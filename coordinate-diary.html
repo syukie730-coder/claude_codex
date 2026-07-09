@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>幸恵ちゃんのコーディネート日記</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=Klee+One:wght@400;600&display=swap');
+  :root {
+    --pink: #FF1E77;
+    --pink-deep: #C1004E;
+    --pink-mid: #FF69A8;
+    --pink-light: #FFC2DC;
+    --purple: #7A1FD0;
+    --mint: #00B894;
+    --cream: #FFDCEC;
+    --text: #2E0F1E;
+    --text-soft: #9E2560;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    background: linear-gradient(160deg, #FF6FB0 0%, #E45BC8 45%, #A85BE0 100%);
+    background-attachment: fixed;
+    color: var(--text); min-height: 100vh; padding-bottom: 40px;
+  }
+  header {
+    text-align: center; padding: 22px 20px 18px; margin: 12px 10px 0;
+    background: linear-gradient(135deg, #FF1E77, #C1004E);
+    border-radius: 26px 26px 0 0;
+    box-shadow: 0 6px 18px rgba(193,0,78,0.4);
+  }
+  header .ribbon { font-size: 34px; display: block; margin-bottom: 4px; filter: drop-shadow(0 3px 5px rgba(0,0,0,0.3)); }
+  header h1 {
+    font-family: 'Klee One', cursive; font-size: 25px; font-weight: 600; line-height: 1.4;
+    color: #fff; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.25);
+  }
+  .board {
+    max-width: 480px; margin: 0 auto; padding: 18px 12px 14px;
+    background: #fff; border-radius: 0 0 26px 26px; margin-left: 10px; margin-right: 10px;
+    box-shadow: 0 10px 30px rgba(122,31,208,0.35);
+  }
+  .month-nav { display: flex; align-items: center; justify-content: center; gap: 18px; margin: 0 0 16px; }
+  .month-nav button {
+    background: linear-gradient(135deg, var(--pink), var(--pink-deep)); border: none; color: #fff;
+    width: 46px; height: 46px; border-radius: 50%; font-size: 22px; cursor: pointer; font-weight: 700;
+    box-shadow: 0 5px 14px rgba(193,0,78,0.5);
+  }
+  .month-nav button:active { transform: scale(0.9); }
+  .month-title {
+    font-family: 'Klee One', cursive; font-size: 23px; font-weight: 700; color: var(--pink-deep);
+    min-width: 150px; text-align: center;
+  }
+  .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 8px; }
+  .weekdays div { text-align: center; font-size: 14px; font-weight: 700; color: var(--text-soft); padding: 4px 0; }
+  .weekdays div.sun { color: #FF1E5A; }
+  .weekdays div.sat { color: #1E5AFF; }
+  .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .day {
+    aspect-ratio: 1 / 1.15; border-radius: 15px;
+    background: linear-gradient(135deg, #FFEAF3, #FFD6E8);
+    border: 2px solid var(--pink-mid);
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+    padding-top: 5px; cursor: pointer; position: relative; overflow: hidden;
+    box-shadow: 0 3px 7px rgba(255,30,119,0.2);
+  }
+  .day.empty { background: transparent; border: none; box-shadow: none; cursor: default; }
+  .day .num { font-size: 14px; font-weight: 700; color: var(--pink-deep); z-index: 2; }
+  .day.today { border-color: var(--purple); border-width: 3px; box-shadow: 0 4px 12px rgba(122,31,208,0.5); }
+  .day.today .num { color: var(--purple); }
+  .day .thumb { position: absolute; inset: 0; object-fit: cover; width: 100%; height: 100%; }
+  .day.has .num {
+    background: linear-gradient(135deg, var(--pink), var(--pink-deep)); color: #fff;
+    border-radius: 9px; padding: 1px 7px; margin-bottom: auto; box-shadow: 0 2px 6px rgba(193,0,78,0.5);
+  }
+  .day.has.today .num { background: linear-gradient(135deg, var(--purple), var(--pink-deep)); }
+  .day .heart { position: absolute; bottom: 4px; right: 5px; font-size: 14px; z-index: 3; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.25)); }
+  .day .dot { width: 10px; height: 10px; background: var(--mint); border-radius: 50%; margin-top: auto; margin-bottom: 6px; z-index: 2; box-shadow: 0 2px 4px rgba(0,184,148,0.6); }
+  .day:active { transform: scale(0.94); }
+  .overlay {
+    position: fixed; inset: 0; background: rgba(46, 15, 30, 0.55); backdrop-filter: blur(4px);
+    display: none; align-items: flex-end; justify-content: center; z-index: 100;
+  }
+  .overlay.show { display: flex; }
+  .sheet {
+    background: var(--cream); width: 100%; max-width: 480px; border-radius: 30px 30px 0 0;
+    padding: 10px 20px 30px; max-height: 92vh; overflow-y: auto; animation: slideUp 0.3s ease;
+    border-top: 6px solid var(--pink);
+  }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .grip { width: 46px; height: 6px; background: var(--pink); border-radius: 3px; margin: 6px auto 14px; }
+  .sheet h2 {
+    font-family: 'Klee One', cursive; text-align: center; color: var(--pink-deep); font-size: 21px;
+    margin-bottom: 16px; font-weight: 700;
+  }
+  .view-photo {
+    width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 22px; margin-bottom: 16px;
+    background: var(--pink-light); border: 4px solid var(--pink); box-shadow: 0 8px 22px rgba(193,0,78,0.4);
+  }
+  .view-row {
+    display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; font-size: 15px; line-height: 1.6;
+    background: #fff; padding: 13px 15px; border-radius: 16px; box-shadow: 0 3px 8px rgba(255,30,119,0.2);
+    border-left: 5px solid var(--pink);
+  }
+  .view-row .ico { font-size: 18px; flex-shrink: 0; }
+  .view-row .lbl { font-weight: 700; color: var(--pink-deep); flex-shrink: 0; }
+  .view-note {
+    background: linear-gradient(135deg, #FFCEE4, #E6CCFF); border-radius: 18px; padding: 16px;
+    font-size: 15px; line-height: 1.8; white-space: pre-wrap; word-break: break-word; margin: 10px 0 16px;
+    border: 2px dashed var(--pink); color: var(--text);
+  }
+  .no-entry { text-align: center; color: var(--text-soft); padding: 28px 10px; font-size: 15px; line-height: 1.9; }
+  .no-entry .big { font-size: 48px; display: block; margin-bottom: 12px; }
+  .photo-picker {
+    width: 100%; aspect-ratio: 4 / 5; border-radius: 22px; border: 3px dashed var(--pink);
+    background: linear-gradient(135deg, #FFCEE4, #E6CCFF);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--pink-deep);
+    cursor: pointer; overflow: hidden; margin-bottom: 18px; font-weight: 700;
+  }
+  .photo-picker img { width: 100%; height: 100%; object-fit: cover; }
+  .photo-picker .icon { font-size: 44px; margin-bottom: 8px; }
+  .photo-picker .txt { font-size: 14px; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 14px; font-weight: 700; margin-bottom: 7px; color: var(--pink-deep); }
+  .field input, .field textarea {
+    width: 100%; border: 2px solid var(--pink-mid); border-radius: 16px; padding: 13px 15px;
+    font-size: 15px; font-family: inherit; color: var(--text); background: #fff; outline: none;
+  }
+  .field input:focus, .field textarea:focus { border-color: var(--pink); box-shadow: 0 0 0 3px rgba(255,30,119,0.2); }
+  .field textarea { resize: none; min-height: 84px; line-height: 1.7; }
+  .sheet-buttons { display: flex; gap: 12px; margin-top: 12px; }
+  .sheet-buttons button {
+    flex: 1; padding: 15px; border-radius: 20px; font-size: 15px; font-weight: 700; font-family: inherit;
+    border: none; cursor: pointer;
+  }
+  .btn-cancel { background: #E8B8CE; color: var(--pink-deep); }
+  .btn-save { background: linear-gradient(135deg, var(--pink), var(--pink-deep)); color: #fff; box-shadow: 0 5px 14px rgba(193,0,78,0.5); }
+  .btn-del { background: linear-gradient(135deg, #FF4D4D, #C40000); color: #fff; flex: 0 0 auto; padding: 15px 20px; }
+  .btn-edit { background: linear-gradient(135deg, var(--purple), var(--pink-deep)); color: #fff; box-shadow: 0 5px 14px rgba(122,31,208,0.5); }
+  .sheet-buttons button:active { transform: scale(0.97); }
+  #fileInput { display: none; }
+</style>
+</head>
+<body>
+<header>
+  <span class="ribbon">🎀</span>
+  <h1>幸恵ちゃんのコーディネート日記</h1>
+</header>
+<div class="board">
+  <div class="month-nav">
+    <button onclick="changeMonth(-1)">‹</button>
+    <div class="month-title" id="monthTitle"></div>
+    <button onclick="changeMonth(1)">›</button>
+  </div>
+  <div class="weekdays">
+    <div class="sun">日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div class="sat">土</div>
+  </div>
+  <div class="days" id="days"></div>
+</div>
+<div class="overlay" id="overlay">
+  <div class="sheet" id="sheet"></div>
+</div>
+<input type="file" id="fileInput" accept="image/*">
+<script>
+  let entries = {};
+  let viewDate = new Date();
+  let selectedKey = null;
+  let currentPhoto = null;
+  const WEEK = ['日','月','火','水','木','金','土'];
+  const STORAGE_KEY = 'coord-calendar';
+
+  function load() {
+    try { const r = localStorage.getItem(STORAGE_KEY); entries = r ? JSON.parse(r) : {}; }
+    catch (e) { entries = {}; }
+    renderCalendar();
+  }
+  function persist() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); }
+    catch (e) {
+      console.error(e);
+      alert('保存できなかったよ💦 写真が多すぎるかもしれないから、古い日の写真をいくつか消してみてね。');
+    }
+  }
+  function keyOf(y, m, d) { return y + '-' + String(m+1).padStart(2,'0') + '-' + String(d).padStart(2,'0'); }
+  function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+  function renderCalendar() {
+    const y = viewDate.getFullYear();
+    const m = viewDate.getMonth();
+    document.getElementById('monthTitle').textContent = y + '年 ' + (m+1) + '月';
+    const first = new Date(y, m, 1).getDay();
+    const daysInMonth = new Date(y, m+1, 0).getDate();
+    const today = new Date();
+    const todayKey = keyOf(today.getFullYear(), today.getMonth(), today.getDate());
+    let html = '';
+    for (let i = 0; i < first; i++) html += '<div class="day empty"></div>';
+    for (let d = 1; d <= daysInMonth; d++) {
+      const k = keyOf(y, m, d);
+      const e = entries[k];
+      const isToday = k === todayKey;
+      let cls = 'day';
+      if (e) cls += ' has';
+      if (isToday) cls += ' today';
+      html += '<div class="' + cls + '" onclick="openDay(\'' + k + '\')">' +
+        (e && e.photo ? '<img class="thumb" src="' + e.photo + '">' : '') +
+        '<span class="num">' + d + '</span>' +
+        (e && e.photo ? '<span class="heart">💗</span>' : '') +
+        (e && !e.photo ? '<span class="dot"></span>' : '') +
+      '</div>';
+    }
+    document.getElementById('days').innerHTML = html;
+  }
+  function changeMonth(dir) { viewDate.setMonth(viewDate.getMonth() + dir); renderCalendar(); }
+  function prettyKey(k) {
+    const [y,m,d] = k.split('-');
+    const dt = new Date(+y, +m-1, +d);
+    return y + '年' + (+m) + '月' + (+d) + '日（' + WEEK[dt.getDay()] + '）';
+  }
+  function openDay(k) {
+    selectedKey = k;
+    const e = entries[k];
+    const sheet = document.getElementById('sheet');
+    if (e) {
+      sheet.innerHTML =
+        '<div class="grip"></div>' +
+        '<h2>🌸 ' + prettyKey(k) + '</h2>' +
+        (e.photo ? '<img class="view-photo" src="' + e.photo + '">' : '') +
+        (e.place ? '<div class="view-row"><span class="ico">📍</span><span class="lbl">どこで：</span><span>' + escapeHtml(e.place) + '</span></div>' : '') +
+        (e.who ? '<div class="view-row"><span class="ico">👥</span><span class="lbl">だれと：</span><span>' + escapeHtml(e.who) + '</span></div>' : '') +
+        (e.outfit ? '<div class="view-row"><span class="ico">👗</span><span class="lbl">服装：</span><span>' + escapeHtml(e.outfit) + '</span></div>' : '') +
+        (e.note ? '<div class="view-note">💭 ' + escapeHtml(e.note) + '</div>' : '') +
+        '<div class="sheet-buttons">' +
+          '<button class="btn-cancel" onclick="closeSheet()">とじる</button>' +
+          '<button class="btn-edit" onclick="editDay(\'' + k + '\')">✏️ なおす</button>' +
+        '</div>';
+    } else {
+      sheet.innerHTML =
+        '<div class="grip"></div>' +
+        '<h2>🌸 ' + prettyKey(k) + '</h2>' +
+        '<div class="no-entry"><span class="big">🌷</span>この日はまだ記録がないよ。<br>コーデを残してみる？♪</div>' +
+        '<div class="sheet-buttons">' +
+          '<button class="btn-cancel" onclick="closeSheet()">とじる</button>' +
+          '<button class="btn-save" onclick="editDay(\'' + k + '\')">＋ きろくする 💕</button>' +
+        '</div>';
+    }
+    document.getElementById('overlay').classList.add('show');
+  }
+  function editDay(k) {
+    selectedKey = k;
+    const e = entries[k] || {};
+    currentPhoto = e.photo || null;
+    const sheet = document.getElementById('sheet');
+    sheet.innerHTML =
+      '<div class="grip"></div>' +
+      '<h2>✏️ ' + prettyKey(k) + '</h2>' +
+      '<div class="photo-picker" id="picker" onclick="document.getElementById(\'fileInput\').click()">' +
+        (currentPhoto ? '<img src="' + currentPhoto + '">' : '<div class="icon">📷</div><div class="txt">コーデの写真をえらぶ</div>') +
+      '</div>' +
+      '<div class="field"><label>📍 どこで</label><input type="text" id="inPlace" placeholder="例：横浜のカフェ" value="' + (e.place?escapeHtml(e.place):'') + '"></div>' +
+      '<div class="field"><label>👥 だれと</label><input type="text" id="inWho" placeholder="例：お友だちと" value="' + (e.who?escapeHtml(e.who):'') + '"></div>' +
+      '<div class="field"><label>👗 どんな服装</label><input type="text" id="inOutfit" placeholder="例：花柄ワンピにデニムジャケット" value="' + (e.outfit?escapeHtml(e.outfit):'') + '"></div>' +
+      '<div class="field"><label>💭 感想・メモ</label><textarea id="inNote" placeholder="お気に入りポイントや感じたこと♪">' + (e.note?escapeHtml(e.note):'') + '</textarea></div>' +
+      '<div class="sheet-buttons">' +
+        '<button class="btn-cancel" onclick="openDay(\'' + k + '\')">やめる</button>' +
+        (entries[k] ? '<button class="btn-del" onclick="delDay(\'' + k + '\')">🗑</button>' : '') +
+        '<button class="btn-save" onclick="saveDay()">ほぞん 💕</button>' +
+      '</div>';
+    document.getElementById('overlay').classList.add('show');
+  }
+  document.getElementById('fileInput').addEventListener('change', function(ev){
+    const file = ev.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(){
+      const img = new Image();
+      img.onload = function(){
+        const max = 900;
+        let w = img.width, h = img.height;
+        if (w>max||h>max){ if(w>h){h=h*max/w;w=max;}else{w=w*max/h;h=max;} }
+        const c = document.createElement('canvas');
+        c.width=w; c.height=h;
+        c.getContext('2d').drawImage(img,0,0,w,h);
+        currentPhoto = c.toDataURL('image/jpeg',0.75);
+        document.getElementById('picker').innerHTML = '<img src="' + currentPhoto + '">';
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+  function saveDay() {
+    const data = {
+      place: document.getElementById('inPlace').value.trim(),
+      who: document.getElementById('inWho').value.trim(),
+      outfit: document.getElementById('inOutfit').value.trim(),
+      note: document.getElementById('inNote').value.trim(),
+      photo: currentPhoto
+    };
+    if (!data.photo && !data.place && !data.who && !data.outfit && !data.note) { alert('写真かメモを入れてね💕'); return; }
+    entries[selectedKey] = data;
+    persist();
+    renderCalendar();
+    openDay(selectedKey);
+  }
+  function delDay(k) {
+    if (!confirm('この日の記録をけしてもいい？')) return;
+    delete entries[k];
+    persist();
+    renderCalendar();
+    closeSheet();
+  }
+  function closeSheet(){ document.getElementById('overlay').classList.remove('show'); }
+  document.getElementById('overlay').addEventListener('click', function(e){ if(e.target===this) closeSheet(); });
+  load();
+</script>
+</body>
+</html>
