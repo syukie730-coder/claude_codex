@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<!-- iPhoneのホーム画面に追加したとき、アプリのように全画面で開く設定 -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="レシピ手帳">
+<title>レシピ手帳 🍳</title>
+<style>
+/* ============================================================
+   レシピ手帳 デザイン設定
+   ・白を基調にしたApple純正アプリ風
+   ・文字は大きめ(基本18px)、ボタンも大きめ
+   ============================================================ */
+:root{
+  --bg:#F7F7F9;          /* 画面全体のうすいグレー */
+  --card:#FFFFFF;        /* カードの白 */
+  --text:#1C1C1E;        /* 基本の文字色 */
+  --sub:#8A8A8E;         /* うすい文字色 */
+  --line:#E8E8EC;        /* 区切り線 */
+  --accent:#E0563F;      /* アクセント(トマト色) */
+  --accent-soft:#FDEEEA; /* アクセントのうすい色 */
+  --star:#F5A623;        /* 星の色 */
+  --heart:#E4426B;       /* お気に入りハート */
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{
+  font-family:-apple-system,"Hiragino Sans","Hiragino Kaku Gothic ProN",sans-serif;
+  background:var(--bg); color:var(--text);
+  font-size:18px; line-height:1.6;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+button{font-family:inherit;border:none;background:none;cursor:pointer;color:inherit;}
+input,textarea,select{
+  font-family:inherit;font-size:18px;color:var(--text);
+  border:1.5px solid var(--line);border-radius:12px;
+  padding:14px;width:100%;background:#fff;
+}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent);}
+textarea{min-height:120px;resize:vertical;}
+
+/* ---------- 画面共通 ---------- */
+.screen{display:none;max-width:560px;margin:0 auto;padding:16px 16px 120px;}
+.screen.active{display:block;}
+
+/* ヘッダー */
+.header{display:flex;align-items:center;gap:10px;padding:12px 0 6px;}
+.back-btn{
+  font-size:19px;color:var(--accent);font-weight:600;
+  padding:8px 12px 8px 0;flex-shrink:0;
+}
+.big-title{font-size:32px;font-weight:800;letter-spacing:.01em;padding:6px 0 14px;}
+.page-title{font-size:24px;font-weight:800;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* 検索バー */
+.searchbar{
+  display:flex;align-items:center;gap:8px;background:#ECECF0;
+  border-radius:14px;padding:12px 14px;margin-bottom:16px;
+}
+.searchbar input{border:none;background:transparent;padding:0;font-size:18px;}
+.searchbar span{font-size:18px;color:var(--sub);}
+
+/* カード・リスト行 */
+.card{background:var(--card);border-radius:18px;overflow:hidden;margin-bottom:16px;
+  box-shadow:0 1px 3px rgba(0,0,0,.05);}
+.row{
+  display:flex;align-items:center;gap:14px;width:100%;text-align:left;
+  padding:16px;border-bottom:1px solid var(--line);font-size:19px;
+  min-height:60px;
+}
+.row:last-child{border-bottom:none;}
+.row .emoji{font-size:28px;width:38px;text-align:center;flex-shrink:0;}
+.row .label{flex:1;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.row .count{color:var(--sub);font-size:17px;}
+.row .chev{color:#C7C7CC;font-size:20px;font-weight:700;}
+
+/* 大きいボタン */
+.big-btn{
+  display:block;width:100%;text-align:center;
+  background:var(--accent);color:#fff;font-size:20px;font-weight:700;
+  border-radius:16px;padding:16px;margin:8px 0;
+}
+.soft-btn{
+  display:block;width:100%;text-align:center;
+  background:var(--accent-soft);color:var(--accent);font-size:19px;font-weight:700;
+  border-radius:16px;padding:15px;margin:8px 0;
+}
+.gray-btn{
+  display:block;width:100%;text-align:center;
+  background:#ECECF0;color:var(--text);font-size:19px;font-weight:600;
+  border-radius:16px;padding:15px;margin:8px 0;
+}
+.danger-btn{
+  display:block;width:100%;text-align:center;
+  background:#FCE9E9;color:#D0342C;font-size:19px;font-weight:700;
+  border-radius:16px;padding:15px;margin:8px 0;
+}
+
+/* ＋ 浮かぶボタン */
+.fab{
+  position:fixed;right:20px;bottom:calc(24px + env(safe-area-inset-bottom));
+  width:66px;height:66px;border-radius:50%;
+  background:var(--accent);color:#fff;font-size:36px;font-weight:600;
+  box-shadow:0 4px 14px rgba(224,86,63,.4);
+  display:flex;align-items:center;justify-content:center;z-index:50;
+}
+
+/* レシピ一覧のカード */
+.recipe-item{display:flex;align-items:center;gap:14px;width:100%;text-align:left;
+  padding:12px 14px;border-bottom:1px solid var(--line);}
+.recipe-item:last-child{border-bottom:none;}
+.thumb{
+  width:76px;height:76px;border-radius:14px;object-fit:cover;flex-shrink:0;
+  background:var(--accent-soft);display:flex;align-items:center;justify-content:center;
+  font-size:34px;
+}
+.recipe-item .info{flex:1;min-width:0;}
+.recipe-item .name{font-size:19px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.stars{color:var(--star);font-size:18px;letter-spacing:2px;}
+.stars .off{color:#D9D9DE;}
+.fav-mark{font-size:20px;flex-shrink:0;}
+
+/* 並び替え */
+.sort-bar{display:flex;gap:8px;overflow-x:auto;padding-bottom:12px;-webkit-overflow-scrolling:touch;}
+.sort-bar button{
+  flex-shrink:0;font-size:16px;font-weight:600;padding:9px 16px;border-radius:20px;
+  background:#ECECF0;color:var(--sub);
+}
+.sort-bar button.on{background:var(--accent);color:#fff;}
+
+/* 詳細画面 */
+.photo-strip{display:flex;gap:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;
+  border-radius:18px;margin-bottom:14px;}
+.photo-strip img{height:240px;border-radius:18px;flex-shrink:0;max-width:100%;object-fit:cover;}
+.detail-name{font-size:27px;font-weight:800;line-height:1.4;}
+.detail-meta{color:var(--sub);font-size:16px;margin:4px 0 12px;}
+.section-title{font-size:16px;font-weight:800;color:var(--accent);
+  margin:18px 0 6px;letter-spacing:.05em;}
+.section-body{background:var(--card);border-radius:16px;padding:16px;
+  font-size:18px;white-space:pre-wrap;word-break:break-word;
+  box-shadow:0 1px 3px rgba(0,0,0,.05);}
+.link-btn{
+  display:flex;align-items:center;gap:12px;width:100%;
+  background:var(--card);border-radius:16px;padding:16px;margin:8px 0;
+  font-size:19px;font-weight:700;color:var(--text);text-decoration:none;
+  box-shadow:0 1px 3px rgba(0,0,0,.05);
+}
+.link-btn .chev{margin-left:auto;color:#C7C7CC;}
+
+/* 入力フォーム */
+.form-group{margin-bottom:18px;}
+.form-label{font-size:16px;font-weight:800;color:var(--sub);margin-bottom:6px;display:block;}
+.star-input{font-size:38px;letter-spacing:6px;color:#D9D9DE;user-select:none;}
+.star-input span{cursor:pointer;}
+.star-input span.on{color:var(--star);}
+.photo-previews{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
+.photo-previews .pv{position:relative;}
+.photo-previews img{width:86px;height:86px;object-fit:cover;border-radius:12px;}
+.photo-previews .del{
+  position:absolute;top:-8px;right:-8px;width:28px;height:28px;border-radius:50%;
+  background:#3A3A3C;color:#fff;font-size:16px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+}
+.photo-add{
+  width:86px;height:86px;border-radius:12px;border:2px dashed #C7C7CC;
+  display:flex;align-items:center;justify-content:center;font-size:32px;color:var(--sub);
+}
+
+/* フォルダ編集 */
+.folder-edit-row{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);}
+.folder-edit-row:last-child{border-bottom:none;}
+.folder-edit-row input{flex:1;font-size:18px;padding:10px 12px;}
+.folder-edit-row .del-folder{
+  width:40px;height:40px;border-radius:50%;background:#FCE9E9;color:#D0342C;
+  font-size:22px;font-weight:700;flex-shrink:0;
+}
+
+/* お知らせ(トースト) */
+#toast{
+  position:fixed;left:50%;bottom:110px;transform:translateX(-50%);
+  background:#3A3A3C;color:#fff;font-size:17px;font-weight:600;
+  padding:12px 22px;border-radius:24px;opacity:0;transition:opacity .3s;
+  pointer-events:none;z-index:99;white-space:nowrap;
+}
+#toast.show{opacity:1;}
+
+.empty{
+  text-align:center;color:var(--sub);font-size:18px;padding:50px 20px;line-height:1.8;
+}
+.note-text{color:var(--sub);font-size:16px;line-height:1.8;margin:10px 4px;}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     ホーム画面 : フォルダ一覧・検索・お気に入り
+============================================================ -->
+<div class="screen active" id="scr-home">
+  <div class="big-title">🍳 レシピ手帳</div>
+
+  <div class="searchbar" onclick="goSearch()">
+    <span>🔍</span>
+    <input id="home-search" placeholder="料理名・材料で検索" readonly>
+  </div>
+
+  <div class="card">
+    <button class="row" onclick="openFavorites()">
+      <span class="emoji">❤️</span>
+      <span class="label">お気に入り</span>
+      <span class="count" id="fav-count"></span>
+      <span class="chev">›</span>
+    </button>
+  </div>
+
+  <div class="card" id="folder-list"><!-- フォルダはここに表示されます --></div>
+
+  <button class="gray-btn" onclick="showScreen('scr-folders')">📁 フォルダを編集する</button>
+  <button class="gray-btn" onclick="showScreen('scr-backup')">💾 バックアップ・復元</button>
+
+  <button class="fab" onclick="openForm(null)">＋</button>
+</div>
+
+<!-- ============================================================
+     レシピ一覧画面 (フォルダの中 / お気に入り / 検索結果)
+============================================================ -->
+<div class="screen" id="scr-list">
+  <div class="header">
+    <button class="back-btn" onclick="showScreen('scr-home')">‹ 戻る</button>
+    <div class="page-title" id="list-title"></div>
+  </div>
+
+  <div class="searchbar" id="list-searchbar" style="display:none;">
+    <span>🔍</span>
+    <input id="search-input" placeholder="料理名・材料で検索" oninput="renderList()">
+  </div>
+
+  <div class="sort-bar">
+    <button data-sort="new" class="on" onclick="setSort('new')">新しい順</button>
+    <button data-sort="old" onclick="setSort('old')">古い順</button>
+    <button data-sort="star" onclick="setSort('star')">評価順</button>
+    <button data-sort="name" onclick="setSort('name')">名前順</button>
+  </div>
+
+  <div class="card" id="recipe-list"></div>
+  <button class="fab" onclick="openForm(null)">＋</button>
+</div>
+
+<!-- ============================================================
+     レシピ詳細画面
+============================================================ -->
+<div class="screen" id="scr-detail">
+  <div class="header">
+    <button class="back-btn" onclick="backFromDetail()">‹ 戻る</button>
+    <div class="page-title"></div>
+    <button class="back-btn" id="detail-fav" onclick="toggleFav()">♡</button>
+  </div>
+  <div id="detail-body"></div>
+  <button class="soft-btn" onclick="editCurrent()">✏️ このレシピを編集する</button>
+  <button class="danger-btn" id="del-btn" onclick="askDelete()">🗑 このレシピを削除する</button>
+</div>
+
+<!-- ============================================================
+     レシピ登録・編集画面
+============================================================ -->
+<div class="screen" id="scr-form">
+  <div class="header">
+    <button class="back-btn" onclick="cancelForm()">‹ やめる</button>
+    <div class="page-title" id="form-title">新しいレシピ</div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">料理名 (必ず入れてください)</label>
+    <input id="f-name" placeholder="例:鶏むね肉のねぎ塩だれ">
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">カテゴリー</label>
+    <select id="f-folder"></select>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">評価 (星をタップ)</label>
+    <div class="star-input" id="f-stars"></div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">作った日</label>
+    <input id="f-date" type="date">
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">写真 (何枚でもOK)</label>
+    <input type="file" id="f-photo-input" accept="image/*" multiple style="display:none" onchange="addPhotos(this.files)">
+    <div class="photo-previews" id="f-photos"></div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">材料</label>
+    <textarea id="f-ing" placeholder="例:&#10;鶏むね肉 1枚&#10;長ねぎ 1本&#10;ごま油 大さじ1"></textarea>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">作り方</label>
+    <textarea id="f-steps" placeholder="例:&#10;1. 鶏肉をそぎ切りにする&#10;2. フライパンで焼く&#10;3. ねぎ塩だれをかける"></textarea>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">自分のメモ・感想</label>
+    <textarea id="f-memo" placeholder="例:家族に大好評!次は倍量で作る"></textarea>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">📷 Instagramのリンク</label>
+    <input id="f-insta" placeholder="https://www.instagram.com/..." inputmode="url">
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">▶️ YouTubeのリンク</label>
+    <input id="f-youtube" placeholder="https://www.youtube.com/..." inputmode="url">
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">🔗 その他のWebサイト</label>
+    <input id="f-web" placeholder="https://..." inputmode="url">
+  </div>
+
+  <button class="big-btn" onclick="saveRecipe()">✅ 保存する</button>
+</div>
+
+<!-- ============================================================
+     フォルダ編集画面
+============================================================ -->
+<div class="screen" id="scr-folders">
+  <div class="header">
+    <button class="back-btn" onclick="saveFoldersAndBack()">‹ 完了</button>
+    <div class="page-title">フォルダを編集</div>
+  </div>
+  <p class="note-text">名前は直接書きかえられます。「−」ボタンでフォルダを削除できます(中のレシピは「🍛 その他」に移動します)。</p>
+  <div class="card" id="folder-edit-list"></div>
+  <button class="soft-btn" onclick="addFolder()">＋ フォルダを追加する</button>
+</div>
+
+<!-- ============================================================
+     バックアップ画面
+============================================================ -->
+<div class="screen" id="scr-backup">
+  <div class="header">
+    <button class="back-btn" onclick="showScreen('scr-home')">‹ 戻る</button>
+    <div class="page-title">バックアップ・復元</div>
+  </div>
+  <p class="note-text" id="backup-info"></p>
+  <button class="big-btn" onclick="exportBackup()">💾 バックアップを保存する</button>
+  <p class="note-text">↑ レシピ全部をひとつのファイルにして保存します。「ファイル」アプリやiCloudに保存しておくと安心です😊</p>
+  <input type="file" id="restore-input" accept=".json,application/json" style="display:none" onchange="importBackup(this.files[0])">
+  <button class="gray-btn" onclick="document.getElementById('restore-input').click()">📂 バックアップから復元する</button>
+  <p class="note-text">↑ 保存しておいたファイルを選ぶと、レシピが元どおりになります。</p>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ============================================================
+   データ保存のしくみ
+   1. Claudeのアプリ内で開いたとき → window.storage に保存
+   2. Safariに保存したHTMLで開いたとき → localStorage に保存
+   3. どちらも使えないとき → 一時的な保存(閉じると消える)
+   ============================================================ */
+const memStore = {};   // 一時保存用
+
+const store = {
+  async get(key){
+    if (window.storage) {
+      try { const r = await window.storage.get(key); return r ? r.value : null; }
+      catch(e){ return null; }
+    }
+    try { return localStorage.getItem(key); } catch(e){ return memStore[key] ?? null; }
+  },
+  async set(key, value){
+    if (window.storage) {
+      try { await window.storage.set(key, value); return; } catch(e){}
+    }
+    try { localStorage.setItem(key, value); } catch(e){ memStore[key] = value; }
+  },
+  async del(key){
+    if (window.storage) {
+      try { await window.storage.delete(key); return; } catch(e){}
+    }
+    try { localStorage.removeItem(key); } catch(e){ delete memStore[key]; }
+  },
+  async listKeys(prefix){
+    if (window.storage) {
+      try { const r = await window.storage.list(prefix); return r ? r.keys : []; }
+      catch(e){ return []; }
+    }
+    try {
+      const keys = [];
+      for (let i=0;i<localStorage.length;i++){
+        const k = localStorage.key(i);
+        if (k && k.startsWith(prefix)) keys.push(k);
+      }
+      return keys;
+    } catch(e){ return Object.keys(memStore).filter(k=>k.startsWith(prefix)); }
+  }
+};
+
+/* ============================================================
+   アプリの状態(いま表示しているものなど)
+   ============================================================ */
+let folders = [];        // フォルダ一覧 [{id, name}]
+let recipes = [];        // レシピ全部
+let currentFolder = null;   // いま開いているフォルダのid ('fav'=お気に入り,'search'=検索)
+let currentRecipe = null;   // いま開いているレシピ
+let sortMode = 'new';       // 並び替えの種類
+let formPhotos = [];        // フォーム入力中の写真
+let formStars = 0;          // フォーム入力中の星の数
+let editingId = null;       // 編集中のレシピid(nullなら新規)
+let cameFrom = 'scr-home';  // 詳細画面からの戻り先
+
+// 最初に入っているフォルダ
+const DEFAULT_FOLDERS = [
+  "🥦 野菜料理","🍗 鶏肉料理","🐷 豚肉料理","🥩 牛肉料理","🍖 ひき肉料理",
+  "🍳 卵料理","🧀 豆腐料理","🐟 魚料理","🥔 じゃがいも料理","🥕 根菜料理",
+  "🌿 サラダ","🥜 乾物料理","🍝 麺料理","🍚 ご飯もの","🥣 スープ","🍛 その他"
+];
+
+/* ============================================================
+   起動時の読み込み
+   ============================================================ */
+async function init(){
+  // フォルダを読み込む(初回はデフォルトを作る)
+  const f = await store.get('folders');
+  if (f) {
+    folders = JSON.parse(f);
+  } else {
+    folders = DEFAULT_FOLDERS.map((name,i)=>({id:'f'+i, name}));
+    await store.set('folders', JSON.stringify(folders));
+  }
+  // レシピを全部読み込む
+  const keys = await store.listKeys('recipe:');
+  recipes = [];
+  for (const k of keys){
+    const v = await store.get(k);
+    if (v) { try { recipes.push(JSON.parse(v)); } catch(e){} }
+  }
+  renderHome();
+}
+
+/* ============================================================
+   画面の切りかえ
+   ============================================================ */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+/* ============================================================
+   ホーム画面
+   ============================================================ */
+function renderHome(){
+  const list = document.getElementById('folder-list');
+  list.innerHTML = '';
+  folders.forEach(f=>{
+    const n = recipes.filter(r=>r.folderId===f.id).length;
+    const emoji = f.name.trim().split(' ')[0];
+    const label = f.name.replace(emoji,'').trim() || f.name;
+    const btn = document.createElement('button');
+    btn.className = 'row';
+    btn.innerHTML = `<span class="emoji">${esc(emoji)}</span>
+      <span class="label">${esc(label)}</span>
+      <span class="count">${n>0? n+'件':''}</span><span class="chev">›</span>`;
+    btn.onclick = ()=>openFolder(f.id);
+    list.appendChild(btn);
+  });
+  const favN = recipes.filter(r=>r.favorite).length;
+  document.getElementById('fav-count').textContent = favN>0? favN+'件':'';
+}
+
+// HTMLとして安全に表示するための変換
+function esc(s){
+  return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ============================================================
+   レシピ一覧画面
+   ============================================================ */
+function openFolder(id){
+  currentFolder = id;
+  const f = folders.find(x=>x.id===id);
+  document.getElementById('list-title').textContent = f ? f.name : '';
+  document.getElementById('list-searchbar').style.display = 'none';
+  showScreen('scr-list'); renderList();
+}
+function openFavorites(){
+  currentFolder = 'fav';
+  document.getElementById('list-title').textContent = '❤️ お気に入り';
+  document.getElementById('list-searchbar').style.display = 'none';
+  showScreen('scr-list'); renderList();
+}
+function goSearch(){
+  currentFolder = 'search';
+  document.getElementById('list-title').textContent = '🔍 検索';
+  document.getElementById('list-searchbar').style.display = 'flex';
+  showScreen('scr-list'); renderList();
+  setTimeout(()=>document.getElementById('search-input').focus(), 100);
+}
+function setSort(mode){
+  sortMode = mode;
+  document.querySelectorAll('.sort-bar button').forEach(b=>{
+    b.classList.toggle('on', b.dataset.sort===mode);
+  });
+  renderList();
+}
+function getVisibleRecipes(){
+  let list;
+  if (currentFolder==='fav') list = recipes.filter(r=>r.favorite);
+  else if (currentFolder==='search'){
+    const q = document.getElementById('search-input').value.trim().toLowerCase();
+    list = !q ? [] : recipes.filter(r=>
+      (r.name+' '+r.ingredients+' '+r.memo).toLowerCase().includes(q));
+  } else list = recipes.filter(r=>r.folderId===currentFolder);
+
+  // 並び替え
+  const sorted = [...list];
+  if (sortMode==='new')  sorted.sort((a,b)=>(b.date||'').localeCompare(a.date||'') || b.created-a.created);
+  if (sortMode==='old')  sorted.sort((a,b)=>(a.date||'').localeCompare(b.date||'') || a.created-b.created);
+  if (sortMode==='star') sorted.sort((a,b)=>(b.rating||0)-(a.rating||0));
+  if (sortMode==='name') sorted.sort((a,b)=>a.name.localeCompare(b.name,'ja'));
+  return sorted;
+}
+function starHTML(n){
+  let s='';
+  for(let i=1;i<=5;i++) s += i<=n ? '★' : '<span class="off">★</span>';
+  return `<span class="stars">${s}</span>`;
+}
+function renderList(){
+  const wrap = document.getElementById('recipe-list');
+  const list = getVisibleRecipes();
+  wrap.innerHTML = '';
+  if (list.length===0){
+    const msg = currentFolder==='search'
+      ? '検索したいことばを<br>上の欄に入れてください🔍'
+      : 'まだレシピがありません。<br>右下の「＋」ボタンから<br>登録できます😊';
+    wrap.innerHTML = `<div class="empty">${msg}</div>`;
+    return;
+  }
+  list.forEach(r=>{
+    const btn = document.createElement('button');
+    btn.className = 'recipe-item';
+    const photo = (r.photos && r.photos[0])
+      ? `<img class="thumb" src="${r.photos[0]}" alt="">`
+      : `<div class="thumb">🍽️</div>`;
+    btn.innerHTML = `${photo}
+      <div class="info">
+        <div class="name">${esc(r.name)}</div>
+        ${starHTML(r.rating||0)}
+      </div>
+      <span class="fav-mark">${r.favorite?'❤️':''}</span>`;
+    btn.onclick = ()=>openDetail(r.id);
+    wrap.appendChild(btn);
+  });
+}
+
+/* ============================================================
+   詳細画面
+   ============================================================ */
+function openDetail(id){
+  currentRecipe = recipes.find(r=>r.id===id);
+  if (!currentRecipe) return;
+  cameFrom = 'scr-list';
+  const r = currentRecipe;
+  const body = document.getElementById('detail-body');
+
+  const folderName = (folders.find(f=>f.id===r.folderId)||{}).name || '';
+  const dateStr = r.date ? r.date.replace(/-/g,'/') : '';
+
+  let html = '';
+  if (r.photos && r.photos.length)
+    html += `<div class="photo-strip">${r.photos.map(p=>`<img src="${p}" alt="料理写真">`).join('')}</div>`;
+  html += `<div class="detail-name">${esc(r.name)}</div>`;
+  html += `<div class="detail-meta">${esc(folderName)}${dateStr? ' ・ 作った日 '+dateStr:''}</div>`;
+  html += starHTML(r.rating||0);
+
+  if (r.ingredients) html += `<div class="section-title">材料</div><div class="section-body">${esc(r.ingredients)}</div>`;
+  if (r.steps)       html += `<div class="section-title">作り方</div><div class="section-body">${esc(r.steps)}</div>`;
+  if (r.memo)        html += `<div class="section-title">自分のメモ・感想</div><div class="section-body">${esc(r.memo)}</div>`;
+
+  const links = [];
+  if (r.instagram) links.push(['📷','Instagramで見る',r.instagram]);
+  if (r.youtube)   links.push(['▶️','YouTubeで見る',r.youtube]);
+  if (r.web)       links.push(['🔗','Webサイトで見る',r.web]);
+  if (links.length){
+    html += `<div class="section-title">リンク</div>`;
+    links.forEach(([icon,label,url])=>{
+      let u = url.trim();
+      if (u && !/^https?:\/\//i.test(u)) u = 'https://'+u;  // https:// を自動で足す
+      html += `<a class="link-btn" href="${esc(u)}" target="_blank" rel="noopener">
+        <span>${icon}</span><span>${label}</span><span class="chev">›</span></a>`;
+    });
+  }
+  body.innerHTML = html;
+  updateFavBtn();
+  resetDeleteBtn();
+  showScreen('scr-detail');
+}
+function backFromDetail(){ showScreen(cameFrom); renderList(); renderHome(); }
+function updateFavBtn(){
+  document.getElementById('detail-fav').textContent = currentRecipe.favorite ? '❤️' : '♡';
+}
+async function toggleFav(){
+  currentRecipe.favorite = !currentRecipe.favorite;
+  await store.set('recipe:'+currentRecipe.id, JSON.stringify(currentRecipe));
+  updateFavBtn(); renderHome();
+  toast(currentRecipe.favorite ? 'お気に入りに追加しました❤️' : 'お気に入りを外しました');
+}
+
+/* --- 削除は2回タップで確定(押しまちがい防止) --- */
+let deleteArmed = false;
+function resetDeleteBtn(){
+  deleteArmed = false;
+  document.getElementById('del-btn').textContent = '🗑 このレシピを削除する';
+}
+async function askDelete(){
+  const btn = document.getElementById('del-btn');
+  if (!deleteArmed){
+    deleteArmed = true;
+    btn.textContent = '⚠️ もう一度押すと削除されます';
+    setTimeout(resetDeleteBtn, 4000);  // 4秒たつと元に戻る
+    return;
+  }
+  await store.del('recipe:'+currentRecipe.id);
+  recipes = recipes.filter(r=>r.id!==currentRecipe.id);
+  toast('削除しました');
+  renderHome(); showScreen('scr-list'); renderList();
+}
+
+/* ============================================================
+   レシピ登録・編集フォーム
+   ============================================================ */
+function openForm(recipe){
+  editingId = recipe ? recipe.id : null;
+  document.getElementById('form-title').textContent = recipe ? 'レシピを編集' : '新しいレシピ';
+
+  // カテゴリーの選択肢を作る
+  const sel = document.getElementById('f-folder');
+  sel.innerHTML = folders.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join('');
+
+  // 値をセット(新規なら空、編集なら今の値)
+  document.getElementById('f-name').value  = recipe?.name || '';
+  sel.value = recipe?.folderId || (currentFolder && currentFolder!=='fav' && currentFolder!=='search' ? currentFolder : folders[0]?.id);
+  document.getElementById('f-date').value  = recipe?.date || new Date().toISOString().slice(0,10);
+  document.getElementById('f-ing').value   = recipe?.ingredients || '';
+  document.getElementById('f-steps').value = recipe?.steps || '';
+  document.getElementById('f-memo').value  = recipe?.memo || '';
+  document.getElementById('f-insta').value = recipe?.instagram || '';
+  document.getElementById('f-youtube').value = recipe?.youtube || '';
+  document.getElementById('f-web').value   = recipe?.web || '';
+  formPhotos = recipe?.photos ? [...recipe.photos] : [];
+  formStars = recipe?.rating || 0;
+  renderStarsInput(); renderPhotoPreviews();
+  showScreen('scr-form');
+}
+function editCurrent(){ openForm(currentRecipe); }
+function cancelForm(){ showScreen(editingId ? 'scr-detail' : (currentFolder ? 'scr-list' : 'scr-home')); }
+
+/* --- 星の入力 --- */
+function renderStarsInput(){
+  const box = document.getElementById('f-stars');
+  box.innerHTML = '';
+  for(let i=1;i<=5;i++){
+    const s = document.createElement('span');
+    s.textContent = '★';
+    if (i<=formStars) s.classList.add('on');
+    s.onclick = ()=>{ formStars = (formStars===i)? i-1 : i; renderStarsInput(); };
+    box.appendChild(s);
+  }
+}
+
+/* --- 写真の入力(小さく圧縮して保存容量を節約) --- */
+function renderPhotoPreviews(){
+  const box = document.getElementById('f-photos');
+  box.innerHTML = '';
+  formPhotos.forEach((p,i)=>{
+    const d = document.createElement('div');
+    d.className = 'pv';
+    d.innerHTML = `<img src="${p}"><button class="del" onclick="removePhoto(${i})">✕</button>`;
+    box.appendChild(d);
+  });
+  const add = document.createElement('button');
+  add.className = 'photo-add'; add.textContent = '＋';
+  add.onclick = ()=>document.getElementById('f-photo-input').click();
+  box.appendChild(add);
+}
+function removePhoto(i){ formPhotos.splice(i,1); renderPhotoPreviews(); }
+
+function addPhotos(files){
+  [...files].forEach(file=>{
+    const reader = new FileReader();
+    reader.onload = e=>{
+      const img = new Image();
+      img.onload = ()=>{
+        // 長い辺を900pxまでに縮めてJPEGで保存(容量を小さく)
+        const max = 900;
+        let w = img.width, h = img.height;
+        if (Math.max(w,h) > max){
+          const rate = max/Math.max(w,h);
+          w = Math.round(w*rate); h = Math.round(h*rate);
+        }
+        const cv = document.createElement('canvas');
+        cv.width = w; cv.height = h;
+        cv.getContext('2d').drawImage(img,0,0,w,h);
+        formPhotos.push(cv.toDataURL('image/jpeg', 0.72));
+        renderPhotoPreviews();
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+  document.getElementById('f-photo-input').value = '';
+}
+
+/* --- 保存 --- */
+async function saveRecipe(){
+  const name = document.getElementById('f-name').value.trim();
+  if (!name){ toast('料理名を入れてください'); return; }
+
+  const isNew = !editingId;
+  const id = editingId || 'r' + Date.now();
+  const old = recipes.find(r=>r.id===id);
+
+  const recipe = {
+    id,
+    name,
+    folderId:   document.getElementById('f-folder').value,
+    rating:     formStars,
+    date:       document.getElementById('f-date').value,
+    photos:     formPhotos,
+    ingredients:document.getElementById('f-ing').value.trim(),
+    steps:      document.getElementById('f-steps').value.trim(),
+    memo:       document.getElementById('f-memo').value.trim(),
+    instagram:  document.getElementById('f-insta').value.trim(),
+    youtube:    document.getElementById('f-youtube').value.trim(),
+    web:        document.getElementById('f-web').value.trim(),
+    favorite:   old ? old.favorite : false,
+    created:    old ? old.created : Date.now()
+  };
+
+  await store.set('recipe:'+id, JSON.stringify(recipe));
+  if (old) recipes[recipes.indexOf(old)] = recipe;
+  else recipes.push(recipe);
+
+  toast(isNew ? '保存しました✅' : '更新しました✅');
+  renderHome();
+  currentRecipe = recipe;
+  if (isNew){ openFolder(recipe.folderId); }
+  else { openDetail(recipe.id); }
+}
+
+/* ============================================================
+   フォルダ編集
+   ============================================================ */
+function renderFolderEdit(){
+  const box = document.getElementById('folder-edit-list');
+  box.innerHTML = '';
+  folders.forEach((f,i)=>{
+    const row = document.createElement('div');
+    row.className = 'folder-edit-row';
+    row.innerHTML = `
+      <input value="${esc(f.name)}" oninput="folders[${i}].name=this.value">
+      <button class="del-folder" onclick="deleteFolder(${i})">−</button>`;
+    box.appendChild(row);
+  });
+}
+function addFolder(){
+  folders.push({id:'f'+Date.now(), name:'📁 新しいフォルダ'});
+  renderFolderEdit();
+}
+async function deleteFolder(i){
+  const f = folders[i];
+  // 「その他」フォルダを探す(なければ最初のフォルダに移す)
+  let other = folders.find(x=>x.name.includes('その他') && x.id!==f.id) ||
+              folders.find(x=>x.id!==f.id);
+  if (!other){ toast('最後のひとつは削除できません'); return; }
+  // 中のレシピを移動
+  for (const r of recipes){
+    if (r.folderId===f.id){
+      r.folderId = other.id;
+      await store.set('recipe:'+r.id, JSON.stringify(r));
+    }
+  }
+  folders.splice(i,1);
+  renderFolderEdit();
+  toast('フォルダを削除しました');
+}
+async function saveFoldersAndBack(){
+  folders = folders.filter(f=>f.name.trim()!=='');
+  await store.set('folders', JSON.stringify(folders));
+  renderHome(); showScreen('scr-home');
+}
+// フォルダ編集画面を開くときに一覧を作る
+document.getElementById('scr-folders');
+const _origShow = showScreen;
+showScreen = function(id){
+  if (id==='scr-folders') renderFolderEdit();
+  if (id==='scr-backup')  renderBackupInfo();
+  _origShow(id);
+};
+
+/* ============================================================
+   バックアップ・復元
+   ============================================================ */
+function renderBackupInfo(){
+  document.getElementById('backup-info').textContent =
+    `いま保存されているレシピ:${recipes.length}件 / フォルダ:${folders.length}個`;
+}
+function exportBackup(){
+  const data = { app:'recipe-techo', version:1, savedAt:new Date().toISOString(),
+                 folders, recipes };
+  const blob = new Blob([JSON.stringify(data)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const d = new Date().toISOString().slice(0,10);
+  a.download = `レシピ手帳バックアップ_${d}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('バックアップを書き出しました💾');
+}
+async function importBackup(file){
+  if (!file) return;
+  try{
+    const text = await file.text();
+    const data = JSON.parse(text);
+    if (!data.recipes || !data.folders) throw new Error('形式ちがい');
+    // 古いレシピデータを消してから入れ直す
+    const keys = await store.listKeys('recipe:');
+    for (const k of keys) await store.del(k);
+    folders = data.folders;
+    recipes = data.recipes;
+    await store.set('folders', JSON.stringify(folders));
+    for (const r of recipes) await store.set('recipe:'+r.id, JSON.stringify(r));
+    renderHome(); renderBackupInfo();
+    toast(`復元しました✅(${recipes.length}件)`);
+  }catch(e){
+    toast('このファイルは読み込めませんでした');
+  }
+  document.getElementById('restore-input').value = '';
+}
+
+/* ============================================================
+   スタート!
+   ============================================================ */
+init();
+</script>
+</body>
+</html>
