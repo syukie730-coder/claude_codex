@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>思い出手帳 〜たからものアルバム〜</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FFFDF2;
+  --bg:#BEE3F5;
+  --rose:#E06A3B;
+  --rose-deep:#C24E22;
+  --sage:#4E9B3F;
+  --lavender:#6E6BB8;
+  --sun:#F2B01E;
+  --sky:#2E86C1;
+  --ink:#31423A;
+  --ink-soft:#5F7267;
+  --line:#D8E0C8;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{font-size:17px}
+body{
+  font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN","BIZ UDGothic",sans-serif;
+  background:linear-gradient(180deg,#8FCBEB 0%,#BEE3F5 34%,#E9F5DC 72%,#CBE8AC 100%) fixed;
+  background-color:var(--bg);
+  color:var(--ink);
+  min-height:100vh;
+  padding-bottom:96px;
+  line-height:1.7;
+}
+button{font-family:inherit;color:inherit;border:none;background:none;cursor:pointer}
+body::before, body::after{
+  content:"";position:fixed;z-index:-1;pointer-events:none;
+  background:#fff;border-radius:99px;opacity:.9;
+  box-shadow:32px 10px 0 -6px #fff, -30px 12px 0 -8px #fff, 0 -14px 0 -4px #fff;
+}
+body::before{width:110px;height:38px;top:70px;left:-20px}
+body::after{width:90px;height:32px;top:150px;right:-14px;opacity:.75}
+input,textarea,select{font-family:inherit;font-size:1rem;color:var(--ink)}
+
+/* ===== ヘッダー ===== */
+header{text-align:center;padding:22px 16px 14px;position:relative}
+.app-title{
+  display:inline-block;position:relative;
+  background:var(--paper);border:3px solid var(--sage);border-radius:16px;
+  padding:10px 30px;font-size:1.35rem;font-weight:700;color:#2E6B24;
+  box-shadow:0 4px 0 #3F7D33, 0 8px 16px rgba(46,107,36,.25);
+}
+.app-title small{display:block;font-size:.72rem;font-weight:500;color:var(--ink-soft);letter-spacing:.14em}
+.tape{
+  position:absolute;width:74px;height:24px;
+  background:repeating-linear-gradient(45deg,#4E9B3F,#4E9B3F 7px,#7CC468 7px,#7CC468 14px);
+  opacity:.95;border-radius:3px;box-shadow:0 1px 3px rgba(0,0,0,.15);
+}
+.tape.left{top:-11px;left:-26px;transform:rotate(-8deg)}
+.tape.right{top:-11px;right:-26px;transform:rotate(7deg);
+  background:repeating-linear-gradient(45deg,#2E86C1,#2E86C1 7px,#6FB4E0 7px,#6FB4E0 14px)}
+.counter{margin-top:10px;font-size:.9rem;color:var(--ink-soft)}
+.counter b{color:var(--rose-deep);font-size:1.15rem}
+
+/* ===== 画面共通 ===== */
+main{max-width:560px;margin:0 auto;padding:0 14px}
+.screen{display:none}
+.screen.active{display:block;animation:pop .25s ease}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.card{
+  background:var(--paper);border-radius:18px;padding:16px;
+  box-shadow:0 3px 12px rgba(107,81,71,.09);margin-bottom:16px;position:relative;
+}
+.section-title{
+  font-weight:700;color:var(--rose-deep);font-size:1.05rem;margin-bottom:10px;
+  display:flex;align-items:center;gap:8px;
+}
+
+/* ===== カレンダー ===== */
+.cal-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.cal-nav button{
+  width:52px;height:52px;border-radius:50%;
+  background:var(--paper);box-shadow:0 2px 6px rgba(107,81,71,.14);
+  font-size:1.5rem;color:var(--rose-deep);font-weight:700;
+}
+.cal-nav h2{font-size:1.28rem;color:var(--ink)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.dow{text-align:center;font-size:.78rem;font-weight:700;color:var(--ink-soft);padding:4px 0}
+.dow.sun{color:#E8336B}.dow.sat{color:#2D7DD2}
+.day{
+  aspect-ratio:1/1.15;background:#fff;border-radius:10px;border:1.5px solid var(--line);
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  padding-top:3px;font-size:.92rem;position:relative;overflow:hidden;
+}
+.day.empty{background:transparent;border:none}
+.day.today{border:3px solid var(--sun);background:#FFF4D6}
+.day .num{font-weight:700;z-index:2;text-shadow:0 0 4px #fff,0 0 4px #fff}
+.day.sun .num{color:#E8336B}.day.sat .num{color:#2D7DD2}
+.day img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.62}
+.day .dot{width:9px;height:9px;border-radius:50%;background:var(--rose);margin-top:2px;z-index:2;box-shadow:0 0 0 2px #fff}
+.day .heart-mini{position:absolute;bottom:2px;right:3px;font-size:.7rem;z-index:2}
+
+/* ===== ポラロイド ===== */
+.memory-list{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.polaroid{
+  background:#fff;border-radius:6px;padding:8px 8px 10px;
+  box-shadow:0 4px 10px rgba(107,81,71,.16);position:relative;text-align:center;
+}
+.memory-list .polaroid:nth-child(odd){transform:rotate(-1.6deg)}
+.memory-list .polaroid:nth-child(even){transform:rotate(1.4deg)}
+.polaroid .ptape{
+  position:absolute;top:-10px;left:50%;transform:translateX(-50%) rotate(-3deg);
+  width:64px;height:20px;border-radius:2px;opacity:.95;
+  background:repeating-linear-gradient(45deg,#F2B01E,#F2B01E 6px,#FFD466 6px,#FFD466 12px);
+  box-shadow:0 1px 3px rgba(0,0,0,.15);
+}
+.memory-list .polaroid:nth-child(3n+2) .ptape{
+  background:repeating-linear-gradient(45deg,#2E86C1,#2E86C1 6px,#6FB4E0 6px,#6FB4E0 12px);
+}
+.memory-list .polaroid:nth-child(3n) .ptape{
+  background:repeating-linear-gradient(45deg,#4E9B3F,#4E9B3F 6px,#7CC468 6px,#7CC468 12px);
+}
+.polaroid .photo{
+  width:100%;aspect-ratio:1;object-fit:cover;border-radius:3px;background:#EAF4E0;
+  display:flex;align-items:center;justify-content:center;font-size:2rem;
+}
+.polaroid .p-place{font-weight:700;font-size:.92rem;margin-top:6px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.polaroid .p-date{font-size:.74rem;color:var(--ink-soft)}
+.badge{
+  display:inline-block;font-size:.7rem;font-weight:700;color:#fff;
+  padding:1px 10px;border-radius:99px;background:var(--rose);margin-top:3px;
+}
+.badge.count{background:#8D6E63}
+.fav-star{position:absolute;top:4px;right:6px;font-size:1.05rem;filter:drop-shadow(0 1px 1px rgba(0,0,0,.2))}
+
+/* ===== チップ ===== */
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.chip{
+  padding:8px 16px;border-radius:99px;background:var(--paper);
+  border:1.5px solid var(--line);font-size:.88rem;font-weight:500;
+  box-shadow:0 1px 4px rgba(107,81,71,.07);
+}
+.chip.on{background:var(--sky);border-color:var(--sky);color:#fff;font-weight:700}
+
+/* ===== フォーム ===== */
+.field{margin-bottom:16px}
+.field label{
+  display:flex;align-items:center;gap:6px;
+  font-weight:700;font-size:.95rem;margin-bottom:6px;color:var(--rose-deep);
+}
+.field input[type=text],.field input[type=date],.field textarea,.field select{
+  width:100%;padding:13px 14px;border-radius:12px;
+  border:1.8px solid var(--line);background:#fff;font-size:1.02rem;
+}
+.field select{appearance:none;-webkit-appearance:none;
+  background-image:linear-gradient(45deg,transparent 50%,var(--ink-soft) 50%),linear-gradient(135deg,var(--ink-soft) 50%,transparent 50%);
+  background-position:calc(100% - 20px) 50%,calc(100% - 14px) 50%;
+  background-size:6px 6px;background-repeat:no-repeat}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--rose)}
+.field textarea{min-height:120px;resize:vertical;line-height:1.8}
+.cat-chips{display:flex;gap:8px;flex-wrap:wrap}
+.cat-chip{padding:9px 16px;border-radius:99px;border:1.8px solid var(--line);background:#fff;font-size:.92rem}
+.cat-chip.on{background:var(--sage);border-color:var(--sage);color:#fff;font-weight:700}
+.photo-add-btn{
+  width:100%;padding:15px;border:2.5px dashed var(--rose);
+  border-radius:14px;background:#FFF3E8;color:var(--rose-deep);
+  font-weight:700;font-size:1rem;
+}
+.photo-count-note{font-size:.8rem;color:var(--ink-soft);margin-top:6px;text-align:center}
+.photo-previews{display:grid;grid-template-columns:1fr 1fr;gap:14px 10px;margin-top:14px}
+.pv{background:#fff;border:1.5px solid var(--line);border-radius:8px;padding:6px;position:relative;
+  box-shadow:0 3px 8px rgba(107,81,71,.12)}
+.pv .pv-tape{
+  position:absolute;top:-9px;left:50%;transform:translateX(-50%) rotate(-3deg);
+  width:52px;height:16px;border-radius:2px;opacity:.95;z-index:3;
+  background:repeating-linear-gradient(45deg,#F2B01E,#F2B01E 5px,#FFD466 5px,#FFD466 10px);
+  box-shadow:0 1px 2px rgba(0,0,0,.15);
+}
+.pv:nth-child(even) .pv-tape{
+  background:repeating-linear-gradient(45deg,#4E9B3F,#4E9B3F 5px,#7CC468 5px,#7CC468 10px)}
+.pv img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px;display:block}
+.pv input{width:100%;border:none;border-bottom:1.5px dashed var(--line);
+  padding:6px 2px;font-size:.85rem;margin-top:4px}
+.pv input:focus{outline:none;border-color:var(--rose)}
+.pv .del-photo{
+  position:absolute;top:-8px;right:-8px;width:30px;height:30px;border-radius:50%;
+  background:var(--rose-deep);color:#fff;font-size:1rem;font-weight:700;
+  box-shadow:0 2px 5px rgba(0,0,0,.25);line-height:1;z-index:3;
+}
+.pv .pv-fav{
+  position:absolute;top:8px;left:8px;font-size:1.2rem;z-index:3;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.35));
+}
+/* ペタッと貼る演出 */
+@keyframes dropIn{
+  0%{opacity:0;transform:translateY(-56px) scale(1.28) rotate(var(--rot,-7deg))}
+  62%{opacity:1;transform:translateY(5px) scale(.97) rotate(calc(var(--rot,-7deg)/-3))}
+  82%{transform:translateY(-2px) scale(1.01) rotate(0deg)}
+  100%{transform:none}
+}
+.pv.drop{animation:dropIn .6s cubic-bezier(.34,1.4,.64,1) both}
+.pv.drop::after{
+  content:"✨";position:absolute;top:-14px;right:6px;font-size:1rem;z-index:4;
+  animation:spark .9s ease both;
+}
+@keyframes spark{0%,40%{opacity:0;transform:scale(.4)}60%{opacity:1;transform:scale(1.25)}100%{opacity:0;transform:scale(.8) translateY(-8px)}}
+
+.fav-toggle{
+  display:flex;align-items:center;gap:10px;
+  padding:13px 16px;border-radius:12px;background:#fff;border:1.8px solid var(--line);
+  width:100%;font-size:1rem;font-weight:500;
+}
+.fav-toggle.on{border-color:var(--sun);background:#fff9ec}
+.btn-row{display:flex;gap:10px;margin-top:20px}
+.btn{
+  flex:1;padding:16px;border-radius:14px;font-size:1.08rem;font-weight:700;
+  box-shadow:0 3px 8px rgba(107,81,71,.15);
+}
+.btn.primary{background:var(--rose);color:#fff}
+.btn.ghost{background:#fff;border:1.8px solid var(--line);color:var(--ink-soft)}
+.btn.danger{background:#fff;border:1.8px solid #e0a3a3;color:#c96a6a}
+.btn.sky{background:var(--sky);color:#fff}
+
+/* ===== 詳細:写真グリッド ===== */
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.photo-grid button{position:relative;border-radius:8px;overflow:hidden;background:#EAF4E0;aspect-ratio:1}
+.photo-grid img{width:100%;height:100%;object-fit:cover;display:block}
+.photo-grid .g-fav{position:absolute;top:3px;right:4px;font-size:.9rem;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}
+.meta-row{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;font-size:.98rem}
+.meta-row .ico{flex-shrink:0}
+.diary-box{
+  background:repeating-linear-gradient(#fff,#fff 30px,#E2ECD2 30px,#E2ECD2 31px);
+  border:1.5px solid var(--line);border-radius:12px;
+  padding:4px 14px 10px;line-height:31px;font-size:.98rem;white-space:pre-wrap;
+}
+.map-link{
+  display:inline-flex;align-items:center;gap:6px;
+  background:#eef4ea;border:1.5px solid var(--sage);color:#5d7a4c;
+  padding:9px 18px;border-radius:99px;font-weight:700;font-size:.92rem;
+  text-decoration:none;margin-top:4px;
+}
+
+/* ===== 今日の思い出 ===== */
+.today-memory{border:2px dashed var(--sun);background:#fffaf0}
+.mini-item{
+  display:flex;gap:12px;align-items:center;background:#fff;
+  border-radius:12px;padding:10px;margin-bottom:8px;
+  border:1.5px solid var(--line);width:100%;text-align:left;
+}
+.mini-item img{width:58px;height:58px;object-fit:cover;border-radius:8px;flex-shrink:0}
+.mini-item .ph{width:58px;height:58px;border-radius:8px;background:#EAF4E0;
+  display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
+.mini-item .t1{font-weight:700;font-size:.95rem}
+.mini-item .t2{font-size:.78rem;color:var(--ink-soft)}
+.years-ago{font-size:.75rem;font-weight:700;color:#b78a2e;background:#fdeecb;
+  border-radius:99px;padding:1px 10px;display:inline-block;margin-bottom:2px}
+
+/* ===== たびアルバム ===== */
+.album-book{
+  width:100%;text-align:left;background:var(--paper);border-radius:16px;overflow:hidden;
+  box-shadow:0 4px 12px rgba(107,81,71,.16);margin-bottom:16px;position:relative;
+  border-left:10px solid var(--sage);
+}
+.album-book:nth-child(even){border-left-color:var(--sky)}
+.album-book .cover{width:100%;height:150px;object-fit:cover;display:block;background:#EAF4E0}
+.album-book .cover-ph{width:100%;height:150px;display:flex;align-items:center;justify-content:center;
+  font-size:3rem;background:#EAF4E0}
+.album-book .a-body{padding:12px 14px}
+.album-book .a-title{font-weight:700;font-size:1.05rem}
+.album-book .a-sub{font-size:.8rem;color:var(--ink-soft);margin-top:2px}
+.new-album-btn{
+  width:100%;padding:17px;border:2.5px dashed var(--sage);border-radius:16px;
+  background:#F2FAE8;color:#2E6B24;font-weight:700;font-size:1.02rem;margin-bottom:16px;
+}
+.cover-hero{border-radius:12px;overflow:hidden;margin-bottom:12px;position:relative}
+.cover-hero img{width:100%;max-height:230px;object-fit:cover;display:block}
+.cover-hero .cover-ph{height:150px;display:flex;align-items:center;justify-content:center;
+  font-size:3rem;background:#EAF4E0}
+
+/* ===== 検索 ===== */
+.search-box{display:flex;gap:8px;margin-bottom:12px}
+.search-box input{flex:1;padding:13px 16px;border-radius:99px;border:1.8px solid var(--line);background:#fff}
+.search-box input:focus{outline:none;border-color:var(--rose)}
+.search-box button{
+  width:52px;height:52px;border-radius:50%;background:var(--rose);color:#fff;
+  font-size:1.2rem;flex-shrink:0;box-shadow:0 2px 6px rgba(201,106,128,.3);
+}
+
+/* ===== 下タブ ===== */
+nav.tabbar{
+  position:fixed;bottom:0;left:0;right:0;z-index:50;
+  background:var(--paper);border-top:3px solid var(--sage);
+  display:flex;justify-content:space-around;
+  padding:8px 4px calc(10px + env(safe-area-inset-bottom));
+  box-shadow:0 -4px 14px rgba(49,66,58,.12);
+}
+.tab{
+  flex:1;max-width:130px;text-align:center;padding:7px 2px;border-radius:14px;
+  font-size:.74rem;font-weight:700;color:var(--ink-soft);
+}
+.tab .ti{display:block;font-size:1.4rem;line-height:1.2}
+.tab.on{background:#DFF0C8;color:#2E6B24}
+
+/* ===== モーダル ===== */
+.overlay{
+  display:none;position:fixed;inset:0;background:rgba(90,60,55,.4);z-index:100;
+  align-items:flex-end;justify-content:center;
+}
+.overlay.show{display:flex}
+.sheet{
+  background:var(--bg);width:100%;max-width:560px;
+  border-radius:24px 24px 0 0;max-height:92vh;overflow-y:auto;
+  padding:20px 16px calc(24px + env(safe-area-inset-bottom));
+  animation:up .28s ease;
+}
+@keyframes up{from{transform:translateY(60px);opacity:0}to{transform:none;opacity:1}}
+.sheet-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.sheet-head h3{color:var(--rose-deep);font-size:1.15rem}
+.close-x{width:44px;height:44px;border-radius:50%;background:var(--paper);
+  font-size:1.15rem;color:var(--ink-soft);box-shadow:0 2px 6px rgba(107,81,71,.12);flex-shrink:0}
+
+/* ===== ライトボックス(写真拡大) ===== */
+#lightbox{
+  display:none;position:fixed;inset:0;background:rgba(20,26,22,.96);z-index:300;
+  flex-direction:column;
+}
+#lightbox.show{display:flex}
+.lb-top{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:calc(10px + env(safe-area-inset-top)) 14px 8px;color:#fff;
+}
+.lb-count{font-size:.95rem;font-weight:700;letter-spacing:.05em}
+.lb-close{width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.18);
+  color:#fff;font-size:1.2rem}
+.lb-stage{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;touch-action:pan-y;
+}
+.lb-stage img{
+  max-width:100%;max-height:100%;object-fit:contain;
+  transition:transform .18s ease, opacity .18s ease;user-select:none;-webkit-user-drag:none;
+}
+.lb-loading{position:absolute;color:#fff;font-size:.95rem;opacity:.85}
+.lb-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.16);
+  color:#fff;font-size:1.5rem;font-weight:700;z-index:2;
+}
+.lb-arrow.prev{left:8px}.lb-arrow.next{right:8px}
+.lb-bottom{
+  padding:10px 16px calc(16px + env(safe-area-inset-bottom));
+  color:#fff;display:flex;align-items:center;gap:12px;
+}
+.lb-fav{
+  flex-shrink:0;width:52px;height:52px;border-radius:50%;
+  background:rgba(255,255,255,.16);font-size:1.5rem;
+}
+.lb-comment{font-size:.95rem;line-height:1.5;flex:1;opacity:.95}
+.lb-hint{position:absolute;bottom:8px;left:0;right:0;text-align:center;
+  color:rgba(255,255,255,.55);font-size:.72rem;pointer-events:none}
+
+/* ===== 長押しメニュー & ゴミ箱 ===== */
+[data-mid],[data-day]{
+  -webkit-user-select:none;user-select:none;
+  -webkit-touch-callout:none;
+}
+/* iPhone標準の「写真に保存」メニューが出ないようにする */
+main img, .sheet img{
+  -webkit-touch-callout:none;
+  -webkit-user-select:none;user-select:none;
+  -webkit-user-drag:none;
+  pointer-events:none;
+}
+.lb-stage img{-webkit-touch-callout:none}
+@keyframes wobble{0%,100%{transform:scale(1)}50%{transform:scale(.955)}}
+.pressing{animation:wobble .5s ease infinite;opacity:.85}
+.act-btn{
+  display:flex;align-items:center;gap:12px;width:100%;
+  background:#fff;border:1.8px solid var(--line);border-radius:14px;
+  padding:16px;font-size:1.05rem;font-weight:700;margin-bottom:10px;
+  box-shadow:0 2px 6px rgba(107,81,71,.08);text-align:left;
+}
+.act-btn .ai{font-size:1.35rem;flex-shrink:0}
+.act-btn.danger{border-color:#e0a3a3;color:#c96a6a}
+.longpress-hint{font-size:.76rem;color:var(--ink-soft);text-align:center;margin:2px 0 12px}
+.trash-item{
+  display:flex;gap:10px;align-items:center;background:#fff;
+  border:1.5px solid var(--line);border-radius:12px;padding:10px;margin-bottom:10px;
+}
+.trash-item img{width:54px;height:54px;object-fit:cover;border-radius:8px;flex-shrink:0}
+.trash-item .ph{width:54px;height:54px;border-radius:8px;background:#EAF4E0;
+  display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.trash-item .ti1{font-weight:700;font-size:.9rem}
+.trash-item .ti2{font-size:.72rem;color:var(--ink-soft)}
+.trash-item .t-btns{margin-left:auto;display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+.trash-item .t-btns button{font-size:.78rem;font-weight:700;padding:7px 12px;border-radius:99px;white-space:nowrap}
+.t-restore{background:#DFF0C8;color:#2E6B24}
+.t-purge{background:#fdeaea;color:#c96a6a}
+
+/* ===== アプリ内蔵の確認ダイアログ ===== */
+#confirmOverlay{align-items:center;padding:20px;z-index:350}
+.confirm-box{
+  background:var(--paper);border-radius:20px;padding:24px 18px 18px;
+  max-width:420px;width:100%;
+  box-shadow:0 10px 30px rgba(49,66,58,.3);animation:pop .2s ease;
+}
+.confirm-msg{
+  font-size:1.02rem;line-height:1.75;margin-bottom:18px;
+  white-space:pre-wrap;text-align:center;font-weight:500;
+}
+
+.empty-msg{text-align:center;color:var(--ink-soft);padding:26px 10px;font-size:.95rem}
+.empty-msg .big{font-size:2.4rem;display:block;margin-bottom:6px}
+.toast{
+  position:fixed;top:18px;left:50%;transform:translateX(-50%) translateY(-90px);
+  background:var(--ink);color:#fff;padding:12px 26px;border-radius:99px;
+  font-size:.95rem;font-weight:700;z-index:400;transition:transform .3s ease;
+  box-shadow:0 4px 14px rgba(0,0,0,.25);white-space:nowrap;
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="app-title">
+    <span class="tape left"></span><span class="tape right"></span>
+    🌿 思い出手帳
+    <small>〜 た か ら も の ア ル バ ム 〜</small>
+  </div>
+  <div class="counter">たからもの：<b id="memCount">0</b> こ / 写真：<b id="photoCount">0</b> 枚 ✨</div>
+</header>
+
+<main>
+  <!-- ===== カレンダー画面 ===== -->
+  <section class="screen active" id="scr-cal">
+    <div class="card">
+      <div class="cal-nav">
+        <button onclick="moveMonth(-1)" aria-label="前の月">‹</button>
+        <h2 id="calTitle">2026年7月</h2>
+        <button onclick="moveMonth(1)" aria-label="次の月">›</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+      <p style="font-size:.78rem;color:var(--ink-soft);text-align:center;margin-top:8px">
+        日にちをタップすると思い出を書けるよ🖊
+      </p>
+    </div>
+
+    <div class="card today-memory" id="todayCard" style="display:none">
+      <div class="section-title">🌸 今日の思い出</div>
+      <div id="todayList"></div>
+    </div>
+
+    <div class="card" id="pastCard" style="display:none">
+      <div class="section-title">⏰ むかしの今日</div>
+      <div id="pastList"></div>
+    </div>
+  </section>
+
+  <!-- ===== 思い出一覧画面 ===== -->
+  <section class="screen" id="scr-album">
+    <p class="longpress-hint">💡 思い出をぎゅっと長押しすると「直す・ゴミ箱」メニューが出るよ</p>
+    <div class="chips" id="albumChips"></div>
+    <div class="memory-list" id="albumGrid"></div>
+    <div class="empty-msg" id="albumEmpty" style="display:none">
+      <span class="big">🌷</span>まだ思い出がありません。<br>カレンダーの日にちをタップして<br>最初のたからものを残してみてね😊
+    </div>
+  </section>
+
+  <!-- ===== たびアルバム画面 ===== -->
+  <section class="screen" id="scr-trips">
+    <button class="new-album-btn" onclick="openAlbumForm(null)">＋ 新しい旅のアルバムをつくる 🧳</button>
+    <div id="tripList"></div>
+    <div class="empty-msg" id="tripEmpty" style="display:none">
+      <span class="big">🧳</span>まだアルバムがありません。<br>「新しい旅のアルバムをつくる」から<br>最初のアルバムをつくってみてね😊
+    </div>
+  </section>
+
+  <!-- ===== さがす画面 ===== -->
+  <section class="screen" id="scr-search">
+    <div class="card">
+      <div class="section-title">🔍 思い出をさがす</div>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="場所や人の名前を入力" onkeydown="if(event.key==='Enter')doSearch()">
+        <button onclick="doSearch()" aria-label="検索">🔍</button>
+      </div>
+      <div class="chips" id="searchCats"></div>
+    </div>
+    <div class="card">
+      <div class="section-title">💗 お気に入りの写真</div>
+      <button class="btn sky" style="width:100%" onclick="showFavPhotos()">お気に入り写真をぜんぶ見る 📷</button>
+      <div class="photo-grid" id="favPhotoGrid" style="margin-top:12px"></div>
+    </div>
+    <div class="card">
+      <div class="section-title">🗑 ゴミ箱</div>
+      <p style="font-size:.82rem;color:var(--ink-soft);margin-bottom:10px">捨てた思い出はここから元に戻せるよ</p>
+      <button class="btn ghost" style="width:100%" onclick="openTrash()">ゴミ箱を見る（<span id="trashCount">0</span>こ）</button>
+    </div>
+    <div class="memory-list" id="searchGrid"></div>
+    <div class="empty-msg" id="searchEmpty" style="display:none">
+      <span class="big">🔎</span>見つかりませんでした。<br>別の言葉でさがしてみてね
+    </div>
+  </section>
+</main>
+
+<!-- ===== 下タブ ===== -->
+<nav class="tabbar">
+  <button class="tab on" id="tab-cal" onclick="showScreen('cal')"><span class="ti">📅</span>カレンダー</button>
+  <button class="tab" id="tab-album" onclick="showScreen('album')"><span class="ti">📖</span>思い出</button>
+  <button class="tab" id="tab-trips" onclick="showScreen('trips')"><span class="ti">🧳</span>たび</button>
+  <button class="tab" id="tab-search" onclick="showScreen('search')"><span class="ti">🔍</span>さがす</button>
+</nav>
+
+<!-- ===== 日別リストシート ===== -->
+<div class="overlay" id="dayOverlay" onclick="if(event.target===this)closeDay()">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h3 id="dayTitle">7月10日の思い出</h3>
+      <button class="close-x" onclick="closeDay()">✕</button>
+    </div>
+    <div id="dayList"></div>
+    <p class="longpress-hint">💡 思い出を長押しすると「直す・ゴミ箱」メニューが出るよ</p>
+    <button class="btn primary" style="width:100%" onclick="openForm(null, currentDayKey, null)">＋ この日の思い出を書く</button>
+  </div>
+</div>
+
+<!-- ===== 入力フォームシート ===== -->
+<div class="overlay" id="formOverlay">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h3 id="formTitle">思い出を書く 🖊</h3>
+      <button class="close-x" onclick="closeForm()">✕</button>
+    </div>
+
+    <div class="field">
+      <label>📅 日付</label>
+      <input type="date" id="fDate">
+    </div>
+    <div class="field">
+      <label>👥 一緒に行った人</label>
+      <input type="text" id="fPeople" placeholder="例：夫、お友達の花子さん">
+    </div>
+    <div class="field">
+      <label>📍 行った場所・旅行先</label>
+      <input type="text" id="fPlace" placeholder="例：箱根温泉">
+    </div>
+    <div class="field">
+      <label>🧳 旅のアルバム</label>
+      <select id="fAlbum"><option value="">（アルバムに入れない）</option></select>
+    </div>
+    <div class="field">
+      <label>🏷 カテゴリー</label>
+      <div class="cat-chips" id="fCats"></div>
+    </div>
+    <div class="field">
+      <label>📷 写真（何枚でもOK・上限なし）</label>
+      <button class="photo-add-btn" onclick="document.getElementById('fPhotoInput').click()">＋ 写真をえらぶ（まとめて選べます）</button>
+      <input type="file" id="fPhotoInput" accept="image/*" multiple style="display:none" onchange="addPhotos(this.files)">
+      <div class="photo-count-note" id="fPhotoNote"></div>
+      <div class="photo-previews" id="fPreviews"></div>
+    </div>
+    <div class="field">
+      <label>💌 感想・思い出日記</label>
+      <textarea id="fDiary" placeholder="楽しかったこと、おいしかったもの、なんでも書いてね"></textarea>
+    </div>
+    <div class="field">
+      <button class="fav-toggle" id="fFav" onclick="toggleFav()">
+        <span id="fFavIcon" style="font-size:1.3rem">☆</span>
+        <span>お気に入りに登録する</span>
+      </button>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn ghost" onclick="closeForm()">やめる</button>
+      <button class="btn primary" id="saveBtn" onclick="saveMemory()">💾 保存する</button>
+    </div>
+    <div class="btn-row" id="deleteRow" style="display:none">
+      <button class="btn danger" onclick="deleteMemory()">🗑 この思い出をゴミ箱に捨てる</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 詳細シート ===== -->
+<div class="overlay" id="detailOverlay" onclick="if(event.target===this)closeDetail()">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h3 id="dTitle">思い出</h3>
+      <button class="close-x" onclick="closeDetail()">✕</button>
+    </div>
+    <div id="dBody"></div>
+    <div class="btn-row">
+      <button class="btn ghost" onclick="closeDetail()">とじる</button>
+      <button class="btn primary" onclick="editFromDetail()">✏️ 直す・書き足す</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== アルバム作成/編集シート ===== -->
+<div class="overlay" id="albumFormOverlay">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h3 id="aFormTitle">旅のアルバムをつくる 🧳</h3>
+      <button class="close-x" onclick="closeAlbumForm()">✕</button>
+    </div>
+    <div class="field">
+      <label>✏️ アルバムの名前</label>
+      <input type="text" id="aTitle" placeholder="例：2026年 春の京都旅行">
+    </div>
+    <div class="field">
+      <label>📝 旅のメモ（自由に）</label>
+      <textarea id="aMemo" placeholder="例：夫と2泊3日。桜がとってもきれいだった🌸"></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn ghost" onclick="closeAlbumForm()">やめる</button>
+      <button class="btn primary" onclick="saveAlbum()">💾 保存する</button>
+    </div>
+    <div class="btn-row" id="aDeleteRow" style="display:none">
+      <button class="btn danger" onclick="deleteAlbum()">🗑 このアルバムを削除する</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== アルバム詳細シート ===== -->
+<div class="overlay" id="albumDetailOverlay" onclick="if(event.target===this)closeAlbumDetail()">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h3 id="adTitle">アルバム</h3>
+      <button class="close-x" onclick="closeAlbumDetail()">✕</button>
+    </div>
+    <div id="adBody"></div>
+  </div>
+</div>
+
+<!-- ===== 表紙えらびシート ===== -->
+<div class="overlay" id="coverOverlay" onclick="if(event.target===this)closeCoverPicker()">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h3>表紙の写真をえらぶ 🖼</h3>
+      <button class="close-x" onclick="closeCoverPicker()">✕</button>
+    </div>
+    <p style="font-size:.88rem;color:var(--ink-soft);margin-bottom:12px">好きな写真をタップすると表紙になるよ😊</p>
+    <div class="photo-grid" id="coverGrid"></div>
+    <div class="empty-msg" id="coverEmpty" style="display:none">
+      <span class="big">📷</span>このアルバムにはまだ写真がありません。<br>思い出に写真を追加してからえらんでね
+    </div>
+  </div>
+</div>
+
+<!-- ===== 長押しメニュー ===== -->
+<div class="overlay" id="actionOverlay" onclick="if(event.target===this)closeActions()">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h3 id="actTitle">この思い出をどうする？</h3>
+      <button class="close-x" onclick="closeActions()">✕</button>
+    </div>
+    <button class="act-btn" onclick="actOpen()"><span class="ai">👀</span>ひらいて見る</button>
+    <button class="act-btn" onclick="actEdit()"><span class="ai">✏️</span>直す・書き足す</button>
+    <button class="act-btn danger" onclick="actTrash()"><span class="ai">🗑</span>ゴミ箱に捨てる（元に戻せます）</button>
+    <button class="btn ghost" style="width:100%;margin-top:6px" onclick="closeActions()">やめる</button>
+  </div>
+</div>
+
+<!-- ===== ゴミ箱 ===== -->
+<div class="overlay" id="trashOverlay" onclick="if(event.target===this)closeTrash()">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h3>🗑 ゴミ箱</h3>
+      <button class="close-x" onclick="closeTrash()">✕</button>
+    </div>
+    <p style="font-size:.85rem;color:var(--ink-soft);margin-bottom:12px">
+      「↩ 元に戻す」でいつでも復活できるよ😊<br>
+      「✕ 完全に削除」すると写真ごと消えて、元に戻せません
+    </p>
+    <div id="trashList"></div>
+    <div class="empty-msg" id="trashEmpty" style="display:none">
+      <span class="big">🗑</span>ゴミ箱は空っぽです
+    </div>
+    <button class="btn danger" style="width:100%" id="emptyTrashBtn" onclick="emptyTrash()">🗑 ゴミ箱を空にする（完全に削除）</button>
+  </div>
+</div>
+
+<!-- ===== ライトボックス ===== -->
+<div id="lightbox">
+  <div class="lb-top">
+    <span class="lb-count" id="lbCount">1 / 1</span>
+    <button class="lb-close" onclick="closeLightbox()">✕</button>
+  </div>
+  <div class="lb-stage" id="lbStage">
+    <span class="lb-loading" id="lbLoading">よみこみ中…📷</span>
+    <img id="lbImg" alt="">
+    <button class="lb-arrow prev" onclick="lbMove(-1)" aria-label="前の写真">‹</button>
+    <button class="lb-arrow next" onclick="lbMove(1)" aria-label="次の写真">›</button>
+    <span class="lb-hint">← スワイプで次の写真 →</span>
+  </div>
+  <div class="lb-bottom">
+    <button class="lb-fav" id="lbFav" onclick="lbToggleFav()">☆</button>
+    <div class="lb-comment" id="lbComment"></div>
+  </div>
+</div>
+
+<!-- ===== アプリ内蔵の確認ダイアログ ===== -->
+<div class="overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="confirm-msg" id="confirmMsg"></div>
+    <div class="btn-row" style="margin-top:0">
+      <button class="btn ghost" onclick="answerConfirm(false)">いいえ</button>
+      <button class="btn danger" id="confirmOk" onclick="answerConfirm(true)">はい</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   データ設計（v2）
+   - memories  : 思い出本体（写真は入れない → 一覧が軽い）
+                 {id, date, people, place, category, diary,
+                  favorite, albumId, photoCount, coverThumb, createdAt}
+   - photos    : 写真のサムネイル＋情報（一覧・グリッド用）
+                 {id, memoryId, thumb, comment, favorite, createdAt}
+   - photoFull : 原寸に近い画像（拡大表示のときだけ読む）
+                 {id, data}
+   - albums    : 旅のアルバム
+                 {id, title, memo, coverThumb, coverPhotoId, createdAt}
+   ============================================================ */
+let db;
+const DB_NAME = "omoideTechoDB", DB_VER = 2;
+const CATS = ["旅行","食事会","イベント","家族","趣味","その他"];
+const CAT_COLORS = {"旅行":"#2E86C1","食事会":"#E67E22","イベント":"#C0392B","家族":"#4E9B3F","趣味":"#6E6BB8","その他":"#8D6E63"};
+let memories = [];   // 表示中の思い出（ゴミ箱の中は含まない）
+let trashed = [];    // ゴミ箱の中の思い出
+let albums = [];
+let totalPhotos = 0;
+let viewYear, viewMonth;
+let currentDayKey = null;
+let editingId = null;
+let formPhotos = [];        // [{id?, thumb, full?, comment, favorite, _drop?}]
+let formPhotosDeleted = []; // 削除予定の既存写真id
+let formFav = false;
+let formCat = "旅行";
+let detailId = null;
+let albumFilter = "all";
+let searchCat = null;
+let editingAlbumId = null;
+let detailAlbumId = null;
+let saving = false;
+
+/* ---------- IndexedDB 基本 ---------- */
+function openDB(){
+  return new Promise((res, rej)=>{
+    const req = indexedDB.open(DB_NAME, DB_VER);
+    req.onupgradeneeded = e=>{
+      const d = e.target.result;
+      if(!d.objectStoreNames.contains("memories"))
+        d.createObjectStore("memories", {keyPath:"id", autoIncrement:true});
+      if(!d.objectStoreNames.contains("photos")){
+        const ps = d.createObjectStore("photos", {keyPath:"id", autoIncrement:true});
+        ps.createIndex("byMemory","memoryId",{unique:false});
+      }
+      if(!d.objectStoreNames.contains("photoFull"))
+        d.createObjectStore("photoFull", {keyPath:"id"});
+      if(!d.objectStoreNames.contains("albums"))
+        d.createObjectStore("albums", {keyPath:"id", autoIncrement:true});
+    };
+    req.onsuccess = e=>{ db = e.target.result; res(); };
+    req.onerror = ()=>rej(req.error);
+  });
+}
+function store(name, mode){ return db.transaction(name, mode||"readonly").objectStore(name); }
+function reqP(r){ return new Promise((res,rej)=>{ r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
+
+async function loadAll(){
+  const all = await reqP(store("memories").getAll()) || [];
+  memories = all.filter(m=>!m.deleted);
+  trashed = all.filter(m=>m.deleted).sort((a,b)=>(b.deletedAt||0)-(a.deletedAt||0));
+  albums = await reqP(store("albums").getAll()) || [];
+  totalPhotos = await reqP(store("photos").count()) || 0;
+  const tc = document.getElementById("trashCount");
+  if(tc) tc.textContent = trashed.length;
+}
+async function getPhotos(memoryId){
+  const list = await reqP(store("photos").index("byMemory").getAll(memoryId)) || [];
+  return list.sort((a,b)=>a.id-b.id);
+}
+async function getFull(photoId){
+  const rec = await reqP(store("photoFull").get(photoId));
+  return rec ? rec.data : null;
+}
+async function putPhotoMeta(p){ return reqP(store("photos","readwrite").put(p)); }
+async function deletePhoto(id){
+  await reqP(store("photos","readwrite").delete(id));
+  await reqP(store("photoFull","readwrite").delete(id));
+}
+
+/* ---------- v1 → v2 引っ越し（写真を別保存に移す） ---------- */
+async function migrateV1(){
+  const olds = memories.filter(m=>Array.isArray(m.photos));
+  if(!olds.length) return;
+  toast("アプリを新しくしています…少し待ってね🍀");
+  for(const m of olds){
+    let first = null, count = 0;
+    for(const ph of m.photos){
+      try{
+        const thumb = await makeThumbFromData(ph.data);
+        const pid = await reqP(store("photos","readwrite").add({
+          memoryId:m.id, thumb, comment:ph.comment||"", favorite:false, createdAt:Date.now()
+        }));
+        await reqP(store("photoFull","readwrite").put({id:pid, data:ph.data}));
+        if(!first) first = thumb;
+        count++;
+      }catch(e){ console.error(e); }
+    }
+    delete m.photos;
+    m.photoCount = count;
+    m.coverThumb = first;
+    await reqP(store("memories","readwrite").put(m));
+  }
+  await loadAll();
+  toast("お引っ越し完了！写真がもっと軽く動くよ✨");
+}
+
+/* ---------- ユーティリティ ---------- */
+const $ = id=>document.getElementById(id);
+function toast(msg){
+  const t = $("toast"); t.textContent = msg; t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 2200);
+}
+/* iPhone標準のconfirmは環境によって出ないことがあるので、アプリ内蔵の確認画面を使う */
+let confirmResolve = null;
+function askConfirm(msg, okLabel){
+  return new Promise(res=>{
+    confirmResolve = res;
+    $("confirmMsg").textContent = msg;
+    $("confirmOk").textContent = okLabel || "はい";
+    $("confirmOverlay").classList.add("show");
+  });
+}
+function answerConfirm(v){
+  $("confirmOverlay").classList.remove("show");
+  if(confirmResolve){ const r = confirmResolve; confirmResolve = null; r(v); }
+}
+function dateKey(y,m,d){ return `${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`; }
+function fmtJP(key){ const [y,m,d]=key.split("-").map(Number); return `${y}年${m}月${d}日`; }
+function todayKey(){ const n=new Date(); return dateKey(n.getFullYear(),n.getMonth(),n.getDate()); }
+function catBadge(cat){ return `<span class="badge" style="background:${CAT_COLORS[cat]||"#B7A99A"}">${cat||"その他"}</span>`; }
+function escapeHTML(s){ return (s||"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function albumName(id){ const a=albums.find(x=>x.id===id); return a?a.title:""; }
+
+/* ---------- 画像圧縮（原寸用＋サムネイル用を同時に作る） ---------- */
+function loadImage(src){
+  return new Promise((res,rej)=>{ const img=new Image(); img.onload=()=>res(img); img.onerror=rej; img.src=src; });
+}
+function drawScaled(img, max, quality){
+  let w=img.width, h=img.height;
+  if(Math.max(w,h)>max){ const r=max/Math.max(w,h); w=Math.round(w*r); h=Math.round(h*r); }
+  const cv=document.createElement("canvas"); cv.width=w; cv.height=h;
+  cv.getContext("2d").drawImage(img,0,0,w,h);
+  return cv.toDataURL("image/jpeg", quality);
+}
+function compressImage(file){
+  return new Promise((res, rej)=>{
+    const reader = new FileReader();
+    reader.onload = async ()=>{
+      try{
+        const img = await loadImage(reader.result);
+        res({
+          full:  drawScaled(img, 1400, .82),  // 拡大表示用
+          thumb: drawScaled(img, 260, .72)    // 一覧・カレンダー用(超軽量)
+        });
+      }catch(e){ rej(e); }
+    };
+    reader.onerror = rej;
+    reader.readAsDataURL(file);
+  });
+}
+async function makeThumbFromData(dataURL){
+  const img = await loadImage(dataURL);
+  return drawScaled(img, 260, .72);
+}
+
+/* ---------- 画面切替 ---------- */
+function showScreen(name){
+  ["cal","album","trips","search"].forEach(n=>{
+    $("scr-"+n).classList.toggle("active", n===name);
+    $("tab-"+n).classList.toggle("on", n===name);
+  });
+  if(name==="cal") renderCalendar();
+  if(name==="album") renderAlbum();
+  if(name==="trips") renderTrips();
+  if(name==="search"){ renderSearch(); renderFavPhotoPreview(); }
+}
+function updateCounter(){
+  $("memCount").textContent = memories.length;
+  $("photoCount").textContent = totalPhotos;
+}
+
+/* ---------- カレンダー ---------- */
+function moveMonth(diff){
+  viewMonth += diff;
+  if(viewMonth<0){viewMonth=11;viewYear--;}
+  if(viewMonth>11){viewMonth=0;viewYear++;}
+  renderCalendar();
+}
+function renderCalendar(){
+  $("calTitle").textContent = `${viewYear}年${viewMonth+1}月`;
+  const grid = $("calGrid"); grid.innerHTML = "";
+  ["日","月","火","水","木","金","土"].forEach((d,i)=>{
+    const el=document.createElement("div");
+    el.className="dow"+(i===0?" sun":i===6?" sat":"");
+    el.textContent=d; grid.appendChild(el);
+  });
+  const first = new Date(viewYear,viewMonth,1).getDay();
+  const days = new Date(viewYear,viewMonth+1,0).getDate();
+  const tk = todayKey();
+  for(let i=0;i<first;i++){ const el=document.createElement("div"); el.className="day empty"; grid.appendChild(el); }
+  for(let d=1; d<=days; d++){
+    const key = dateKey(viewYear,viewMonth,d);
+    const dow = (first+d-1)%7;
+    const dayMems = memories.filter(m=>m.date===key);
+    const el = document.createElement("button");
+    el.className = "day"+(dow===0?" sun":dow===6?" sat":"")+(key===tk?" today":"");
+    el.dataset.day = key;
+    let inner = "";
+    const withPhoto = dayMems.find(m=>m.coverThumb);
+    if(withPhoto) inner += `<img src="${withPhoto.coverThumb}" alt="" loading="lazy">`;
+    inner += `<span class="num">${d}</span>`;
+    if(dayMems.length && !withPhoto) inner += `<span class="dot"></span>`;
+    if(dayMems.some(m=>m.favorite)) inner += `<span class="heart-mini">💗</span>`;
+    el.innerHTML = inner;
+    el.onclick = ()=>openDay(key);
+    grid.appendChild(el);
+  }
+  renderTodayCards();
+  updateCounter();
+}
+function renderTodayCards(){
+  const tk = todayKey();
+  const todays = memories.filter(m=>m.date===tk);
+  $("todayCard").style.display = todays.length?"block":"none";
+  $("todayList").innerHTML = todays.map(m=>miniItem(m)).join("");
+  const [ty,tm,td] = tk.split("-");
+  const past = memories.filter(m=>{
+    const [y,mo,d]=m.date.split("-");
+    return mo===tm && d===td && y<ty;
+  }).sort((a,b)=>b.date.localeCompare(a.date));
+  $("pastCard").style.display = past.length?"block":"none";
+  $("pastList").innerHTML = past.map(m=>{
+    const years = Number(ty)-Number(m.date.split("-")[0]);
+    return miniItem(m, `<span class="years-ago">${years}年前</span>`);
+  }).join("");
+}
+function miniItem(m, extra=""){
+  const ph = m.coverThumb
+    ? `<img src="${m.coverThumb}" alt="" loading="lazy">`
+    : `<div class="ph">🌸</div>`;
+  return `<button class="mini-item" data-mid="${m.id}" onclick="openDetail(${m.id})">
+    ${ph}
+    <div>${extra}
+      <div class="t1">${escapeHTML(m.place)||"(場所なし)"} ${catBadge(m.category)}</div>
+      <div class="t2">${fmtJP(m.date)}${m.people?` / ${escapeHTML(m.people)}`:""}${m.photoCount?` / 📷${m.photoCount}枚`:""}</div>
+    </div>
+  </button>`;
+}
+
+/* ---------- 日別シート ---------- */
+function openDay(key){
+  currentDayKey = key;
+  $("dayTitle").textContent = fmtJP(key)+" の思い出";
+  const list = memories.filter(m=>m.date===key);
+  $("dayList").innerHTML = list.length
+    ? list.map(m=>miniItem(m)).join("")
+    : `<div class="empty-msg" style="padding:14px"><span class="big">📝</span>まだこの日の思い出はありません</div>`;
+  $("dayOverlay").classList.add("show");
+}
+function closeDay(){ $("dayOverlay").classList.remove("show"); }
+
+/* ---------- 入力フォーム ---------- */
+function buildCatChips(){
+  const box=$("fCats"); box.innerHTML="";
+  CATS.forEach(c=>{
+    const b=document.createElement("button");
+    b.className="cat-chip"+(formCat===c?" on":"");
+    b.textContent=c;
+    b.onclick=()=>{ formCat=c; buildCatChips(); };
+    box.appendChild(b);
+  });
+}
+function buildAlbumSelect(selected){
+  const sel=$("fAlbum");
+  sel.innerHTML = `<option value="">（アルバムに入れない）</option>` +
+    albums.map(a=>`<option value="${a.id}" ${selected===a.id?"selected":""}>${escapeHTML(a.title)}</option>`).join("");
+}
+async function openForm(id, presetDate, presetAlbum){
+  closeDay(); closeDetail(); closeAlbumDetail();
+  editingId = id;
+  formPhotos = []; formPhotosDeleted = []; formFav = false; formCat = "旅行";
+  if(id != null){
+    const m = memories.find(x=>x.id===id);
+    if(!m) return;
+    $("formTitle").textContent = "思い出を直す ✏️";
+    $("fDate").value = m.date;
+    $("fPeople").value = m.people||"";
+    $("fPlace").value = m.place||"";
+    $("fDiary").value = m.diary||"";
+    formCat = m.category||"その他";
+    formFav = !!m.favorite;
+    buildAlbumSelect(m.albumId||"");
+    $("deleteRow").style.display = "flex";
+    const metas = await getPhotos(id);
+    formPhotos = metas.map(p=>({id:p.id, thumb:p.thumb, comment:p.comment||"", favorite:!!p.favorite}));
+  } else {
+    $("formTitle").textContent = "思い出を書く 🖊";
+    $("fDate").value = presetDate || todayKey();
+    $("fPeople").value=""; $("fPlace").value=""; $("fDiary").value="";
+    buildAlbumSelect(presetAlbum||"");
+    $("deleteRow").style.display = "none";
+  }
+  buildCatChips();
+  renderPreviews();
+  refreshFav();
+  $("formOverlay").classList.add("show");
+}
+function closeForm(){ $("formOverlay").classList.remove("show"); }
+function toggleFav(){ formFav=!formFav; refreshFav(); }
+function refreshFav(){
+  $("fFav").classList.toggle("on", formFav);
+  $("fFavIcon").textContent = formFav?"⭐":"☆";
+}
+async function addPhotos(files){
+  if(!files || !files.length) return;
+  toast(`写真を${files.length}枚 取り込んでいます…📷`);
+  for(const f of files){
+    try{
+      const {full, thumb} = await compressImage(f);
+      formPhotos.push({thumb, full, comment:"", favorite:false, _drop:true});
+    }catch(e){ console.error(e); }
+  }
+  $("fPhotoInput").value = "";
+  renderPreviews();
+  toast("ペタッ！アルバムに貼りました✨");
+}
+function renderPreviews(){
+  $("fPreviews").innerHTML = formPhotos.map((p,i)=>{
+    const rot = (i%2===0?-1:1)*(5+ (i%3)*2);
+    const drop = p._drop ? `class="pv drop" style="--rot:${rot}deg"` : `class="pv"`;
+    return `<div ${drop}>
+      <span class="pv-tape"></span>
+      <button class="del-photo" onclick="delPhoto(${i})" aria-label="写真を削除">✕</button>
+      <button class="pv-fav" onclick="togglePhotoFav(${i})" aria-label="お気に入り">${p.favorite?"⭐":"☆"}</button>
+      <img src="${p.thumb}" alt="" loading="lazy">
+      <input type="text" placeholder="ひとことコメント" value="${escapeHTML(p.comment)}"
+        onchange="formPhotos[${i}].comment=this.value">
+    </div>`;
+  }).join("");
+  formPhotos.forEach(p=>delete p._drop);
+  $("fPhotoNote").textContent = formPhotos.length ? `いま ${formPhotos.length} 枚（何枚でも追加できるよ）` : "";
+}
+function togglePhotoFav(i){
+  formPhotos[i].favorite = !formPhotos[i].favorite;
+  renderPreviews();
+}
+async function delPhoto(i){
+  if(!(await askConfirm("この写真を削除しますか？", "削除する"))) return;
+  const p = formPhotos[i];
+  if(p.id) formPhotosDeleted.push(p.id);
+  formPhotos.splice(i,1);
+  renderPreviews();
+}
+async function saveMemory(){
+  if(saving) return;
+  const date = $("fDate").value;
+  if(!date){ toast("日付を入れてね📅"); return; }
+  saving = true;
+  $("saveBtn").textContent = "保存中…🍀";
+  try{
+    const albumVal = $("fAlbum").value;
+    const m = {
+      date,
+      people: $("fPeople").value.trim(),
+      place: $("fPlace").value.trim(),
+      category: formCat,
+      diary: $("fDiary").value.trim(),
+      favorite: formFav,
+      albumId: albumVal ? Number(albumVal) : null,
+    };
+    let memId = editingId;
+    if(memId != null){
+      const old = memories.find(x=>x.id===memId);
+      m.id = memId;
+      m.createdAt = old ? old.createdAt : Date.now();
+      await reqP(store("memories","readwrite").put(m));
+    } else {
+      m.createdAt = Date.now();
+      memId = await reqP(store("memories","readwrite").add(m));
+      m.id = memId;
+    }
+    // 削除された写真
+    for(const pid of formPhotosDeleted){ await deletePhoto(pid); }
+    // 写真を保存（新規は原寸を別保存、既存はコメント等だけ更新）
+    for(const p of formPhotos){
+      if(p.id){
+        await putPhotoMeta({id:p.id, memoryId:memId, thumb:p.thumb, comment:p.comment, favorite:!!p.favorite, createdAt:p.createdAt||Date.now()});
+      } else {
+        const pid = await reqP(store("photos","readwrite").add({
+          memoryId:memId, thumb:p.thumb, comment:p.comment, favorite:!!p.favorite, createdAt:Date.now()
+        }));
+        await reqP(store("photoFull","readwrite").put({id:pid, data:p.full}));
+        p.id = pid; delete p.full;
+      }
+    }
+    // 表紙サムネと枚数を思い出に記録（一覧を軽くするため）
+    m.photoCount = formPhotos.length;
+    m.coverThumb = formPhotos.length ? formPhotos[0].thumb : null;
+    await reqP(store("memories","readwrite").put(m));
+
+    await loadAll();
+    closeForm();
+    renderCalendar(); renderAlbum(); renderTrips();
+    toast(editingId!=null ? "書き直しました✏️" : "たからものが増えました🌸");
+    editingId = null;
+  }catch(e){
+    console.error(e);
+    toast("保存できませんでした…もう一度試してね");
+  }finally{
+    saving = false;
+    $("saveBtn").textContent = "💾 保存する";
+  }
+}
+async function deleteMemory(){
+  if(editingId==null) return;
+  if(!(await askConfirm("この思い出をゴミ箱に入れますか？\n(ゴミ箱からいつでも元に戻せます)", "ゴミ箱に入れる"))) return;
+  const id = editingId;
+  editingId = null;
+  closeForm();
+  await trashMemory(id);
+}
+
+/* ---------- 長押しメニュー ---------- */
+let actionId = null;
+let lpTimer = null, lpEl = null, lpFired = false, lpX = 0, lpY = 0;
+
+document.addEventListener("pointerdown", e=>{
+  const el = e.target.closest("[data-mid],[data-day]");
+  if(!el) return;
+  lpEl = el; lpFired = false;
+  lpX = e.clientX; lpY = e.clientY;
+  el.classList.add("pressing");
+  lpTimer = setTimeout(()=>{
+    lpFired = true;
+    if(lpEl) lpEl.classList.remove("pressing");
+    if(navigator.vibrate) navigator.vibrate(30);
+    if(el.dataset.mid) openActions(Number(el.dataset.mid));
+    else longPressDay(el.dataset.day);
+  }, 550);
+});
+/* カレンダーの日付を長押ししたとき */
+function longPressDay(key){
+  const list = memories.filter(m=>m.date===key);
+  if(list.length===1){
+    openActions(list[0].id);           // 思い出が1つ → そのままメニュー
+  } else if(list.length>1){
+    openDay(key);                      // 複数 → リストを開く
+    toast("直したい思い出を長押ししてね😊");
+  } else {
+    openForm(null, key, null);         // まだない → 新しく書く
+  }
+}
+function lpCancel(){
+  if(lpTimer){ clearTimeout(lpTimer); lpTimer = null; }
+  if(lpEl){ lpEl.classList.remove("pressing"); lpEl = null; }
+}
+document.addEventListener("pointermove", e=>{
+  if(lpTimer && (Math.abs(e.clientX-lpX)>12 || Math.abs(e.clientY-lpY)>12)) lpCancel();
+});
+document.addEventListener("pointerup", lpCancel);
+document.addEventListener("pointercancel", lpCancel);
+/* 長押し後のタップ(詳細が開いてしまう)を止める */
+document.addEventListener("click", e=>{
+  if(lpFired){
+    if(e.target.closest("[data-mid],[data-day]")){
+      e.stopPropagation(); e.preventDefault();
+    }
+    lpFired = false;
+  }
+}, true);
+/* OS標準の長押しメニュー(写真に保存など)を止める */
+document.addEventListener("contextmenu", e=>{
+  if(e.target.closest("[data-mid],[data-day]") || e.target.tagName==="IMG") e.preventDefault();
+});
+
+function openActions(id){
+  const m = memories.find(x=>x.id===id);
+  if(!m) return;
+  actionId = id;
+  $("actTitle").textContent = `「${m.place || fmtJP(m.date)}」をどうする？`;
+  closeDay(); closeAlbumDetail();
+  $("actionOverlay").classList.add("show");
+}
+function closeActions(){ $("actionOverlay").classList.remove("show"); }
+function actOpen(){ closeActions(); openDetail(actionId); }
+function actEdit(){ closeActions(); openForm(actionId, null, null); }
+function actTrash(){ closeActions(); trashMemory(actionId); }
+
+/* ---------- ゴミ箱 ---------- */
+async function trashMemory(id){
+  const m = memories.find(x=>x.id===id);
+  if(!m) return;
+  m.deleted = true;
+  m.deletedAt = Date.now();
+  await reqP(store("memories","readwrite").put(m));
+  await loadAll();
+  renderCalendar(); renderAlbum(); renderTrips();
+  toast("ゴミ箱に入れました（元に戻せるよ）🗑");
+}
+function openTrash(){ renderTrash(); $("trashOverlay").classList.add("show"); }
+function closeTrash(){ $("trashOverlay").classList.remove("show"); }
+function renderTrash(){
+  $("trashList").innerHTML = trashed.map(m=>`
+    <div class="trash-item">
+      ${m.coverThumb?`<img src="${m.coverThumb}" alt="" loading="lazy">`:`<div class="ph">🌸</div>`}
+      <div>
+        <div class="ti1">${escapeHTML(m.place)||"(場所なし)"}</div>
+        <div class="ti2">${fmtJP(m.date)}${m.photoCount?` / 📷${m.photoCount}枚`:""}</div>
+      </div>
+      <div class="t-btns">
+        <button class="t-restore" onclick="restoreMemory(${m.id})">↩ 元に戻す</button>
+        <button class="t-purge" onclick="purgeMemory(${m.id})">✕ 完全に削除</button>
+      </div>
+    </div>`).join("");
+  $("trashEmpty").style.display = trashed.length?"none":"block";
+  $("emptyTrashBtn").style.display = trashed.length?"block":"none";
+}
+async function restoreMemory(id){
+  const m = trashed.find(x=>x.id===id);
+  if(!m) return;
+  delete m.deleted; delete m.deletedAt;
+  await reqP(store("memories","readwrite").put(m));
+  await loadAll();
+  renderTrash();
+  renderCalendar(); renderAlbum(); renderTrips();
+  toast("元に戻しました🌸");
+}
+async function purgeOne(id){
+  const metas = await getPhotos(id);
+  for(const p of metas){ await deletePhoto(p.id); }
+  await reqP(store("memories","readwrite").delete(id));
+}
+async function purgeMemory(id){
+  if(!(await askConfirm("この思い出を完全に削除しますか？\n(写真も一緒に消えます・元に戻せません)", "完全に削除"))) return;
+  await purgeOne(id);
+  await loadAll();
+  renderTrash();
+  renderCalendar(); renderAlbum(); renderTrips();
+  toast("完全に削除しました");
+}
+async function emptyTrash(){
+  if(!trashed.length) return;
+  if(!(await askConfirm(`ゴミ箱の中の ${trashed.length}こ をすべて完全に削除しますか？\n(写真も一緒に消えます・元に戻せません)`, "全部削除する"))) return;
+  for(const m of [...trashed]){ await purgeOne(m.id); }
+  await loadAll();
+  renderTrash();
+  renderCalendar(); renderAlbum(); renderTrips();
+  toast("ゴミ箱を空にしました");
+}
+
+/* ---------- 思い出一覧 ---------- */
+function renderAlbum(){
+  const chips = [["all","すべて"],["fav","💗お気に入り"], ...CATS.map(c=>[c,c])];
+  $("albumChips").innerHTML = chips.map(([v,l])=>
+    `<button class="chip ${albumFilter===v?"on":""}" onclick="albumFilter='${v}';renderAlbum()">${l}</button>`
+  ).join("");
+  let list = [...memories].sort((a,b)=>b.date.localeCompare(a.date));
+  if(albumFilter==="fav") list = list.filter(m=>m.favorite);
+  else if(albumFilter!=="all") list = list.filter(m=>m.category===albumFilter);
+  $("albumGrid").innerHTML = list.map(polaroid).join("");
+  $("albumEmpty").style.display = list.length?"none":"block";
+}
+function polaroid(m){
+  const photo = m.coverThumb
+    ? `<img class="photo" src="${m.coverThumb}" alt="" loading="lazy">`
+    : `<div class="photo">🌸</div>`;
+  return `<button class="polaroid" data-mid="${m.id}" onclick="openDetail(${m.id})">
+    <span class="ptape"></span>
+    ${m.favorite?`<span class="fav-star">⭐</span>`:""}
+    ${photo}
+    <div class="p-place">${escapeHTML(m.place)||"(場所なし)"}</div>
+    <div class="p-date">${fmtJP(m.date)}</div>
+    ${catBadge(m.category)} ${m.photoCount?`<span class="badge count">📷${m.photoCount}</span>`:""}
+  </button>`;
+}
+
+/* ---------- 詳細 ---------- */
+async function openDetail(id){
+  closeDay();
+  const m = memories.find(x=>x.id===id);
+  if(!m) return;
+  detailId = id;
+  $("dTitle").textContent = m.place || "思い出";
+  let html = `
+    <div class="card">
+      <div class="meta-row"><span class="ico">📅</span><b>${fmtJP(m.date)}</b>${m.favorite?" ⭐":""}</div>
+      ${m.people?`<div class="meta-row"><span class="ico">👥</span>${escapeHTML(m.people)}</div>`:""}
+      ${m.place?`<div class="meta-row"><span class="ico">📍</span>${escapeHTML(m.place)}</div>`:""}
+      ${m.albumId?`<div class="meta-row"><span class="ico">🧳</span>${escapeHTML(albumName(m.albumId))}</div>`:""}
+      <div class="meta-row"><span class="ico">🏷</span>${catBadge(m.category)}</div>
+      ${m.place?`<a class="map-link" target="_blank" rel="noopener"
+        href="https://www.google.com/maps/search/${encodeURIComponent(m.place)}">🗺 地図でこの場所を見る</a>`:""}
+    </div>`;
+  if(m.diary){
+    html += `<div class="card"><div class="section-title">💌 思い出日記</div>
+      <div class="diary-box">${escapeHTML(m.diary)}</div></div>`;
+  }
+  const photos = await getPhotos(id);
+  if(photos.length){
+    html += `<div class="section-title" style="margin:4px 2px 10px">📷 写真 (${photos.length}枚)　<span style="font-size:.75rem;font-weight:500;color:var(--ink-soft)">タップで大きく見られるよ</span></div>`;
+    html += `<div class="photo-grid">` + photos.map((p,i)=>`
+      <button onclick="openLightboxForMemory(${id},${i})">
+        <img src="${p.thumb}" alt="" loading="lazy">
+        ${p.favorite?`<span class="g-fav">⭐</span>`:""}
+      </button>`).join("") + `</div>`;
+  }
+  $("dBody").innerHTML = html;
+  $("detailOverlay").classList.add("show");
+}
+function closeDetail(){ $("detailOverlay").classList.remove("show"); }
+function editFromDetail(){ openForm(detailId, null, null); }
+
+/* ---------- ライトボックス（拡大＆スワイプ） ---------- */
+let lbPhotos = [], lbIndex = 0;
+async function openLightboxForMemory(memoryId, idx){
+  const photos = await getPhotos(memoryId);
+  openLightbox(photos, idx);
+}
+function openLightbox(photos, idx){
+  if(!photos.length) return;
+  lbPhotos = photos; lbIndex = idx||0;
+  $("lightbox").classList.add("show");
+  lbShow();
+}
+function closeLightbox(){ $("lightbox").classList.remove("show"); $("lbImg").src=""; }
+async function lbShow(){
+  const p = lbPhotos[lbIndex];
+  $("lbCount").textContent = `${lbIndex+1} / ${lbPhotos.length}`;
+  $("lbFav").textContent = p.favorite ? "⭐" : "☆";
+  $("lbComment").textContent = p.comment || "";
+  const img = $("lbImg");
+  img.style.opacity = ".3";
+  img.src = p.thumb;                    // まずサムネを即表示
+  $("lbLoading").style.display = "block";
+  if(!p._full){ p._full = await getFull(p.id); } // 原寸は必要なときだけ読む
+  // スワイプ連打対策：いま表示中の写真か確認してから差し替え
+  if(lbPhotos[lbIndex] === p && p._full){
+    img.src = p._full;
+  }
+  img.style.opacity = "1";
+  $("lbLoading").style.display = "none";
+}
+function lbMove(diff){
+  lbIndex = (lbIndex + diff + lbPhotos.length) % lbPhotos.length;
+  lbShow();
+}
+async function lbToggleFav(){
+  const p = lbPhotos[lbIndex];
+  p.favorite = !p.favorite;
+  $("lbFav").textContent = p.favorite ? "⭐" : "☆";
+  await putPhotoMeta({id:p.id, memoryId:p.memoryId, thumb:p.thumb, comment:p.comment||"", favorite:p.favorite, createdAt:p.createdAt||Date.now()});
+  toast(p.favorite ? "お気に入りに登録しました⭐" : "お気に入りを外しました");
+}
+/* スワイプ */
+(function(){
+  let startX = null;
+  const stage = document.getElementById("lbStage");
+  stage.addEventListener("touchstart", e=>{ startX = e.touches[0].clientX; }, {passive:true});
+  stage.addEventListener("touchend", e=>{
+    if(startX==null) return;
+    const dx = e.changedTouches[0].clientX - startX;
+    if(dx < -45) lbMove(1);
+    else if(dx > 45) lbMove(-1);
+    startX = null;
+  }, {passive:true});
+})();
+
+/* ---------- たびアルバム ---------- */
+function renderTrips(){
+  const list = [...albums].sort((a,b)=>b.createdAt-a.createdAt);
+  $("tripList").innerHTML = list.map(a=>{
+    const mems = memories.filter(m=>m.albumId===a.id);
+    const photoSum = mems.reduce((s,m)=>s+(m.photoCount||0),0);
+    const cover = a.coverThumb
+      ? `<img class="cover" src="${a.coverThumb}" alt="" loading="lazy">`
+      : `<div class="cover-ph">🧳</div>`;
+    return `<button class="album-book" onclick="openAlbumDetail(${a.id})">
+      ${cover}
+      <div class="a-body">
+        <div class="a-title">${escapeHTML(a.title)}</div>
+        <div class="a-sub">思い出 ${mems.length}こ / 📷 ${photoSum}枚${a.memo?` / ${escapeHTML(a.memo.slice(0,20))}${a.memo.length>20?"…":""}`:""}</div>
+      </div>
+    </button>`;
+  }).join("");
+  $("tripEmpty").style.display = list.length?"none":"block";
+}
+function openAlbumForm(id){
+  closeAlbumDetail();
+  editingAlbumId = id;
+  if(id != null){
+    const a = albums.find(x=>x.id===id);
+    if(!a) return;
+    $("aFormTitle").textContent = "アルバムを直す ✏️";
+    $("aTitle").value = a.title;
+    $("aMemo").value = a.memo||"";
+    $("aDeleteRow").style.display = "flex";
+  } else {
+    $("aFormTitle").textContent = "旅のアルバムをつくる 🧳";
+    $("aTitle").value = ""; $("aMemo").value = "";
+    $("aDeleteRow").style.display = "none";
+  }
+  $("albumFormOverlay").classList.add("show");
+}
+function closeAlbumForm(){ $("albumFormOverlay").classList.remove("show"); }
+async function saveAlbum(){
+  const title = $("aTitle").value.trim();
+  if(!title){ toast("アルバムの名前を入れてね✏️"); return; }
+  let a;
+  if(editingAlbumId != null){
+    a = albums.find(x=>x.id===editingAlbumId);
+    a = {...a, title, memo:$("aMemo").value.trim()};
+  } else {
+    a = {title, memo:$("aMemo").value.trim(), coverThumb:null, coverPhotoId:null, createdAt:Date.now()};
+  }
+  await reqP(store("albums","readwrite").put(a));
+  await loadAll();
+  closeAlbumForm();
+  renderTrips();
+  toast(editingAlbumId!=null ? "書き直しました✏️" : "新しいアルバムができました🧳✨");
+  editingAlbumId = null;
+}
+async function deleteAlbum(){
+  if(editingAlbumId==null) return;
+  if(!(await askConfirm("このアルバムを削除しますか？\n(中の思い出や写真は消えません。アルバムの入れ物だけ消えます)", "削除する"))) return;
+  // 中の思い出はアルバム未所属に戻す
+  for(const m of memories.filter(x=>x.albumId===editingAlbumId)){
+    m.albumId = null;
+    await reqP(store("memories","readwrite").put(m));
+  }
+  await reqP(store("albums","readwrite").delete(editingAlbumId));
+  await loadAll();
+  editingAlbumId = null;
+  closeAlbumForm(); closeAlbumDetail();
+  renderTrips(); renderAlbum();
+  toast("アルバムを削除しました");
+}
+async function openAlbumDetail(id){
+  const a = albums.find(x=>x.id===id);
+  if(!a) return;
+  detailAlbumId = id;
+  $("adTitle").textContent = a.title;
+  const mems = memories.filter(m=>m.albumId===id).sort((x,y)=>x.date.localeCompare(y.date));
+  const photoSum = mems.reduce((s,m)=>s+(m.photoCount||0),0);
+  const cover = a.coverThumb
+    ? `<div class="cover-hero"><img src="${a.coverThumb}" alt=""></div>`
+    : `<div class="cover-hero"><div class="cover-ph">🧳</div></div>`;
+  let html = cover + `
+    <div class="card">
+      <div class="meta-row"><span class="ico">📖</span>思い出 ${mems.length}こ / 📷 写真 ${photoSum}枚</div>
+      ${mems.length?`<div class="meta-row"><span class="ico">📅</span>${fmtJP(mems[0].date)} 〜 ${fmtJP(mems[mems.length-1].date)}</div>`:""}
+      ${a.memo?`<div class="diary-box" style="margin-top:8px">${escapeHTML(a.memo)}</div>`:""}
+    </div>
+    <div class="btn-row" style="margin-top:0">
+      <button class="btn sky" onclick="openCoverPicker(${id})">🖼 表紙をえらぶ</button>
+      <button class="btn ghost" onclick="openAlbumForm(${id})">✏️ 直す</button>
+    </div>
+    <div class="section-title" style="margin:16px 2px 8px">🌸 この旅の思い出</div>`;
+  html += mems.length
+    ? mems.map(m=>miniItem(m)).join("")
+    : `<div class="empty-msg" style="padding:14px"><span class="big">📝</span>まだこの旅の思い出はありません</div>`;
+  html += `<button class="btn primary" style="width:100%;margin-top:8px" onclick="openForm(null, null, ${id})">＋ この旅に思い出を追加する</button>`;
+  $("adBody").innerHTML = html;
+  $("albumDetailOverlay").classList.add("show");
+}
+function closeAlbumDetail(){ $("albumDetailOverlay").classList.remove("show"); }
+
+/* ---------- 表紙えらび ---------- */
+let coverAlbumId = null;
+async function openCoverPicker(albumId){
+  coverAlbumId = albumId;
+  const mems = memories.filter(m=>m.albumId===albumId);
+  let allPhotos = [];
+  for(const m of mems){
+    const ps = await getPhotos(m.id);
+    allPhotos = allPhotos.concat(ps);
+  }
+  $("coverGrid").innerHTML = allPhotos.map(p=>`
+    <button onclick="setCover(${p.id})"><img src="${p.thumb}" alt="" loading="lazy"></button>
+  `).join("");
+  $("coverEmpty").style.display = allPhotos.length?"none":"block";
+  window._coverPhotos = allPhotos;
+  $("coverOverlay").classList.add("show");
+}
+function closeCoverPicker(){ $("coverOverlay").classList.remove("show"); }
+async function setCover(photoId){
+  const p = (window._coverPhotos||[]).find(x=>x.id===photoId);
+  if(!p || coverAlbumId==null) return;
+  const a = albums.find(x=>x.id===coverAlbumId);
+  a.coverThumb = p.thumb;
+  a.coverPhotoId = photoId;
+  await reqP(store("albums","readwrite").put(a));
+  await loadAll();
+  closeCoverPicker();
+  renderTrips();
+  openAlbumDetail(coverAlbumId);
+  toast("表紙が決まりました🖼✨");
+}
+
+/* ---------- 検索 ---------- */
+function renderSearch(){
+  const chips = CATS.map(c=>
+    `<button class="chip ${searchCat===c?"on":""}" onclick="searchCat=(searchCat==='${c}'?null:'${c}');doSearch()">${c}</button>`
+  ).join("");
+  $("searchCats").innerHTML = chips;
+}
+function doSearch(){
+  renderSearch();
+  const q = $("searchInput").value.trim();
+  let list = [...memories].sort((a,b)=>b.date.localeCompare(a.date));
+  if(searchCat) list = list.filter(m=>m.category===searchCat);
+  if(q) list = list.filter(m=>
+    (m.place||"").includes(q) || (m.people||"").includes(q) || (m.diary||"").includes(q)
+  );
+  if(!q && !searchCat) list = [];
+  $("searchGrid").innerHTML = list.map(polaroid).join("");
+  $("searchEmpty").style.display = (list.length===0 && (q||searchCat)) ? "block" : "none";
+}
+async function getFavPhotos(){
+  const all = await reqP(store("photos").getAll()) || [];
+  return all.filter(p=>p.favorite).sort((a,b)=>b.id-a.id);
+}
+async function renderFavPhotoPreview(){
+  const favs = (await getFavPhotos()).slice(0,6);
+  $("favPhotoGrid").innerHTML = favs.map((p,i)=>`
+    <button onclick="showFavPhotos(${i})"><img src="${p.thumb}" alt="" loading="lazy"><span class="g-fav">⭐</span></button>
+  `).join("");
+}
+async function showFavPhotos(idx){
+  const favs = await getFavPhotos();
+  if(!favs.length){ toast("まだお気に入りの写真がありません☆"); return; }
+  openLightbox(favs, idx||0);
+}
+
+/* ---------- 起動 ---------- */
+(async function init(){
+  const n = new Date();
+  viewYear = n.getFullYear(); viewMonth = n.getMonth();
+  try{
+    await openDB();
+    // ずっと使える人生アルバムのため、保存領域の保護をお願いする
+    if(navigator.storage && navigator.storage.persist){
+      navigator.storage.persist().catch(()=>{});
+    }
+    await loadAll();
+    await migrateV1();  // 旧バージョンのデータを自動でお引っ越し
+  }catch(e){
+    console.error(e);
+    toast("データ保存が使えないみたい…Safariの通常モードで開いてね");
+  }
+  renderCalendar();
+  updateCounter();
+})();
+</script>
+</body>
+</html>
