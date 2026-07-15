@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#7FA576">
+<meta name="description" content="日曜日の作り置き記録アプリ。買い物リスト・常備菜メニュー・フォトギャラリー・お気に入り管理などの機能を備えた、かわいい雰囲気のレシピ記録アプリです。">
+<title>🍳 今週の常備菜</title>
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFkAAADACAYAAABvYs8kAAAzxklEQVR42u292XNk133n+Tl3yx1I
+IAEUqgoooPaFLJLiUhQpUiRFqSV55B5b1kRbtjQPHY5+cEzHhOcPmHDEOMJvfrNjYhx2WJI93Z5R
+yB63FkuWmhLFsljmUiJZIln7glqwA7nf9Zx5SJxbF4kEkAmgpJJUpwJRQOLinnu/53d+v9/5rSII
+gmkhxC4ejHs1ZkQYhuoBDvdmKKUQQmA8gOLej65BVqpF8IZhtFbHMDCM1p8LITBNM/5cCBFf/8tA
+bfod2t8n+Y773ZVS8Vf7PdYbVrcPI4TAdV3Onj3L8PAwtVoN0zQ5dOgQlUqFy5cvc/DgQS5fvsz4
++Djj4+O/FCCbpkkYhszMzHD+/HleeOEFpqamOH36NPV6nWPHjnHq1ClqtRp/+Zd/SRiGRFFEKpXi
+6aef5pFHHmFgYCBmDdsGudFoMD09zTvvvMPhw4c5d+4cvu/z7rvvAnDt2jUcx+H69ev83u/93n1N
+zZoab9y4wVtvvcXZs2epVqs8//zzvPnmm7zyyisopbh+/TpHjhzh/Pnz/Mmf/AnPPfcck5OTDA4O
+MjU1RS6X4+TJk6RSqe1TslIKx3G4efMmjzzyCLdu3WLv3r2k02mklDiOg2EY3L59m2eeeea+p2DP
+8/jqV7/KxYsXaTQaBEFAX18fAJ/97Gep1+t8+OGHfPnLX2bXrl1cvHgxJrTXX3+dF198kVwuF7NH
+jVEnau5Ju1haWuL06dPs2bOH+fl5+vr6OHbsGNVqlfPnzzMxMcH58+c5dOgQx44du69BDsOQt99+
+O+bFSiksy+LRRx/FMAyWl5eZnZ3lyJEjKKWo1Wp8/etfZ2FhAd/3KZVKPPbYYxw/fpx8Pr/u7u8J
+ZL1KpmnG3yulkFIihIh/NgwDKWX8+f3KKpKCLjmklKt+r3/W/Lud3bQLwSS4+vsHevImi9HNz+sR
+k/7c+hXE5p4CvpnqlgRc74gHIHdBxUmANwK7nU3o8QDkHqg2CbI+rOjfaTn0gF1sA/QkwLZtrxGa
+hmEQRRFRFK35+we2iw3YRDvAWs3rpJUkj+Lt4wEl9zCSat96Qk9T9Cp28ctiyPl5AtkJE30GEEIQ
+RRFRFFEul2PhN5NULz+y9vH75hCKBEv9HXe5+C5vHHv3h0KVQohXLSGY3FKHqhqhJrYBBnCa7aQi
+tB5JaXNXl6dFZO52YbNVt5fEHqpJYrfEqR4qjGKY4OgUDfJW27Xrn1cjKhVqMlKNx3NHnlyuuEdl
+Yh8Aq1Gh3PKqmFUXdIEy8GJlSlchP1VSq3pFu39ND9VqMVXdHkuZOWqI0g7lHy0Y0H6F4hzKJqmY
+5Wk/EYnDY8TuvRz3j2Ydp8iZvWvGEZyHt4d2ZkzQF2GaHKAO4WKeYTxVo/rM4+Hv3I9sYVHfx8g
+kEmq3qn/QmHpCVvlPAELHw0S8RvcGBqLzLj/DFPbV4GR28PFEDTpVJxMH+YPwWOl6eFPxGK3bQ8B
+OzvVUkFEK/iUpFrrmSdKuVCCWhWqyJk9kwPmKiA8dChQMWqflNLLEhV8NRrDlgKe5AKH8s4KG2pJ
+nEBG3FJt9dKqZ2pldOAjg3M8wJl16bHvLfaP/7aT//4cxfA5UGLw7IVW8e3xpHLhBwqmDHhJ5wqX
+aowIJbATrHGiBTjnWt+M0N0m0HjBN8tZpD7SqPSxXy0Wvz5oIeYqrqX5O9eFdzMdRK7/qM+8j5aE
+BIQvFv4Zqm1HcR1lHEVTHr3dH9SZfwjQp3lLLbgKBqNAEqYmr6/n0d6FGbRCUzVlGX9xdF2TXWU
+jdtPBb7SFDaaNf2eGwHWVLDqDJL8mRQOGkXjVqPJ3VRRLEfL0dDZRc4ujvL7gIrvPNkv//k+4Gvr
+8aUnfUNz/A7QddVhXfLgNHhzABvYJOGcRPY4ViJ/HhAyST8fPTfzcFHsD8m+VsGZd8QsQDI4TvEj
+w3X3V7a2L1EO1eJKiOUVOzXjVZYH9ZMvDLw6aJ4SLqTQUGg2nFnPy5RJR/sOYTOJNR1TTNdaKfKq
+FPM10Gpl6+6gGmAcSAUpZwz0OTWpwVZSJLXtGm1qOqnJiB4fTt3Wm3F7SYuUfLO6z2eo5khxJ9Bj
+hjBZt3vJKs9fTWvVn6T33eiWCvW7RFSi4S1f9j4nNxWfA5qUDUHDe1pC6+3TiOoVqRpMWLABNx3Lg
+fNxRnlvZ+Y7XYm/Zqz2MNSHqRSwEj6eChEzlWpZmlZOsqVLLUjuWPUd/zVjbX+Jzd/X0W63c2KYvZ
+qzfUAVkM0S3VrU5wGtvmnyAKoEJKGSIKq6dZLZ8LXdShjZEk7iMwVo0VXp/9X1DLKk5Gm0JCKKyxH
+q6xfquOvLLgLhKwKRD3tnrLMnbD9Lquo+jJLQDPsYoHIDQqvLY1fqOoKxDh5jsfMGkEXjbx8YEO4V
+CjZGfXkZPRKhvq4+aJzRb6Z9Kt4sOhTmIJrXqGpZqVX9GKFb3OMDSv1RWKpq7ySQvLtLqHSBLMFT
+vWjVVMyV6yxlJ/eZPG0E5aVN6dN7kw22H3ZQNB7r00UdK6ZyXY0gqxnrAKPZWMkEltmZpvmZIkXQX
+N2eWi+DfUheCKL2MK8RCYhI0xZXMx/1c9KfOnLwOFxGqvAXfmL05TQ9/5AhQAcZU3FVlNfXXDzq8k
+gqFWJRMVv/r3FUx9rlNiBYlVZQFQY6gvKqyp1Sp/+Ktr5sSmxFH1KYLO9Fvx6t2dLOy1gRVYWfWVF
+YfhSn1BjuQPvNy6a75MJ71kEjfUbZSvs/0LNL+mGq6OQjuzE0Fih1FKJ9R2E5YXYYwFQEwvkQpV9Q
+Z6E7K3gVSpSLkS7TFnR3CiDp0hqnjnx4yBfzV/NeWQnpN3N0CYtLMLU/LxN2YhxEqPVZqCmMPWuZH
+hZ3LAKuQ2MKzcGYxNdZRNO6+gDI/tgWkf1dH5kL4EOGFN1Y/1wWHfL0gSIDFLpCFpgx2pEjhBLuIR
+S6QZBjh7kLyWvSwBwM2eSvvxGqHjEQQvwJZxCkBPh6P7E/w0jQU+0AW6mBWd+8L6cTzB4HZqWqPCe
+Q1Yl5SZsRvvmQIJ9RQSX6iT5VuJqKBb9S7DlBBKdJwUBMJ8PEbwl6yyLK3vf2TrYqSGj+j4BdgHtK
+P4J8P0eI7EQhkZJUkHUV6xEDWqrS4hDGxs4JAkJfKhgKO9LH8CG7gI+YK5VNvfKvsCOwq0KSVNYXQp
+PJXPvqJM7/B3u+e8F0Y79FKLAP0JvCYsF1Hxq8k9G9tGe5uWKa/ILBHVHFRsK3HEcv/TBv/Zm/tHT
+SLT9M2T4xLqVoJSKEyU9VNJDhHDJvbEVE0K7v4gLPxqMqLdOg2L2eTRNLZZI6gMXMq7x3eFn8bKhX
+sQk2vQSGC2yXqJWdkjMbFN00l0sHfVk6SlL9BPidrHBEEuXwL3T1bO1JGXLPLA3W8yF7Xb8VF/GqD
+OO0zVLjZvdMSDuUZKJFPMsm8OMkxzGTBOYKMAFdALpN3hcFdVkqcnJ4JJ+8hNS5xDN6z/OKDQqLQc
+jnAE0xfVxCm7gakqy3u8EzHqTQPqU+TqPCBJlbKGbYW4N0uqMnN+8s1D0pD5Y+S6RLvVCQpvT0jMq
+EuK5v5fJLzL4iQ0jOCp3iW3dUKJp7u6nN1OZ7zFJmA0tKvIgVz5vb/T1xfI/dM5c0pTOz+hKVZBOr
+I6bqxoFgB8RhWLZ7P1rOH9W8JBZFS0OkqsGJi0NWjxEWljt5TuqWXpvqFPUC0hnZ8oBdwzfPJA0e6
+FHoRflS5RFPxSWCL5qGbH8CqKmJCrKoMwVaYp+VWVFCHUYxVrNpMuSiFq9yI8nSxsU5iQJKvCgn0d
+MLcZhfzOsRa2QwKYxvqgVrwxY5N3tVPcB3oSmVxbx2fUeFZVOEgdLy5qE5w5xQi/1EkI/S7F1yVKp
+e1KR8pnrgG1B7sZEKCRdI1dUSJW1QY6fH8PHPG5K9VSDqx+H8UqJa5SrJtJ3L23F9/CvAXUL1pQg5p
+w1a5tJIqQa1p/tLyGDe2gVcbTJYFBvMXzW3tnhDgFVF3xhajzvCMcX5fD9p5kf8kBnqCXvxFOEzLh
+d5J8vILqfqg8PxBWRi1fWUuR0EEPZ9dNhXvgU7ZYv8FPrIp6DVGDhgwfVKWf1XZnTkOvNxu0OYdGQ
+4wXdW0tqCx/dFMzEqr7dDSXeGJ0tBj5Z2E6I3KLHcAbVfZGCZwB7jvDQMXMJ2J3Ys1NyRiKPxR4wB
+cHsoJ2LO/LjVp5zyZphVzXlhMKRKnbOzpAUWKX7kZfUhqwJkd+jXKkzTNhyJGIe7dOBEkk9Ss/6PB
+ycSNpLFrp7rFxJBFTv1kMEGvxzOVLzpxzv8LHUmJGFT1lqWNzEVFnpVvLEVEv8xK6r3dEoFR8t7xQ
+b1Wd3i0KRDt5UdhjHwv5dZjyTZJu8sLqP+bXIzaFNm3d4MLTVi3Leu47dMqNFJ+D0Pav8Yq/DRhwI
+Gzc2YWvN+hM0mRTQ+p6PfXJYYhVp7PnR6sIhW8E+xTDVv9y4H4OwSZQ/T7yx/GdNyYNZ4POfW+VG
+J4d7I4l7OTBc/A5l5xW3X4l4ZuqEVP5JHc9u8hJEcQhcYbKpwgGx1c6eP6Lk7/oelPcfHVbJ+/OIe
+yN2N7w+jmBj+o7TlRqW8i1VZpRYPJH3swDHJhMGq2Mq4aWyRYCkBVaKA1tEqbT/sAM0t/7XJZC8A
+ZNMiR3sF0cMLfZvzEQH7mCNCpAoKAJgWm2JYQE5YNpzGvXjx/yeFH4gJD2Ej8aBKVL1c/U4MHqm3
+EYEVr8ZhQs8Q8w1MYS/xY3VMGjDRYx/xVG7tgNEzYN9nAcFz0RTD3Zd3E0F6W5cJEIKu8YkrK0r4p
+J3n2nB2YPfplUqFVpBaRaQQfqf0K12w/Cyw5VoLV0B2LQd3y6oJJH8o+eJPLvPPuY6+VNPfQEbLJg
+W5EVG3Q0sElQEVB1hs5sMCJVxpX5kbP4c7L9k1Fn+ySV5dGTj0A4W5Kry5aVZWXLEXlKT8S4Jx9H
+LXpWgC1I3Sc9zMzNF3JLeRTv3aeJAM6bvCF4zCg1hK6gy1v0QTkXRZLdVl/Blt3V0dKv3eVw0XJHV
+SEYXaRGkSZP3b8f8pMm1l6u8G7bqEWCRfNQpMv2WJKPhiluD/DUPmAdfxl7Q6DEZjL7A8W/mEEp+Z
+U4prlHqePXIJ5W2F4WtIHYt4Vf2BN2X0lMWf4wYvwYsjqArxWNMxNsQmfwDVUDdlCYH9IY">
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Kiwi+Maru:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ivory:#FCF9F1;
+  --white:#FFFFFF;
+  --green:#7FA576;
+  --green-deep:#5E8657;
+  --green-pale:#EAF2E5;
+  --wood:#C9A876;
+  --wood-deep:#A88752;
+  --tomato:#E4573D;
+  --tomato-deep:#C13E27;
+  --carrot:#F08A24;
+  --yellow:#F2B705;
+  --ink:#332B22;
+  --ink-soft:#6E6152;
+  --glass:rgba(255,255,255,.68);
+  --shadow:0 8px 24px rgba(51,43,34,.13);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{font-size:17px;}
+body{
+  font-family:'Zen Maru Gothic',sans-serif;
+  font-weight:700;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(242,183,5,.10), transparent 40%),
+    radial-gradient(circle at 85% 25%, rgba(127,165,118,.14), transparent 45%),
+    radial-gradient(circle at 50% 90%, rgba(228,87,61,.08), transparent 45%),
+    var(--ivory);
+  color:var(--ink);
+  min-height:100vh;
+  overflow-x:hidden;
+  animation:pageIn .8s ease both;
+}
+@keyframes pageIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01s!important;transition-duration:.01s!important;}
+}
+
+/* ===== 背景アニメ ===== */
+.bganim{position:fixed;inset:0;pointer-events:none;z-index:0;}
+.bgi{position:absolute;font-size:2.1rem;opacity:.18;animation:floaty 10s ease-in-out infinite;}
+@keyframes floaty{
+  0%,100%{transform:translateY(0) rotate(-8deg);}
+  50%{transform:translateY(-20px) rotate(8deg);}
+}
+
+/* ===== ヘッダー ===== */
+header{
+  position:relative;z-index:1;
+  text-align:center;
+  padding:22px 16px 16px;
+  background:linear-gradient(180deg,#7FA576,#6B9663);
+  border-bottom:6px solid var(--wood);
+  border-radius:0 0 26px 26px;
+  box-shadow:var(--shadow);
+}
+.pot{display:inline-block;position:relative;font-size:2.5rem;}
+.steam{
+  position:absolute;left:50%;top:-14px;
+  width:7px;height:16px;border-radius:7px;
+  background:rgba(255,255,255,.85);
+  animation:steam 2.4s ease-in-out infinite;
+}
+.steam.s1{margin-left:-11px;animation-delay:0s;}
+.steam.s2{margin-left:0;animation-delay:.8s;}
+.steam.s3{margin-left:11px;animation-delay:1.6s;}
+@keyframes steam{
+  0%{opacity:0;transform:translateY(6px) scaleY(.6);}
+  40%{opacity:.95;}
+  100%{opacity:0;transform:translateY(-18px) scaleY(1.25);}
+}
+h1{
+  font-family:'Kiwi Maru',serif;
+  font-size:1.6rem;font-weight:500;
+  letter-spacing:.05em;color:#fff;
+  margin-top:2px;
+  text-shadow:0 2px 0 rgba(0,0,0,.15);
+}
+.subtitle{font-size:.82rem;color:#EAF6E4;margin-top:3px;letter-spacing:.12em;}
+
+/* ===== レイアウト ===== */
+main{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:16px 14px 110px;}
+.hidden{display:none!important;}
+
+/* ===== ボトムナビ ===== */
+nav{
+  position:fixed;left:50%;bottom:0;transform:translateX(-50%);
+  width:100%;max-width:560px;z-index:15;
+  display:flex;gap:6px;
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border-top:3px solid var(--green);
+  padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+}
+.nav-btn{
+  flex:1;border:none;background:none;
+  font-family:inherit;font-weight:900;
+  font-size:.7rem;color:var(--ink-soft);
+  cursor:pointer;padding:6px 2px;border-radius:12px;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  transition:all .2s;
+}
+.nav-btn .ic{font-size:1.35rem;}
+.nav-btn.active{background:var(--green-pale);color:var(--green-deep);}
+
+/* ===== ガラスカード ===== */
+.card{
+  background:var(--glass);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  border:2.5px solid rgba(255,255,255,.95);
+  border-radius:20px;
+  box-shadow:var(--shadow);
+  padding:16px;margin-bottom:16px;
+}
+.card-title{
+  font-family:'Kiwi Maru',serif;
+  font-size:1.1rem;font-weight:500;
+  display:flex;align-items:center;gap:7px;
+  margin-bottom:12px;color:var(--green-deep);
+}
+
+/* ===== 月間カレンダー ===== */
+.cal-head{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:12px;
+}
+.cal-title{
+  font-family:'Kiwi Maru',serif;
+  font-size:1.3rem;font-weight:500;color:var(--ink);
+}
+.cal-nav{
+  width:44px;height:44px;border-radius:50%;
+  border:2.5px solid var(--green);background:#fff;
+  color:var(--green-deep);font-size:1.15rem;font-weight:900;
+  cursor:pointer;transition:all .15s;
+  font-family:inherit;
+}
+.cal-nav:active{transform:scale(.9);background:var(--green-pale);}
+.cal-grid{
+  display:grid;grid-template-columns:repeat(7,1fr);
+  gap:5px;
+}
+.dowcell{
+  text-align:center;font-size:.78rem;font-weight:900;
+  color:var(--ink-soft);padding:4px 0 7px;
+}
+.dowcell.sun{color:var(--tomato);}
+.dowcell.sat{color:#4A7FB5;}
+.daycell{
+  aspect-ratio:1/1.06;
+  background:#fff;
+  border:2px solid #EFE7D8;
+  border-radius:13px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:1px;cursor:pointer;position:relative;
+  font-size:.98rem;font-weight:900;
+  transition:transform .12s, border-color .2s;
+}
+.daycell:active{transform:scale(.92);}
+.daycell.blank{background:transparent;border:none;cursor:default;}
+.daycell.sun{
+  background:linear-gradient(180deg,#FDF0E4,#FBE3CB);
+  border-color:var(--carrot);
+  color:var(--tomato-deep);
+}
+.daycell.sat{color:#4A7FB5;}
+.daycell.sunday-num{color:var(--tomato);}
+.daycell.today{
+  border:3px solid var(--tomato);
+  box-shadow:0 0 0 3px rgba(228,87,61,.18);
+}
+.daycell .mark{font-size:.82rem;line-height:1;height:.95em;}
+.daycell.other{opacity:.35;}
+
+/* ===== 日別画面 ===== */
+.day-title-bar{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:16px;
+}
+.back-btn{
+  border:none;background:#fff;
+  border:2.5px solid var(--green);
+  color:var(--green-deep);
+  border-radius:14px;padding:9px 14px;
+  font-family:inherit;font-size:.9rem;font-weight:900;
+  cursor:pointer;box-shadow:0 3px 0 rgba(94,134,87,.3);
+}
+.back-btn:active{transform:translateY(2px);box-shadow:none;}
+.day-title{
+  flex:1;
+  font-family:'Kiwi Maru',serif;
+  font-size:1.18rem;font-weight:500;
+}
+.day-title .sun-badge{
+  display:inline-block;
+  background:var(--tomato);color:#fff;
+  font-size:.68rem;font-weight:900;
+  border-radius:8px;padding:2px 8px;
+  margin-left:6px;vertical-align:middle;
+  font-family:'Zen Maru Gothic',sans-serif;
+}
+
+/* ===== 入力・ボタン共通 ===== */
+.btn{
+  border:none;border-radius:13px;
+  font-family:inherit;font-size:.95rem;font-weight:900;
+  padding:11px 18px;cursor:pointer;
+  background:var(--green);color:#fff;
+  box-shadow:0 3px 0 var(--green-deep);
+  transition:transform .12s;
+}
+.btn:active{transform:translateY(2px);box-shadow:none;}
+.btn.orange{background:var(--carrot);box-shadow:0 3px 0 #C96F13;}
+.btn.ghost{background:#F4EAD8;color:var(--wood-deep);box-shadow:0 3px 0 #DCC9A4;}
+.btn.red{background:var(--tomato);box-shadow:0 3px 0 var(--tomato-deep);}
+input[type=text],input[type=url],textarea{
+  width:100%;border:2.5px solid var(--wood);
+  border-radius:13px;padding:11px 13px;
+  font-family:inherit;font-size:1rem;font-weight:700;
+  background:#fff;color:var(--ink);outline:none;
+}
+input:focus,textarea:focus{border-color:var(--green);}
+textarea{resize:vertical;min-height:70px;line-height:1.7;}
+
+/* ===== 買い物リスト ===== */
+.shop-row{display:flex;gap:8px;margin-bottom:12px;}
+.shop-row input{flex:1;width:auto;}
+ul.shoplist{list-style:none;}
+ul.shoplist li{
+  display:flex;align-items:center;gap:11px;
+  padding:10px 4px;border-bottom:2px dashed #E8DCC6;
+  font-size:1.02rem;transition:opacity .3s;
+}
+ul.shoplist li:last-child{border-bottom:none;}
+ul.shoplist li.done{opacity:.38;}
+ul.shoplist li.done .shop-name{text-decoration:line-through;}
+.shop-name{flex:1;}
+.checkbox{
+  width:27px;height:27px;flex-shrink:0;
+  border:3px solid var(--green);border-radius:9px;
+  background:#fff;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;color:#fff;font-weight:900;
+  transition:background .2s;
+}
+.checkbox.checked{background:var(--green);}
+.del{border:none;background:none;color:#CBB28A;font-size:1.1rem;cursor:pointer;padding:5px;font-weight:900;}
+.empty{text-align:center;color:var(--ink-soft);font-size:.9rem;padding:14px 4px;line-height:1.9;}
+
+/* ===== 料理カード ===== */
+.dish-card{
+  background:#fff;
+  border:2.5px solid #F0D9AE;
+  border-radius:17px;
+  box-shadow:var(--shadow);
+  padding:14px 16px;margin-bottom:12px;
+  animation:pageIn .4s ease both;
+}
+.dish-card.completed{background:var(--green-pale);border-color:var(--green);}
+.dish-top{display:flex;align-items:flex-start;gap:8px;}
+.dish-name{flex:1;font-size:1.12rem;font-weight:900;line-height:1.45;padding-top:2px;}
+.dish-card.completed .dish-name{color:var(--green-deep);}
+.star{
+  border:none;background:none;font-size:1.45rem;
+  cursor:pointer;line-height:1;padding:2px;
+  filter:grayscale(1);opacity:.4;transition:all .2s;
+}
+.star.on{filter:none;opacity:1;transform:scale(1.15);}
+.dish-memo{
+  font-size:.92rem;color:var(--ink-soft);
+  margin-top:7px;line-height:1.65;white-space:pre-wrap;
+}
+.photo-strip{
+  display:flex;gap:8px;margin-top:11px;
+  overflow-x:auto;padding-bottom:4px;
+  -webkit-overflow-scrolling:touch;
+}
+.photo-thumb{
+  width:86px;height:86px;flex-shrink:0;
+  border-radius:13px;object-fit:cover;
+  border:2.5px solid var(--wood);
+  cursor:pointer;
+}
+.photo-add{
+  width:86px;height:86px;flex-shrink:0;
+  border-radius:13px;
+  border:2.5px dashed var(--wood);
+  background:#FDF8EE;color:var(--wood-deep);
+  font-size:1.6rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.dish-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;align-items:center;}
+.video-btn{
+  display:inline-flex;align-items:center;gap:4px;
+  background:var(--tomato);color:#fff;
+  border:none;border-radius:11px;
+  padding:9px 14px;font-family:inherit;
+  font-size:.85rem;font-weight:900;cursor:pointer;
+  text-decoration:none;box-shadow:0 3px 0 var(--tomato-deep);
+}
+.done-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  background:#fff;border:2.5px solid var(--green);
+  color:var(--green-deep);border-radius:11px;
+  padding:8px 13px;font-family:inherit;
+  font-size:.85rem;font-weight:900;cursor:pointer;
+  transition:all .2s;box-shadow:0 3px 0 rgba(94,134,87,.3);
+}
+.done-btn.on{background:var(--green);color:#fff;box-shadow:0 3px 0 var(--green-deep);}
+.edit-btn{
+  margin-left:auto;border:none;background:none;
+  color:var(--ink-soft);font-size:.84rem;font-weight:900;
+  font-family:inherit;cursor:pointer;padding:6px;
+}
+
+/* ===== 検索・一覧 ===== */
+.searchbox{
+  display:flex;align-items:center;gap:8px;
+  background:#fff;border:2.5px solid var(--wood);
+  border-radius:15px;padding:11px 14px;margin-bottom:16px;
+}
+.searchbox input{border:none;padding:0;border-radius:0;flex:1;width:auto;}
+.result-date{
+  display:inline-block;font-size:.76rem;font-weight:900;
+  background:var(--green);color:#fff;
+  border-radius:9px;padding:3px 10px;margin-bottom:7px;
+  cursor:pointer;box-shadow:0 2px 0 var(--green-deep);
+}
+
+/* ===== 履歴 ===== */
+.year-block{margin-bottom:18px;}
+.year-head{
+  font-family:'Kiwi Maru',serif;font-size:1.15rem;font-weight:500;
+  color:var(--wood-deep);margin-bottom:10px;
+  display:flex;align-items:center;gap:8px;
+}
+.month-row{
+  background:#fff;border:2.5px solid #F0D9AE;
+  border-radius:15px;box-shadow:var(--shadow);
+  padding:13px 16px;margin-bottom:9px;
+  display:flex;align-items:center;gap:10px;
+  cursor:pointer;font-size:1rem;font-weight:900;
+  transition:transform .12s;
+}
+.month-row:active{transform:scale(.97);}
+.month-row .cnt{
+  margin-left:auto;font-size:.8rem;
+  background:var(--green-pale);color:var(--green-deep);
+  border-radius:9px;padding:4px 11px;
+}
+
+/* ===== モーダル ===== */
+.overlay{
+  position:fixed;inset:0;background:rgba(51,43,34,.45);
+  backdrop-filter:blur(3px);
+  display:none;align-items:flex-end;justify-content:center;
+  z-index:20;
+}
+.overlay.show{display:flex;}
+.overlay.center{align-items:center;}
+.modal{
+  background:var(--ivory);
+  border-radius:26px 26px 0 0;
+  border-top:5px solid var(--green);
+  width:100%;max-width:560px;
+  padding:22px 20px calc(26px + env(safe-area-inset-bottom));
+  animation:slideUp .3s ease both;
+  max-height:88vh;overflow-y:auto;
+}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0;}to{transform:none;opacity:1;}}
+.modal h2{
+  font-family:'Kiwi Maru',serif;font-size:1.15rem;font-weight:500;
+  margin-bottom:16px;text-align:center;color:var(--green-deep);
+}
+.field{margin-bottom:13px;}
+.field label{display:block;font-size:.85rem;font-weight:900;margin-bottom:6px;}
+.modal-btns{display:flex;gap:10px;margin-top:18px;}
+.modal-btns .btn{flex:1;padding:13px;}
+.danger-link{
+  display:block;text-align:center;margin:16px auto 0;
+  color:var(--tomato);font-size:.88rem;font-weight:900;
+  background:none;border:none;font-family:inherit;cursor:pointer;
+}
+.confirm-box{
+  background:var(--ivory);border-radius:20px;
+  border:3px solid var(--green);
+  padding:22px;width:calc(100% - 48px);max-width:340px;
+  text-align:center;animation:slideUp .25s ease both;margin:auto;
+}
+.confirm-box p{font-size:1rem;line-height:1.75;margin-bottom:17px;white-space:pre-wrap;}
+
+/* ===== 写真ビューア ===== */
+.photo-viewer{
+  position:fixed;inset:0;z-index:40;
+  background:rgba(20,15,10,.9);
+  display:none;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:20px;
+}
+.photo-viewer.show{display:flex;}
+.photo-viewer img{
+  max-width:100%;max-height:74vh;
+  border-radius:16px;
+}
+.pv-btns{display:flex;gap:12px;margin-top:18px;}
+
+/* ===== トースト・キラキラ ===== */
+.toast{
+  position:fixed;left:50%;bottom:110px;transform:translateX(-50%) translateY(20px);
+  background:var(--ink);color:#fff;
+  border-radius:14px;padding:12px 22px;
+  font-size:.95rem;font-weight:900;z-index:50;opacity:0;
+  transition:all .3s ease;pointer-events:none;white-space:nowrap;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.sparkle{position:fixed;pointer-events:none;z-index:60;font-size:1.1rem;animation:spark .8s ease-out forwards;}
+@keyframes spark{
+  0%{opacity:1;transform:translate(0,0) scale(.6);}
+  100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.35);}
+}
+</style>
+</head>
+<body>
+
+<div class="bganim" id="bganim"></div>
+
+<header>
+  <span class="pot">🍲<span class="steam s1"></span><span class="steam s2"></span><span class="steam s3"></span></span>
+  <h1>今週の常備菜</h1>
+  <p class="subtitle">にちようびの、つくりおきじかん</p>
+</header>
+
+<main>
+  <!-- ===== 月間カレンダー ===== -->
+  <section id="viewCal">
+    <div class="card">
+      <div class="cal-head">
+        <button class="cal-nav" id="calPrev">◀</button>
+        <div class="cal-title" id="calTitle"></div>
+        <button class="cal-nav" id="calNext">▶</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+    <div class="empty">日付をタップすると、その日の記録が開くよ🍳<br>日曜日はオレンジ色になってるよ🧡</div>
+  </section>
+
+  <!-- ===== 日別画面 ===== -->
+  <section id="viewDay" class="hidden">
+    <div class="day-title-bar">
+      <button class="back-btn" id="dayBack">◀ もどる</button>
+      <div class="day-title" id="dayTitle"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🛒 買い物リスト</div>
+      <div class="shop-row">
+        <input type="text" id="shopInput" placeholder="例:にんじん 3本" enterkeyhint="done">
+        <button class="btn" id="shopAdd">追加</button>
+      </div>
+      <ul class="shoplist" id="shopList"></ul>
+      <div class="empty hidden" id="shopEmpty">まだ何もないよ🥕</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🍅 今週作る常備菜</div>
+      <div id="dishArea"></div>
+      <div class="empty hidden" id="dishEmpty">まだメニューがないよ🍳<br>下のボタンから追加してね</div>
+      <button class="btn orange" id="dishAdd" style="width:100%;padding:13px;margin-top:6px;">＋ 常備菜を追加する</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📝 きょうのメモ</div>
+      <textarea id="dayMemo" placeholder="気づきや感想を自由にどうぞ🍀"></textarea>
+      <button class="btn" id="memoSave" style="width:100%;padding:12px;margin-top:10px;">メモを保存する</button>
+    </div>
+  </section>
+
+  <!-- ===== 検索 ===== -->
+  <section id="viewSearch" class="hidden">
+    <div class="searchbox">
+      <span>🔍</span>
+      <input type="text" id="searchInput" placeholder="料理名・メモでさがす" enterkeyhint="search">
+    </div>
+    <div id="searchArea"></div>
+    <div class="empty hidden" id="searchEmpty"></div>
+  </section>
+
+  <!-- ===== お気に入り ===== -->
+  <section id="viewFav" class="hidden">
+    <div id="favArea"></div>
+    <div class="empty hidden" id="favEmpty">お気に入りはまだないよ⭐<br>料理カードの星マークを押してね</div>
+  </section>
+
+  <!-- ===== 履歴 ===== -->
+  <section id="viewHistory" class="hidden">
+    <div id="historyArea"></div>
+    <div class="empty hidden" id="historyEmpty">記録はまだないよ📚<br>カレンダーから日付を開いて記録してね</div>
+  </section>
+</main>
+
+<!-- ボトムナビ -->
+<nav>
+  <button class="nav-btn active" data-view="cal"><span class="ic">📅</span>カレンダー</button>
+  <button class="nav-btn" data-view="search"><span class="ic">🔍</span>さがす</button>
+  <button class="nav-btn" data-view="fav"><span class="ic">⭐</span>お気に入り</button>
+  <button class="nav-btn" data-view="history"><span class="ic">📚</span>履歴</button>
+</nav>
+
+<!-- 料理 追加/編集モーダル -->
+<div class="overlay" id="dishOverlay">
+  <div class="modal">
+    <h2 id="dishModalTitle">🍳 常備菜を追加</h2>
+    <div class="field">
+      <label>料理名 *</label>
+      <input type="text" id="fName" placeholder="例:にんじんしりしり">
+    </div>
+    <div class="field">
+      <label>メモ</label>
+      <textarea id="fMemo" placeholder="味付けのポイント、材料など"></textarea>
+    </div>
+    <div class="field">
+      <label>動画・レシピURL(YouTube / Instagram / TikTokなど)</label>
+      <input type="url" id="fUrl" placeholder="https://...">
+    </div>
+    <div class="modal-btns">
+      <button class="btn ghost" id="dishCancel">やめる</button>
+      <button class="btn" id="dishSave">保存する</button>
+    </div>
+    <button class="danger-link hidden" id="dishDelete">この料理を削除する</button>
+  </div>
+</div>
+
+<!-- 確認ダイアログ -->
+<div class="overlay center" id="confirmOverlay">
+  <div class="confirm-box">
+    <p id="confirmText"></p>
+    <div class="modal-btns">
+      <button class="btn ghost" id="confirmNo">やめる</button>
+      <button class="btn red" id="confirmYes">削除する</button>
+    </div>
+  </div>
+</div>
+
+<!-- 写真ビューア -->
+<div class="photo-viewer" id="photoViewer">
+  <img id="pvImg" alt="料理の写真">
+  <div class="pv-btns">
+    <button class="btn ghost" id="pvClose">とじる</button>
+    <button class="btn red" id="pvDelete">この写真を削除</button>
+  </div>
+</div>
+
+<input type="file" id="photoInput" accept="image/*" multiple style="display:none;">
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+const LS_KEY = "joubisai_cal_v1";
+const DOW = ["日","月","火","水","木","金","土"];
+
+/* ========== state ========== */
+/* state.days = { "2026-07-19": { shopping:[], dishes:[], memo:"" } } */
+let state = load();
+function load(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return { days:{} };
+}
+function save(){
+  try{
+    localStorage.setItem(LS_KEY, JSON.stringify(state));
+  }catch(e){
+    toast("保存がいっぱいかも💦 古い写真を減らしてね");
+  }
+}
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function dayData(key){
+  if(!state.days[key]) state.days[key] = { shopping:[], dishes:[], memo:"" };
+  return state.days[key];
+}
+function hasRecord(key){
+  const d = state.days[key];
+  return !!(d && (d.shopping.length || d.dishes.length || (d.memo && d.memo.trim())));
+}
+function cleanIfEmpty(key){
+  const d = state.days[key];
+  if(d && !d.shopping.length && !d.dishes.length && !(d.memo && d.memo.trim())){
+    delete state.days[key];
+  }
+}
+
+/* ========== 背景アニメ ========== */
+const bgEmojis = ["🥕","🍅","🧅","🥦","🌿","🍲","🥄","🌽","🫑"];
+const bg = document.getElementById("bganim");
+for(let i=0;i<9;i++){
+  const s = document.createElement("span");
+  s.className = "bgi";
+  s.textContent = bgEmojis[i];
+  s.style.left = (4 + Math.random()*88) + "%";
+  s.style.top = (12 + Math.random()*80) + "%";
+  s.style.animationDelay = (Math.random()*7) + "s";
+  s.style.animationDuration = (8 + Math.random()*6) + "s";
+  bg.appendChild(s);
+}
+
+/* ========== トースト・キラキラ ========== */
+let toastTimer = null;
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove("show"), 2200);
+}
+function sparkleAt(x, y){
+  const chars = ["✨","⭐","🌟","✨"];
+  for(let i=0;i<6;i++){
+    const s = document.createElement("span");
+    s.className = "sparkle";
+    s.textContent = chars[i % chars.length];
+    s.style.left = x + "px";
+    s.style.top = y + "px";
+    s.style.setProperty("--dx", (Math.random()*80-40) + "px");
+    s.style.setProperty("--dy", (Math.random()*-70-10) + "px");
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(), 900);
+  }
+}
+
+/* ========== 確認ダイアログ ========== */
+let confirmCb = null;
+function askConfirm(text, cb, okLabel){
+  document.getElementById("confirmText").textContent = text;
+  document.getElementById("confirmYes").textContent = okLabel || "削除する";
+  confirmCb = cb;
+  document.getElementById("confirmOverlay").classList.add("show");
+}
+document.getElementById("confirmNo").onclick = ()=>{
+  document.getElementById("confirmOverlay").classList.remove("show");
+  confirmCb = null;
+};
+document.getElementById("confirmYes").onclick = ()=>{
+  document.getElementById("confirmOverlay").classList.remove("show");
+  if(confirmCb) confirmCb();
+  confirmCb = null;
+};
+
+/* ========== ビュー切り替え ========== */
+const views = { cal:"viewCal", day:"viewDay", search:"viewSearch", fav:"viewFav", history:"viewHistory" };
+let currentView = "cal";
+function showView(v){
+  currentView = v;
+  Object.values(views).forEach(id=>document.getElementById(id).classList.add("hidden"));
+  document.getElementById(views[v]).classList.remove("hidden");
+  document.querySelectorAll(".nav-btn").forEach(b=>{
+    b.classList.toggle("active", b.dataset.view === (v==="day" ? "cal" : v));
+  });
+  window.scrollTo({top:0});
+  if(v==="cal") renderCal();
+  if(v==="search") renderSearch();
+  if(v==="fav") renderFav();
+  if(v==="history") renderHistory();
+}
+document.querySelectorAll(".nav-btn").forEach(b=>{
+  b.onclick = ()=>showView(b.dataset.view);
+});
+
+/* ========== 日付ヘルパー ========== */
+function pad(n){ return String(n).padStart(2,"0"); }
+function keyOf(y,m,d){ return `${y}-${pad(m)}-${pad(d)}`; }
+function todayKey(){
+  const n = new Date();
+  return keyOf(n.getFullYear(), n.getMonth()+1, n.getDate());
+}
+function fmtKey(key){
+  const [y,m,d] = key.split("-").map(Number);
+  const dow = DOW[new Date(y,m-1,d).getDay()];
+  return `${y}年${m}月${d}日(${dow})`;
+}
+
+/* ========== 月間カレンダー ========== */
+let calY, calM; /* 1-12 */
+{
+  const n = new Date();
+  calY = n.getFullYear(); calM = n.getMonth()+1;
+}
+document.getElementById("calPrev").onclick = ()=>{
+  calM--; if(calM<1){ calM=12; calY--; }
+  renderCal();
+};
+document.getElementById("calNext").onclick = ()=>{
+  calM++; if(calM>12){ calM=1; calY++; }
+  renderCal();
+};
+function renderCal(){
+  document.getElementById("calTitle").textContent = `${calY}年 ${calM}月`;
+  const grid = document.getElementById("calGrid");
+  grid.innerHTML = "";
+  DOW.forEach((d,i)=>{
+    const c = document.createElement("div");
+    c.className = "dowcell" + (i===0 ? " sun" : i===6 ? " sat" : "");
+    c.textContent = d;
+    grid.appendChild(c);
+  });
+  const first = new Date(calY, calM-1, 1).getDay();
+  const days = new Date(calY, calM, 0).getDate();
+  const tKey = todayKey();
+  for(let i=0;i<first;i++){
+    const c = document.createElement("div");
+    c.className = "daycell blank";
+    grid.appendChild(c);
+  }
+  for(let d=1; d<=days; d++){
+    const key = keyOf(calY, calM, d);
+    const dow = new Date(calY, calM-1, d).getDay();
+    const c = document.createElement("div");
+    c.className = "daycell"
+      + (dow===0 ? " sun" : "")
+      + (dow===6 ? " sat" : "")
+      + (key===tKey ? " today" : "");
+    const num = document.createElement("span");
+    num.textContent = d;
+    c.appendChild(num);
+    const mark = document.createElement("span");
+    mark.className = "mark";
+    mark.textContent = hasRecord(key) ? "🍳" : "";
+    c.appendChild(mark);
+    c.onclick = ()=>openDay(key);
+    grid.appendChild(c);
+  }
+}
+
+/* ========== 日別画面 ========== */
+let currentDay = null;
+function openDay(key){
+  currentDay = key;
+  const [y,m,d] = key.split("-").map(Number);
+  const dow = new Date(y,m-1,d).getDay();
+  const title = document.getElementById("dayTitle");
+  title.innerHTML = "";
+  title.append(`${m}月${d}日(${DOW[dow]})`);
+  if(dow===0){
+    const b = document.createElement("span");
+    b.className = "sun-badge";
+    b.textContent = "つくりおき日和🍳";
+    title.appendChild(b);
+  }
+  document.getElementById("dayMemo").value = (state.days[key] && state.days[key].memo) || "";
+  renderShop();
+  renderDishes();
+  showView("day");
+}
+document.getElementById("dayBack").onclick = ()=>{
+  cleanIfEmpty(currentDay);
+  save();
+  showView("cal");
+};
+
+/* ---- 買い物リスト ---- */
+const shopInput = document.getElementById("shopInput");
+function renderShop(){
+  const d = state.days[currentDay];
+  const list = (d && d.shopping) || [];
+  const ul = document.getElementById("shopList");
+  ul.innerHTML = "";
+  document.getElementById("shopEmpty").classList.toggle("hidden", list.length>0);
+  list.forEach(item=>{
+    const li = document.createElement("li");
+    li.className = item.done ? "done" : "";
+    const cb = document.createElement("button");
+    cb.className = "checkbox" + (item.done ? " checked" : "");
+    cb.textContent = item.done ? "✓" : "";
+    cb.onclick = (e)=>{
+      item.done = !item.done;
+      save(); renderShop();
+      if(item.done) sparkleAt(e.clientX, e.clientY);
+    };
+    const name = document.createElement("span");
+    name.className = "shop-name";
+    name.textContent = item.name;
+    const del = document.createElement("button");
+    del.className = "del";
+    del.textContent = "✕";
+    del.onclick = ()=>{
+      const dd = dayData(currentDay);
+      dd.shopping = dd.shopping.filter(s=>s.id!==item.id);
+      save(); renderShop();
+    };
+    li.append(cb, name, del);
+    ul.appendChild(li);
+  });
+}
+function addShop(){
+  const v = shopInput.value.trim();
+  if(!v) return;
+  dayData(currentDay).shopping.push({id:uid(), name:v, done:false});
+  shopInput.value = "";
+  save(); renderShop(); 
+}
+document.getElementById("shopAdd").onclick = addShop;
+shopInput.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); addShop(); }});
+
+/* ---- 料理カード ---- */
+function renderDishes(){
+  const d = state.days[currentDay];
+  const list = (d && d.dishes) || [];
+  const area = document.getElementById("dishArea");
+  area.innerHTML = "";
+  document.getElementById("dishEmpty").classList.toggle("hidden", list.length>0);
+  list.forEach(m=>area.appendChild(dishCard(m, currentDay, true)));
+}
+function dishCard(m, dayKey, editable){
+  const c = document.createElement("div");
+  c.className = "dish-card" + (m.done ? " completed" : "");
+
+  const top = document.createElement("div");
+  top.className = "dish-top";
+  const name = document.createElement("div");
+  name.className = "dish-name";
+  name.textContent = (m.done ? "🌸 " : "") + m.name;
+  const star = document.createElement("button");
+  star.className = "star" + (m.fav ? " on" : "");
+  star.textContent = "⭐";
+  star.onclick = (e)=>{
+    m.fav = !m.fav;
+    save();
+    refreshCurrent();
+    if(m.fav){ sparkleAt(e.clientX, e.clientY); toast("お気に入りに登録したよ⭐"); }
+  };
+  top.append(name, star);
+  c.appendChild(top);
+
+  if(m.memo){
+    const memo = document.createElement("div");
+    memo.className = "dish-memo";
+    memo.textContent = m.memo;
+    c.appendChild(memo);
+  }
+
+  /* 写真 */
+  const strip = document.createElement("div");
+  strip.className = "photo-strip";
+  (m.photos||[]).forEach((p,idx)=>{
+    const img = document.createElement("img");
+    img.className = "photo-thumb";
+    img.src = p;
+    img.alt = m.name + "の写真";
+    img.onclick = ()=>openPhoto(m, idx);
+    strip.appendChild(img);
+  });
+  if(editable){
+    const add = document.createElement("button");
+    add.className = "photo-add";
+    add.textContent = "📷＋";
+    add.onclick = ()=>{
+      photoTarget = m;
+      document.getElementById("photoInput").click();
+    };
+    strip.appendChild(add);
+  }
+  if((m.photos||[]).length || editable) c.appendChild(strip);
+
+  const acts = document.createElement("div");
+  acts.className = "dish-actions";
+  if(m.url){
+    const a = document.createElement("a");
+    a.className = "video-btn";
+    a.href = m.url;
+    a.target = "_blank";
+    a.rel = "noopener";
+    a.textContent = "▶ 動画を見る";
+    acts.appendChild(a);
+  }
+  const doneBtn = document.createElement("button");
+  doneBtn.className = "done-btn" + (m.done ? " on" : "");
+  doneBtn.textContent = m.done ? "✓ できあがり!" : "完成チェック";
+  doneBtn.onclick = (e)=>{
+    m.done = !m.done;
+    save(); refreshCurrent();
+    if(m.done){
+      sparkleAt(e.clientX, e.clientY);
+      toast("今日もお疲れさま🍀");
+    }
+  };
+  acts.appendChild(doneBtn);
+  if(editable){
+    const edit = document.createElement("button");
+    edit.className = "edit-btn";
+    edit.textContent = "✏️ 編集";
+    edit.onclick = ()=>openDishModal(m);
+    acts.appendChild(edit);
+  }
+  c.appendChild(acts);
+  return c;
+}
+function refreshCurrent(){
+  if(currentView==="day") renderDishes();
+  else if(currentView==="fav") renderFav();
+  else if(currentView==="search") renderSearch();
+}
+
+/* ---- 写真:圧縮して保存 ---- */
+let photoTarget = null;
+document.getElementById("photoInput").addEventListener("change", async function(){
+  if(!photoTarget || !this.files.length) return;
+  const files = [...this.files];
+  this.value = "";
+  for(const f of files){
+    try{
+      const data = await compressImage(f);
+      if(!photoTarget.photos) photoTarget.photos = [];
+      photoTarget.photos.push(data);
+    }catch(e){}
+  }
+  save();
+  refreshCurrent();
+  toast("写真を保存したよ📷✨");
+});
+function compressImage(file){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      const img = new Image();
+      img.onload = ()=>{
+        const MAX = 640;
+        let w = img.width, h = img.height;
+        if(w > h && w > MAX){ h = h*MAX/w; w = MAX; }
+        else if(h >= w && h > MAX){ w = w*MAX/h; h = MAX; }
+        const cv = document.createElement("canvas");
+        cv.width = w; cv.height = h;
+        cv.getContext("2d").drawImage(img, 0, 0, w, h);
+        resolve(cv.toDataURL("image/jpeg", .72));
+      };
+      img.onerror = reject;
+      img.src = reader.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+/* ---- 写真ビューア ---- */
+let pvDish = null, pvIdx = 0;
+function openPhoto(m, idx){
+  pvDish = m; pvIdx = idx;
+  document.getElementById("pvImg").src = m.photos[idx];
+  document.getElementById("photoViewer").classList.add("show");
+}
+document.getElementById("pvClose").onclick = ()=>{
+  document.getElementById("photoViewer").classList.remove("show");
+};
+document.getElementById("pvDelete").onclick = ()=>{
+  document.getElementById("photoViewer").classList.remove("show");
+  askConfirm("この写真を削除する?", ()=>{
+    pvDish.photos.splice(pvIdx, 1);
+    save(); refreshCurrent();
+    toast("写真を削除したよ");
+  });
+};
+
+/* ---- 料理 追加/編集モーダル ---- */
+const dishOverlay = document.getElementById("dishOverlay");
+let editingDish = null;
+function openDishModal(m){
+  editingDish = m || null;
+  document.getElementById("dishModalTitle").textContent = m ? "✏️ 料理を編集" : "🍳 常備菜を追加";
+  document.getElementById("fName").value = m ? m.name : "";
+  document.getElementById("fMemo").value = m ? (m.memo||"") : "";
+  document.getElementById("fUrl").value = m ? (m.url||"") : "";
+  document.getElementById("dishDelete").classList.toggle("hidden", !m);
+  dishOverlay.classList.add("show");
+}
+document.getElementById("dishAdd").onclick = ()=>openDishModal(null);
+document.getElementById("dishCancel").onclick = ()=>dishOverlay.classList.remove("show");
+dishOverlay.addEventListener("click", e=>{ if(e.target===dishOverlay) dishOverlay.classList.remove("show"); });
+
+document.getElementById("dishSave").onclick = ()=>{
+  const name = document.getElementById("fName").value.trim();
+  if(!name){ toast("料理名を入れてね🍳"); return; }
+  const memo = document.getElementById("fMemo").value.trim();
+  const url = document.getElementById("fUrl").value.trim();
+  if(editingDish){
+    editingDish.name = name; editingDish.memo = memo; editingDish.url = url;
+    toast("更新したよ😊");
+  }else{
+    dayData(currentDay).dishes.push({id:uid(), name, memo, url, fav:false, done:false, photos:[]});
+    toast("常備菜を追加したよ🍅");
+  }
+  save();
+  dishOverlay.classList.remove("show");
+  renderDishes();
+};
+document.getElementById("dishDelete").onclick = ()=>{
+  if(!editingDish) return;
+  const m = editingDish;
+  askConfirm(`「${m.name}」を削除する?\n(写真も一緒に消えるよ)`, ()=>{
+    const dd = dayData(currentDay);
+    dd.dishes = dd.dishes.filter(x=>x.id!==m.id);
+    save();
+    dishOverlay.classList.remove("show");
+    renderDishes();
+    toast("削除したよ");
+  });
+};
+
+/* ---- 日メモ ---- */
+document.getElementById("memoSave").onclick = (e)=>{
+  dayData(currentDay).memo = document.getElementById("dayMemo").value;
+  cleanIfEmpty(currentDay);
+  save();
+  sparkleAt(e.clientX, e.clientY);
+  toast("今日もお疲れさま🍀");
+};
+
+/* ========== 検索 ========== */
+function renderSearch(){
+  const q = document.getElementById("searchInput").value.trim();
+  const area = document.getElementById("searchArea");
+  const em = document.getElementById("searchEmpty");
+  area.innerHTML = "";
+  em.classList.add("hidden");
+  if(!q){
+    em.textContent = "料理名やメモで検索してね🔍";
+    em.classList.remove("hidden");
+    return;
+  }
+  const keys = Object.keys(state.days).sort().reverse();
+  let found = 0;
+  keys.forEach(key=>{
+    const d = state.days[key];
+    (d.dishes||[]).forEach(m=>{
+      if(m.name.includes(q) || (m.memo||"").includes(q)){
+        found++;
+        const wrap = document.createElement("div");
+        const tag = document.createElement("span");
+        tag.className = "result-date";
+        tag.textContent = "📅 " + fmtKey(key);
+        tag.onclick = ()=>openDay(key);
+        wrap.appendChild(tag);
+        wrap.appendChild(dishCard(m, key, false));
+        area.appendChild(wrap);
+      }
+    });
+  });
+  if(found===0){
+    em.textContent = "見つからなかったよ🔍";
+    em.classList.remove("hidden");
+  }
+}
+document.getElementById("searchInput").addEventListener("input", renderSearch);
+
+/* ========== お気に入り ========== */
+function renderFav(){
+  const area = document.getElementById("favArea");
+  area.innerHTML = "";
+  const keys = Object.keys(state.days).sort().reverse();
+  let found = 0;
+  keys.forEach(key=>{
+    (state.days[key].dishes||[]).forEach(m=>{
+      if(m.fav){
+        found++;
+        const wrap = document.createElement("div");
+        const tag = document.createElement("span");
+        tag.className = "result-date";
+        tag.textContent = "📅 " + fmtKey(key);
+        tag.onclick = ()=>openDay(key);
+        wrap.appendChild(tag);
+        wrap.appendChild(dishCard(m, key, false));
+        area.appendChild(wrap);
+      }
+    });
+  });
+  document.getElementById("favEmpty").classList.toggle("hidden", found>0);
+}
+
+/* ========== 履歴(年→月) ========== */
+function renderHistory(){
+  const area = document.getElementById("historyArea");
+  area.innerHTML = "";
+  const keys = Object.keys(state.days).filter(hasRecord).sort().reverse();
+  document.getElementById("historyEmpty").classList.toggle("hidden", keys.length>0);
+  if(keys.length===0) return;
+
+  /* 年→月→日でまとめる */
+  const tree = {};
+  keys.forEach(key=>{
+    const [y,m] = key.split("-");
+    if(!tree[y]) tree[y] = {};
+    if(!tree[y][m]) tree[y][m] = [];
+    tree[y][m].push(key);
+  });
+  Object.keys(tree).sort().reverse().forEach(y=>{
+    const yb = document.createElement("div");
+    yb.className = "year-block";
+    const yh = document.createElement("div");
+    yh.className = "year-head";
+    yh.textContent = "🗓 " + y + "年";
+    yb.appendChild(yh);
+    Object.keys(tree[y]).sort().reverse().forEach(m=>{
+      const dayKeys = tree[y][m];
+      let dishCount = 0;
+      dayKeys.forEach(k=>{ dishCount += (state.days[k].dishes||[]).length; });
+      const row = document.createElement("div");
+      row.className = "month-row";
+      row.innerHTML = `<span>🍳 ${Number(m)}月</span>`;
+      const cnt = document.createElement("span");
+      cnt.className = "cnt";
+      cnt.textContent = `${dayKeys.length}日・${dishCount}品`;
+      row.appendChild(cnt);
+      row.onclick = ()=>{
+        calY = Number(y); calM = Number(m);
+        showView("cal");
+      };
+      yb.appendChild(row);
+    });
+    area.appendChild(yb);
+  });
+}
+
+/* ========== 初期表示 ========== */
+renderCal();
+})();
+</script>
+</body>
+</html>
