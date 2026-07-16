@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="お買い物リスト">
+<meta name="theme-color" content="#FFE3EE">
+<title>🛒 業務スーパーお買い物リスト</title>
+<link rel="apple-touch-icon" href="gyomu-shopping-icon.png">
+<link rel="icon" type="image/png" href="gyomu-shopping-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Kiwi+Maru:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pink:#FFD9E8;
+  --pink-deep:#F79EC1;
+  --pink-soft:#FFF0F6;
+  --lavender:#E8DFF8;
+  --lavender-deep:#B79CE0;
+  --white:#FFFFFF;
+  --bg:#FFF9FC;
+  --text:#4A4453;
+  --text-soft:#9B92A8;
+  --shadow:0 4px 16px rgba(214,160,192,.22);
+  --radius:22px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{font-size:17px}
+body{
+  font-family:'Zen Maru Gothic',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  padding-bottom:60px;
+  overscroll-behavior-y:contain;
+}
+/* ---------- ヘッダー ---------- */
+header{
+  background:linear-gradient(160deg,#FFE3EE 0%,#F3EBFC 100%);
+  padding:calc(env(safe-area-inset-top) + 22px) 20px 26px;
+  text-align:center;
+  border-radius:0 0 34px 34px;
+  position:relative;
+  overflow:hidden;
+}
+header .deco{position:absolute;font-size:20px;opacity:.55;animation:floaty 5s ease-in-out infinite}
+header .deco:nth-child(1){top:14px;left:12%;animation-delay:0s}
+header .deco:nth-child(2){top:40px;right:10%;animation-delay:1.2s}
+header .deco:nth-child(3){bottom:16px;left:8%;animation-delay:2.4s}
+header .deco:nth-child(4){bottom:24px;right:16%;animation-delay:3.4s}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.basket-wrap{margin:0 auto 6px;width:88px;height:78px}
+h1{
+  font-family:'Kiwi Maru',serif;
+  font-size:1.28rem;
+  font-weight:500;
+  letter-spacing:.04em;
+  color:#5A4B63;
+}
+header p.sub{font-size:.8rem;color:var(--text-soft);margin-top:4px}
+/* ---------- タブ ---------- */
+.tabs{
+  display:flex;gap:10px;
+  padding:16px 18px 4px;
+  position:sticky;top:0;z-index:20;
+  background:linear-gradient(180deg,var(--bg) 78%,rgba(255,249,252,0));
+}
+.tab{
+  flex:1;border:none;
+  padding:13px 6px;
+  border-radius:999px;
+  font-family:'Zen Maru Gothic',sans-serif;
+  font-size:.98rem;font-weight:700;
+  color:var(--text-soft);
+  background:var(--white);
+  box-shadow:var(--shadow);
+  transition:transform .18s,background .25s,color .25s;
+}
+.tab:active{transform:scale(.95)}
+.tab.on{color:#fff}
+.tab.on.t-pink{background:linear-gradient(135deg,#F9A9C9,#F480B1)}
+.tab.on.t-lav{background:linear-gradient(135deg,#C3A9EA,#A98BDB)}
+/* ---------- セクション共通 ---------- */
+main{padding:14px 18px 30px;max-width:560px;margin:0 auto}
+section{display:none;animation:fadein .3s ease}
+section.show{display:block}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sec-title{
+  font-family:'Kiwi Maru',serif;
+  font-size:1.12rem;font-weight:500;
+  margin:10px 2px 14px;color:#5A4B63;
+  display:flex;align-items:center;gap:8px;
+}
+/* ---------- ボタン ---------- */
+.btn{
+  border:none;border-radius:999px;
+  font-family:'Zen Maru Gothic',sans-serif;
+  font-weight:700;font-size:1rem;
+  padding:14px 22px;color:#fff;
+  box-shadow:var(--shadow);
+  transition:transform .18s;
+}
+.btn:active{transform:scale(.94)}
+.btn-pink{background:linear-gradient(135deg,#F9A9C9,#F480B1)}
+.btn-lav{background:linear-gradient(135deg,#C3A9EA,#A98BDB)}
+.btn-ghost{background:var(--white);color:var(--text-soft);box-shadow:0 2px 8px rgba(214,160,192,.16)}
+.btn-wide{width:100%;display:block}
+.add-btn{width:100%;margin-bottom:16px;font-size:1.04rem;padding:15px}
+/* ---------- 買い物リスト ---------- */
+#listWrap{display:flex;flex-direction:column;gap:10px}
+.item{
+  background:var(--white);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  display:flex;align-items:center;
+  padding:8px 12px 8px 6px;
+  min-height:60px;
+  transition:opacity .25s,transform .2s;
+  animation:pop-in .3s ease;
+}
+@keyframes pop-in{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+.item.dragging{opacity:.35}
+.item .handle{
+  font-size:1.15rem;color:#E3D5EE;
+  padding:16px 8px 16px 10px;
+  touch-action:none;user-select:none;-webkit-user-select:none;
+}
+.chk{
+  width:30px;height:30px;flex:none;
+  border-radius:10px;
+  border:2.5px solid var(--pink-deep);
+  background:var(--pink-soft);
+  margin-right:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.05rem;color:#fff;
+  transition:background .2s,border-color .2s;
+}
+.item.done .chk{background:linear-gradient(135deg,#F9A9C9,#F480B1);border-color:transparent;animation:bounce .35s ease}
+@keyframes bounce{0%{transform:scale(1)}40%{transform:scale(1.28)}70%{transform:scale(.92)}100%{transform:scale(1)}}
+.item .name{
+  flex:1;font-size:1.05rem;font-weight:500;
+  padding:14px 4px;line-height:1.4;word-break:break-all;
+}
+.item.done .name{text-decoration:line-through;color:#C9BFD4}
+.item.done{opacity:.75}
+/* ---------- おすすめ商品 ---------- */
+.searchbar{
+  display:flex;align-items:center;gap:8px;
+  background:var(--white);border-radius:999px;
+  box-shadow:var(--shadow);
+  padding:4px 8px 4px 18px;margin-bottom:12px;
+}
+.searchbar input{
+  flex:1;border:none;outline:none;
+  font-family:'Zen Maru Gothic',sans-serif;
+  font-size:1rem;padding:12px 0;color:var(--text);
+  background:transparent;min-width:0;
+}
+.searchbar input::placeholder{color:#D4C8E0}
+.fav-filter{
+  border:none;border-radius:999px;flex:none;
+  padding:10px 16px;font-size:1.05rem;
+  background:var(--pink-soft);
+  transition:background .25s,transform .18s;
+}
+.fav-filter:active{transform:scale(.9)}
+.fav-filter.on{background:linear-gradient(135deg,#F9A9C9,#F480B1)}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{
+  background:var(--white);border-radius:var(--radius);
+  box-shadow:var(--shadow);overflow:hidden;
+  position:relative;animation:pop-in .35s ease;
+}
+.card .ph{
+  width:100%;aspect-ratio:1/1;object-fit:cover;display:block;
+  background:linear-gradient(135deg,#FFE9F2,#EFE7FB);
+}
+.card .noimg{
+  width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;
+  font-size:2.2rem;background:linear-gradient(135deg,#FFE9F2,#EFE7FB);
+}
+.card .body{padding:10px 12px 12px}
+.card .cname{font-weight:700;font-size:.96rem;line-height:1.35;word-break:break-all}
+.card .cmemo{
+  font-size:.8rem;color:var(--text-soft);margin-top:5px;line-height:1.4;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.heart{
+  position:absolute;top:8px;right:8px;
+  width:40px;height:40px;border:none;border-radius:50%;
+  background:rgba(255,255,255,.88);
+  font-size:1.15rem;
+  box-shadow:0 2px 8px rgba(0,0,0,.1);
+  transition:transform .18s;
+  display:flex;align-items:center;justify-content:center;
+}
+.heart:active{transform:scale(1.25)}
+.card-edit{
+  position:absolute;top:8px;left:8px;
+  width:36px;height:36px;border:none;border-radius:50%;
+  background:rgba(255,255,255,.88);font-size:.95rem;
+  box-shadow:0 2px 8px rgba(0,0,0,.1);
+}
+/* ---------- 空っぽ表示 ---------- */
+.empty{
+  text-align:center;padding:44px 16px;color:var(--text-soft);
+  font-size:.94rem;line-height:2;
+}
+.empty .big{font-size:2.4rem;display:block;margin-bottom:6px}
+/* ---------- モーダル ---------- */
+.overlay{
+  position:fixed;inset:0;background:rgba(90,75,99,.4);
+  display:none;align-items:flex-end;justify-content:center;
+  z-index:100;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);
+}
+.overlay.show{display:flex;animation:fadein .2s}
+.sheet{
+  background:var(--white);width:100%;max-width:560px;
+  border-radius:28px 28px 0 0;
+  padding:24px 22px calc(env(safe-area-inset-bottom) + 26px);
+  animation:slideup .28s ease;
+  max-height:88vh;overflow-y:auto;
+}
+@keyframes slideup{from{transform:translateY(60px);opacity:0}to{transform:none;opacity:1}}
+.sheet h3{
+  font-family:'Kiwi Maru',serif;font-weight:500;
+  font-size:1.08rem;text-align:center;margin-bottom:18px;color:#5A4B63;
+}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:.85rem;font-weight:700;color:var(--text-soft);margin-bottom:7px}
+.field input[type=text],.field textarea{
+  width:100%;border:2px solid #F3E6EE;border-radius:16px;
+  padding:13px 15px;font-family:'Zen Maru Gothic',sans-serif;
+  font-size:1.02rem;color:var(--text);outline:none;background:#FFFDFE;
+}
+.field input:focus,.field textarea:focus{border-color:var(--pink-deep)}
+.field textarea{resize:none;height:78px;line-height:1.5}
+.photo-pick{
+  width:100%;aspect-ratio:16/10;border-radius:18px;border:2.5px dashed #E9C8DA;
+  background:var(--pink-soft);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:6px;
+  font-size:.9rem;color:var(--text-soft);overflow:hidden;position:relative;
+}
+.photo-pick img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.photo-pick .pp-icon{font-size:2rem}
+.sheet-btns{display:flex;gap:10px;margin-top:20px}
+.sheet-btns .btn{flex:1;text-align:center}
+/* アクションシート */
+.acts{display:flex;flex-direction:column;gap:10px}
+.acts .btn{width:100%}
+.act-title{
+  text-align:center;font-weight:700;font-size:1rem;
+  padding:4px 8px 16px;word-break:break-all;color:#5A4B63;
+}
+/* 確認 */
+.confirm-msg{text-align:center;font-size:.98rem;line-height:1.7;padding:4px 6px 18px}
+/* ---------- ライトボックス ---------- */
+#lightbox{
+  position:fixed;inset:0;background:rgba(35,25,42,.92);
+  display:none;align-items:center;justify-content:center;
+  z-index:200;flex-direction:column;padding:20px;
+}
+#lightbox.show{display:flex;animation:fadein .2s}
+#lightbox img{max-width:100%;max-height:74vh;border-radius:18px;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+#lightbox .lb-name{color:#fff;font-weight:700;margin-top:14px;font-size:1.02rem;text-align:center}
+#lightbox .lb-memo{color:#E4D8EE;margin-top:6px;font-size:.86rem;text-align:center;line-height:1.6;max-width:90%}
+#lightbox .lb-close{
+  margin-top:20px;border:none;border-radius:999px;
+  padding:12px 34px;background:rgba(255,255,255,.16);
+  color:#fff;font-family:'Zen Maru Gothic',sans-serif;font-weight:700;font-size:.95rem;
+}
+/* ---------- キラッ✨ ---------- */
+.spark{
+  position:fixed;pointer-events:none;z-index:300;font-size:20px;
+  animation:sparkfly .8s ease-out forwards;
+}
+@keyframes sparkfly{
+  0%{opacity:1;transform:translate(0,0) scale(.6)}
+  100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.4)}
+}
+/* ---------- トースト ---------- */
+#toast{
+  position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 28px);
+  transform:translateX(-50%) translateY(20px);
+  background:linear-gradient(135deg,#F9A9C9,#B79CE0);
+  color:#fff;font-weight:700;font-size:.92rem;
+  padding:12px 26px;border-radius:999px;
+  box-shadow:0 6px 20px rgba(180,130,180,.4);
+  opacity:0;transition:opacity .25s,transform .25s;
+  z-index:400;pointer-events:none;white-space:nowrap;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="deco">🌸</span><span class="deco">✨</span><span class="deco">💕</span><span class="deco">🍎</span>
+  <div class="basket-wrap">
+    <svg viewBox="0 0 100 90" width="88" height="78" aria-hidden="true">
+      <path d="M28 38 L20 20" stroke="#B79CE0" stroke-width="5" stroke-linecap="round" fill="none"/>
+      <path d="M72 38 L80 20" stroke="#B79CE0" stroke-width="5" stroke-linecap="round" fill="none"/>
+      <circle cx="20" cy="18" r="5" fill="#F480B1"/>
+      <circle cx="80" cy="18" r="5" fill="#F480B1"/>
+      <path d="M14 40 Q50 30 86 40 L80 76 Q50 84 20 76 Z" fill="#FFD9E8" stroke="#F79EC1" stroke-width="3"/>
+      <path d="M22 48 Q50 42 78 48" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M24 58 Q50 52 76 58" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <circle cx="36" cy="34" r="7" fill="#FF8FAF"/>
+      <circle cx="50" cy="30" r="8" fill="#C3A9EA"/>
+      <circle cx="64" cy="34" r="7" fill="#FFC46B"/>
+      <text x="50" y="72" font-size="13" text-anchor="middle">🌸</text>
+    </svg>
+  </div>
+  <h1>🛒 業務スーパーお買い物リスト</h1>
+  <p class="sub">毎週のお買い物を たのしく かわいく 💕</p>
+</header>
+
+<nav class="tabs">
+  <button class="tab t-pink on" id="tabList" onclick="switchTab('list')">🛒 次回買うもの</button>
+  <button class="tab t-lav" id="tabReco" onclick="switchTab('reco')">🌸 おすすめ商品</button>
+</nav>
+
+<main>
+  <!-- ① 次回買うものリスト -->
+  <section id="secList" class="show">
+    <button class="btn btn-pink add-btn" onclick="openItemSheet()">＋ 追加</button>
+    <div id="listWrap"></div>
+    <div class="empty" id="listEmpty" style="display:none">
+      <span class="big">🛒</span>
+      まだ何もないよ🌸<br>「＋追加」で買うものを登録してね💕
+    </div>
+  </section>
+
+  <!-- ② おすすめ商品 -->
+  <section id="secReco">
+    <div class="searchbar">
+      🔍 <input type="text" id="searchInput" placeholder="商品名でさがす" oninput="renderRecos()">
+      <button class="fav-filter" id="favFilter" onclick="toggleFavFilter()" aria-label="お気に入りだけ表示">🤍</button>
+    </div>
+    <button class="btn btn-lav add-btn" onclick="openRecoSheet()">＋ 追加</button>
+    <div class="cards" id="cardsWrap"></div>
+    <div class="empty" id="recoEmpty" style="display:none">
+      <span class="big">🌸</span>
+      お気に入り商品を写真つきで<br>登録してみてね✨
+    </div>
+  </section>
+</main>
+
+<!-- 商品名入力シート -->
+<div class="overlay" id="ovItem" onclick="closeIfBg(event,'ovItem')">
+  <div class="sheet">
+    <h3 id="itemSheetTitle">🛒 買うものを追加</h3>
+    <div class="field">
+      <label>商品名</label>
+      <input type="text" id="itemNameInput" placeholder="例：もち麦" maxlength="40">
+    </div>
+    <div class="sheet-btns">
+      <button class="btn btn-ghost" onclick="closeOv('ovItem')">キャンセル</button>
+      <button class="btn btn-pink" onclick="saveItem(event)">保存 ✨</button>
+    </div>
+  </div>
+</div>
+
+<!-- リスト項目アクション -->
+<div class="overlay" id="ovItemAct" onclick="closeIfBg(event,'ovItemAct')">
+  <div class="sheet">
+    <div class="act-title" id="itemActName"></div>
+    <div class="acts">
+      <button class="btn btn-pink" onclick="editItemFromAct()">✏️ 編集</button>
+      <button class="btn btn-lav" onclick="askDeleteItem()">🗑 削除</button>
+      <button class="btn btn-ghost" onclick="closeOv('ovItemAct')">キャンセル</button>
+    </div>
+  </div>
+</div>
+
+<!-- おすすめ商品 追加/編集シート -->
+<div class="overlay" id="ovReco" onclick="closeIfBg(event,'ovReco')">
+  <div class="sheet">
+    <h3 id="recoSheetTitle">🌸 おすすめ商品を追加</h3>
+    <div class="field">
+      <label>📷 写真</label>
+      <button type="button" class="photo-pick" id="photoPick" onclick="document.getElementById('photoInput').click()">
+        <span class="pp-icon">📷</span>
+        <span id="photoPickLabel">タップして写真を選ぶ</span>
+      </button>
+      <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="onPhotoPicked(event)">
+    </div>
+    <div class="field">
+      <label>商品名</label>
+      <input type="text" id="recoNameInput" placeholder="例：冷凍ブロッコリー" maxlength="40">
+    </div>
+    <div class="field">
+      <label>ひとことメモ</label>
+      <textarea id="recoMemoInput" placeholder="例：業務スーパーで必ず買う／コスパ最高／リピート決定" maxlength="120"></textarea>
+    </div>
+    <div class="sheet-btns">
+      <button class="btn btn-ghost" onclick="closeOv('ovReco')">キャンセル</button>
+      <button class="btn btn-lav" onclick="saveReco(event)">保存 ✨</button>
+    </div>
+  </div>
+</div>
+
+<!-- おすすめ商品アクション -->
+<div class="overlay" id="ovRecoAct" onclick="closeIfBg(event,'ovRecoAct')">
+  <div class="sheet">
+    <div class="act-title" id="recoActName"></div>
+    <div class="acts">
+      <button class="btn btn-lav" onclick="editRecoFromAct()">✏️ 編集</button>
+      <button class="btn btn-pink" onclick="askDeleteReco()">🗑 削除</button>
+      <button class="btn btn-ghost" onclick="closeOv('ovRecoAct')">キャンセル</button>
+    </div>
+  </div>
+</div>
+
+<!-- 削除確認 -->
+<div class="overlay" id="ovConfirm" onclick="closeIfBg(event,'ovConfirm')">
+  <div class="sheet">
+    <h3>🗑 削除しますか？</h3>
+    <div class="confirm-msg" id="confirmMsg"></div>
+    <div class="sheet-btns">
+      <button class="btn btn-ghost" onclick="closeOv('ovConfirm')">やめておく</button>
+      <button class="btn btn-pink" id="confirmYes">削除する</button>
+    </div>
+  </div>
+</div>
+
+<!-- ライトボックス -->
+<div id="lightbox" onclick="closeLightbox()">
+  <img id="lbImg" alt="">
+  <div class="lb-name" id="lbName"></div>
+  <div class="lb-memo" id="lbMemo"></div>
+  <button class="lb-close">とじる</button>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* =========================================================
+   💾 データ保存
+   ・買い物リスト → localStorage
+   ・おすすめ商品(画像入り) → IndexedDB(容量が大きいので)
+========================================================= */
+const LS_KEY = 'gs_shopping_list_v1';
+let items = [];   // {id, name, checked}
+let recos = [];   // {id, name, memo, fav, img, thumb, created}
+let db = null;
+
+function loadItems(){
+  try{ items = JSON.parse(localStorage.getItem(LS_KEY)) || []; }
+  catch(e){ items = []; }
+}
+function saveItems(){
+  localStorage.setItem(LS_KEY, JSON.stringify(items));
+}
+
+function openDB(){
+  return new Promise((resolve,reject)=>{
+    const req = indexedDB.open('gyomu-super-app', 1);
+    req.onupgradeneeded = e=>{
+      const d = e.target.result;
+      if(!d.objectStoreNames.contains('recos')){
+        d.createObjectStore('recos', {keyPath:'id'});
+      }
+    };
+    req.onsuccess = e=>resolve(e.target.result);
+    req.onerror = ()=>reject(req.error);
+  });
+}
+function dbGetAll(){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction('recos','readonly');
+    const rq = tx.objectStore('recos').getAll();
+    rq.onsuccess = ()=>resolve(rq.result||[]);
+    rq.onerror = ()=>reject(rq.error);
+  });
+}
+function dbPut(rec){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction('recos','readwrite');
+    tx.objectStore('recos').put(rec);
+    tx.oncomplete = resolve; tx.onerror = ()=>reject(tx.error);
+  });
+}
+function dbDelete(id){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction('recos','readwrite');
+    tx.objectStore('recos').delete(id);
+    tx.oncomplete = resolve; tx.onerror = ()=>reject(tx.error);
+  });
+}
+
+/* ========================================================= タブ */
+function switchTab(t){
+  document.getElementById('secList').classList.toggle('show', t==='list');
+  document.getElementById('secReco').classList.toggle('show', t==='reco');
+  document.getElementById('tabList').classList.toggle('on', t==='list');
+  document.getElementById('tabReco').classList.toggle('on', t==='reco');
+}
+
+/* ========================================================= 共通UI */
+function openOv(id){ document.getElementById(id).classList.add('show'); }
+function closeOv(id){ document.getElementById(id).classList.remove('show'); }
+function closeIfBg(e,id){ if(e.target.id===id) closeOv(id); }
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._tm);
+  t._tm = setTimeout(()=>t.classList.remove('show'), 1600);
+}
+/* キラッ✨演出 */
+function sparkle(e){
+  let x = innerWidth/2, y = innerHeight/2;
+  if(e){
+    const r = e.target.getBoundingClientRect();
+    x = r.left + r.width/2; y = r.top + r.height/2;
+  }
+  const chars = ['✨','🌸','💕','⭐'];
+  for(let i=0;i<7;i++){
+    const s = document.createElement('span');
+    s.className = 'spark';
+    s.textContent = chars[i % chars.length];
+    s.style.left = x+'px'; s.style.top = y+'px';
+    const ang = Math.random()*Math.PI*2, dist = 46+Math.random()*46;
+    s.style.setProperty('--dx', Math.cos(ang)*dist+'px');
+    s.style.setProperty('--dy', Math.sin(ang)*dist-30+'px');
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(), 850);
+  }
+}
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function esc(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* =========================================================
+   ① 次回買うものリスト
+========================================================= */
+let editingItemId = null;
+let actItemId = null;
+
+function openItemSheet(id){
+  editingItemId = id || null;
+  document.getElementById('itemSheetTitle').textContent = id ? '✏️ 商品名を編集' : '🛒 買うものを追加';
+  const inp = document.getElementById('itemNameInput');
+  inp.value = id ? (items.find(i=>i.id===id)?.name || '') : '';
+  openOv('ovItem');
+  setTimeout(()=>inp.focus(), 120);
+}
+function saveItem(e){
+  const name = document.getElementById('itemNameInput').value.trim();
+  if(!name){ toast('商品名を入れてね🌸'); return; }
+  if(editingItemId){
+    const it = items.find(i=>i.id===editingItemId);
+    if(it) it.name = name;
+    toast('編集しました ✏️');
+  }else{
+    items.push({id:uid(), name, checked:false});
+    toast('追加しました 🛒');
+  }
+  saveItems(); renderItems();
+  closeOv('ovItem'); sparkle(e);
+}
+function toggleCheck(id){
+  const it = items.find(i=>i.id===id);
+  if(!it) return;
+  it.checked = !it.checked;
+  saveItems(); renderItems();
+}
+function openItemAct(id){
+  actItemId = id;
+  const it = items.find(i=>i.id===id);
+  document.getElementById('itemActName').textContent = '「' + (it?.name||'') + '」';
+  openOv('ovItemAct');
+}
+function editItemFromAct(){
+  closeOv('ovItemAct');
+  openItemSheet(actItemId);
+}
+function askDeleteItem(){
+  closeOv('ovItemAct');
+  const it = items.find(i=>i.id===actItemId);
+  showConfirm('「'+ (it?.name||'') +'」をリストから削除するよ。いいかな？', ()=>{
+    items = items.filter(i=>i.id!==actItemId);
+    saveItems(); renderItems();
+    toast('削除しました 🗑');
+  });
+}
+function showConfirm(msg, onYes){
+  document.getElementById('confirmMsg').textContent = msg;
+  const btn = document.getElementById('confirmYes');
+  btn.onclick = ()=>{ closeOv('ovConfirm'); onYes(); };
+  openOv('ovConfirm');
+}
+
+function renderItems(){
+  const wrap = document.getElementById('listWrap');
+  wrap.innerHTML = '';
+  document.getElementById('listEmpty').style.display = items.length ? 'none' : 'block';
+  items.forEach(it=>{
+    const div = document.createElement('div');
+    div.className = 'item' + (it.checked ? ' done' : '');
+    div.dataset.id = it.id;
+    div.innerHTML =
+      '<span class="handle" aria-label="ならびかえ">☰</span>' +
+      '<button class="chk" aria-label="チェック">' + (it.checked?'✓':'') + '</button>' +
+      '<span class="name">' + esc(it.name) + '</span>';
+    div.querySelector('.chk').onclick = ()=>toggleCheck(it.id);
+    div.querySelector('.name').onclick = ()=>openItemAct(it.id);
+    attachDrag(div.querySelector('.handle'), div);
+    wrap.appendChild(div);
+  });
+}
+
+/* --- ドラッグ＆ドロップ並び替え（ハンドル☰を長押しせずそのままドラッグ）--- */
+function attachDrag(handle, row){
+  handle.addEventListener('pointerdown', ev=>{
+    ev.preventDefault();
+    const wrap = document.getElementById('listWrap');
+    row.classList.add('dragging');
+    handle.setPointerCapture(ev.pointerId);
+
+    const move = e=>{
+      const y = e.clientY;
+      const others = [...wrap.querySelectorAll('.item:not(.dragging)')];
+      let placed = false;
+      for(const o of others){
+        const r = o.getBoundingClientRect();
+        if(y < r.top + r.height/2){ wrap.insertBefore(row, o); placed = true; break; }
+      }
+      if(!placed) wrap.appendChild(row);
+    };
+    const up = ()=>{
+      handle.removeEventListener('pointermove', move);
+      handle.removeEventListener('pointerup', up);
+      handle.removeEventListener('pointercancel', up);
+      row.classList.remove('dragging');
+      // 新しい順番を保存
+      const order = [...wrap.querySelectorAll('.item')].map(el=>el.dataset.id);
+      items.sort((a,b)=>order.indexOf(a.id)-order.indexOf(b.id));
+      saveItems();
+    };
+    handle.addEventListener('pointermove', move);
+    handle.addEventListener('pointerup', up);
+    handle.addEventListener('pointercancel', up);
+  });
+}
+
+/* =========================================================
+   ② おすすめ商品
+========================================================= */
+let editingRecoId = null;
+let actRecoId = null;
+let pickedImg = null;    // 圧縮後dataURL(拡大表示用)
+let pickedThumb = null;  // サムネイル(カード用・軽量)
+let favOnly = false;
+
+function openRecoSheet(id){
+  editingRecoId = id || null;
+  pickedImg = null; pickedThumb = null;
+  const r = id ? recos.find(x=>x.id===id) : null;
+  document.getElementById('recoSheetTitle').textContent = id ? '✏️ おすすめ商品を編集' : '🌸 おすすめ商品を追加';
+  document.getElementById('recoNameInput').value = r ? r.name : '';
+  document.getElementById('recoMemoInput').value = r ? (r.memo||'') : '';
+  document.getElementById('photoInput').value = '';
+  setPhotoPreview(r ? r.img : null);
+  if(r){ pickedImg = r.img || null; pickedThumb = r.thumb || null; }
+  openOv('ovReco');
+}
+function setPhotoPreview(dataUrl){
+  const pick = document.getElementById('photoPick');
+  pick.querySelectorAll('img').forEach(i=>i.remove());
+  document.getElementById('photoPickLabel').textContent = dataUrl ? 'タップして写真を変更' : 'タップして写真を選ぶ';
+  if(dataUrl){
+    const img = document.createElement('img');
+    img.src = dataUrl;
+    pick.appendChild(img);
+  }
+}
+/* 📸 画像圧縮：長辺1000pxのJPEG(拡大用) + 360pxサムネ(カード用) */
+function onPhotoPicked(ev){
+  const file = ev.target.files && ev.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    const img = new Image();
+    img.onload = ()=>{
+      pickedImg = compressImage(img, 1000, .78);
+      pickedThumb = compressImage(img, 360, .72);
+      setPhotoPreview(pickedThumb);
+    };
+    img.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+}
+function compressImage(img, maxSide, quality){
+  let w = img.naturalWidth, h = img.naturalHeight;
+  if(Math.max(w,h) > maxSide){
+    const sc = maxSide / Math.max(w,h);
+    w = Math.round(w*sc); h = Math.round(h*sc);
+  }
+  const cv = document.createElement('canvas');
+  cv.width = w; cv.height = h;
+  cv.getContext('2d').drawImage(img, 0, 0, w, h);
+  return cv.toDataURL('image/jpeg', quality);
+}
+async function saveReco(e){
+  const name = document.getElementById('recoNameInput').value.trim();
+  const memo = document.getElementById('recoMemoInput').value.trim();
+  if(!name){ toast('商品名を入れてね🌸'); return; }
+  try{
+    if(editingRecoId){
+      const r = recos.find(x=>x.id===editingRecoId);
+      if(r){
+        r.name = name; r.memo = memo;
+        r.img = pickedImg; r.thumb = pickedThumb;
+        await dbPut(r);
+      }
+      toast('編集しました ✏️');
+    }else{
+      const rec = {id:uid(), name, memo, fav:false, img:pickedImg, thumb:pickedThumb, created:Date.now()};
+      recos.unshift(rec);
+      await dbPut(rec);
+      toast('保存しました 🌸');
+    }
+    renderRecos();
+    closeOv('ovReco'); sparkle(e);
+  }catch(err){
+    toast('保存に失敗しちゃった…もう一度試してね');
+  }
+}
+async function toggleFav(id, ev){
+  ev.stopPropagation();
+  const r = recos.find(x=>x.id===id);
+  if(!r) return;
+  r.fav = !r.fav;
+  await dbPut(r);
+  renderRecos();
+  if(r.fav) sparkle(ev);
+}
+function toggleFavFilter(){
+  favOnly = !favOnly;
+  const b = document.getElementById('favFilter');
+  b.classList.toggle('on', favOnly);
+  b.textContent = favOnly ? '❤️' : '🤍';
+  renderRecos();
+}
+function openRecoAct(id, ev){
+  ev.stopPropagation();
+  actRecoId = id;
+  const r = recos.find(x=>x.id===id);
+  document.getElementById('recoActName').textContent = '「' + (r?.name||'') + '」';
+  openOv('ovRecoAct');
+}
+function editRecoFromAct(){
+  closeOv('ovRecoAct');
+  openRecoSheet(actRecoId);
+}
+function askDeleteReco(){
+  closeOv('ovRecoAct');
+  const r = recos.find(x=>x.id===actRecoId);
+  showConfirm('「'+ (r?.name||'') +'」を削除するよ。写真も消えちゃうけど、いいかな？', async ()=>{
+    recos = recos.filter(x=>x.id!==actRecoId);
+    await dbDelete(actRecoId);
+    renderRecos();
+    toast('削除しました 🗑');
+  });
+}
+function openLightbox(id){
+  const r = recos.find(x=>x.id===id);
+  if(!r) return;
+  if(!r.img){ openRecoAct(id, {stopPropagation(){}}); return; }
+  document.getElementById('lbImg').src = r.img;
+  document.getElementById('lbName').textContent = r.name;
+  document.getElementById('lbMemo').textContent = r.memo || '';
+  document.getElementById('lightbox').classList.add('show');
+}
+function closeLightbox(){
+  document.getElementById('lightbox').classList.remove('show');
+}
+
+function renderRecos(){
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const wrap = document.getElementById('cardsWrap');
+  wrap.innerHTML = '';
+  let list = recos;
+  if(favOnly) list = list.filter(r=>r.fav);
+  if(q) list = list.filter(r=>(r.name||'').toLowerCase().includes(q) || (r.memo||'').toLowerCase().includes(q));
+  document.getElementById('recoEmpty').style.display = list.length ? 'none' : 'block';
+  document.getElementById('recoEmpty').innerHTML = recos.length && !list.length
+    ? '<span class="big">🔍</span>見つからなかったよ🌸<br>ことばを変えてさがしてみてね'
+    : '<span class="big">🌸</span>お気に入り商品を写真つきで<br>登録してみてね✨';
+  list.forEach(r=>{
+    const card = document.createElement('div');
+    card.className = 'card';
+    const imgHtml = r.thumb
+      ? '<img class="ph" loading="lazy" src="'+r.thumb+'" alt="">'
+      : '<div class="noimg">🍎</div>';
+    card.innerHTML =
+      imgHtml +
+      '<button class="heart">'+(r.fav?'❤️':'🤍')+'</button>' +
+      '<button class="card-edit">✏️</button>' +
+      '<div class="body"><div class="cname">'+esc(r.name)+'</div>' +
+      (r.memo ? '<div class="cmemo">💕 '+esc(r.memo)+'</div>' : '') +
+      '</div>';
+    card.querySelector('.heart').onclick = ev=>toggleFav(r.id, ev);
+    card.querySelector('.card-edit').onclick = ev=>openRecoAct(r.id, ev);
+    card.onclick = ()=>openLightbox(r.id);
+    wrap.appendChild(card);
+  });
+}
+
+/* ========================================================= 起動 */
+(async function init(){
+  loadItems();
+  renderItems();
+  try{
+    db = await openDB();
+    recos = (await dbGetAll()).sort((a,b)=>(b.created||0)-(a.created||0));
+  }catch(e){ recos = []; }
+  renderRecos();
+})();
+</script>
+</body>
+</html>
