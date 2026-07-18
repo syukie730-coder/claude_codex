@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="コスメ手帳">
+<link rel="apple-touch-icon" href="cosme-techo-icon.png">
+<title>わたしだけのコスメ手帳</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=Zen+Maru+Gothic:wght@400;500;700&family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ivory:#FFFDF9;
+  --pink-bg:#F7DFE6;
+  --pink-soft:#F1C9D4;
+  --pink-deep:#E1A3B5;
+  --rose:#A6556C;
+  --rose-dark:#8C4760;
+  --gold:#C6A254;
+  --gold-dark:#A98938;
+  --gold-light:#E8D5A8;
+  --ink:#5A4A48;
+  --ink-soft:#8C7A78;
+  --card:#FFFFFF;
+  --shadow:0 6px 24px rgba(166,85,108,.14);
+  --radius:20px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:'Zen Maru Gothic',sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 15% 10%, rgba(241,201,212,.6), transparent 45%),
+    radial-gradient(circle at 90% 30%, rgba(232,213,168,.28), transparent 40%),
+    radial-gradient(circle at 50% 95%, rgba(241,201,212,.45), transparent 50%),
+    var(--ivory);
+  min-height:100dvh;
+  line-height:1.7;
+  overscroll-behavior-y:none;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink)}
+img{display:block;max-width:100%}
+
+/* ===================== 起動演出 ===================== */
+#opening{
+  position:fixed;inset:0;z-index:1000;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(160deg,#F5D3DC 0%,#FFFDF9 55%,#F3E5C9 130%);
+  perspective:1200px;overflow:hidden;
+  transition:opacity .8s ease;
+}
+#opening.fadeout{opacity:0;pointer-events:none}
+.book{
+  position:relative;width:min(78vw,320px);aspect-ratio:3/4.1;
+  transform-style:preserve-3d;
+}
+.cover,.innerPage{
+  position:absolute;inset:0;border-radius:8px 16px 16px 8px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:26px;
+}
+.innerPage{
+  background:linear-gradient(150deg,#FFFEFB,#F7DFE6);
+  box-shadow:0 18px 50px rgba(166,85,108,.28);
+  border:1px solid #F0DFC9;
+}
+.innerPage .welcome-en{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:var(--gold-dark);letter-spacing:.12em}
+.innerPage .welcome-ja{font-family:'Shippori Mincho',serif;font-size:1.02rem;margin-top:10px;color:var(--rose);letter-spacing:.2em}
+.innerPage .welcome-deco{font-size:1.6rem;margin-top:16px}
+.cover{
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255,255,255,.5), transparent 60%),
+    linear-gradient(155deg,#F0BFCD 0%,#E8A9BC 60%,#E9AC9F 130%);
+  box-shadow:0 18px 50px rgba(166,85,108,.38);
+  transform-origin:left center;
+  transition:transform 1.6s cubic-bezier(.66,.05,.28,1);
+  border:1px solid rgba(255,255,255,.7);
+  z-index:2;
+}
+#opening.open .cover{transform:rotateY(-125deg)}
+.cover::before{
+  content:"";position:absolute;inset:12px;border-radius:6px 12px 12px 6px;
+  border:1.5px solid rgba(198,162,84,.75);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(198,162,84,.14), transparent 30%),
+    radial-gradient(circle at 50% 100%, rgba(198,162,84,.14), transparent 30%);
+}
+.cover-en{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.95rem;letter-spacing:.24em;color:var(--gold-dark);position:relative}
+.cover-title{
+  font-family:'Shippori Mincho',serif;font-weight:600;
+  font-size:1.5rem;letter-spacing:.14em;line-height:1.9;color:#6E3D4B;
+  margin:14px 0;position:relative;
+}
+.cover-sub{font-size:.72rem;letter-spacing:.3em;color:var(--gold-dark);position:relative}
+.cover-orn{font-size:1.5rem;margin-top:18px;position:relative}
+.cover-line{width:52px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:12px auto 0;position:relative}
+.skip-hint{
+  position:absolute;bottom:max(26px,env(safe-area-inset-bottom));left:0;right:0;
+  text-align:center;font-size:.72rem;color:var(--ink-soft);letter-spacing:.18em;
+  animation:blink 2.4s ease infinite;
+}
+@keyframes blink{0%,100%{opacity:.35}50%{opacity:.9}}
+
+/* キラキラ */
+.sparkle{
+  position:absolute;width:10px;height:10px;pointer-events:none;z-index:5;
+  background:radial-gradient(circle,#fff 0%,#F5DFA0 45%,transparent 70%);
+  clip-path:polygon(50% 0%,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0% 50%,38% 38%);
+  animation:sparkleAnim 2.6s ease-out forwards;
+}
+@keyframes sparkleAnim{
+  0%{transform:scale(0) rotate(0);opacity:0}
+  20%{opacity:1}
+  60%{transform:scale(1.3) rotate(160deg);opacity:.95}
+  100%{transform:scale(.2) rotate(300deg);opacity:0}
+}
+/* 花びら */
+.petal{
+  position:absolute;top:-24px;width:16px;height:13px;pointer-events:none;z-index:4;
+  background:radial-gradient(circle at 35% 35%,#F6C4D2,#EB9DB4);
+  border-radius:70% 30% 60% 40%/60% 40% 60% 40%;
+  opacity:.9;
+  animation:petalFall linear forwards;
+}
+@keyframes petalFall{
+  0%{transform:translate(0,0) rotate(0deg)}
+  25%{transform:translate(22px,26vh) rotate(120deg)}
+  50%{transform:translate(-14px,52vh) rotate(220deg)}
+  75%{transform:translate(18px,78vh) rotate(320deg)}
+  100%{transform:translate(-8px,108vh) rotate(420deg);opacity:.4}
+}
+
+/* ===================== 全体レイアウト ===================== */
+#app{max-width:560px;margin:0 auto;padding:0 16px calc(96px + env(safe-area-inset-bottom))}
+header.masthead{
+  text-align:center;padding:26px 0 6px;
+}
+.masthead .en{
+  font-family:'Cormorant Garamond',serif;font-style:italic;
+  font-size:.95rem;letter-spacing:.22em;color:var(--gold-dark);
+}
+.masthead h1{
+  font-family:'Shippori Mincho',serif;font-weight:600;
+  font-size:1.42rem;letter-spacing:.13em;color:#6E3D4B;margin-top:4px;
+}
+.masthead .rule{
+  width:120px;height:1px;margin:12px auto 0;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  position:relative;
+}
+.masthead .rule::after{
+  content:"❦";position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);
+  background:transparent;color:var(--gold);font-size:.8rem;
+  text-shadow:0 0 6px var(--ivory), 2px 0 var(--ivory), -2px 0 var(--ivory);
+}
+.date-line{font-size:.72rem;color:var(--ink-soft);letter-spacing:.16em;margin-top:8px}
+
+/* ビュー切替 */
+.view{display:none;animation:fadeUp .45s ease both}
+.view.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* ホーム統計 */
+.stats{
+  display:flex;justify-content:center;gap:26px;margin:16px 0 4px;
+}
+.stat{text-align:center}
+.stat b{font-family:'Shippori Mincho',serif;font-size:1.4rem;color:var(--rose);display:block;line-height:1.2}
+.stat span{font-size:.68rem;color:var(--ink-soft);letter-spacing:.1em}
+
+/* セクション見出し */
+.sec-title{
+  display:flex;align-items:center;gap:10px;
+  margin:26px 2px 12px;
+}
+.sec-title h2{
+  font-family:'Shippori Mincho',serif;font-weight:600;
+  font-size:1.02rem;letter-spacing:.14em;color:#6E3D4B;white-space:nowrap;
+}
+.sec-title::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--gold-light),transparent)}
+.sec-title .en{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.8rem;color:var(--gold-dark);white-space:nowrap}
+
+/* カテゴリグリッド */
+.cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.cat-cell{
+  background:var(--card);border-radius:16px;box-shadow:var(--shadow);
+  border:1px solid rgba(198,162,84,.18);
+  padding:13px 4px 10px;text-align:center;position:relative;
+  transition:transform .18s ease;
+}
+.cat-cell:active{transform:scale(.94)}
+.cat-cell .emoji{font-size:1.5rem;line-height:1}
+.cat-cell .name{font-size:.66rem;margin-top:6px;color:var(--ink);letter-spacing:.02em}
+.cat-cell .count{
+  position:absolute;top:-6px;right:-4px;min-width:20px;height:20px;padding:0 5px;
+  border-radius:999px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+  color:#fff;font-size:.62rem;font-weight:700;line-height:20px;
+  box-shadow:0 2px 6px rgba(169,137,56,.4);
+}
+
+/* カードリスト(アルバム風) */
+.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.cosme-card{
+  background:var(--card);border-radius:14px;box-shadow:var(--shadow);
+  border:1px solid rgba(198,162,84,.16);
+  padding:10px 10px 12px;position:relative;
+  transition:transform .18s ease;
+}
+.cosme-card:active{transform:scale(.96)}
+.cosme-card .ph{
+  width:100%;aspect-ratio:1;border-radius:10px;overflow:hidden;
+  background:linear-gradient(140deg,var(--pink-bg),var(--pink-soft));
+  display:flex;align-items:center;justify-content:center;font-size:2rem;
+}
+.cosme-card .ph img{width:100%;height:100%;object-fit:cover}
+.cosme-card .brand{font-size:.62rem;color:var(--gold-dark);letter-spacing:.1em;margin-top:8px;text-transform:uppercase}
+.cosme-card .nm{font-size:.8rem;font-weight:700;line-height:1.4;margin-top:2px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cosme-card .stars{font-size:.7rem;color:var(--gold);margin-top:4px;letter-spacing:.05em}
+.cosme-card .fav-mark{position:absolute;top:16px;right:16px;font-size:1rem;filter:drop-shadow(0 1px 3px rgba(0,0,0,.2))}
+.cosme-card .rank-badge{
+  position:absolute;top:4px;left:4px;z-index:2;
+  background:linear-gradient(135deg,#E8CD8B,var(--gold-dark));color:#fff;
+  font-size:.62rem;font-weight:700;padding:3px 9px;border-radius:999px;
+  box-shadow:0 2px 6px rgba(169,137,56,.45);letter-spacing:.05em;
+}
+.empty{
+  text-align:center;color:var(--ink-soft);padding:48px 12px;font-size:.86rem;line-height:2;
+}
+.empty .big{font-size:2.2rem;display:block;margin-bottom:8px}
+
+/* 戻る付きページヘッダ */
+.page-head{display:flex;align-items:center;gap:10px;padding:20px 0 4px}
+.page-head .back{
+  width:38px;height:38px;border-radius:50%;background:var(--card);
+  box-shadow:var(--shadow);font-size:1rem;color:var(--rose);flex:none;
+  border:1px solid rgba(198,162,84,.2);
+}
+.page-head h2{
+  font-family:'Shippori Mincho',serif;font-weight:600;font-size:1.08rem;
+  letter-spacing:.1em;color:#6E3D4B;flex:1;
+}
+.page-head .mini{font-size:.7rem;color:var(--ink-soft)}
+
+/* フィルタチップ */
+.chips{display:flex;gap:8px;overflow-x:auto;padding:10px 2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  flex:none;padding:7px 14px;border-radius:999px;font-size:.74rem;
+  background:var(--card);border:1px solid rgba(198,162,84,.25);color:var(--ink-soft);
+  box-shadow:0 2px 8px rgba(166,85,108,.08);
+}
+.chip.on{
+  background:linear-gradient(135deg,#E9B3C3,var(--pink-deep));
+  color:#6E3D4B;font-weight:700;border-color:transparent;
+}
+
+/* 検索 */
+.search-box{
+  display:flex;align-items:center;gap:8px;background:var(--card);
+  border:1px solid rgba(198,162,84,.25);border-radius:999px;
+  padding:11px 18px;box-shadow:var(--shadow);margin-top:12px;
+}
+.search-box input{border:none;outline:none;flex:1;background:transparent}
+.search-box input::placeholder{color:#C4B2B0}
+
+/* ===================== 詳細ページ(雑誌の1ページ風) ===================== */
+.overlay{
+  position:fixed;inset:0;z-index:600;background:rgba(90,74,72,.35);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  display:none;align-items:flex-end;justify-content:center;
+}
+.overlay.show{display:flex}
+.sheet{
+  width:100%;max-width:560px;max-height:94dvh;overflow-y:auto;
+  background:var(--ivory);border-radius:26px 26px 0 0;
+  padding:10px 20px calc(30px + env(safe-area-inset-bottom));
+  animation:sheetUp .35s cubic-bezier(.2,.8,.3,1) both;
+  -webkit-overflow-scrolling:touch;
+}
+@keyframes sheetUp{from{transform:translateY(60px);opacity:0}to{transform:none;opacity:1}}
+.sheet .grab{width:44px;height:5px;border-radius:99px;background:#E4D2CE;margin:6px auto 14px}
+.detail-gallery{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;border-radius:16px;scrollbar-width:none}
+.detail-gallery::-webkit-scrollbar{display:none}
+.detail-gallery .slide{
+  flex:none;width:100%;aspect-ratio:1;scroll-snap-align:center;border-radius:16px;overflow:hidden;
+  background:linear-gradient(140deg,var(--pink-bg),var(--pink-soft));
+  display:flex;align-items:center;justify-content:center;font-size:3rem;
+  border:6px solid #fff;box-shadow:var(--shadow);
+}
+.detail-gallery .slide img{width:100%;height:100%;object-fit:cover}
+.gal-dots{display:flex;justify-content:center;gap:6px;margin-top:10px}
+.gal-dots i{width:6px;height:6px;border-radius:50%;background:#DDB4C0}
+.gal-dots i.on{background:var(--rose);width:16px;border-radius:99px}
+.detail-brand{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;color:var(--gold-dark);letter-spacing:.15em;text-align:center;margin-top:18px}
+.detail-name{font-family:'Shippori Mincho',serif;font-weight:600;font-size:1.2rem;text-align:center;letter-spacing:.06em;color:#5F3A44;line-height:1.6;margin-top:2px}
+.detail-stars{text-align:center;font-size:1.05rem;color:var(--gold);margin-top:6px;letter-spacing:.12em}
+.detail-badges{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+.dbadge{font-size:.68rem;padding:4px 12px;border-radius:999px;background:var(--pink-bg);color:var(--rose);border:1px solid var(--pink-deep)}
+.dbadge.gold{background:#FBF4E2;color:var(--gold-dark);border-color:var(--gold-light)}
+.spec{margin-top:18px;background:var(--card);border-radius:16px;border:1px solid rgba(198,162,84,.18);padding:6px 16px;box-shadow:var(--shadow)}
+.spec .row{display:flex;padding:10px 0;border-bottom:1px dashed #EBCBD3;font-size:.82rem}
+.spec .row:last-child{border-bottom:none}
+.spec .lbl{flex:none;width:88px;color:var(--gold-dark);font-size:.7rem;letter-spacing:.08em;padding-top:2px}
+.spec .val{flex:1;white-space:pre-wrap;word-break:break-word}
+.detail-actions{display:flex;gap:10px;margin-top:20px}
+.btn{
+  flex:1;padding:14px;border-radius:999px;font-size:.88rem;font-weight:700;letter-spacing:.08em;
+  text-align:center;transition:transform .15s ease;
+}
+.btn:active{transform:scale(.96)}
+.btn.gold{background:linear-gradient(135deg,#E3C171,var(--gold-dark));color:#fff;box-shadow:0 4px 14px rgba(169,137,56,.35)}
+.btn.pink{background:linear-gradient(135deg,#EBA9BE,#DC8AA4);color:#5F3A44;box-shadow:0 4px 14px rgba(166,85,108,.28)}
+.btn.line{border:1.5px solid var(--pink-deep);color:var(--rose)}
+.btn.danger{color:#C25B5B;border:1.5px solid #EDBDBD}
+.btn.sm{flex:none;padding:10px 18px;font-size:.78rem}
+
+/* 削除確認パネル */
+.del-confirm{
+  margin-top:18px;background:#FDF1F1;border:1.5px solid #EDBDBD;border-radius:16px;
+  padding:16px;text-align:center;animation:fadeUp .3s ease both;
+}
+.del-confirm .msg{font-size:.84rem;color:#A64B4B;font-weight:700;line-height:1.8}
+.del-confirm .sub{font-size:.72rem;font-weight:400;color:#B97676}
+.btn.danger-fill{background:linear-gradient(135deg,#E08585,#C25B5B);color:#fff;box-shadow:0 4px 14px rgba(194,91,91,.35)}
+
+/* ===================== フォーム ===================== */
+.form-card{background:var(--card);border-radius:20px;border:1px solid rgba(198,162,84,.18);box-shadow:var(--shadow);padding:20px 18px;margin-top:14px}
+.f-group{margin-bottom:16px}
+.f-group label{display:block;font-size:.72rem;color:var(--gold-dark);letter-spacing:.1em;margin-bottom:6px}
+.f-group input[type=text],.f-group input[type=date],.f-group input[type=number],.f-group select,.f-group textarea{
+  width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid #ECD0D7;
+  background:#FFFDFB;outline:none;
+}
+.f-group textarea{min-height:88px;resize:vertical}
+.f-group input:focus,.f-group select:focus,.f-group textarea:focus{border-color:var(--pink-deep);box-shadow:0 0 0 3px rgba(225,163,181,.32)}
+.photo-add{
+  display:flex;gap:10px;flex-wrap:wrap;
+}
+.photo-thumb{
+  width:72px;height:72px;border-radius:12px;overflow:hidden;position:relative;
+  border:2px solid #fff;box-shadow:0 3px 10px rgba(166,85,108,.2);
+}
+.photo-thumb img{width:100%;height:100%;object-fit:cover}
+.photo-thumb .del{
+  position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;
+  background:rgba(90,74,72,.75);color:#fff;font-size:.7rem;line-height:20px;text-align:center;
+}
+.photo-plus{
+  width:72px;height:72px;border-radius:12px;border:1.8px dashed var(--pink-deep);
+  color:var(--rose);font-size:1.4rem;display:flex;align-items:center;justify-content:center;
+  background:var(--pink-bg);
+}
+.star-input{display:flex;gap:8px;font-size:1.7rem;color:#E7D9C6}
+.star-input span.on{color:var(--gold);text-shadow:0 0 8px rgba(198,162,84,.4)}
+.seg{display:flex;gap:8px}
+.seg button{
+  flex:1;padding:10px 4px;border-radius:12px;border:1.5px solid #ECD0D7;font-size:.76rem;background:#FFFDFB;
+}
+.seg button.on{background:linear-gradient(135deg,#EBA9BE,#E1A3B5);border-color:transparent;color:#5F3A44;font-weight:700}
+
+/* ===================== ランキング ===================== */
+.rank-list{display:flex;flex-direction:column;gap:12px}
+.rank-item{
+  display:flex;gap:12px;align-items:center;background:var(--card);
+  border-radius:16px;border:1px solid rgba(198,162,84,.18);box-shadow:var(--shadow);padding:10px 14px 10px 10px;
+}
+.rank-item:active{transform:scale(.98)}
+.rank-no{
+  flex:none;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:'Shippori Mincho',serif;font-weight:700;font-size:1rem;color:#fff;
+  background:linear-gradient(135deg,#D4BC85,#B59B60);
+}
+.rank-no.r1{background:linear-gradient(135deg,#F2D67E,#C9A24B);box-shadow:0 3px 10px rgba(198,162,84,.5)}
+.rank-no.r2{background:linear-gradient(135deg,#DEDEDE,#ABABAB)}
+.rank-no.r3{background:linear-gradient(135deg,#E3B08B,#BC7B4F)}
+.rank-item .ph{flex:none;width:56px;height:56px;border-radius:12px;overflow:hidden;background:var(--pink-bg);display:flex;align-items:center;justify-content:center;font-size:1.4rem}
+.rank-item .ph img{width:100%;height:100%;object-fit:cover}
+.rank-item .info{flex:1;min-width:0}
+.rank-item .info .b{font-size:.62rem;color:var(--gold-dark);letter-spacing:.08em}
+.rank-item .info .n{font-size:.82rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank-item .info .s{font-size:.68rem;color:var(--gold)}
+.year-select{
+  width:100%;padding:12px 14px;border-radius:14px;border:1.5px solid var(--gold-light);
+  background:#FFFDFB;margin-top:8px;font-size:.9rem;color:#6E3D4B;
+}
+
+/* ===================== 設定 ===================== */
+.setting-card{background:var(--card);border-radius:18px;border:1px solid rgba(198,162,84,.18);box-shadow:var(--shadow);padding:18px;margin-top:14px}
+.setting-card h3{font-family:'Shippori Mincho',serif;font-size:.95rem;color:#6E3D4B;letter-spacing:.1em;margin-bottom:8px}
+.setting-card p{font-size:.78rem;color:var(--ink-soft);margin-bottom:12px}
+
+/* ===================== 下部タブ ===================== */
+nav.tabbar{
+  position:fixed;left:0;right:0;bottom:0;z-index:500;
+  display:flex;justify-content:space-around;
+  max-width:560px;margin:0 auto;
+  background:rgba(255,250,248,.9);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-top:1px solid rgba(198,162,84,.25);
+  padding:8px 6px calc(10px + env(safe-area-inset-bottom));
+}
+.tabbar button{
+  flex:1;text-align:center;font-size:.6rem;color:var(--ink-soft);letter-spacing:.05em;
+  display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0;
+}
+.tabbar button .ic{font-size:1.25rem;line-height:1.2;filter:grayscale(.55);opacity:.7;transition:.2s}
+.tabbar button.on{color:var(--rose);font-weight:700}
+.tabbar button.on .ic{filter:none;opacity:1;transform:translateY(-2px)}
+
+/* 追加(＋)フローティングボタン */
+#fab{
+  position:fixed;right:calc(50% - 264px);bottom:calc(86px + env(safe-area-inset-bottom));z-index:490;
+  width:58px;height:58px;border-radius:50%;
+  background:linear-gradient(135deg,#E2A0B4,#CC7590);
+  color:#fff;font-size:1.7rem;line-height:1;
+  box-shadow:0 8px 22px rgba(166,85,108,.5);
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .18s ease;
+}
+@media(max-width:600px){#fab{right:18px}}
+#fab:active{transform:scale(.9) rotate(90deg)}
+
+/* トースト */
+#toast{
+  position:fixed;left:50%;bottom:calc(120px + env(safe-area-inset-bottom));transform:translate(-50%,20px);
+  background:rgba(110,61,75,.94);color:#fff;font-size:.8rem;letter-spacing:.08em;
+  padding:11px 22px;border-radius:999px;opacity:0;pointer-events:none;z-index:900;
+  transition:.35s ease;box-shadow:0 6px 18px rgba(110,61,75,.4);white-space:nowrap;
+}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ホーム背景のふわふわ */
+.floaty{position:fixed;font-size:1.1rem;opacity:.16;pointer-events:none;z-index:0;animation:floatUp 16s linear infinite}
+@keyframes floatUp{
+  0%{transform:translateY(105dvh) rotate(0);opacity:0}
+  12%{opacity:.16}
+  88%{opacity:.16}
+  100%{transform:translateY(-8dvh) rotate(50deg);opacity:0}
+}
+#app,#opening,nav.tabbar,#fab{position:relative}
+#app{position:relative;z-index:1}
+
+@media (prefers-reduced-motion: reduce){
+  .sparkle,.petal,.floaty{display:none!important}
+  .cover{transition-duration:.4s}
+  .view{animation:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ 起動演出 ============ -->
+<div id="opening">
+  <div class="book">
+    <div class="innerPage">
+      <div class="welcome-en">Welcome, ma chérie</div>
+      <div class="welcome-ja">今日も、きれいな一日を。</div>
+      <div class="welcome-deco">🌸 ✨ 🌸</div>
+    </div>
+    <div class="cover">
+      <div class="cover-en">MON CARNET DE BEAUTÉ</div>
+      <div class="cover-title">わたしだけの<br>コスメ手帳</div>
+      <div class="cover-line"></div>
+      <div class="cover-sub">MY BEAUTY MUSEUM</div>
+      <div class="cover-orn">🌹</div>
+    </div>
+  </div>
+  <div class="skip-hint">画面タップでひらく ✧</div>
+</div>
+
+<!-- ============ 本体 ============ -->
+<div id="app">
+
+  <!-- ホーム -->
+  <section class="view active" id="view-home">
+    <header class="masthead">
+      <div class="en">MON CARNET DE BEAUTÉ</div>
+      <h1>わたしだけのコスメ手帳</h1>
+      <div class="rule"></div>
+      <div class="date-line" id="todayLine"></div>
+    </header>
+    <div class="stats">
+      <div class="stat"><b id="stTotal">0</b><span>コレクション</span></div>
+      <div class="stat"><b id="stFav">0</b><span>お気に入り</span></div>
+      <div class="stat"><b id="stBest">0</b><span>ベストコスメ</span></div>
+    </div>
+    <div class="sec-title"><h2>カテゴリーから見る</h2><span class="en">Category</span></div>
+    <div class="cat-grid" id="catGrid"></div>
+    <div class="sec-title"><h2>最近のコスメ</h2><span class="en">New in</span></div>
+    <div class="card-grid" id="recentGrid"></div>
+  </section>
+
+  <!-- 一覧(カテゴリ/全件) -->
+  <section class="view" id="view-list">
+    <div class="page-head">
+      <button class="back" onclick="showView('home')">←</button>
+      <h2 id="listTitle">コレクション</h2>
+      <span class="mini" id="listCount"></span>
+    </div>
+    <div class="chips" id="listChips"></div>
+    <div class="card-grid" id="listGrid"></div>
+  </section>
+
+  <!-- お気に入り -->
+  <section class="view" id="view-fav">
+    <div class="page-head" style="padding-top:26px">
+      <h2>💗 お気に入りコレクション</h2>
+    </div>
+    <p style="font-size:.74rem;color:var(--ink-soft);margin:0 2px 4px">ハートを付けたコスメだけを集めた、特別なページだよ。</p>
+    <div class="card-grid" id="favGrid" style="margin-top:12px"></div>
+  </section>
+
+  <!-- ランキング -->
+  <section class="view" id="view-rank">
+    <div class="page-head" style="padding-top:26px">
+      <h2>🏆 マイ ベストコスメ</h2>
+    </div>
+    <p style="font-size:.74rem;color:var(--ink-soft);margin:0 2px">それぞれのコスメの詳細ページから「🏆ランキング登録」で順位を付けられるよ。</p>
+    <div class="rank-list" id="rankList" style="margin-top:14px"></div>
+    <div class="sec-title"><h2>今年買って良かったコスメ</h2><span class="en">Best Buy</span></div>
+    <select class="year-select" id="bestYear"></select>
+    <p style="font-size:.72rem;color:var(--ink-soft);margin:8px 2px 0">選んだ年に購入した、お気に入り(💗)のコスメを表示するよ。</p>
+    <div class="card-grid" id="bestGrid" style="margin-top:12px"></div>
+  </section>
+
+  <!-- 検索 -->
+  <section class="view" id="view-search">
+    <div class="page-head" style="padding-top:26px">
+      <h2>🔍 コスメをさがす</h2>
+    </div>
+    <div class="search-box">
+      <span>🔍</span>
+      <input type="text" id="searchInput" placeholder="商品名・ブランド・色番・メモで検索">
+    </div>
+    <div class="card-grid" id="searchGrid" style="margin-top:16px"></div>
+  </section>
+
+  <!-- 設定 -->
+  <section class="view" id="view-setting">
+    <div class="page-head" style="padding-top:26px">
+      <h2>⚙️ せってい・バックアップ</h2>
+    </div>
+    <div class="setting-card">
+      <h3>📤 バックアップを保存</h3>
+      <p>登録したコスメと写真をぜんぶ、1つのファイルにして保存できるよ。ときどき保存しておくと安心。</p>
+      <button class="btn gold" style="width:100%" onclick="exportData()">バックアップファイルを作る</button>
+    </div>
+    <div class="setting-card">
+      <h3>📥 バックアップから戻す</h3>
+      <p>保存したバックアップファイルを選ぶと、データを復元できるよ。(今のデータに追加されます)</p>
+      <button class="btn line" style="width:100%" onclick="document.getElementById('importFile').click()">ファイルを選んで復元する</button>
+      <input type="file" id="importFile" accept=".json" style="display:none">
+    </div>
+    <div class="setting-card">
+      <h3>🌸 このアプリについて</h3>
+      <p id="aboutText">わたしだけのコスメ手帳 — 自分だけの美容博物館。<br>データはぜんぶ、この端末の中だけに保存されます。</p>
+    </div>
+  </section>
+
+</div>
+
+<!-- 追加ボタン -->
+<button id="fab" onclick="openForm()">＋</button>
+
+<!-- 下部タブ -->
+<nav class="tabbar">
+  <button data-tab="home" class="on" onclick="tabTo('home',this)"><span class="ic">🏠</span>ホーム</button>
+  <button data-tab="fav" onclick="tabTo('fav',this)"><span class="ic">💗</span>お気に入り</button>
+  <button data-tab="rank" onclick="tabTo('rank',this)"><span class="ic">🏆</span>ベスト</button>
+  <button data-tab="search" onclick="tabTo('search',this)"><span class="ic">🔍</span>さがす</button>
+  <button data-tab="setting" onclick="tabTo('setting',this)"><span class="ic">⚙️</span>せってい</button>
+</nav>
+
+<!-- 詳細シート -->
+<div class="overlay" id="detailOverlay" onclick="if(event.target===this)closeDetail()">
+  <div class="sheet" id="detailSheet"></div>
+</div>
+
+<!-- 登録/編集フォームシート -->
+<div class="overlay" id="formOverlay" onclick="if(event.target===this)closeForm()">
+  <div class="sheet">
+    <div class="grab"></div>
+    <h2 id="formTitle" style="font-family:'Shippori Mincho',serif;font-size:1.1rem;color:#6E3D4B;letter-spacing:.1em;text-align:center">コスメを登録する</h2>
+    <div class="form-card">
+      <div class="f-group">
+        <label>📷 商品の写真(何枚でもOK)</label>
+        <div class="photo-add" id="photoArea">
+          <button class="photo-plus" onclick="document.getElementById('photoInput').click()">＋</button>
+        </div>
+        <input type="file" id="photoInput" accept="image/*" multiple style="display:none">
+      </div>
+      <div class="f-group"><label>🗂 カテゴリー</label><select id="fCategory"></select></div>
+      <div class="f-group"><label>💄 商品名 <span style="color:var(--rose)">*</span></label><input type="text" id="fName" placeholder="例:影色リップメイカー"></div>
+      <div class="f-group"><label>🏷 ブランド名</label><input type="text" id="fBrand" placeholder="例:CEZANNE"></div>
+      <div class="f-group"><label>🎨 色・品番</label><input type="text" id="fColor" placeholder="例:01 ウォームベージュ"></div>
+      <div class="f-group"><label>📅 購入日</label><input type="date" id="fDate"></div>
+      <div class="f-group"><label>🛍 購入場所</label><input type="text" id="fPlace" placeholder="例:マツキヨ、Amazon"></div>
+      <div class="f-group"><label>💰 価格(円)</label><input type="number" id="fPrice" placeholder="例:660" inputmode="numeric"></div>
+      <div class="f-group"><label>⭐ おすすめ度</label><div class="star-input" id="starInput"></div></div>
+      <div class="f-group"><label>🔁 リピートしたい?</label>
+        <div class="seg" id="repeatSeg">
+          <button data-v="yes">💖 ぜったいリピ</button>
+          <button data-v="maybe">🤔 検討中</button>
+          <button data-v="no">🙅‍♀️ しない</button>
+        </div>
+      </div>
+      <div class="f-group"><label>💬 使用感・お気に入りポイント</label><textarea id="fImpression" placeholder="つけ心地、色もち、香りなど"></textarea></div>
+      <div class="f-group"><label>📝 自由コメント</label><textarea id="fComment" placeholder="思い出やメモを自由にどうぞ"></textarea></div>
+    </div>
+    <div class="detail-actions">
+      <button class="btn line" onclick="closeForm()">やめる</button>
+      <button class="btn gold" onclick="saveItem()">保存する ✧</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ================= わたしだけのコスメ手帳 ================= */
+'use strict';
+
+const CATS = [
+  {key:'eyemake',   emoji:'👁️', name:'アイメイク'},
+  {key:'lip',       emoji:'💋', name:'リップ'},
+  {key:'concealer', emoji:'🩹', name:'コンシーラー'},
+  {key:'foundation',emoji:'🧴', name:'ファンデーション'},
+  {key:'base',      emoji:'🫧', name:'化粧下地'},
+  {key:'powder',    emoji:'🌸', name:'フェイスパウダー'},
+  {key:'cheek',     emoji:'🍑', name:'チーク'},
+  {key:'highlight', emoji:'✨', name:'ハイライト'},
+  {key:'shading',   emoji:'🌗', name:'シェーディング'},
+  {key:'eyebrow',   emoji:'🖌️', name:'アイブロウ'},
+  {key:'mascara',   emoji:'🌿', name:'マスカラ'},
+  {key:'eyeliner',  emoji:'✒️', name:'アイライナー'},
+  {key:'eyeshadow', emoji:'🎨', name:'アイシャドウ'},
+  {key:'skincare',  emoji:'💧', name:'スキンケア'},
+  {key:'tools',     emoji:'🪞', name:'メイク道具'},
+  {key:'other',     emoji:'🎀', name:'その他'},
+];
+const catOf = k => CATS.find(c => c.key === k) || CATS[CATS.length-1];
+
+/* ---------- IndexedDB ---------- */
+let db;
+function openDB(){
+  return new Promise((res, rej) => {
+    const rq = indexedDB.open('cosmeTecho', 1);
+    rq.onupgradeneeded = e => {
+      const d = e.target.result;
+      if(!d.objectStoreNames.contains('items')){
+        d.createObjectStore('items', {keyPath:'id'});
+      }
+    };
+    rq.onsuccess = e => { db = e.target.result; res(); };
+    rq.onerror = () => rej(rq.error);
+  });
+}
+function dbAll(){
+  return new Promise((res, rej) => {
+    const rq = db.transaction('items').objectStore('items').getAll();
+    rq.onsuccess = () => res(rq.result || []);
+    rq.onerror = () => rej(rq.error);
+  });
+}
+function dbPut(item){
+  return new Promise((res, rej) => {
+    const rq = db.transaction('items','readwrite').objectStore('items').put(item);
+    rq.onsuccess = () => res();
+    rq.onerror = () => rej(rq.error);
+  });
+}
+function dbDel(id){
+  return new Promise((res, rej) => {
+    const rq = db.transaction('items','readwrite').objectStore('items').delete(id);
+    rq.onsuccess = () => res();
+    rq.onerror = () => rej(rq.error);
+  });
+}
+
+let ITEMS = [];
+async function reload(){ ITEMS = await dbAll(); }
+
+/* ---------- ユーティリティ ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const yen = v => v === '' || v == null ? '' : '¥' + Number(v).toLocaleString('ja-JP');
+const starsTxt = n => n > 0 ? '★'.repeat(n) + '☆'.repeat(5-n) : '未評価';
+const fmtDate = d => {
+  if(!d) return '';
+  const [y,m,dd] = d.split('-');
+  return `${y}年${Number(m)}月${Number(dd)}日`;
+};
+function toast(msg){
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._tm);
+  t._tm = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* ---------- 画像圧縮 ---------- */
+function compressImage(file){
+  return new Promise((res, rej) => {
+    const rd = new FileReader();
+    rd.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const MAX = 1000;
+        let w = img.width, h = img.height;
+        if(Math.max(w,h) > MAX){
+          const r = MAX / Math.max(w,h);
+          w = Math.round(w*r); h = Math.round(h*r);
+        }
+        const cv = document.createElement('canvas');
+        cv.width = w; cv.height = h;
+        cv.getContext('2d').drawImage(img, 0, 0, w, h);
+        res(cv.toDataURL('image/jpeg', .82));
+      };
+      img.onerror = rej;
+      img.src = rd.result;
+    };
+    rd.onerror = rej;
+    rd.readAsDataURL(file);
+  });
+}
+
+/* ---------- ビュー切替 ---------- */
+function showView(name){
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  $('#view-' + name).classList.add('active');
+  window.scrollTo({top:0});
+}
+function tabTo(name, btn){
+  document.querySelectorAll('.tabbar button').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  if(name === 'home') renderHome();
+  if(name === 'fav') renderFav();
+  if(name === 'rank') renderRank();
+  if(name === 'search') { renderSearch(); setTimeout(()=>{},0); }
+  showView(name);
+}
+
+/* ---------- カード生成 ---------- */
+function cardHTML(it){
+  const c = catOf(it.category);
+  const ph = it.images && it.images.length
+    ? `<img src="${it.images[0]}" alt="">`
+    : `<span>${c.emoji}</span>`;
+  return `<div class="cosme-card" onclick="openDetail('${it.id}')">
+    ${it.rank ? `<span class="rank-badge">🏆 ${it.rank}位</span>` : ''}
+    <div class="ph">${ph}</div>
+    ${it.favorite ? '<span class="fav-mark">💗</span>' : ''}
+    <div class="brand">${esc(it.brand) || c.name}</div>
+    <div class="nm">${esc(it.name)}</div>
+    <div class="stars">${it.rating > 0 ? '★'.repeat(it.rating) : ''}</div>
+  </div>`;
+}
+function grid(el, list, emptyMsg){
+  el.innerHTML = list.length
+    ? list.map(cardHTML).join('')
+    : `<div class="empty" style="grid-column:1/-1"><span class="big">🌷</span>${emptyMsg}</div>`;
+}
+
+/* ---------- ホーム ---------- */
+function renderHome(){
+  const now = new Date();
+  const wd = ['日','月','火','水','木','金','土'][now.getDay()];
+  $('#todayLine').textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日(${wd})`;
+  $('#stTotal').textContent = ITEMS.length;
+  $('#stFav').textContent = ITEMS.filter(i => i.favorite).length;
+  $('#stBest').textContent = ITEMS.filter(i => i.rank).length;
+
+  $('#catGrid').innerHTML = CATS.map(c => {
+    const n = ITEMS.filter(i => i.category === c.key).length;
+    return `<div class="cat-cell" onclick="openList('${c.key}')">
+      ${n ? `<span class="count">${n}</span>` : ''}
+      <div class="emoji">${c.emoji}</div>
+      <div class="name">${c.name}</div>
+    </div>`;
+  }).join('');
+
+  const recent = [...ITEMS].sort((a,b) => b.createdAt - a.createdAt).slice(0,4);
+  grid($('#recentGrid'), recent, 'まだ登録がないよ。<br>右下の「＋」から、最初のコスメを迎えてあげてね😊');
+}
+
+/* ---------- 一覧 ---------- */
+let listCat = 'all';
+function openList(catKey){
+  listCat = catKey;
+  renderList();
+  showView('list');
+}
+function renderList(){
+  const chips = [{key:'all', emoji:'🌷', name:'すべて'}, ...CATS];
+  $('#listChips').innerHTML = chips.map(c =>
+    `<button class="chip ${listCat===c.key?'on':''}" onclick="listCat='${c.key}';renderList()">${c.emoji} ${c.name}</button>`
+  ).join('');
+  const list = (listCat === 'all' ? [...ITEMS] : ITEMS.filter(i => i.category === listCat))
+    .sort((a,b) => b.createdAt - a.createdAt);
+  const c = listCat === 'all' ? null : catOf(listCat);
+  $('#listTitle').textContent = c ? `${c.emoji} ${c.name}` : '🌷 すべてのコスメ';
+  $('#listCount').textContent = `${list.length}件`;
+  grid($('#listGrid'), list, 'このカテゴリーは、まだからっぽだよ。');
+}
+
+/* ---------- お気に入り ---------- */
+function renderFav(){
+  const list = ITEMS.filter(i => i.favorite).sort((a,b) => (b.rating||0) - (a.rating||0));
+  grid($('#favGrid'), list, 'まだお気に入りがないよ。<br>コスメの詳細ページで💗を押してみてね。');
+}
+
+/* ---------- ランキング ---------- */
+function renderRank(){
+  const ranked = ITEMS.filter(i => i.rank).sort((a,b) => a.rank - b.rank);
+  $('#rankList').innerHTML = ranked.length
+    ? ranked.map(it => {
+        const c = catOf(it.category);
+        const ph = it.images && it.images.length ? `<img src="${it.images[0]}" alt="">` : c.emoji;
+        const cls = it.rank <= 3 ? 'r' + it.rank : '';
+        return `<div class="rank-item" onclick="openDetail('${it.id}')">
+          <div class="rank-no ${cls}">${it.rank}</div>
+          <div class="ph">${ph}</div>
+          <div class="info">
+            <div class="b">${esc(it.brand) || c.name}</div>
+            <div class="n">${esc(it.name)}</div>
+            <div class="s">${it.rating>0 ? '★'.repeat(it.rating) : ''}</div>
+          </div>
+          <div>›</div>
+        </div>`;
+      }).join('')
+    : `<div class="empty"><span class="big">👑</span>まだランキングがないよ。<br>詳細ページの「🏆ランキング登録」から選んでね。</div>`;
+
+  // 今年買って良かった:購入年の候補
+  const years = [...new Set(ITEMS.filter(i => i.purchaseDate).map(i => i.purchaseDate.slice(0,4)))].sort().reverse();
+  const cur = String(new Date().getFullYear());
+  if(!years.includes(cur)) years.unshift(cur);
+  const sel = $('#bestYear');
+  const keep = sel.value || cur;
+  sel.innerHTML = years.map(y => `<option value="${y}">${y}年 に買って良かったコスメ 🎁</option>`).join('');
+  sel.value = years.includes(keep) ? keep : years[0];
+  renderBestYear();
+}
+function renderBestYear(){
+  const y = $('#bestYear').value;
+  const list = ITEMS.filter(i => i.favorite && i.purchaseDate && i.purchaseDate.startsWith(y))
+    .sort((a,b) => (b.rating||0) - (a.rating||0));
+  grid($('#bestGrid'), list, `${y}年のお気に入り(💗と購入日つき)が、まだないみたい。`);
+}
+
+/* ---------- 検索 ---------- */
+function renderSearch(){
+  const q = $('#searchInput').value.trim().toLowerCase();
+  if(!q){
+    $('#searchGrid').innerHTML = `<div class="empty" style="grid-column:1/-1"><span class="big">🔍</span>商品名やブランド名を入れてみてね。</div>`;
+    return;
+  }
+  const list = ITEMS.filter(i =>
+    [i.name, i.brand, i.colorCode, i.place, i.impression, i.comment]
+      .some(v => (v||'').toLowerCase().includes(q))
+  ).sort((a,b) => b.createdAt - a.createdAt);
+  grid($('#searchGrid'), list, `「${esc(q)}」は見つからなかったよ。`);
+}
+
+/* ---------- 詳細 ---------- */
+let detailId = null;
+function openDetail(id){
+  detailId = id;
+  const it = ITEMS.find(i => i.id === id);
+  if(!it) return;
+  const c = catOf(it.category);
+  const imgs = it.images || [];
+  const slides = imgs.length
+    ? imgs.map(src => `<div class="slide"><img src="${src}" alt=""></div>`).join('')
+    : `<div class="slide">${c.emoji}</div>`;
+  const dots = imgs.length > 1
+    ? `<div class="gal-dots" id="galDots">${imgs.map((_,i)=>`<i class="${i===0?'on':''}"></i>`).join('')}</div>`
+    : '';
+  const repeatTxt = {yes:'💖 ぜったいリピ', maybe:'🤔 検討中', no:'🙅‍♀️ リピなし'}[it.repeat] || '';
+  const rows = [
+    ['カテゴリー', `${c.emoji} ${c.name}`],
+    ['色・品番', esc(it.colorCode)],
+    ['購入日', fmtDate(it.purchaseDate)],
+    ['購入場所', esc(it.place)],
+    ['価格', yen(it.price)],
+    ['使用感', esc(it.impression)],
+    ['コメント', esc(it.comment)],
+  ].filter(r => r[1]);
+  $('#detailSheet').innerHTML = `
+    <div class="grab"></div>
+    <div class="detail-gallery" id="detailGal">${slides}</div>
+    ${dots}
+    <div class="detail-brand">${esc(it.brand) || '&nbsp;'}</div>
+    <div class="detail-name">${esc(it.name)}</div>
+    <div class="detail-stars">${starsTxt(it.rating||0)}</div>
+    <div class="detail-badges">
+      ${it.favorite ? '<span class="dbadge">💗 お気に入り</span>' : ''}
+      ${it.rank ? `<span class="dbadge gold">🏆 マイベスト ${it.rank}位</span>` : ''}
+      ${repeatTxt ? `<span class="dbadge">${repeatTxt}</span>` : ''}
+    </div>
+    <div class="spec">
+      ${rows.map(r => `<div class="row"><div class="lbl">${r[0]}</div><div class="val">${r[1]}</div></div>`).join('') || '<div class="row"><div class="val" style="color:var(--ink-soft)">くわしい情報は、編集から追加できるよ。</div></div>'}
+    </div>
+    <div class="detail-actions">
+      <button class="btn pink" onclick="toggleFav()">${it.favorite ? '💔 お気に入り解除' : '💗 お気に入り'}</button>
+      <button class="btn gold" onclick="openRankPicker()">🏆 ランキング登録</button>
+    </div>
+    <div class="detail-actions">
+      <button class="btn line" onclick="editItem()">✏️ 編集する</button>
+      <button class="btn danger" onclick="deleteItem()">🗑 削除</button>
+    </div>
+  `;
+  const gal = $('#detailGal');
+  if(imgs.length > 1){
+    gal.addEventListener('scroll', () => {
+      const idx = Math.round(gal.scrollLeft / gal.clientWidth);
+      document.querySelectorAll('#galDots i').forEach((d,i) => d.classList.toggle('on', i === idx));
+    }, {passive:true});
+  }
+  $('#detailOverlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeDetail(){
+  $('#detailOverlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+async function toggleFav(){
+  const it = ITEMS.find(i => i.id === detailId);
+  it.favorite = !it.favorite;
+  it.updatedAt = Date.now();
+  await dbPut(it);
+  toast(it.favorite ? '💗 お気に入りに追加したよ' : 'お気に入りから外したよ');
+  openDetail(detailId);
+  refreshAll();
+}
+async function openRankPicker(){
+  const it = ITEMS.find(i => i.id === detailId);
+  const cur = it.rank || 0;
+  const btns = [];
+  for(let n=1; n<=10; n++){
+    btns.push(`<button class="btn ${cur===n?'gold':'line'} sm" style="flex:none;width:calc(20% - 8px)" onclick="setRank(${n})">${n}位</button>`);
+  }
+  const html = `
+    <div style="margin-top:18px;background:var(--card);border-radius:16px;padding:16px;border:1px solid var(--gold-light)" id="rankPicker">
+      <div style="font-size:.8rem;color:#6E3D4B;font-weight:700;margin-bottom:10px;text-align:center">🏆 ベストコスメ、何位にする?</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center">${btns.join('')}</div>
+      ${cur ? `<button class="btn line sm" style="width:100%;margin-top:10px" onclick="setRank(0)">ランキングから外す</button>` : ''}
+    </div>`;
+  const old = $('#rankPicker');
+  if(old){ old.remove(); return; }
+  $('#detailSheet').insertAdjacentHTML('beforeend', html);
+  $('#rankPicker').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+async function setRank(n){
+  const it = ITEMS.find(i => i.id === detailId);
+  if(n > 0){
+    // 同じ順位の子がいたら、その子は順位なしに
+    const dup = ITEMS.find(i => i.rank === n && i.id !== it.id);
+    if(dup){ dup.rank = null; dup.updatedAt = Date.now(); await dbPut(dup); }
+    it.rank = n;
+    toast(`🏆 ${n}位に登録したよ!`);
+  } else {
+    it.rank = null;
+    toast('ランキングから外したよ');
+  }
+  it.updatedAt = Date.now();
+  await dbPut(it);
+  openDetail(detailId);
+  refreshAll();
+}
+/* 削除:アプリ内の確認パネルを表示(confirmダイアログは使わない) */
+function deleteItem(){
+  const it = ITEMS.find(i => i.id === detailId);
+  if(!it) return;
+  const old = document.getElementById('delConfirm');
+  if(old){ old.remove(); return; }
+  const html = `
+    <div class="del-confirm" id="delConfirm">
+      <div class="msg">「${esc(it.name)}」を削除する?</div>
+      <div class="sub">この操作は元に戻せないよ。</div>
+      <div style="display:flex;gap:10px;margin-top:12px">
+        <button class="btn line" onclick="document.getElementById('delConfirm').remove()">やめる</button>
+        <button class="btn danger-fill" onclick="reallyDelete()">削除する</button>
+      </div>
+    </div>`;
+  $('#detailSheet').insertAdjacentHTML('beforeend', html);
+  document.getElementById('delConfirm').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+async function reallyDelete(){
+  await dbDel(detailId);
+  closeDetail();
+  await reload();
+  refreshAll();
+  toast('🗑 削除したよ');
+}
+
+/* ---------- フォーム ---------- */
+let editingId = null;
+let formImages = [];
+let formRating = 0;
+let formRepeat = '';
+
+function buildFormStatics(){
+  $('#fCategory').innerHTML = CATS.map(c => `<option value="${c.key}">${c.emoji} ${c.name}</option>`).join('');
+  const si = $('#starInput');
+  si.innerHTML = [1,2,3,4,5].map(n => `<span data-n="${n}">★</span>`).join('');
+  si.querySelectorAll('span').forEach(sp => {
+    sp.onclick = () => {
+      const n = Number(sp.dataset.n);
+      formRating = (formRating === n) ? 0 : n;
+      paintStars();
+    };
+  });
+  document.querySelectorAll('#repeatSeg button').forEach(b => {
+    b.onclick = () => {
+      formRepeat = (formRepeat === b.dataset.v) ? '' : b.dataset.v;
+      paintRepeat();
+    };
+  });
+  $('#photoInput').addEventListener('change', async e => {
+    const files = [...e.target.files];
+    if(!files.length) return;
+    toast('写真をとり込んでいるよ…');
+    for(const f of files){
+      try{ formImages.push(await compressImage(f)); }
+      catch(err){ console.error(err); }
+    }
+    e.target.value = '';
+    paintPhotos();
+    toast('📷 写真を追加したよ');
+  });
+}
+function paintStars(){
+  document.querySelectorAll('#starInput span').forEach(sp =>
+    sp.classList.toggle('on', Number(sp.dataset.n) <= formRating));
+}
+function paintRepeat(){
+  document.querySelectorAll('#repeatSeg button').forEach(b =>
+    b.classList.toggle('on', b.dataset.v === formRepeat));
+}
+function paintPhotos(){
+  const area = $('#photoArea');
+  area.querySelectorAll('.photo-thumb').forEach(el => el.remove());
+  formImages.forEach((src, idx) => {
+    const div = document.createElement('div');
+    div.className = 'photo-thumb';
+    div.innerHTML = `<img src="${src}" alt=""><button class="del">✕</button>`;
+    div.querySelector('.del').onclick = () => { formImages.splice(idx,1); paintPhotos(); };
+    area.insertBefore(div, area.firstChild);
+  });
+}
+function openForm(presetCat){
+  editingId = null;
+  formImages = [];
+  formRating = 0;
+  formRepeat = '';
+  $('#formTitle').textContent = 'コスメを登録する';
+  ['fName','fBrand','fColor','fDate','fPlace','fPrice','fImpression','fComment'].forEach(id => $('#'+id).value = '');
+  $('#fCategory').value = presetCat || (listCat !== 'all' && $('#view-list').classList.contains('active') ? listCat : CATS[0].key);
+  paintStars(); paintRepeat(); paintPhotos();
+  $('#formOverlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function editItem(){
+  const it = ITEMS.find(i => i.id === detailId);
+  closeDetail();
+  editingId = it.id;
+  formImages = [...(it.images||[])];
+  formRating = it.rating || 0;
+  formRepeat = it.repeat || '';
+  $('#formTitle').textContent = 'コスメを編集する';
+  $('#fCategory').value = it.category;
+  $('#fName').value = it.name || '';
+  $('#fBrand').value = it.brand || '';
+  $('#fColor').value = it.colorCode || '';
+  $('#fDate').value = it.purchaseDate || '';
+  $('#fPlace').value = it.place || '';
+  $('#fPrice').value = it.price ?? '';
+  $('#fImpression').value = it.impression || '';
+  $('#fComment').value = it.comment || '';
+  paintStars(); paintRepeat(); paintPhotos();
+  $('#formOverlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeForm(){
+  $('#formOverlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+async function saveItem(){
+  const name = $('#fName').value.trim();
+  if(!name){ toast('商品名だけは入れてね😊'); $('#fName').focus(); return; }
+  const base = editingId ? ITEMS.find(i => i.id === editingId) : {};
+  const item = {
+    ...base,
+    id: editingId || 'c' + Date.now() + Math.random().toString(36).slice(2,7),
+    category: $('#fCategory').value,
+    name,
+    brand: $('#fBrand').value.trim(),
+    colorCode: $('#fColor').value.trim(),
+    purchaseDate: $('#fDate').value,
+    place: $('#fPlace').value.trim(),
+    price: $('#fPrice').value === '' ? '' : Number($('#fPrice').value),
+    rating: formRating,
+    repeat: formRepeat,
+    impression: $('#fImpression').value.trim(),
+    comment: $('#fComment').value.trim(),
+    images: formImages,
+    favorite: base.favorite || false,
+    rank: base.rank || null,
+    createdAt: base.createdAt || Date.now(),
+    updatedAt: Date.now(),
+  };
+  await dbPut(item);
+  await reload();
+  closeForm();
+  refreshAll();
+  toast(editingId ? '✏️ 更新したよ' : '🌸 コレクションに仲間入り!');
+  editingId = null;
+}
+
+/* ---------- バックアップ ---------- */
+async function exportData(){
+  await reload();
+  if(!ITEMS.length){ toast('まだデータがないよ'); return; }
+  const data = { app:'cosme-techo', version:1, exportedAt:new Date().toISOString(), items:ITEMS };
+  const blob = new Blob([JSON.stringify(data)], {type:'application/json'});
+  const a = document.createElement('a');
+  const d = new Date();
+  a.href = URL.createObjectURL(blob);
+  a.download = `コスメ手帳バックアップ_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('📤 バックアップを保存したよ');
+}
+$('#importFile').addEventListener('change', async e => {
+  const f = e.target.files[0];
+  if(!f) return;
+  try{
+    const data = JSON.parse(await f.text());
+    if(!data.items || !Array.isArray(data.items)) throw new Error('bad format');
+    for(const it of data.items){
+      if(it && it.id && it.name) await dbPut(it);
+    }
+    await reload();
+    refreshAll();
+    toast(`📥 ${data.items.length}件を復元したよ`);
+  }catch(err){
+    toast('ファイルの読み込みに失敗したよ');
+  }
+  e.target.value = '';
+});
+
+/* ---------- 全体更新 ---------- */
+function refreshAll(){
+  renderHome();
+  if($('#view-list').classList.contains('active')) renderList();
+  if($('#view-fav').classList.contains('active')) renderFav();
+  if($('#view-rank').classList.contains('active')) renderRank();
+  if($('#view-search').classList.contains('active')) renderSearch();
+}
+
+/* ---------- 起動演出 ---------- */
+function sparkleBurst(container, count){
+  const rect = container.getBoundingClientRect();
+  for(let i=0;i<count;i++){
+    const s = document.createElement('div');
+    s.className = 'sparkle';
+    s.style.left = (rect.left + Math.random()*rect.width) + 'px';
+    s.style.top = (rect.top + Math.random()*rect.height) + 'px';
+    const size = 6 + Math.random()*12;
+    s.style.width = s.style.height = size + 'px';
+    s.style.animationDelay = (Math.random()*1.2) + 's';
+    document.getElementById('opening').appendChild(s);
+    setTimeout(() => s.remove(), 4200);
+  }
+}
+function petalRain(count){
+  const op = document.getElementById('opening');
+  for(let i=0;i<count;i++){
+    const p = document.createElement('div');
+    p.className = 'petal';
+    p.style.left = (Math.random()*100) + 'vw';
+    p.style.animationDuration = (4 + Math.random()*4) + 's';
+    p.style.animationDelay = (Math.random()*1.5) + 's';
+    const sc = .7 + Math.random()*.9;
+    p.style.transform = `scale(${sc})`;
+    op.appendChild(p);
+    setTimeout(() => p.remove(), 10000);
+  }
+}
+let opened = false;
+function playOpening(){
+  const op = document.getElementById('opening');
+  const start = () => {
+    if(opened) return;
+    opened = true;
+    op.classList.add('open');
+    const book = op.querySelector('.book');
+    sparkleBurst(book, 26);
+    petalRain(14);
+    setTimeout(() => sparkleBurst(book, 14), 900);
+    setTimeout(() => {
+      op.classList.add('fadeout');
+      setTimeout(() => op.remove(), 900);
+    }, 2600);
+  };
+  op.addEventListener('click', start);
+  setTimeout(start, 1400); // タップしなくても自動で開く
+}
+
+/* ---------- ホーム背景のふわふわ ---------- */
+function homeFloaties(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const glyphs = ['🌸','✨','💗','🫧','🎀'];
+  for(let i=0;i<7;i++){
+    const f = document.createElement('div');
+    f.className = 'floaty';
+    f.textContent = glyphs[i % glyphs.length];
+    f.style.left = (5 + Math.random()*90) + 'vw';
+    f.style.animationDuration = (14 + Math.random()*12) + 's';
+    f.style.animationDelay = (Math.random()*14) + 's';
+    document.body.appendChild(f);
+  }
+}
+
+/* ---------- 初期化 ---------- */
+(async function init(){
+  try{
+    await openDB();
+    await reload();
+  }catch(e){
+    alert('データベースを開けませんでした。Safariのプライベートモードでは使えないことがあるよ。');
+  }
+  buildFormStatics();
+  renderHome();
+  $('#bestYear').addEventListener('change', renderBestYear);
+  $('#searchInput').addEventListener('input', renderSearch);
+  homeFloaties();
+  playOpening();
+})();
+
+</script>
+</body>
+</html>
