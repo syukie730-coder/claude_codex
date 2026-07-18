@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="placenta-diary-icon.png">
+<title>美活メルヘン手帳 〜Placenta Beauty Diary〜</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sky:#C4E6F2;
+  --leaf:#8FBF6F;
+  --leaf-deep:#6FA453;
+  --meadow:#B7D98A;
+  --cream:#FFF9EC;
+  --paper:#FFFDF6;
+  --coral:#F0946B;
+  --coral-deep:#E07A52;
+  --rose:#F2A6C0;
+  --rose-deep:#DE7Fa4;
+  --honey:#F5C95C;
+  --honey-deep:#E5AF35;
+  --sora:#6FB6D6;
+  --brown:#5F4B32;
+  --brown-soft:#95805F;
+  --radius-lg:26px;
+  --radius-md:18px;
+  --card-shadow:0 10px 26px rgba(110,90,50,.16);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{font-size:16px;}
+body{
+  font-family:'Zen Maru Gothic',sans-serif;
+  color:var(--brown);
+  min-height:100vh;
+  background:
+    radial-gradient(500px 400px at 88% 4%, rgba(255,238,180,.9), rgba(255,238,180,0) 65%),
+    linear-gradient(180deg,#BCE2F2 0%, #D6EDE2 42%, #F3F0CF 72%, #FFF4D8 100%);
+  background-attachment:fixed;
+  overflow-x:hidden;
+  padding-bottom:150px;
+}
+/* ---------- お日さま ---------- */
+.sun{
+  position:fixed;top:26px;right:26px;width:64px;height:64px;z-index:0;
+  background:radial-gradient(circle,#FFE9A8 30%,#FFD667 65%,rgba(255,214,103,0) 72%);
+  border-radius:50%;
+  box-shadow:0 0 40px 18px rgba(255,224,140,.55);
+  animation:sunGlow 6s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes sunGlow{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
+/* ---------- ながれる雲 ---------- */
+.cloud{
+  position:fixed;z-index:0;pointer-events:none;opacity:.9;
+  filter:drop-shadow(0 6px 8px rgba(120,150,170,.15));
+}
+.cloud i{
+  position:absolute;background:#fff;border-radius:50%;
+}
+.cloud.c1{top:9%;animation:drift 70s linear infinite;}
+.cloud.c2{top:22%;animation:drift 95s linear infinite;animation-delay:-40s;transform:scale(.7);opacity:.75;}
+@keyframes drift{
+  from{left:-180px;}
+  to{left:110%;}
+}
+/* ---------- ふもとの丘 ---------- */
+.hills{
+  position:fixed;left:0;right:0;bottom:0;z-index:0;pointer-events:none;
+  line-height:0;
+}
+.hills svg{width:100%;height:auto;display:block;}
+/* ---------- 舞う葉っぱ・花びら ---------- */
+.petal-layer{position:fixed;inset:0;pointer-events:none;z-index:2;overflow:hidden;}
+.petal{
+  position:absolute;top:-6%;
+  width:14px;height:14px;
+  background:linear-gradient(135deg,#FAC7D8,#F09EBE);
+  border-radius:70% 0 70% 0;
+  opacity:.85;
+  animation:fall linear forwards;
+}
+.petal.leafy{background:linear-gradient(135deg,#BCDD92,#8FBF6F);border-radius:0 70% 0 70%;}
+.petal.honeyp{background:linear-gradient(135deg,#FBE39F,#F2C75B);}
+@keyframes fall{
+  0%{transform:translate3d(0,-4vh,0) rotate(0deg);opacity:0;}
+  10%{opacity:.9;}
+  100%{transform:translate3d(var(--sway),108vh,0) rotate(var(--spin));opacity:0;}
+}
+/* ---------- 光の精(ふわっと上る光) ---------- */
+.spirit{
+  position:fixed;bottom:12%;pointer-events:none;z-index:2;
+  width:8px;height:8px;border-radius:50%;
+  background:radial-gradient(circle,#FFFDF0 0%,#FFE9A0 45%,transparent 70%);
+  animation:riseUp ease-in forwards;
+}
+@keyframes riseUp{
+  0%{transform:translate(0,0) scale(.6);opacity:0;}
+  20%{opacity:.95;}
+  100%{transform:translate(var(--sway),-55vh) scale(1.2);opacity:0;}
+}
+/* ---------- 保存キラキラ ---------- */
+.sparkle{
+  position:fixed;width:6px;height:6px;pointer-events:none;z-index:60;
+  background:radial-gradient(circle,#FFFDF0 0%,#FFD667 40%,transparent 70%);
+  border-radius:50%;
+  animation:sparkleFly .95s ease-out forwards;
+}
+@keyframes sparkleFly{
+  0%{transform:translate(0,0) scale(1);opacity:1;}
+  100%{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0;}
+}
+/* ---------- 全体 ---------- */
+.app{
+  position:relative;z-index:3;
+  max-width:520px;margin:0 auto;
+  padding:calc(22px + env(safe-area-inset-top)) 18px 20px;
+  animation:appIn .8s cubic-bezier(.22,.9,.3,1) both;
+}
+@keyframes appIn{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:none;}}
+/* ---------- ヘッダー ---------- */
+header{text-align:center;margin-bottom:18px;}
+.brand-en{
+  font-size:.72rem;letter-spacing:.32em;color:var(--sora);
+  text-transform:uppercase;font-weight:700;
+}
+h1{
+  font-family:'Kiwi Maru',serif;font-weight:500;
+  font-size:1.6rem;letter-spacing:.1em;margin-top:4px;
+}
+h1 .t1{color:var(--coral);}
+h1 .t2{color:var(--leaf-deep);}
+h1 .t3{color:var(--sora);}
+h1 .t4{color:var(--honey-deep);}
+h1 .t5{color:var(--rose-deep);}
+.brand-line{
+  width:150px;height:8px;margin:8px auto 0;position:relative;
+}
+.brand-line::before{
+  content:"🌼 ・ 🍃 ・ 🌼";
+  font-size:.55rem;letter-spacing:.3em;
+  position:absolute;left:50%;top:0;transform:translateX(-50%);
+}
+/* ---------- ヒーローカード(絵本の表紙) ---------- */
+.hero{
+  position:relative;
+  border-radius:var(--radius-lg);
+  padding:22px 22px 20px;
+  background:linear-gradient(170deg,#FFFDF4 0%,#FDF6E2 100%);
+  border:2.5px solid #F0DFAF;
+  box-shadow:var(--card-shadow), inset 0 0 0 5px rgba(255,255,255,.7);
+  overflow:hidden;
+}
+.hero::before{ /* 内側の水彩にじみ */
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(220px 130px at 12% 88%, rgba(183,217,138,.4), transparent 70%),
+    radial-gradient(200px 120px at 88% 90%, rgba(242,166,192,.3), transparent 70%),
+    radial-gradient(180px 110px at 85% 8%, rgba(196,230,242,.55), transparent 70%);
+}
+.hero-label{
+  position:relative;font-size:.8rem;letter-spacing:.2em;color:var(--brown-soft);
+  display:flex;align-items:center;justify-content:center;gap:8px;font-weight:700;
+}
+.hero-label::before{content:"🌷";font-size:.85rem;}
+.hero-label::after{content:"🌷";font-size:.85rem;}
+.hero-main{position:relative;display:flex;align-items:center;justify-content:center;gap:18px;margin:10px 0 4px;}
+.hero-flower{
+  font-size:3.1rem;line-height:1;
+  filter:drop-shadow(0 5px 8px rgba(150,120,60,.3));
+  animation:flowerSway 4s ease-in-out infinite;
+  transform-origin:bottom center;
+}
+@keyframes flowerSway{0%,100%{transform:rotate(-5deg);}50%{transform:rotate(6deg);}}
+.hero-count{text-align:center;}
+.hero-count .num{
+  font-family:'Kiwi Maru',serif;font-size:3.1rem;font-weight:500;line-height:1;
+  color:var(--coral);
+  text-shadow:2px 2px 0 #FFF, 4px 4px 0 rgba(240,148,107,.25);
+}
+.hero-count .unit{font-size:1rem;color:var(--brown-soft);margin-left:4px;font-weight:700;}
+.hero-count .cap{font-size:.78rem;letter-spacing:.12em;color:var(--brown-soft);margin-top:4px;}
+.hero-sub{
+  position:relative;display:flex;justify-content:center;gap:12px;margin-top:14px;
+}
+.pill{
+  padding:8px 16px;border-radius:999px;font-size:.82rem;font-weight:700;color:var(--brown);
+  background:#fff;
+  border:2px solid var(--meadow);
+  box-shadow:0 4px 8px rgba(120,140,80,.15);
+}
+.pill.gold{border-color:#F2D488;}
+.pill b{font-family:'Kiwi Maru',serif;font-size:1.1rem;color:var(--leaf-deep);margin:0 2px;}
+.pill.gold b{color:var(--honey-deep);}
+/* ---------- カレンダーカード ---------- */
+.cal-card{
+  margin-top:20px;
+  border-radius:var(--radius-lg);
+  background:linear-gradient(175deg,#FFFEF8,#FCF7E8);
+  border:2.5px solid #E8DFC2;
+  box-shadow:var(--card-shadow), inset 0 0 0 5px rgba(255,255,255,.7);
+  padding:18px 14px 20px;
+  perspective:1200px;
+  position:relative;overflow:hidden;
+}
+.cal-card::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(240px 130px at 8% 100%, rgba(196,230,242,.4), transparent 70%);
+}
+.cal-head{position:relative;display:flex;align-items:center;justify-content:space-between;padding:0 4px 12px;}
+.month-title{
+  font-family:'Kiwi Maru',serif;font-size:1.3rem;font-weight:500;letter-spacing:.08em;
+  text-align:center;color:var(--brown);
+}
+.month-title small{
+  display:block;font-size:.68rem;letter-spacing:.28em;color:var(--sora);font-weight:700;
+  text-transform:uppercase;margin-top:2px;
+}
+.nav-btn{
+  width:46px;height:46px;border:none;border-radius:50%;cursor:pointer;
+  font-size:1.2rem;color:#fff;font-weight:700;
+  background:linear-gradient(160deg,#9CCB7C,#6FA453);
+  border:2.5px solid #fff;
+  box-shadow:0 5px 10px rgba(110,150,80,.35);
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.nav-btn:active{transform:translateY(2px) scale(.93);box-shadow:0 2px 5px rgba(110,150,80,.35);}
+.cal-body{position:relative;transform-style:preserve-3d;}
+.cal-body.turn-next{animation:turnNext .5s cubic-bezier(.4,.1,.3,1);}
+.cal-body.turn-prev{animation:turnPrev .5s cubic-bezier(.4,.1,.3,1);}
+@keyframes turnNext{
+  0%{transform:rotateY(0);opacity:1;}
+  49%{transform:rotateY(-72deg);opacity:.15;}
+  51%{transform:rotateY(72deg);opacity:.15;}
+  100%{transform:rotateY(0);opacity:1;}
+}
+@keyframes turnPrev{
+  0%{transform:rotateY(0);opacity:1;}
+  49%{transform:rotateY(72deg);opacity:.15;}
+  51%{transform:rotateY(-72deg);opacity:.15;}
+  100%{transform:rotateY(0);opacity:1;}
+}
+.weekdays{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:.75rem;font-weight:700;letter-spacing:.05em;color:var(--brown-soft);padding-bottom:8px;}
+.weekdays span:first-child{color:var(--coral-deep);}
+.weekdays span:last-child{color:var(--sora);}
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+.day{
+  aspect-ratio:1/1.08;
+  border-radius:15px;cursor:pointer;position:relative;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  font-family:inherit;font-size:.92rem;font-weight:500;color:var(--brown);
+  background:#FFFEF9;
+  border:2px solid #EFE6CC;
+  box-shadow:0 3px 6px rgba(140,120,70,.12);
+  transition:transform .18s ease, box-shadow .18s ease;
+}
+.day:active{transform:translateY(2px) scale(.94);box-shadow:0 1px 3px rgba(140,120,70,.15);}
+.day.empty{visibility:hidden;}
+.day .mark{font-size:1.05rem;line-height:1;height:1.1em;}
+.day.today{
+  border-color:var(--honey);
+  background:linear-gradient(170deg,#FFFBEA,#FFF3CE);
+  box-shadow:0 4px 12px rgba(230,180,60,.35);
+}
+.day.done{
+  background:linear-gradient(160deg,#EAF6DA,#CBE8A9);
+  border-color:var(--leaf);
+  color:var(--leaf-deep);font-weight:700;
+  box-shadow:0 5px 12px rgba(120,160,80,.3);
+}
+.day.done .mark{animation:markSway 3s ease-in-out infinite;transform-origin:bottom center;}
+@keyframes markSway{0%,100%{transform:rotate(-8deg);}50%{transform:rotate(8deg);}}
+.day.bloom .mark{animation:bloom .9s cubic-bezier(.2,1.4,.4,1) both;}
+@keyframes bloom{
+  0%{transform:scale(0) rotate(-160deg);opacity:0;}
+  60%{transform:scale(1.6) rotate(15deg);opacity:1;}
+  100%{transform:scale(1) rotate(0);}
+}
+/* ---------- 記録シート(絵本のページ) ---------- */
+.overlay{
+  position:fixed;inset:0;z-index:100;
+  background:rgba(90,75,45,.35);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  opacity:0;pointer-events:none;transition:opacity .3s ease;
+}
+.overlay.show{opacity:1;pointer-events:auto;}
+.sheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:101;
+  max-width:520px;margin:0 auto;
+  max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  background:linear-gradient(175deg,#FFFEF8,#FBF4DF);
+  border-radius:28px 28px 0 0;
+  border:2.5px solid #EBDFB8;border-bottom:none;
+  box-shadow:0 -14px 40px rgba(120,100,50,.3);
+  padding:14px 22px calc(26px + env(safe-area-inset-bottom));
+  transform:translateY(105%);
+  transition:transform .42s cubic-bezier(.25,.9,.3,1);
+}
+.sheet.show{transform:translateY(0);}
+.sheet-handle{width:46px;height:6px;border-radius:99px;background:linear-gradient(90deg,var(--leaf),var(--honey),var(--rose));margin:0 auto 14px;}
+.sheet-date{
+  font-family:'Kiwi Maru',serif;font-size:1.25rem;font-weight:500;text-align:center;letter-spacing:.06em;
+  color:var(--brown);
+}
+.sheet-date small{display:block;font-size:.66rem;letter-spacing:.3em;color:var(--sora);font-weight:700;text-transform:uppercase;margin-top:2px;}
+.field{margin-top:16px;}
+.field-label{
+  font-size:.85rem;font-weight:700;letter-spacing:.06em;color:var(--brown);
+  display:flex;align-items:center;gap:6px;margin-bottom:8px;
+}
+input[type=time],input[type=text],textarea{
+  width:100%;border:2px solid #E6D9B4;border-radius:var(--radius-md);
+  padding:12px 15px;font-size:1rem;font-family:inherit;color:var(--brown);
+  background:#FFFEFA;
+  outline:none;transition:border-color .2s, box-shadow .2s;
+}
+input:focus,textarea:focus{border-color:var(--leaf);box-shadow:0 0 0 3px rgba(143,191,111,.25);}
+textarea{resize:none;min-height:78px;line-height:1.6;}
+.choices{display:flex;gap:7px;}
+.choice{
+  flex:1;cursor:pointer;border-radius:var(--radius-md);
+  padding:9px 2px 7px;font-family:inherit;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  background:#FFFEFA;
+  border:2px solid #EBE0BE;
+  box-shadow:0 3px 5px rgba(140,120,70,.1);
+  transition:transform .15s ease, background .2s, border-color .2s;
+}
+.choice span.icon{font-size:1.35rem;line-height:1;}
+.choice span.txt{font-size:.6rem;color:var(--brown-soft);font-weight:700;}
+.choice:active{transform:scale(.92);}
+.choice.on{
+  background:linear-gradient(165deg,#F4FBE8,#DFF0C2);
+  border-color:var(--leaf);
+  box-shadow:0 5px 10px rgba(120,160,80,.3);
+  transform:translateY(-2px);
+}
+.choice.on span.txt{color:var(--leaf-deep);}
+.photo-row{display:flex;align-items:center;gap:12px;}
+.photo-btn{
+  border:2px dashed #D9C795;border-radius:var(--radius-md);
+  background:#FFFEF8;cursor:pointer;
+  padding:13px 18px;font-family:inherit;font-size:.88rem;font-weight:700;color:var(--brown-soft);
+  flex:1;transition:background .2s;
+}
+.photo-btn:active{background:#FBF3DC;}
+.photo-preview{
+  width:74px;height:74px;border-radius:16px;object-fit:cover;display:none;
+  border:3px solid #fff;box-shadow:0 5px 12px rgba(130,110,60,.3);
+}
+.photo-del{display:none;border:none;background:none;color:var(--brown-soft);font-size:.75rem;cursor:pointer;text-decoration:underline;padding:4px;font-family:inherit;}
+.sheet-actions{display:flex;gap:10px;margin-top:22px;}
+.btn{
+  border:none;cursor:pointer;font-family:inherit;font-weight:700;letter-spacing:.08em;
+  border-radius:999px;padding:15px 8px;font-size:.98rem;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.btn:active{transform:translateY(2px) scale(.97);}
+.btn-save{
+  flex:2;color:#fff;
+  background:linear-gradient(150deg,#F5A876,#E07A52);
+  border:2.5px solid #fff;
+  box-shadow:0 7px 16px rgba(210,110,70,.4);
+}
+.btn-delete{
+  flex:1;color:var(--brown-soft);background:#FFFEFA;
+  border:2px solid #E2D5AE;display:none;
+}
+.btn-cancel{flex:1;color:var(--brown-soft);background:#FFFEFA;border:2px solid #E2D5AE;}
+/* ---------- トースト・ご褒美 ---------- */
+.toast{
+  position:fixed;left:50%;bottom:96px;transform:translate(-50%,20px);
+  z-index:120;padding:13px 26px;border-radius:999px;
+  background:#FFFEF6;
+  border:2.5px solid var(--honey);
+  box-shadow:0 8px 24px rgba(140,110,50,.3);
+  font-size:.92rem;font-weight:700;color:var(--brown);letter-spacing:.03em;
+  opacity:0;pointer-events:none;transition:opacity .35s, transform .35s;
+  white-space:nowrap;
+}
+.toast.show{opacity:1;transform:translate(-50%,0);}
+.reward{
+  position:fixed;inset:0;z-index:130;display:flex;align-items:center;justify-content:center;
+  background:rgba(90,75,45,.42);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
+  opacity:0;pointer-events:none;transition:opacity .35s;
+}
+.reward.show{opacity:1;pointer-events:auto;}
+.reward-card{
+  width:min(84vw,340px);text-align:center;
+  border-radius:28px;padding:32px 26px 28px;
+  background:linear-gradient(170deg,#FFFEF7,#FBF2D8);
+  border:3px solid var(--honey);
+  outline:3px dashed rgba(229,175,53,.5);outline-offset:-11px;
+  box-shadow:0 22px 55px rgba(90,70,30,.5);
+  transform:scale(.7);transition:transform .45s cubic-bezier(.2,1.4,.4,1);
+}
+.reward.show .reward-card{transform:scale(1);}
+.reward-gem{font-size:3rem;animation:flowerSway 3s ease-in-out infinite;display:inline-block;filter:drop-shadow(0 6px 12px rgba(180,140,50,.4));}
+.reward-title{font-family:'Kiwi Maru',serif;font-size:1.3rem;font-weight:500;margin-top:12px;letter-spacing:.08em;color:var(--coral-deep);}
+.reward-msg{font-size:.9rem;line-height:1.9;color:var(--brown);margin-top:12px;font-weight:500;}
+.reward-btn{
+  margin-top:20px;border:none;cursor:pointer;font-family:inherit;font-weight:700;
+  padding:13px 40px;border-radius:999px;color:#fff;font-size:.95rem;letter-spacing:.12em;
+  background:linear-gradient(150deg,#8FBF6F,#6FA453);
+  border:2.5px solid #fff;
+  box-shadow:0 7px 16px rgba(110,150,80,.45);
+}
+footer{
+  text-align:center;margin-top:24px;
+  font-size:.72rem;letter-spacing:.24em;color:var(--brown-soft);font-weight:700;
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none !important;transition:none !important;}
+  .petal-layer{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="sun"></div>
+
+<div class="cloud c1" style="width:150px;height:50px;">
+  <i style="width:70px;height:70px;left:20px;top:-28px;"></i>
+  <i style="width:50px;height:50px;left:70px;top:-16px;"></i>
+  <i style="width:110px;height:44px;left:8px;top:0;border-radius:40px;"></i>
+</div>
+<div class="cloud c2" style="width:150px;height:50px;">
+  <i style="width:60px;height:60px;left:26px;top:-24px;"></i>
+  <i style="width:44px;height:44px;left:72px;top:-12px;"></i>
+  <i style="width:110px;height:40px;left:10px;top:0;border-radius:40px;"></i>
+</div>
+
+<div class="petal-layer" id="petalLayer"></div>
+
+<div class="app">
+  <header>
+    <div class="brand-en">Placenta Beauty Diary</div>
+    <h1><span class="t1">美</span><span class="t2">活</span><span class="t3">メルヘン</span><span class="t4">手</span><span class="t5">帳</span></h1>
+    <div class="brand-line"></div>
+  </header>
+
+  <!-- ヒーローカード -->
+  <section class="hero" id="heroCard">
+    <div class="hero-label">今月のプラセンタ</div>
+    <div class="hero-main">
+      <span class="hero-flower">🌻</span>
+      <div class="hero-count">
+        <span class="num" id="monthCount">0</span><span class="unit">回</span>
+        <div class="cap">今月の記録</div>
+      </div>
+    </div>
+    <div class="hero-sub">
+      <span class="pill">今年 <b id="yearCount">0</b> 回</span>
+      <span class="pill gold">累計 <b id="totalCount">0</b> 回</span>
+    </div>
+  </section>
+
+  <!-- カレンダー -->
+  <section class="cal-card">
+    <div class="cal-head">
+      <button class="nav-btn" id="prevBtn" aria-label="前の月">‹</button>
+      <div class="month-title" id="monthTitle"></div>
+      <button class="nav-btn" id="nextBtn" aria-label="次の月">›</button>
+    </div>
+    <div class="cal-body" id="calBody">
+      <div class="weekdays">
+        <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
+      </div>
+      <div class="days" id="daysGrid"></div>
+    </div>
+  </section>
+
+  <footer>— きょうも すこやかに うつくしく —</footer>
+</div>
+
+<!-- ふもとの丘 -->
+<div class="hills">
+  <svg viewBox="0 0 520 130" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0,70 C90,30 170,95 260,60 C350,25 430,85 520,50 L520,130 L0,130 Z" fill="#A9CE85" opacity=".85"/>
+    <path d="M0,95 C110,60 200,115 300,85 C400,55 460,105 520,88 L520,130 L0,130 Z" fill="#8FBF6F"/>
+    <circle cx="60" cy="98" r="3.4" fill="#F2A6C0"/>
+    <circle cx="66" cy="104" r="2.4" fill="#FFF"/>
+    <circle cx="150" cy="108" r="3.2" fill="#F5C95C"/>
+    <circle cx="235" cy="96" r="3.4" fill="#FFF"/>
+    <circle cx="242" cy="103" r="2.4" fill="#F2A6C0"/>
+    <circle cx="330" cy="104" r="3.2" fill="#F5C95C"/>
+    <circle cx="415" cy="100" r="3.4" fill="#F2A6C0"/>
+    <circle cx="472" cy="108" r="3" fill="#FFF"/>
+    <path d="M448,90 l0,-14 m0,3 l-6,-6 m6,3 l6,-6" stroke="#5F7A45" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <circle cx="448" cy="70" r="9" fill="#79A85C"/>
+    <circle cx="441" cy="76" r="7" fill="#8CBB6C"/>
+    <circle cx="455" cy="76" r="7" fill="#8CBB6C"/>
+  </svg>
+</div>
+
+<!-- 記録シート -->
+<div class="overlay" id="overlay"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true">
+  <div class="sheet-handle"></div>
+  <div class="sheet-date" id="sheetDate"></div>
+
+  <div class="field">
+    <div class="field-label">🕰️ 注射した時間</div>
+    <input type="time" id="fTime">
+  </div>
+
+  <div class="field">
+    <div class="field-label">💉 本数・量</div>
+    <input type="text" id="fAmount" placeholder="例：2アンプル / 1本">
+  </div>
+
+  <div class="field">
+    <div class="field-label">🌷 肌の調子</div>
+    <div class="choices" id="skinChoices">
+      <button class="choice" data-v="1"><span class="icon">🥀</span><span class="txt">いまいち</span></button>
+      <button class="choice" data-v="2"><span class="icon">🌱</span><span class="txt">ふつう</span></button>
+      <button class="choice" data-v="3"><span class="icon">🌷</span><span class="txt">いい感じ</span></button>
+      <button class="choice" data-v="4"><span class="icon">🌸</span><span class="txt">つやつや</span></button>
+      <button class="choice" data-v="5"><span class="icon">🌈</span><span class="txt">最高</span></button>
+    </div>
+  </div>
+
+  <div class="field">
+    <div class="field-label">☀️ 今日の気分</div>
+    <div class="choices" id="moodChoices">
+      <button class="choice" data-v="1"><span class="icon">😔</span><span class="txt">おつかれ</span></button>
+      <button class="choice" data-v="2"><span class="icon">😌</span><span class="txt">おだやか</span></button>
+      <button class="choice" data-v="3"><span class="icon">🙂</span><span class="txt">ふつう</span></button>
+      <button class="choice" data-v="4"><span class="icon">😊</span><span class="txt">ごきげん</span></button>
+      <button class="choice" data-v="5"><span class="icon">🥰</span><span class="txt">しあわせ</span></button>
+    </div>
+  </div>
+
+  <div class="field">
+    <div class="field-label">📖 体調メモ</div>
+    <textarea id="fMemo" placeholder="今日の体調や気づいたことを自由にどうぞ"></textarea>
+  </div>
+
+  <div class="field">
+    <div class="field-label">📷 写真</div>
+    <div class="photo-row">
+      <button class="photo-btn" id="photoBtn">📷 写真を追加する</button>
+      <img class="photo-preview" id="photoPreview" alt="添付写真">
+    </div>
+    <button class="photo-del" id="photoDel">写真を削除する</button>
+    <input type="file" id="fPhoto" accept="image/*" hidden>
+  </div>
+
+  <div class="sheet-actions">
+    <button class="btn btn-cancel" id="cancelBtn">閉じる</button>
+    <button class="btn btn-delete" id="deleteBtn">削除</button>
+    <button class="btn btn-save" id="saveBtn">🌼 記録する 🌼</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ご褒美 -->
+<div class="reward" id="reward">
+  <div class="reward-card">
+    <span class="reward-gem" id="rewardGem">🌼</span>
+    <div class="reward-title" id="rewardTitle"></div>
+    <div class="reward-msg" id="rewardMsg"></div>
+    <button class="reward-btn" id="rewardBtn">ありがとう 🌿</button>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+var KEY='placentaJewelRecords';
+var records={};
+try{records=JSON.parse(localStorage.getItem(KEY))||{};}catch(e){records={};}
+
+var today=new Date();
+var viewY=today.getFullYear(), viewM=today.getMonth();
+var editingKey=null, selSkin=0, selMood=0, photoData='';
+var reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- ユーティリティ ---------- */
+function pad(n){return (n<10?'0':'')+n;}
+function dkey(y,m,d){return y+'-'+pad(m+1)+'-'+pad(d);}
+function save(){localStorage.setItem(KEY,JSON.stringify(records));}
+function $(id){return document.getElementById(id);}
+
+/* ---------- 舞う花びら・葉っぱ ---------- */
+function spawnPetals(count){
+  if(reducedMotion) return;
+  var layer=$('petalLayer');
+  var types=['','leafy','honeyp'];
+  for(var i=0;i<count;i++){
+    (function(i){
+      setTimeout(function(){
+        var p=document.createElement('div');
+        p.className='petal '+types[Math.floor(Math.random()*3)];
+        p.style.left=(Math.random()*100)+'%';
+        var s=9+Math.random()*10;
+        p.style.width=s+'px';p.style.height=s+'px';
+        p.style.setProperty('--sway',(Math.random()*160-80)+'px');
+        p.style.setProperty('--spin',(Math.random()*720-360)+'deg');
+        p.style.animationDuration=(6+Math.random()*6)+'s';
+        layer.appendChild(p);
+        setTimeout(function(){p.remove();},13000);
+      }, i*180);
+    })(i);
+  }
+}
+
+/* ---------- 光の精 ---------- */
+function spawnSpirits(count){
+  if(reducedMotion) return;
+  for(var i=0;i<count;i++){
+    (function(i){
+      setTimeout(function(){
+        var s=document.createElement('div');
+        s.className='spirit';
+        s.style.left=(5+Math.random()*90)+'%';
+        var sz=5+Math.random()*7;
+        s.style.width=sz+'px';s.style.height=sz+'px';
+        s.style.setProperty('--sway',(Math.random()*120-60)+'px');
+        s.style.animationDuration=(5+Math.random()*4)+'s';
+        document.body.appendChild(s);
+        setTimeout(function(){s.remove();},9500);
+      }, i*500);
+    })(i);
+  }
+}
+
+/* ---------- 保存キラキラ ---------- */
+function burstSparkles(x,y,n){
+  if(reducedMotion) return;
+  for(var i=0;i<n;i++){
+    var s=document.createElement('div');
+    s.className='sparkle';
+    s.style.left=x+'px'; s.style.top=y+'px';
+    var ang=Math.random()*Math.PI*2, dist=30+Math.random()*70;
+    s.style.setProperty('--dx',Math.cos(ang)*dist+'px');
+    s.style.setProperty('--dy',Math.sin(ang)*dist+'px');
+    var sz=4+Math.random()*6;
+    s.style.width=sz+'px';s.style.height=sz+'px';
+    document.body.appendChild(s);
+    setTimeout(function(el){return function(){el.remove();};}(s),1000);
+  }
+}
+
+/* ---------- カウント ---------- */
+function updateCounts(){
+  var mc=0,yc=0,tc=0;
+  var yPre=today.getFullYear()+'-';
+  var curPre=today.getFullYear()+'-'+pad(today.getMonth()+1)+'-';
+  for(var k in records){
+    tc++;
+    if(k.indexOf(yPre)===0) yc++;
+    if(k.indexOf(curPre)===0) mc++;
+  }
+  $('monthCount').textContent=mc;
+  $('yearCount').textContent=yc;
+  $('totalCount').textContent=tc;
+}
+
+/* ---------- カレンダー描画 ---------- */
+function render(){
+  var mt=$('monthTitle');
+  var en=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  mt.innerHTML=viewY+'年 '+(viewM+1)+'月<small>'+en[viewM]+'</small>';
+  var grid=$('daysGrid');
+  grid.innerHTML='';
+  var first=new Date(viewY,viewM,1).getDay();
+  var last=new Date(viewY,viewM+1,0).getDate();
+  var tKey=dkey(today.getFullYear(),today.getMonth(),today.getDate());
+  for(var i=0;i<first;i++){
+    var e=document.createElement('button');
+    e.className='day empty';e.disabled=true;grid.appendChild(e);
+  }
+  for(var d=1;d<=last;d++){
+    var k=dkey(viewY,viewM,d);
+    var btn=document.createElement('button');
+    btn.className='day';
+    if(k===tKey) btn.classList.add('today');
+    var mark='';
+    if(records[k]){btn.classList.add('done');mark='🌼';}
+    else if(k===tKey){mark='☀️';}
+    btn.innerHTML='<span class="mark">'+mark+'</span><span>'+d+'</span>';
+    btn.dataset.key=k;
+    btn.addEventListener('click',onDayTap);
+    grid.appendChild(btn);
+  }
+  updateCounts();
+}
+
+function turn(dir){
+  var body=$('calBody');
+  if(!reducedMotion){
+    body.classList.remove('turn-next','turn-prev');
+    void body.offsetWidth;
+    body.classList.add(dir>0?'turn-next':'turn-prev');
+    setTimeout(render, 240);
+  }else{
+    render();
+  }
+}
+
+$('prevBtn').addEventListener('click',function(){
+  viewM--; if(viewM<0){viewM=11;viewY--;}
+  turn(-1);
+});
+$('nextBtn').addEventListener('click',function(){
+  viewM++; if(viewM>11){viewM=0;viewY++;}
+  turn(1);
+});
+
+/* ---------- シート ---------- */
+function openSheet(key){
+  editingKey=key;
+  var parts=key.split('-');
+  var d=new Date(+parts[0],+parts[1]-1,+parts[2]);
+  var wd=['日','月','火','水','木','金','土'][d.getDay()];
+  $('sheetDate').innerHTML=(+parts[1])+'月'+(+parts[2])+'日（'+wd+'）<small>Beauty Record</small>';
+  var r=records[key]||{};
+  $('fTime').value=r.time||'';
+  $('fAmount').value=r.amount||'';
+  $('fMemo').value=r.memo||'';
+  selSkin=r.skin||0; selMood=r.mood||0;
+  photoData=r.photo||'';
+  refreshChoices('skinChoices',selSkin);
+  refreshChoices('moodChoices',selMood);
+  refreshPhoto();
+  $('deleteBtn').style.display=records[key]?'block':'none';
+  resetDeleteBtn();
+  $('overlay').classList.add('show');
+  $('sheet').classList.add('show');
+}
+function closeSheet(){
+  $('overlay').classList.remove('show');
+  $('sheet').classList.remove('show');
+  resetDeleteBtn();
+  editingKey=null;
+}
+function onDayTap(e){
+  openSheet(e.currentTarget.dataset.key);
+}
+$('overlay').addEventListener('click',closeSheet);
+$('cancelBtn').addEventListener('click',closeSheet);
+
+function refreshChoices(id,val){
+  var btns=$(id).querySelectorAll('.choice');
+  btns.forEach(function(b){b.classList.toggle('on', +b.dataset.v===val);});
+}
+$('skinChoices').addEventListener('click',function(e){
+  var b=e.target.closest('.choice'); if(!b)return;
+  selSkin=+b.dataset.v; refreshChoices('skinChoices',selSkin);
+});
+$('moodChoices').addEventListener('click',function(e){
+  var b=e.target.closest('.choice'); if(!b)return;
+  selMood=+b.dataset.v; refreshChoices('moodChoices',selMood);
+});
+
+/* ---------- 写真(圧縮して保存) ---------- */
+$('photoBtn').addEventListener('click',function(){$('fPhoto').click();});
+$('fPhoto').addEventListener('change',function(){
+  var file=this.files[0]; if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    var img=new Image();
+    img.onload=function(){
+      var max=520, w=img.width, h=img.height;
+      if(w>h && w>max){h=h*max/w;w=max;}
+      else if(h>=w && h>max){w=w*max/h;h=max;}
+      var c=document.createElement('canvas');
+      c.width=w;c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      photoData=c.toDataURL('image/jpeg',0.68);
+      refreshPhoto();
+    };
+    img.src=ev.target.result;
+  };
+  reader.readAsDataURL(file);
+  this.value='';
+});
+function refreshPhoto(){
+  var pv=$('photoPreview');
+  if(photoData){pv.src=photoData;pv.style.display='block';$('photoDel').style.display='inline-block';}
+  else{pv.style.display='none';$('photoDel').style.display='none';}
+}
+$('photoDel').addEventListener('click',function(){photoData='';refreshPhoto();});
+
+/* ---------- 保存 ---------- */
+$('saveBtn').addEventListener('click',function(){
+  if(!editingKey)return;
+  var isNew=!records[editingKey];
+  records[editingKey]={
+    time:$('fTime').value,
+    amount:$('fAmount').value.trim(),
+    memo:$('fMemo').value.trim(),
+    skin:selSkin, mood:selMood,
+    photo:photoData
+  };
+  try{save();}catch(err){
+    delete records[editingKey].photo;
+    try{save(); showToast('写真は容量オーバーのため保存できませんでした');}catch(e2){}
+  }
+  var key=editingKey;
+  closeSheet();
+  render();
+  var cell=document.querySelector('.day[data-key="'+key+'"]');
+  if(cell){
+    cell.classList.add('bloom');
+    var rect=cell.getBoundingClientRect();
+    burstSparkles(rect.left+rect.width/2, rect.top+rect.height/2, 14);
+  }
+  spawnPetals(6);
+  spawnSpirits(4);
+  showToast(isNew?'今日もキレイの花が咲きました 🌼':'記録を更新しました 🌿');
+  if(isNew) checkReward();
+});
+
+/* ---------- 削除(2回タップ方式) ---------- */
+var deleteArmed=false, deleteTimer=null;
+function resetDeleteBtn(){
+  deleteArmed=false;
+  clearTimeout(deleteTimer);
+  var b=$('deleteBtn');
+  b.textContent='削除';
+  b.style.color='';
+  b.style.borderColor='';
+  b.style.background='';
+}
+$('deleteBtn').addEventListener('click',function(){
+  if(!editingKey)return;
+  if(!deleteArmed){
+    deleteArmed=true;
+    this.textContent='本当に削除？';
+    this.style.color='#D25E3E';
+    this.style.borderColor='#EFA98F';
+    this.style.background='#FFF2EC';
+    deleteTimer=setTimeout(resetDeleteBtn,4000);
+    return;
+  }
+  delete records[editingKey];
+  save();
+  resetDeleteBtn();
+  closeSheet();
+  render();
+  showToast('記録を削除しました');
+});
+
+/* ---------- トースト ---------- */
+var toastTimer=null;
+function showToast(msg){
+  var t=$('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){t.classList.remove('show');},2400);
+}
+
+/* ---------- ご褒美 ---------- */
+var MILESTONES={
+  1:{gem:'🌷',title:'はじめの一輪',msg:'記念すべき最初の記録です。\nここから、キレイの物語が始まります。'},
+  5:{gem:'🌼',title:'5回達成！',msg:'お庭に花が増えてきました。\nコツコツ続ける姿、とても素敵です。'},
+  10:{gem:'🌻',title:'10回達成！',msg:'ひまわりみたいに元気いっぱい。\n自分を大切にする時間が習慣になってきましたね。'},
+  25:{gem:'🌳',title:'25回達成！',msg:'小さな芽が、大きな木に育ちました。\n積み重ねた輝きは、誰にも真似できません。'},
+  50:{gem:'🌈',title:'50回達成！',msg:'空に虹がかかりました。\nこの手帳は、あなただけの物語の本になりました。'},
+  100:{gem:'🏰',title:'100回達成！',msg:'おめでとうございます！\n100回分の努力が、今日のあなたを輝かせています。'}
+};
+function checkReward(){
+  var tc=Object.keys(records).length;
+  var m=MILESTONES[tc];
+  if(!m)return;
+  setTimeout(function(){
+    $('rewardGem').textContent=m.gem;
+    $('rewardTitle').textContent=m.title;
+    $('rewardMsg').textContent=m.msg;
+    $('reward').classList.add('show');
+    spawnPetals(12);
+    spawnSpirits(8);
+  },900);
+}
+$('rewardBtn').addEventListener('click',function(){
+  $('reward').classList.remove('show');
+});
+
+/* ---------- 起動 ---------- */
+render();
+spawnPetals(10);
+spawnSpirits(5);
+setInterval(function(){spawnPetals(3);spawnSpirits(2);},9000);
+})();
+</script>
+</body>
+</html>
