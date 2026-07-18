@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="nukege-icon.png">
+<link rel="icon" href="nukege-icon.png">
+<title>抜け毛記録 🌸</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap');
+
+  :root {
+    /* ===== メルヘンパレット ===== */
+    --cream: #FFFdF5;         /* 絵本の紙 */
+    --cream-deep: #FFF6E9;
+    --pink: #F9C9DC;          /* 桜ピンク */
+    --pink-deep: #E890B5;
+    --lavender: #E4DCF5;      /* ラベンダー */
+    --lavender-deep: #B9A5E0;
+    --mint: #D9F0E4;          /* ミントグリーン */
+    --sky: #DCEDF9;           /* 空色 */
+    --ink: #5C4A52;           /* やわらかい墨色 */
+    --ink-soft: #A98CA0;
+    --gold: #E8C87E;          /* 上品なゴールド */
+
+    /* ===== レベル色(白い記号がくっきり見える濃さ) ===== */
+    --best:  #3FAE8C;   /* ◎ 非常に良い */
+    --good:  #7CB65F;   /* ○ 少ない */
+    --soso:  #E5A93C;   /* △ 少し多い */
+    --bad:   #E07B4C;   /* ✕ 多い */
+    --worst: #C94F72;   /* ✕✕ 非常に多い */
+
+    --line: #F0DDE8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Hiragino Sans", sans-serif;
+    background:
+      radial-gradient(circle at 15% 8%, rgba(228,220,245,.5) 0, transparent 26%),
+      radial-gradient(circle at 88% 20%, rgba(249,201,220,.4) 0, transparent 24%),
+      radial-gradient(circle at 75% 85%, rgba(217,240,228,.5) 0, transparent 28%),
+      var(--cream);
+    color: var(--ink);
+    font-size: 16px;
+    font-weight: 500;
+    overscroll-behavior: none;
+  }
+
+  @keyframes floaty { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+  @keyframes twinkle { 0%,100%{opacity:.9;transform:scale(1)} 50%{opacity:.3;transform:scale(.7)} }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes popIn { 0%{opacity:0;transform:scale(.6)} 70%{transform:scale(1.06)} 100%{opacity:1;transform:scale(1)} }
+  @keyframes fall {
+    0%   { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(105vh) rotate(340deg); opacity: .2; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+
+  /* ===== ヘッダー:絵本の空 ===== */
+  header {
+    background: linear-gradient(160deg, #E9E0F8 0%, #F7D9E8 45%, #FDEEDC 100%);
+    padding: calc(env(safe-area-inset-top) + 16px) 16px 22px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 10;
+    border-bottom: 3px dotted rgba(185,165,224,.45);
+    box-shadow: 0 4px 14px rgba(185,165,224,.18);
+    overflow: hidden;
+  }
+  header .cloud {
+    position: absolute; font-size: 40px; opacity: .55; pointer-events: none;
+    animation: floaty 5s ease-in-out infinite;
+  }
+  header .cloud.c1 { right: 84px; top: calc(env(safe-area-inset-top) + 2px); }
+  header .cloud.c2 { left: 8px; bottom: -8px; font-size: 30px; animation-delay: 1.6s; }
+  header .star {
+    position: absolute; font-size: 14px; color: var(--gold); pointer-events: none;
+    animation: twinkle 2.6s ease-in-out infinite;
+  }
+  header .star.s1 { left: 34%; top: calc(env(safe-area-inset-top) + 6px); }
+  header .star.s2 { right: 30px; bottom: 10px; animation-delay: 1.2s; }
+  header .star.s3 { left: 12px; top: calc(env(safe-area-inset-top) + 20px); animation-delay: .6s; font-size: 11px; }
+
+  .month-nav { display: flex; align-items: center; gap: 6px; z-index: 1; }
+  .month-nav button {
+    background: var(--cream); border: 2.5px solid var(--pink); color: var(--pink-deep);
+    width: 42px; height: 42px; border-radius: 50%; font-size: 20px; font-weight: 900;
+    box-shadow: 0 3px 0 rgba(232,144,181,.35);
+    transition: transform .12s;
+  }
+  .month-nav button:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(232,144,181,.35); }
+  .month-nav .month-label {
+    color: var(--ink); font-size: 20px; font-weight: 900; min-width: 128px; text-align: center;
+    letter-spacing: 1px;
+  }
+  .today-btn {
+    background: var(--cream); color: var(--pink-deep); z-index: 1;
+    border: 2.5px solid var(--pink);
+    padding: 10px 18px; border-radius: 24px; font-size: 14px; font-weight: 900;
+    font-family: inherit;
+    box-shadow: 0 3px 0 rgba(232,144,181,.35);
+    transition: transform .12s;
+  }
+  .today-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(232,144,181,.35); }
+
+  /* ===== 画面切り替え ===== */
+  .screen { display: none; padding-bottom: calc(env(safe-area-inset-bottom) + 96px); }
+  .screen.active { display: block; animation: fadeUp .35s ease both; }
+
+  /* ===== カレンダー ===== */
+  .weekdays { display: grid; grid-template-columns: repeat(7,1fr); text-align: center;
+    padding: 14px 6px 8px; font-size: 13px; color: var(--ink-soft); font-weight: 900; }
+  .weekdays span:first-child { color: #D9748F; }
+  .weekdays span:last-child { color: #7FA3D4; }
+  .cal { display: grid; grid-template-columns: repeat(7,1fr); gap: 5px; padding: 0 8px; }
+  .day {
+    min-height: 78px; background: #fff; border-radius: 18px; padding: 7px 3px 6px;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    border: 2px solid var(--line);
+    box-shadow: 0 3px 6px rgba(185,165,224,.10);
+    animation: popIn .3s ease both;
+    transition: transform .1s;
+  }
+  .day:active { transform: scale(.94); }
+  .day.empty { background: transparent; border: none; box-shadow: none; animation: none; }
+  .day .num { font-size: 14px; font-weight: 900; }
+  .day.sun .num { color: #D9748F; }
+  .day.sat .num { color: #7FA3D4; }
+  .day.today {
+    border: 2.5px solid var(--gold);
+    background: linear-gradient(180deg, #FFFBEF, #FFF3DF);
+    box-shadow: 0 0 0 4px rgba(232,200,126,.22), 0 3px 8px rgba(232,200,126,.25);
+  }
+  .day.today .num::after { content: "✦"; font-size: 9px; color: var(--gold); margin-left: 2px; vertical-align: top; }
+
+  /* ===== マーク:白い記号 × はっきりした色で、どんな背景でもくっきり ===== */
+  .day .mark {
+    width: 92%; height: 33px; border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; font-weight: 900; color: #fff;
+    letter-spacing: 1px;
+    text-shadow: 0 1px 2px rgba(0,0,0,.18);
+    box-shadow: 0 2px 5px rgba(92,74,82,.18), inset 0 -2px 0 rgba(0,0,0,.10);
+    border: 2px solid #fff;
+  }
+  .mark.lv-oo { background: var(--best); }
+  .mark.lv-o  { background: var(--good); }
+  .mark.lv-s  { background: var(--soso); }
+  .mark.lv-x  { background: var(--bad); }
+  .mark.lv-xx { background: var(--worst); font-size: 15px; }
+  .day .memo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--lavender-deep); }
+
+  .summary-card {
+    margin: 18px 12px 0; background: #fff; border-radius: 24px; padding: 18px 16px;
+    border: 2px solid var(--line);
+    box-shadow: 0 4px 12px rgba(185,165,224,.14);
+    position: relative;
+  }
+  .summary-card::before {
+    content: ""; position: absolute; inset: 5px; border-radius: 19px;
+    border: 2px dotted rgba(232,144,181,.35); pointer-events: none;
+  }
+  .summary-card::after { content: "🎀"; position: absolute; top: -14px; right: 18px; font-size: 28px; filter: drop-shadow(0 2px 2px rgba(0,0,0,.12)); }
+  .summary-card h3 { font-size: 16px; color: var(--pink-deep); margin-bottom: 8px; font-weight: 900; }
+  .summary-card p { font-size: 15px; line-height: 1.7; white-space: pre-wrap; position: relative; }
+  .summary-card p.empty { color: var(--ink-soft); }
+  .summary-card button {
+    margin-top: 14px; width: 100%; padding: 14px; border: none; border-radius: 18px;
+    background: linear-gradient(180deg, #F3EBFC, #E4DCF5); color: #7B62AB;
+    font-size: 15px; font-weight: 900; font-family: inherit; position: relative;
+    box-shadow: 0 3px 0 rgba(185,165,224,.45);
+    transition: transform .12s;
+  }
+  .summary-card button:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(185,165,224,.45); }
+
+  .legend { display: flex; justify-content: center; gap: 7px; padding: 16px 8px 4px; flex-wrap: wrap; font-size: 12px; color: var(--ink); font-weight: 700; }
+  .legend span { display: flex; align-items: center; gap: 5px; background: #fff; padding: 6px 11px; border-radius: 16px; border: 2px solid var(--line); box-shadow: 0 2px 4px rgba(185,165,224,.10); }
+  .legend i {
+    width: 22px; height: 17px; border-radius: 6px; display: inline-flex;
+    align-items: center; justify-content: center;
+    color: #fff; font-size: 10px; font-weight: 900; font-style: normal;
+    border: 1.5px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,.15);
+  }
+
+  /* ===== 記録シート(モーダル) ===== */
+  .overlay { position: fixed; inset: 0; background: rgba(92,74,82,.35); display: none; z-index: 50; }
+  .overlay.show { display: block; }
+  .sheet {
+    position: fixed; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(180deg, #FFFDF7, #FFF8F0);
+    border-radius: 30px 30px 0 0; padding: 24px 18px calc(env(safe-area-inset-bottom) + 20px);
+    z-index: 51; transform: translateY(100%); transition: transform .28s ease; max-height: 88vh; overflow-y: auto;
+    border-top: 4px dotted var(--pink);
+    box-shadow: 0 -6px 24px rgba(185,165,224,.25);
+  }
+  .sheet.show { transform: translateY(0); }
+  .sheet h2 { font-size: 19px; text-align: center; margin-bottom: 16px; color: var(--pink-deep); font-weight: 900; }
+  .sheet h2::before { content: "🕊️ "; font-size: 16px; }
+  .lv-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+  .lv-btn {
+    padding: 15px 6px; border-radius: 20px; border: 3px solid #fff;
+    font-size: 20px; font-weight: 900; color: #fff; text-align: center;
+    font-family: inherit; letter-spacing: 1px;
+    text-shadow: 0 1px 2px rgba(0,0,0,.18);
+    box-shadow: 0 4px 0 rgba(92,74,82,.16);
+    transition: transform .12s;
+  }
+  .lv-btn:active { transform: translateY(2px); }
+  .lv-btn small { display: block; font-size: 12px; font-weight: 700; margin-top: 3px; letter-spacing: 0; }
+  .lv-btn.oo { background: var(--best); grid-column: 1 / -1; }
+  .lv-btn.o  { background: var(--good); }
+  .lv-btn.s  { background: var(--soso); }
+  .lv-btn.x  { background: var(--bad); }
+  .lv-btn.xx { background: var(--worst); }
+  .lv-btn.selected {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 4px rgba(232,200,126,.35), 0 4px 0 rgba(92,74,82,.16);
+    transform: scale(.97);
+  }
+  .lv-btn.selected small::after { content: " ✔"; }
+  .sheet label { font-size: 14px; font-weight: 900; color: var(--ink-soft); display: block; margin-bottom: 6px; }
+  .sheet textarea {
+    width: 100%; min-height: 90px; border: 2px solid var(--line); border-radius: 18px;
+    padding: 12px 14px; font-size: 16px; font-family: inherit; resize: vertical;
+    background: #fff; color: var(--ink);
+  }
+  .sheet textarea:focus { outline: none; border-color: var(--lavender-deep); }
+  .memo-hints { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 10px; }
+  .memo-hints button {
+    background: var(--mint); border: 2px solid #BFE3D0; border-radius: 20px; padding: 9px 14px;
+    font-size: 13px; color: #4F8A6E; font-weight: 700; font-family: inherit;
+    box-shadow: 0 2px 0 rgba(79,138,110,.2);
+    transition: transform .12s;
+  }
+  .memo-hints button:active { transform: translateY(2px); box-shadow: none; }
+  .sheet-actions { display: flex; gap: 10px; margin-top: 20px; }
+  .btn-save {
+    flex: 2; padding: 17px; border: 3px solid #fff; border-radius: 22px;
+    background: linear-gradient(135deg, #F0A5C6, #E890B5); color: #fff; font-size: 17px; font-weight: 900;
+    font-family: inherit;
+    box-shadow: 0 5px 0 rgba(217,116,143,.45);
+    transition: transform .12s;
+  }
+  .btn-save:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(217,116,143,.45); }
+  .btn-delete {
+    flex: 1; padding: 17px; border: none; border-radius: 22px;
+    background: #F3ECF0; color: var(--ink-soft); font-size: 15px; font-weight: 900; font-family: inherit;
+  }
+  .btn-close {
+    position: absolute; top: 14px; right: 14px; width: 38px; height: 38px;
+    border: 2px solid var(--line); border-radius: 50%; background: #fff;
+    font-size: 15px; color: var(--ink-soft); font-weight: 900; font-family: inherit;
+  }
+
+  /* ===== グラフ ===== */
+  .graph-wrap { padding: 16px 14px; }
+  .graph-card {
+    background: #fff; border-radius: 24px; border: 2px solid var(--line);
+    padding: 18px 16px; margin-bottom: 16px;
+    box-shadow: 0 4px 12px rgba(185,165,224,.14); position: relative;
+  }
+  .graph-card h3 { font-size: 16px; margin-bottom: 14px; color: var(--pink-deep); font-weight: 900; }
+  .bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .bar-row .bl { width: 100px; font-size: 13px; font-weight: 900; flex-shrink: 0; display: flex; align-items: center; gap: 5px; }
+  .bar-row .bl i {
+    width: 22px; height: 17px; border-radius: 6px; display: inline-flex; flex-shrink: 0;
+    align-items: center; justify-content: center; color: #fff; font-size: 10px;
+    font-weight: 900; font-style: normal; border: 1.5px solid #fff; box-shadow: 0 1px 2px rgba(0,0,0,.14);
+  }
+  .bar-row .track { flex: 1; background: var(--cream-deep); border-radius: 11px; height: 30px; overflow: hidden; border: 2px solid var(--line); }
+  .bar-row .fill { height: 100%; border-radius: 8px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; color: #fff; font-size: 13px; font-weight: 900; min-width: 8px; transition: width .5s ease; text-shadow: 0 1px 1px rgba(0,0,0,.15); }
+  .trend { display: flex; align-items: flex-end; gap: 6px; height: 145px; padding-top: 8px; }
+  .trend .col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+  .trend .stack { width: 100%; max-width: 36px; display: flex; flex-direction: column-reverse; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 5px rgba(92,74,82,.15); border: 2px solid #fff; }
+  .trend .seg { width: 100%; }
+  .trend .ml { font-size: 11px; color: var(--ink-soft); font-weight: 900; }
+  .trend-note { font-size: 12px; color: var(--ink-soft); margin-top: 12px; line-height: 1.7; }
+
+  /* ===== 検索 ===== */
+  .search-wrap { padding: 16px 14px; }
+  .search-box { display: flex; gap: 8px; }
+  .search-box input {
+    flex: 1; padding: 15px; border: 2px solid var(--line); border-radius: 20px;
+    font-size: 16px; background: #fff; font-family: inherit; color: var(--ink);
+  }
+  .search-box input:focus { outline: none; border-color: var(--lavender-deep); }
+  .search-box button {
+    padding: 0 20px; border: 3px solid #fff; border-radius: 20px;
+    background: linear-gradient(135deg, #C3AEE8, #B9A5E0);
+    color: #fff; font-size: 15px; font-weight: 900; font-family: inherit;
+    box-shadow: 0 4px 0 rgba(123,98,171,.35);
+    transition: transform .12s;
+  }
+  .search-box button:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(123,98,171,.35); }
+  .quick-tags { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 12px; }
+  .quick-tags button {
+    background: #fff; border: 2px solid var(--line); border-radius: 20px; padding: 9px 15px;
+    font-size: 14px; color: var(--pink-deep); font-weight: 700; font-family: inherit;
+    box-shadow: 0 2px 0 rgba(232,144,181,.2);
+  }
+  .result { background: #fff; border: 2px solid var(--line); border-radius: 20px; padding: 13px 15px; margin-top: 10px; box-shadow: 0 3px 6px rgba(185,165,224,.10); }
+  .result .r-head { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+  .result .r-date { font-size: 14px; font-weight: 900; }
+  .result .r-lv { font-size: 11px; font-weight: 900; color: #fff; padding: 4px 10px; border-radius: 11px; text-shadow: 0 1px 1px rgba(0,0,0,.15); }
+  .result .r-memo { font-size: 14px; line-height: 1.6; white-space: pre-wrap; }
+  .no-result { text-align: center; color: var(--ink-soft); padding: 30px 0; font-size: 15px; }
+
+  /* ===== 設定 ===== */
+  .settings-wrap { padding: 16px 14px; }
+  .settings-wrap .graph-card p { font-size: 14px; color: var(--ink-soft); line-height: 1.8; margin-bottom: 12px; }
+  .set-btn {
+    width: 100%; padding: 17px; border: none; border-radius: 20px; font-size: 16px; font-weight: 900;
+    margin-bottom: 10px; background: var(--sky); color: #4E7BA8; font-family: inherit;
+    box-shadow: 0 3px 0 rgba(78,123,168,.25);
+    transition: transform .12s;
+  }
+  .set-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(78,123,168,.25); }
+  .set-btn.primary {
+    background: linear-gradient(135deg, #F0A5C6, #E890B5); color: #fff;
+    border: 3px solid #fff;
+    box-shadow: 0 4px 0 rgba(217,116,143,.4);
+  }
+  #importFile { display: none; }
+
+  /* ===== 下タブ ===== */
+  nav {
+    position: fixed; left: 10px; right: 10px;
+    bottom: calc(env(safe-area-inset-bottom) + 10px);
+    background: rgba(255,253,247,.96);
+    border: 2px solid var(--line); border-radius: 28px;
+    display: flex; z-index: 20; padding: 4px;
+    box-shadow: 0 6px 18px rgba(185,165,224,.28);
+  }
+  nav button {
+    flex: 1; padding: 10px 0 9px; border: none; background: none;
+    font-size: 11px; font-weight: 900; color: var(--ink-soft); font-family: inherit;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    border-radius: 22px; transition: background .2s;
+  }
+  nav button .ico { font-size: 22px; line-height: 1; }
+  nav button.active {
+    color: var(--pink-deep);
+    background: linear-gradient(180deg, #FCE8F1, #F9D9E8);
+    box-shadow: inset 0 0 0 2px #fff;
+  }
+  nav button.active .ico { transform: scale(1.12); }
+
+  .toast {
+    position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 108px);
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #F0A5C6, #E890B5); color: #fff;
+    padding: 13px 26px; border-radius: 28px; font-size: 15px; font-weight: 900;
+    border: 2.5px solid #fff;
+    opacity: 0; pointer-events: none; transition: opacity .3s; z-index: 100; white-space: nowrap;
+    box-shadow: 0 5px 14px rgba(217,116,143,.4);
+  }
+  .toast.show { opacity: 1; }
+
+  /* ===== ご褒美の花吹雪 ===== */
+  .petal {
+    position: fixed; top: 0; z-index: 99; pointer-events: none;
+    font-size: 20px; animation: fall linear forwards;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="cloud c1">☁️</span>
+  <span class="cloud c2">☁️</span>
+  <span class="star s1">✦</span>
+  <span class="star s2">✦</span>
+  <span class="star s3">✦</span>
+  <div class="month-nav">
+    <button id="prevMonth">‹</button>
+    <span class="month-label" id="monthLabel">2026年7月</span>
+    <button id="nextMonth">›</button>
+  </div>
+  <button class="today-btn" id="todayBtn">今日</button>
+</header>
+
+<!-- ===== カレンダー画面 ===== -->
+<div class="screen active" id="screen-cal">
+  <div class="weekdays"><span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span></div>
+  <div class="cal" id="calGrid"></div>
+  <div class="legend">
+    <span><i style="background:var(--best)">◎</i>非常に良い</span>
+    <span><i style="background:var(--good)">○</i>少ない</span>
+    <span><i style="background:var(--soso)">△</i>少し多い</span>
+    <span><i style="background:var(--bad)">✕</i>多い</span>
+    <span><i style="background:var(--worst)">✕✕</i>非常に多い</span>
+  </div>
+  <div class="summary-card">
+    <h3>📖 今月のまとめ</h3>
+    <p id="summaryText" class="empty">まだ書かれていません</p>
+    <button id="editSummaryBtn">まとめを書く・直す 🪶</button>
+  </div>
+</div>
+
+<!-- ===== グラフ画面 ===== -->
+<div class="screen" id="screen-graph">
+  <div class="graph-wrap">
+    <div class="graph-card">
+      <h3 id="graphMonthTitle">📊 今月の集計</h3>
+      <div id="monthBars"></div>
+    </div>
+    <div class="graph-card">
+      <h3>🌷 過去6ヶ月の変化</h3>
+      <div class="trend" id="trendChart"></div>
+      <p class="trend-note">棒の高さ＝記録した日数。緑が多い月は調子が良い月、赤が多い月は抜け毛が多かった月です。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 検索画面 ===== -->
+<div class="screen" id="screen-search">
+  <div class="search-wrap">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="メモを検索(例:シャンプー)">
+      <button id="searchBtn">検索</button>
+    </div>
+    <div class="quick-tags">
+      <button data-q="シャンプー">シャンプー</button>
+      <button data-q="ストレス">ストレス</button>
+      <button data-q="薬">薬</button>
+      <button data-q="美容院">美容院</button>
+      <button data-q="かゆ">かゆみ</button>
+    </div>
+    <div id="searchResults"></div>
+  </div>
+</div>
+
+<!-- ===== 設定画面 ===== -->
+<div class="screen" id="screen-settings">
+  <div class="settings-wrap">
+    <div class="graph-card">
+      <h3>💾 バックアップ</h3>
+      <p>データはこのiPhoneの中だけに保存されています。ときどきバックアップを取っておくと安心です😊</p>
+      <button class="set-btn primary" id="exportJsonBtn">JSONでバックアップ(全データ)</button>
+      <button class="set-btn" id="exportCsvBtn">CSVで書き出し(表計算用)</button>
+      <button class="set-btn" id="importBtn">バックアップから復元(インポート)</button>
+      <input type="file" id="importFile" accept=".json">
+    </div>
+    <div class="graph-card">
+      <h3>🎀 このアプリについて</h3>
+      <p>抜け毛記録 ver.3.0 〜メルヘン絵本版〜 🌸<br>
+      毎日数秒で記録できることを大切に作りました。<br>
+      記録するたびに、あなただけの絵本のページが増えていきます🕊️<br>
+      将来は「頭皮写真」「薬・サプリ記録」「AI分析」なども追加できる設計になっています。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 記録シート ===== -->
+<div class="overlay" id="overlay"></div>
+<div class="sheet" id="recordSheet">
+  <button class="btn-close" id="closeSheet">✕</button>
+  <h2 id="sheetTitle">7月6日(月)の記録</h2>
+  <div class="lv-btns">
+    <button class="lv-btn oo" data-lv="oo">◎<small>非常に良い ✨</small></button>
+    <button class="lv-btn o" data-lv="o">○<small>少ない</small></button>
+    <button class="lv-btn s" data-lv="s">△<small>少し多い</small></button>
+    <button class="lv-btn x" data-lv="x">✕<small>多い</small></button>
+    <button class="lv-btn xx" data-lv="xx" style="grid-column: 1 / -1">✕✕<small>非常に多い</small></button>
+  </div>
+  <label>メモ(自由に書けます)</label>
+  <textarea id="memoInput" placeholder="例:シャンプーを変えた、仕事が忙しかった…"></textarea>
+  <div class="memo-hints">
+    <button>シャンプーを変えた</button>
+    <button>ストレスを感じた</button>
+    <button>頭皮がかゆかった</button>
+    <button>美容院へ行った</button>
+    <button>仕事が忙しかった</button>
+  </div>
+  <div class="sheet-actions">
+    <button class="btn-delete" id="deleteBtn">削除</button>
+    <button class="btn-save" id="saveBtn">保存する 🌸</button>
+  </div>
+</div>
+
+<!-- ===== まとめシート ===== -->
+<div class="sheet" id="summarySheet">
+  <button class="btn-close" id="closeSummarySheet">✕</button>
+  <h2 id="summarySheetTitle">7月のまとめ</h2>
+  <label>今月をふり返って(自由に書けます)</label>
+  <textarea id="summaryInput" placeholder="例:今月は比較的少なかった。季節の変わり目で増えた。薬を変えてから改善した。" style="min-height:130px"></textarea>
+  <div class="sheet-actions">
+    <button class="btn-save" id="saveSummaryBtn" style="flex:1">保存する 🌸</button>
+  </div>
+</div>
+
+<nav>
+  <button class="active" data-screen="cal"><span class="ico">🗓️</span>カレンダー</button>
+  <button data-screen="graph"><span class="ico">📊</span>グラフ</button>
+  <button data-screen="search"><span class="ico">🔍</span>検索</button>
+  <button data-screen="settings"><span class="ico">🎀</span>設定</button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ================= データ =================
+// 以前のデータ(v1)をそのまま引き継ぎます。キーは変えていません。
+// 将来の拡張(写真・薬・サプリ・睡眠など)は records[date] にフィールドを足すだけでOKな設計
+const STORAGE_KEY = 'nukege_kiroku_v1';
+let db = { records: {}, summaries: {} };
+
+function loadDB() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) db = JSON.parse(raw);
+    if (!db.records) db.records = {};
+    if (!db.summaries) db.summaries = {};
+  } catch(e) { db = { records: {}, summaries: {} }; }
+}
+function saveDB() { localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); }
+
+// 白い記号 × はっきりした色 = どんな下地でもくっきり見えます
+const LEVELS = {
+  oo: { symbol: '◎',  label: '非常に良い', color: 'var(--best)',  csv: '非常に良い' },
+  o:  { symbol: '○',  label: '少ない',     color: 'var(--good)',  csv: '少ない' },
+  s:  { symbol: '△',  label: '少し多い',   color: 'var(--soso)',  csv: '少し多い' },
+  x:  { symbol: '✕',  label: '多い',       color: 'var(--bad)',   csv: '多い' },
+  xx: { symbol: '✕✕', label: '非常に多い', color: 'var(--worst)', csv: '非常に多い' }
+};
+const LV_ORDER = ['oo','o','s','x','xx'];
+const WD = ['日','月','火','水','木','金','土'];
+
+// ================= 状態 =================
+let viewYear, viewMonth;
+let editingDate = null;
+let selectedLevel = null;
+
+const today = new Date();
+viewYear = today.getFullYear();
+viewMonth = today.getMonth();
+
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2,'0');
+const dateKey = (y,m,d) => `${y}-${pad(m+1)}-${pad(d)}`;
+const monthKey = (y,m) => `${y}-${pad(m+1)}`;
+
+// ================= カレンダー描画 =================
+function renderCalendar() {
+  $('monthLabel').textContent = `${viewYear}年${viewMonth+1}月`;
+  const grid = $('calGrid');
+  grid.innerHTML = '';
+  const first = new Date(viewYear, viewMonth, 1);
+  const daysInMonth = new Date(viewYear, viewMonth+1, 0).getDate();
+  const startDow = first.getDay();
+
+  for (let i = 0; i < startDow; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'day empty';
+    grid.appendChild(cell);
+  }
+  const tKey = dateKey(today.getFullYear(), today.getMonth(), today.getDate());
+  for (let d = 1; d <= daysInMonth; d++) {
+    const key = dateKey(viewYear, viewMonth, d);
+    const dow = (startDow + d - 1) % 7;
+    const cell = document.createElement('div');
+    cell.className = 'day' + (dow===0?' sun':'') + (dow===6?' sat':'') + (key===tKey?' today':'');
+    cell.style.animationDelay = (d * 12) + 'ms';
+    const num = document.createElement('div');
+    num.className = 'num'; num.textContent = d;
+    cell.appendChild(num);
+    const rec = db.records[key];
+    if (rec && rec.level && LEVELS[rec.level]) {
+      const mark = document.createElement('div');
+      mark.className = 'mark lv-' + rec.level;
+      mark.textContent = LEVELS[rec.level].symbol;
+      cell.appendChild(mark);
+    }
+    if (rec && rec.memo) {
+      const dot = document.createElement('div');
+      dot.className = 'memo-dot';
+      cell.appendChild(dot);
+    }
+    cell.addEventListener('click', () => openRecordSheet(key));
+    grid.appendChild(cell);
+  }
+  const s = db.summaries[monthKey(viewYear, viewMonth)];
+  const st = $('summaryText');
+  if (s) { st.textContent = s; st.classList.remove('empty'); }
+  else { st.textContent = 'まだ書かれていません'; st.classList.add('empty'); }
+}
+
+// ================= 記録シート =================
+function openRecordSheet(key) {
+  editingDate = key;
+  const [y,m,d] = key.split('-').map(Number);
+  const dow = WD[new Date(y, m-1, d).getDay()];
+  $('sheetTitle').textContent = `${m}月${d}日(${dow})の記録`;
+  const rec = db.records[key] || {};
+  selectedLevel = rec.level || null;
+  document.querySelectorAll('.lv-btn').forEach(b => {
+    b.classList.toggle('selected', b.dataset.lv === selectedLevel);
+  });
+  $('memoInput').value = rec.memo || '';
+  $('overlay').classList.add('show');
+  $('recordSheet').classList.add('show');
+}
+function closeSheets() {
+  $('overlay').classList.remove('show');
+  $('recordSheet').classList.remove('show');
+  $('summarySheet').classList.remove('show');
+}
+document.querySelectorAll('.lv-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    selectedLevel = b.dataset.lv;
+    document.querySelectorAll('.lv-btn').forEach(x => x.classList.toggle('selected', x===b));
+  });
+});
+document.querySelectorAll('.memo-hints button').forEach(b => {
+  b.addEventListener('click', () => {
+    const t = $('memoInput');
+    t.value = t.value ? t.value + '\n' + b.textContent : b.textContent;
+  });
+});
+
+// ご褒美の花吹雪 🌸
+function celebrate(big) {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const items = big ? ['🌸','✨','🌸','💮','✨','🎀','🌸','⭐️'] : ['🌸','✨','🌸','✨'];
+  const count = big ? 22 : 10;
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('span');
+    p.className = 'petal';
+    p.textContent = items[i % items.length];
+    p.style.left = Math.random() * 100 + 'vw';
+    p.style.fontSize = (14 + Math.random() * 14) + 'px';
+    p.style.animationDuration = (2.2 + Math.random() * 1.8) + 's';
+    p.style.animationDelay = (Math.random() * .5) + 's';
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 4600);
+  }
+}
+function monthRecordCount() {
+  const prefix = monthKey(viewYear, viewMonth) + '-';
+  return Object.keys(db.records).filter(k => k.startsWith(prefix)).length;
+}
+
+$('saveBtn').addEventListener('click', () => {
+  if (!selectedLevel && !$('memoInput').value.trim()) { toast('レベルかメモを入れてね🌸'); return; }
+  db.records[editingDate] = db.records[editingDate] || {};
+  db.records[editingDate].level = selectedLevel;
+  db.records[editingDate].memo = $('memoInput').value.trim();
+  saveDB(); closeSheets(); renderCalendar();
+  const n = monthRecordCount();
+  if (n > 0 && n % 10 === 0) {
+    celebrate(true);
+    toast(`すごい!今月${n}日目の記録です🎀`);
+  } else {
+    celebrate(false);
+    toast('保存しました🌸');
+  }
+});
+$('deleteBtn').addEventListener('click', () => {
+  if (db.records[editingDate] && confirm('この日の記録を削除しますか?')) {
+    delete db.records[editingDate];
+    saveDB(); closeSheets(); renderCalendar(); toast('削除しました');
+  } else if (!db.records[editingDate]) closeSheets();
+});
+$('closeSheet').addEventListener('click', closeSheets);
+$('overlay').addEventListener('click', closeSheets);
+
+// ================= まとめシート =================
+$('editSummaryBtn').addEventListener('click', () => {
+  $('summarySheetTitle').textContent = `${viewMonth+1}月のまとめ`;
+  $('summaryInput').value = db.summaries[monthKey(viewYear, viewMonth)] || '';
+  $('overlay').classList.add('show');
+  $('summarySheet').classList.add('show');
+});
+$('saveSummaryBtn').addEventListener('click', () => {
+  const v = $('summaryInput').value.trim();
+  if (v) db.summaries[monthKey(viewYear, viewMonth)] = v;
+  else delete db.summaries[monthKey(viewYear, viewMonth)];
+  saveDB(); closeSheets(); renderCalendar();
+  celebrate(false);
+  toast('保存しました🌸');
+});
+$('closeSummarySheet').addEventListener('click', closeSheets);
+
+// ================= 月移動 =================
+$('prevMonth').addEventListener('click', () => { viewMonth--; if (viewMonth<0){viewMonth=11;viewYear--;} refresh(); });
+$('nextMonth').addEventListener('click', () => { viewMonth++; if (viewMonth>11){viewMonth=0;viewYear++;} refresh(); });
+$('todayBtn').addEventListener('click', () => { viewYear=today.getFullYear(); viewMonth=today.getMonth(); refresh(); });
+
+// ================= グラフ =================
+function countMonth(y, m) {
+  const prefix = monthKey(y,m) + '-';
+  const c = { oo:0, o:0, s:0, x:0, xx:0 };
+  for (const k in db.records) {
+    const lv = db.records[k].level;
+    if (k.startsWith(prefix) && lv && c[lv] !== undefined) c[lv]++;
+  }
+  return c;
+}
+function renderGraphs() {
+  $('graphMonthTitle').textContent = `📊 ${viewYear}年${viewMonth+1}月の集計`;
+  const c = countMonth(viewYear, viewMonth);
+  const total = LV_ORDER.reduce((s,lv) => s+c[lv], 0);
+  const max = Math.max(...LV_ORDER.map(lv => c[lv]), 1);
+  const rows = LV_ORDER.map(lv => {
+    const w = total ? Math.round(c[lv]/max*100) : 0;
+    return `<div class="bar-row">
+      <div class="bl"><i style="background:${LEVELS[lv].color}">${LEVELS[lv].symbol}</i>${LEVELS[lv].label}</div>
+      <div class="track"><div class="fill" style="width:${Math.max(w, c[lv]?14:0)}%;background:${LEVELS[lv].color}">${c[lv]?c[lv]+'日':''}</div></div>
+    </div>`;
+  }).join('');
+  $('monthBars').innerHTML = total ? rows : '<p class="no-result">この月はまだ記録がありません🌸</p>';
+
+  // 過去6ヶ月(表示月を含む)
+  const cols = [];
+  let maxTotal = 1;
+  const months = [];
+  for (let i = 5; i >= 0; i--) {
+    let y = viewYear, m = viewMonth - i;
+    while (m < 0) { m += 12; y--; }
+    const cc = countMonth(y, m);
+    const t = LV_ORDER.reduce((s,lv) => s+cc[lv], 0);
+    if (t > maxTotal) maxTotal = t;
+    months.push({y, m, cc, t});
+  }
+  const segColor = { oo:'var(--best)', o:'var(--good)', s:'var(--soso)', x:'var(--bad)', xx:'var(--worst)' };
+  for (const {m, cc, t} of months) {
+    const h = lv => t ? (cc[lv]/maxTotal*112) : 0;
+    const segs = LV_ORDER.map(lv => `<div class="seg" style="height:${h(lv)}px;background:${segColor[lv]}"></div>`).join('');
+    cols.push(`<div class="col">
+      <div class="stack" style="height:${t/maxTotal*112}px">${segs}</div>
+      <div class="ml">${m+1}月</div>
+    </div>`);
+  }
+  $('trendChart').innerHTML = cols.join('');
+}
+
+// ================= 検索 =================
+function doSearch(q) {
+  q = q.trim();
+  const box = $('searchResults');
+  if (!q) { box.innerHTML = ''; return; }
+  const keys = Object.keys(db.records).filter(k => (db.records[k].memo||'').includes(q)).sort().reverse();
+  if (!keys.length) { box.innerHTML = '<p class="no-result">「'+escapeHtml(q)+'」が入ったメモは見つかりませんでした</p>'; return; }
+  box.innerHTML = keys.map(k => {
+    const [y,m,d] = k.split('-').map(Number);
+    const rec = db.records[k];
+    const lv = rec.level && LEVELS[rec.level] ? `<span class="r-lv" style="background:${LEVELS[rec.level].color}">${LEVELS[rec.level].symbol} ${LEVELS[rec.level].label}</span>` : '';
+    return `<div class="result" data-key="${k}">
+      <div class="r-head"><span class="r-date">${y}年${m}月${d}日</span>${lv}</div>
+      <div class="r-memo">${escapeHtml(rec.memo)}</div>
+    </div>`;
+  }).join('');
+  box.querySelectorAll('.result').forEach(el => {
+    el.addEventListener('click', () => {
+      const [y,m] = el.dataset.key.split('-').map(Number);
+      viewYear = y; viewMonth = m-1;
+      switchScreen('cal'); refresh();
+      openRecordSheet(el.dataset.key);
+    });
+  });
+}
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+$('searchBtn').addEventListener('click', () => doSearch($('searchInput').value));
+$('searchInput').addEventListener('keydown', e => { if (e.key==='Enter') doSearch(e.target.value); });
+document.querySelectorAll('.quick-tags button').forEach(b => {
+  b.addEventListener('click', () => { $('searchInput').value = b.dataset.q; doSearch(b.dataset.q); });
+});
+
+// ================= バックアップ =================
+function download(filename, text, type) {
+  const blob = new Blob([text], {type});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+$('exportJsonBtn').addEventListener('click', () => {
+  const d = new Date();
+  download(`抜け毛記録_バックアップ_${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}.json`,
+    JSON.stringify(db, null, 2), 'application/json');
+  toast('バックアップを書き出しました');
+});
+$('exportCsvBtn').addEventListener('click', () => {
+  let csv = '\uFEFF日付,レベル,メモ\n';
+  Object.keys(db.records).sort().forEach(k => {
+    const r = db.records[k];
+    const lv = r.level && LEVELS[r.level] ? LEVELS[r.level].csv : '';
+    const memo = (r.memo||'').replace(/"/g,'""');
+    csv += `${k},${lv},"${memo}"\n`;
+  });
+  csv += '\n年月,まとめ\n';
+  Object.keys(db.summaries).sort().forEach(k => {
+    csv += `${k},"${(db.summaries[k]||'').replace(/"/g,'""')}"\n`;
+  });
+  const d = new Date();
+  download(`抜け毛記録_${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}.csv`, csv, 'text/csv');
+  toast('CSVを書き出しました');
+});
+$('importBtn').addEventListener('click', () => $('importFile').click());
+$('importFile').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      if (!data.records) throw new Error();
+      if (confirm('今のデータをバックアップの内容に置き換えますか?\n(置き換え前のデータは消えます)')) {
+        db = { records: data.records||{}, summaries: data.summaries||{} };
+        saveDB(); refresh(); toast('復元しました🌸');
+      }
+    } catch { alert('このファイルは読み込めませんでした。JSONバックアップファイルを選んでください。'); }
+    e.target.value = '';
+  };
+  reader.readAsText(file);
+});
+
+// ================= 画面切り替え =================
+function switchScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === 'screen-'+name));
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('active', b.dataset.screen === name));
+  if (name === 'graph') renderGraphs();
+}
+document.querySelectorAll('nav button').forEach(b => {
+  b.addEventListener('click', () => switchScreen(b.dataset.screen));
+});
+
+function refresh() {
+  renderCalendar();
+  if (document.getElementById('screen-graph').classList.contains('active')) renderGraphs();
+}
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+loadDB();
+refresh();
+</script>
+</body>
+</html>
