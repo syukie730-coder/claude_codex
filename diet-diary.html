@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="からだ手帳">
+<link rel="apple-touch-icon" href="diet-diary-icon.png">
+<title>からだ手帳 〜体重記録〜</title>
+<style>
+:root{
+  --bg:#FBF4F1;
+  --card:#FFFFFF;
+  --pink-pale:#F9E4EB;
+  --pink:#F0B9C9;
+  --accent:#DD8FA8;
+  --accent-deep:#C9748F;
+  --beige:#EFE3DB;
+  --text:#6B5757;
+  --muted:#B29A9A;
+  --fat:#C9A96E;
+  --shadow:0 4px 14px rgba(201,116,143,.10);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{
+  font-family:"Hiragino Maru Gothic ProN","Hiragino Kaku Gothic ProN",-apple-system,sans-serif;
+  background:var(--bg); color:var(--text);
+  font-size:17px; line-height:1.5;
+  overscroll-behavior:none;
+}
+#app{max-width:520px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 92px);}
+
+/* ---------- header ---------- */
+header{text-align:center;margin-bottom:14px;}
+header h1{font-size:21px;color:var(--accent-deep);letter-spacing:.12em;font-weight:600;}
+header p{font-size:13px;color:var(--muted);letter-spacing:.08em;}
+
+/* ---------- 今日を記録ボタン ---------- */
+.today-btn{
+  display:block;width:100%;padding:16px;margin-bottom:14px;
+  background:linear-gradient(135deg,#F3BBCB,#E39BB4);
+  color:#fff;font-size:18px;font-weight:600;letter-spacing:.06em;
+  border:none;border-radius:22px;box-shadow:var(--shadow);
+  transition:transform .12s ease;
+}
+.today-btn:active{transform:scale(.97);}
+
+/* ---------- stats ---------- */
+.stats-card{background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:16px 14px;margin-bottom:14px;}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 6px;}
+.stat{text-align:center;}
+.stat .label{font-size:12px;color:var(--muted);letter-spacing:.04em;}
+.stat .value{font-size:19px;font-weight:600;color:var(--accent-deep);}
+.stat .value small{font-size:12px;font-weight:400;color:var(--muted);}
+.height-row{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:12px;padding-top:12px;border-top:1px dashed var(--pink-pale);font-size:14px;color:var(--muted);}
+.height-row input{width:74px;padding:6px 8px;border:1.5px solid var(--pink-pale);border-radius:12px;font-size:16px;text-align:center;color:var(--text);background:#FFFDFC;}
+.height-row input:focus{outline:none;border-color:var(--pink);}
+
+/* ---------- tabs(views) ---------- */
+.view{display:none;}
+.view.active{display:block;animation:fadein .22s ease;}
+@keyframes fadein{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+
+/* ---------- calendar ---------- */
+.cal-card{background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:16px 12px;}
+.cal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding:0 6px;}
+.cal-head .month{font-size:19px;font-weight:600;color:var(--accent-deep);letter-spacing:.06em;}
+.cal-nav{width:44px;height:44px;border:none;background:var(--pink-pale);color:var(--accent-deep);border-radius:50%;font-size:18px;}
+.cal-nav:active{background:var(--pink);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.cal-dow{text-align:center;font-size:12px;color:var(--muted);padding:4px 0;}
+.cal-dow.sun{color:#D98A9C;} .cal-dow.sat{color:#9AAECB;}
+.cal-day{
+  position:relative;aspect-ratio:1/1;border:none;background:transparent;
+  border-radius:14px;font-size:16px;color:var(--text);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+}
+.cal-day:active{background:var(--pink-pale);}
+.cal-day.other{color:#DCCFCF;}
+.cal-day.today{background:var(--pink-pale);font-weight:600;color:var(--accent-deep);}
+.cal-day .mark{width:7px;height:7px;border-radius:50%;background:var(--accent);}
+.cal-day .mark.empty{background:transparent;}
+.cal-weight{font-size:9px;color:var(--accent-deep);line-height:1;}
+
+/* ---------- graph ---------- */
+.graph-card{background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:16px 12px;}
+.period-row{display:flex;gap:6px;margin-bottom:8px;}
+.period-btn{
+  flex:1;padding:9px 0;border:none;border-radius:14px;
+  background:var(--pink-pale);color:var(--accent-deep);font-size:13px;
+}
+.period-btn.on{background:var(--accent);color:#fff;font-weight:600;}
+.legend{display:flex;justify-content:center;gap:18px;font-size:13px;color:var(--muted);margin:6px 0 2px;}
+.legend .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:-1px;}
+#chart{width:100%;height:auto;display:block;}
+.graph-summary{display:grid;grid-template-columns:repeat(3,1fr);margin-top:10px;padding-top:12px;border-top:1px dashed var(--pink-pale);text-align:center;}
+.graph-summary .label{font-size:12px;color:var(--muted);}
+.graph-summary .value{font-size:17px;font-weight:600;color:var(--accent-deep);}
+.no-data{text-align:center;color:var(--muted);font-size:14px;padding:36px 0;}
+
+/* ---------- list ---------- */
+.list-item{
+  background:var(--card);border-radius:20px;box-shadow:var(--shadow);
+  padding:14px 18px;margin-bottom:10px;border:none;width:100%;text-align:left;
+  display:flex;align-items:center;gap:14px;font-family:inherit;color:var(--text);
+}
+.list-item:active{background:var(--pink-pale);}
+.list-date{min-width:64px;text-align:center;}
+.list-date .md{font-size:17px;font-weight:600;color:var(--accent-deep);}
+.list-date .dow{font-size:11px;color:var(--muted);}
+.list-body{flex:1;}
+.list-body .nums{font-size:17px;}
+.list-body .nums b{font-weight:600;}
+.list-body .nums .fatv{color:var(--fat);font-size:15px;margin-left:10px;}
+.list-body .memo{font-size:13px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:230px;}
+.list-arrow{color:var(--pink);font-size:18px;}
+
+/* ---------- modal ---------- */
+.overlay{
+  position:fixed;inset:0;background:rgba(107,87,87,.35);
+  display:none;align-items:flex-end;justify-content:center;z-index:50;
+}
+.overlay.show{display:flex;}
+.sheet{
+  background:var(--card);width:100%;max-width:520px;
+  border-radius:26px 26px 0 0;padding:22px 22px calc(env(safe-area-inset-bottom) + 22px);
+  animation:slideup .25s ease;
+}
+@keyframes slideup{from{transform:translateY(40px);opacity:0;}to{transform:none;opacity:1;}}
+.sheet h2{font-size:18px;color:var(--accent-deep);text-align:center;margin-bottom:16px;letter-spacing:.06em;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:14px;color:var(--muted);margin-bottom:5px;}
+.field input,.field textarea{
+  width:100%;padding:13px 14px;border:1.5px solid var(--pink-pale);
+  border-radius:16px;font-size:18px;font-family:inherit;color:var(--text);background:#FFFDFC;
+}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--pink);}
+.field textarea{resize:none;height:76px;font-size:16px;}
+.sheet-btns{display:flex;gap:10px;margin-top:6px;}
+.btn{
+  flex:1;padding:15px 0;border:none;border-radius:18px;font-size:17px;font-weight:600;font-family:inherit;
+}
+.btn:active{transform:scale(.97);}
+.btn-save{background:linear-gradient(135deg,#F3BBCB,#E39BB4);color:#fff;}
+.btn-cancel{background:var(--beige);color:var(--text);}
+.btn-delete{background:none;border:none;color:#C77;font-size:15px;margin:14px auto 0;display:block;text-decoration:underline;font-family:inherit;}
+
+/* ---------- confirm ---------- */
+.confirm-box{
+  background:var(--card);border-radius:24px;padding:26px 22px;width:86%;max-width:340px;
+  text-align:center;animation:fadein .2s ease;
+}
+.confirm-box p{font-size:16px;margin-bottom:20px;}
+.overlay.center{align-items:center;}
+
+/* ---------- toast ---------- */
+#toast{
+  position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 104px);
+  transform:translateX(-50%) translateY(10px);
+  background:var(--accent);color:#fff;font-size:15px;
+  padding:10px 24px;border-radius:999px;opacity:0;pointer-events:none;
+  transition:.3s;z-index:60;white-space:nowrap;
+}
+#toast.show{opacity:1;transform:translateX(-50%);}
+
+/* ---------- bottom tab bar ---------- */
+nav{
+  position:fixed;left:0;right:0;bottom:0;z-index:40;
+  background:rgba(255,255,255,.94);backdrop-filter:blur(10px);
+  border-top:1px solid var(--pink-pale);
+  display:flex;max-width:520px;margin:0 auto;
+  padding:8px 0 calc(env(safe-area-inset-bottom) + 6px);
+  border-radius:22px 22px 0 0;
+}
+.tab{
+  flex:1;border:none;background:none;color:var(--muted);
+  font-size:11px;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;
+}
+.tab .ic{font-size:22px;line-height:1;}
+.tab.on{color:var(--accent-deep);font-weight:600;}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>♡ からだ手帳 ♡</h1>
+    <p>まいにちの記録が キレイへの近道</p>
+  </header>
+
+  <!-- ①カレンダー -->
+  <section id="view-cal" class="view active">
+    <button class="today-btn" onclick="openInput(todayStr())">✨ 今日の体重を記録する</button>
+
+    <div class="stats-card">
+      <div class="stats-grid" id="stats"></div>
+      <div class="height-row">
+        身長 <input type="number" id="heightInput" inputmode="decimal" placeholder="158"> cm（BMI計算用）
+      </div>
+    </div>
+
+    <div class="cal-card">
+      <div class="cal-head">
+        <button class="cal-nav" onclick="moveMonth(-1)">‹</button>
+        <div class="month" id="calMonth"></div>
+        <button class="cal-nav" onclick="moveMonth(1)">›</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+  </section>
+
+  <!-- ②グラフ -->
+  <section id="view-graph" class="view">
+    <div class="graph-card">
+      <div class="period-row" id="periodRow">
+        <button class="period-btn" data-d="7">1週間</button>
+        <button class="period-btn on" data-d="30">1か月</button>
+        <button class="period-btn" data-d="90">3か月</button>
+        <button class="period-btn" data-d="180">6か月</button>
+        <button class="period-btn" data-d="365">1年</button>
+      </div>
+      <div class="legend">
+        <span><span class="dot" style="background:var(--accent)"></span>体重(kg)</span>
+        <span><span class="dot" style="background:var(--fat)"></span>体脂肪率(%)</span>
+      </div>
+      <div id="chartWrap"></div>
+      <div class="graph-summary" id="graphSummary"></div>
+    </div>
+  </section>
+
+  <!-- ③記録一覧 -->
+  <section id="view-list" class="view">
+    <div id="listWrap"></div>
+  </section>
+</div>
+
+<!-- 入力シート -->
+<div class="overlay" id="inputOverlay">
+  <div class="sheet">
+    <h2 id="sheetTitle"></h2>
+    <div class="field">
+      <label>体重（kg）</label>
+      <input type="number" id="inW" inputmode="decimal" step="0.1" placeholder="例：50.3">
+    </div>
+    <div class="field">
+      <label>体脂肪率（%）</label>
+      <input type="number" id="inF" inputmode="decimal" step="0.1" placeholder="例：23.1">
+    </div>
+    <div class="field">
+      <label>メモ</label>
+      <textarea id="inM" placeholder="例：ウォーキング30分／飲み会 など"></textarea>
+    </div>
+    <div class="sheet-btns">
+      <button class="btn btn-cancel" onclick="closeInput()">キャンセル</button>
+      <button class="btn btn-save" onclick="saveRecord()">保存する</button>
+    </div>
+    <button class="btn-delete" id="delBtn" onclick="askDelete()">この記録を削除する</button>
+  </div>
+</div>
+
+<!-- 削除確認 -->
+<div class="overlay center" id="confirmOverlay">
+  <div class="confirm-box">
+    <p>この記録を削除しますか？</p>
+    <div class="sheet-btns">
+      <button class="btn btn-cancel" onclick="closeConfirm()">やめる</button>
+      <button class="btn btn-save" style="background:#D98A9C" onclick="doDelete()">削除する</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<nav>
+  <button class="tab on" data-v="cal"><span class="ic">🗓</span>カレンダー</button>
+  <button class="tab" data-v="graph"><span class="ic">📈</span>グラフ</button>
+  <button class="tab" data-v="list"><span class="ic">📖</span>記録一覧</button>
+</nav>
+
+<script>
+"use strict";
+const KEY = "diet_diary_v1";
+const KEY_SET = "diet_diary_settings_v1";
+let records = {};   // {"2026-07-19": {w:50.3, f:23.1, m:"メモ"}}
+let settings = { height: null };
+let calY, calM;               // 表示中の年月
+let editDate = null;          // 入力シートで編集中の日付
+let period = 30;              // グラフ期間(日)
+
+/* ---------- 保存/読込 ---------- */
+function load(){
+  try{ records = JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ records = {}; }
+  try{ settings = Object.assign({height:null}, JSON.parse(localStorage.getItem(KEY_SET))); }catch(e){}
+}
+function save(){ localStorage.setItem(KEY, JSON.stringify(records)); }
+function saveSettings(){ localStorage.setItem(KEY_SET, JSON.stringify(settings)); }
+
+/* ---------- 日付ユーティリティ ---------- */
+function pad(n){ return String(n).padStart(2,"0"); }
+function dstr(y,m,d){ return y + "-" + pad(m) + "-" + pad(d); }
+function todayStr(){ const t = new Date(); return dstr(t.getFullYear(), t.getMonth()+1, t.getDate()); }
+function fromStr(s){ const p = s.split("-"); return new Date(+p[0], +p[1]-1, +p[2]); }
+const DOW = ["日","月","火","水","木","金","土"];
+
+/* ---------- タブ切替 ---------- */
+document.querySelectorAll(".tab").forEach(function(t){
+  t.addEventListener("click", function(){
+    document.querySelectorAll(".tab").forEach(function(x){ x.classList.remove("on"); });
+    t.classList.add("on");
+    document.querySelectorAll(".view").forEach(function(v){ v.classList.remove("active"); });
+    document.getElementById("view-" + t.dataset.v).classList.add("active");
+    if(t.dataset.v === "graph") drawChart();
+    if(t.dataset.v === "list") renderList();
+  });
+});
+
+/* ---------- 統計 ---------- */
+function sortedDates(){ return Object.keys(records).sort(); }
+function renderStats(){
+  const dates = sortedDates();
+  const el = document.getElementById("stats");
+  if(dates.length === 0){
+    el.innerHTML = '<div class="stat" style="grid-column:1/4"><div class="label">まだ記録がありません</div><div class="value" style="font-size:15px">今日から始めましょう🌸</div></div>';
+    return;
+  }
+  const ws = dates.map(function(d){ return records[d].w; }).filter(function(w){ return w != null; });
+  const latest = records[dates[dates.length-1]].w;
+  const first  = records[dates[0]].w;
+  const max = Math.max.apply(null, ws), min = Math.min.apply(null, ws);
+  const avg = ws.reduce(function(a,b){ return a+b; },0) / ws.length;
+  const diff = latest - first;
+  const diffTxt = (diff > 0 ? "+" : "") + diff.toFixed(1);
+  // 連続記録日数（今日 or 昨日から遡る）
+  let streak = 0;
+  let cur = new Date();
+  if(!records[todayStr()]) cur.setDate(cur.getDate()-1);
+  while(records[dstr(cur.getFullYear(), cur.getMonth()+1, cur.getDate())]){
+    streak++; cur.setDate(cur.getDate()-1);
+  }
+  // BMI
+  let bmiTxt = "ー";
+  if(settings.height && latest){
+    const h = settings.height / 100;
+    bmiTxt = (latest / (h*h)).toFixed(1);
+  }
+  function stat(label, value, unit){
+    return '<div class="stat"><div class="label">' + label + '</div><div class="value">' + value + (unit ? '<small> ' + unit + '</small>' : '') + '</div></div>';
+  }
+  el.innerHTML =
+    stat("いまの体重", latest.toFixed(1), "kg") +
+    stat("開始日から", diffTxt, "kg") +
+    stat("BMI", bmiTxt, "") +
+    stat("最高", max.toFixed(1), "kg") +
+    stat("最低", min.toFixed(1), "kg") +
+    stat("平均", avg.toFixed(1), "kg") +
+    stat("連続記録", streak, "日") +
+    stat("記録数", dates.length, "回") +
+    '<div class="stat"><div class="label">きぶん</div><div class="value">' + (diff <= 0 ? "🌸" : "💪") + '</div></div>';
+}
+
+/* ---------- カレンダー ---------- */
+function moveMonth(n){
+  calM += n;
+  if(calM < 1){ calM = 12; calY--; }
+  if(calM > 12){ calM = 1; calY++; }
+  renderCal();
+}
+function renderCal(){
+  document.getElementById("calMonth").textContent = calY + "年 " + calM + "月";
+  const grid = document.getElementById("calGrid");
+  let html = "";
+  DOW.forEach(function(d,i){
+    html += '<div class="cal-dow' + (i===0?" sun":i===6?" sat":"") + '">' + d + '</div>';
+  });
+  const firstDow = new Date(calY, calM-1, 1).getDay();
+  const daysIn = new Date(calY, calM, 0).getDate();
+  const today = todayStr();
+  for(let i=0;i<firstDow;i++) html += "<div></div>";
+  for(let d=1; d<=daysIn; d++){
+    const ds = dstr(calY, calM, d);
+    const rec = records[ds];
+    html += '<button class="cal-day' + (ds===today?" today":"") + '" onclick="openInput(\'' + ds + '\')">'
+      + '<span>' + d + '</span>'
+      + (rec && rec.w != null
+          ? '<span class="cal-weight">' + rec.w.toFixed(1) + '</span>'
+          : (rec ? '<span class="mark"></span>' : '<span class="mark empty"></span>'))
+      + '</button>';
+  }
+  grid.innerHTML = html;
+}
+
+/* ---------- 入力シート ---------- */
+function openInput(ds){
+  editDate = ds;
+  const d = fromStr(ds);
+  document.getElementById("sheetTitle").textContent =
+    (d.getMonth()+1) + "月" + d.getDate() + "日（" + DOW[d.getDay()] + "）の記録";
+  const rec = records[ds] || {};
+  document.getElementById("inW").value = rec.w != null ? rec.w : "";
+  document.getElementById("inF").value = rec.f != null ? rec.f : "";
+  document.getElementById("inM").value = rec.m || "";
+  document.getElementById("delBtn").style.display = records[ds] ? "block" : "none";
+  document.getElementById("inputOverlay").classList.add("show");
+}
+function closeInput(){ document.getElementById("inputOverlay").classList.remove("show"); }
+function saveRecord(){
+  const w = parseFloat(document.getElementById("inW").value);
+  const f = parseFloat(document.getElementById("inF").value);
+  const m = document.getElementById("inM").value.trim();
+  if(isNaN(w) && isNaN(f) && !m){ toast("体重かメモを入力してね"); return; }
+  const rec = {};
+  if(!isNaN(w)) rec.w = Math.round(w*10)/10;
+  if(!isNaN(f)) rec.f = Math.round(f*10)/10;
+  if(m) rec.m = m;
+  records[editDate] = rec;
+  save();
+  closeInput();
+  refreshAll();
+  toast("保存しました 🌸");
+}
+
+/* ---------- 削除 ---------- */
+function askDelete(){ document.getElementById("confirmOverlay").classList.add("show"); }
+function closeConfirm(){ document.getElementById("confirmOverlay").classList.remove("show"); }
+function doDelete(){
+  delete records[editDate];
+  save();
+  closeConfirm();
+  closeInput();
+  refreshAll();
+  toast("削除しました");
+}
+
+/* ---------- グラフ ---------- */
+document.querySelectorAll(".period-btn").forEach(function(b){
+  b.addEventListener("click", function(){
+    document.querySelectorAll(".period-btn").forEach(function(x){ x.classList.remove("on"); });
+    b.classList.add("on");
+    period = +b.dataset.d;
+    drawChart();
+  });
+});
+function smoothPath(pts){
+  if(pts.length < 2) return "";
+  let p = "M" + pts[0][0] + "," + pts[0][1];
+  for(let i=0;i<pts.length-1;i++){
+    const p0 = pts[Math.max(0,i-1)], p1 = pts[i], p2 = pts[i+1], p3 = pts[Math.min(pts.length-1,i+2)];
+    const c1x = p1[0] + (p2[0]-p0[0])/6, c1y = p1[1] + (p2[1]-p0[1])/6;
+    const c2x = p2[0] - (p3[0]-p1[0])/6, c2y = p2[1] - (p3[1]-p1[1])/6;
+    p += "C" + c1x.toFixed(1) + "," + c1y.toFixed(1) + " " + c2x.toFixed(1) + "," + c2y.toFixed(1) + " " + p2[0] + "," + p2[1];
+  }
+  return p;
+}
+function drawChart(){
+  const wrap = document.getElementById("chartWrap");
+  const sum = document.getElementById("graphSummary");
+  const end = new Date(); end.setHours(0,0,0,0);
+  const start = new Date(end); start.setDate(start.getDate() - (period-1));
+  const data = sortedDates()
+    .map(function(ds){ return { d: fromStr(ds), ds: ds, w: records[ds].w, f: records[ds].f }; })
+    .filter(function(r){ return r.d >= start && r.d <= end && (r.w != null || r.f != null); });
+  if(data.length < 2){
+    wrap.innerHTML = '<div class="no-data">この期間の記録が2件以上あると<br>グラフが表示されます🌷</div>';
+    sum.innerHTML = "";
+    return;
+  }
+  const W = 480, H = 300, padL = 44, padR = 14, padT = 16, padB = 30;
+  const t0 = start.getTime(), t1 = end.getTime();
+  function X(t){ return padL + (t - t0) / (t1 - t0 || 1) * (W - padL - padR); }
+  const ws = data.filter(function(r){ return r.w != null; });
+  const fs = data.filter(function(r){ return r.f != null; });
+  let svg = '<svg id="chart" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">';
+  // 体重スケール
+  let wMin=0, wMax=1;
+  if(ws.length){
+    const vals = ws.map(function(r){ return r.w; });
+    wMin = Math.min.apply(null, vals); wMax = Math.max.apply(null, vals);
+    const m = Math.max((wMax - wMin) * 0.25, 0.5); wMin -= m; wMax += m;
+  }
+  function YW(v){ return padT + (wMax - v)/(wMax - wMin) * (H - padT - padB); }
+  // 体脂肪スケール
+  let fMin=0, fMax=1;
+  if(fs.length){
+    const vals = fs.map(function(r){ return r.f; });
+    fMin = Math.min.apply(null, vals); fMax = Math.max.apply(null, vals);
+    const m = Math.max((fMax - fMin) * 0.25, 0.5); fMin -= m; fMax += m;
+  }
+  function YF(v){ return padT + (fMax - v)/(fMax - fMin) * (H - padT - padB); }
+  // 横グリッド + 体重目盛
+  for(let i=0;i<=4;i++){
+    const y = padT + i*(H-padT-padB)/4;
+    svg += '<line x1="'+padL+'" y1="'+y+'" x2="'+(W-padR)+'" y2="'+y+'" stroke="#F6E4EA" stroke-width="1"/>';
+    if(ws.length){
+      const v = wMax - i*(wMax-wMin)/4;
+      svg += '<text x="'+(padL-6)+'" y="'+(y+4)+'" font-size="11" fill="#B29A9A" text-anchor="end">'+v.toFixed(1)+'</text>';
+    }
+  }
+  // 日付ラベル(最初・中間・最後)
+  [start, new Date((t0+t1)/2), end].forEach(function(dt){
+    svg += '<text x="'+X(dt.getTime())+'" y="'+(H-8)+'" font-size="11" fill="#B29A9A" text-anchor="middle">'+(dt.getMonth()+1)+'/'+dt.getDate()+'</text>';
+  });
+  // 体重エリア+ライン
+  if(ws.length >= 2){
+    const pts = ws.map(function(r){ return [X(r.d.getTime()), YW(r.w)]; });
+    const line = smoothPath(pts);
+    svg += '<defs><linearGradient id="gw" x1="0" y1="0" x2="0" y2="1">'
+        + '<stop offset="0" stop-color="#EFAFC2" stop-opacity=".35"/><stop offset="1" stop-color="#EFAFC2" stop-opacity="0"/></linearGradient></defs>';
+    svg += '<path d="'+line+' L'+pts[pts.length-1][0]+','+(H-padB)+' L'+pts[0][0]+','+(H-padB)+' Z" fill="url(#gw)"/>';
+    svg += '<path d="'+line+'" fill="none" stroke="#DD8FA8" stroke-width="3" stroke-linecap="round"/>';
+    pts.forEach(function(p){ svg += '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="3.6" fill="#fff" stroke="#DD8FA8" stroke-width="2.2"/>'; });
+  }
+  // 体脂肪ライン(点線・別スケール)
+  if(fs.length >= 2){
+    const pts = fs.map(function(r){ return [X(r.d.getTime()), YF(r.f)]; });
+    svg += '<path d="'+smoothPath(pts)+'" fill="none" stroke="#C9A96E" stroke-width="2.4" stroke-dasharray="1 6" stroke-linecap="round"/>';
+    pts.forEach(function(p){ svg += '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="3" fill="#C9A96E"/>'; });
+  }
+  svg += "</svg>";
+  wrap.innerHTML = svg;
+  // 期間サマリー
+  if(ws.length){
+    const vals = ws.map(function(r){ return r.w; });
+    const diff = vals[vals.length-1] - vals[0];
+    sum.innerHTML =
+      '<div><div class="label">期間内 最低</div><div class="value">' + Math.min.apply(null,vals).toFixed(1) + '<small style="font-size:12px;color:#B29A9A"> kg</small></div></div>' +
+      '<div><div class="label">期間内 平均</div><div class="value">' + (vals.reduce(function(a,b){return a+b;},0)/vals.length).toFixed(1) + '<small style="font-size:12px;color:#B29A9A"> kg</small></div></div>' +
+      '<div><div class="label">期間の増減</div><div class="value">' + (diff>0?"+":"") + diff.toFixed(1) + '<small style="font-size:12px;color:#B29A9A"> kg</small></div></div>';
+  } else { sum.innerHTML = ""; }
+}
+
+/* ---------- 記録一覧 ---------- */
+function renderList(){
+  const wrap = document.getElementById("listWrap");
+  const dates = sortedDates().reverse();
+  if(dates.length === 0){
+    wrap.innerHTML = '<div class="no-data">まだ記録がありません🌷<br>カレンダーから記録してみてね</div>';
+    return;
+  }
+  let html = "";
+  dates.forEach(function(ds){
+    const r = records[ds];
+    const d = fromStr(ds);
+    html += '<button class="list-item" onclick="openInput(\'' + ds + '\')">'
+      + '<div class="list-date"><div class="md">' + (d.getMonth()+1) + '/' + d.getDate() + '</div><div class="dow">' + DOW[d.getDay()] + '曜日 ・ ' + d.getFullYear() + '</div></div>'
+      + '<div class="list-body"><div class="nums">'
+      + (r.w != null ? '<b>' + r.w.toFixed(1) + '</b> kg' : '<span style="color:#B29A9A">体重なし</span>')
+      + (r.f != null ? '<span class="fatv">体脂肪 ' + r.f.toFixed(1) + '%</span>' : '')
+      + '</div>'
+      + (r.m ? '<div class="memo">📝 ' + escapeHtml(r.m) + '</div>' : '')
+      + '</div><span class="list-arrow">›</span></button>';
+  });
+  wrap.innerHTML = html;
+}
+function escapeHtml(s){
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+/* ---------- 身長 ---------- */
+const hEl = document.getElementById("heightInput");
+hEl.addEventListener("change", function(){
+  const v = parseFloat(hEl.value);
+  settings.height = isNaN(v) ? null : v;
+  saveSettings();
+  renderStats();
+  if(settings.height) toast("身長を保存しました");
+});
+
+/* ---------- トースト ---------- */
+let toastTimer;
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.classList.remove("show"); }, 1800);
+}
+
+/* ---------- 全体更新 ---------- */
+function refreshAll(){
+  renderStats(); renderCal();
+  if(document.getElementById("view-graph").classList.contains("active")) drawChart();
+  if(document.getElementById("view-list").classList.contains("active")) renderList();
+}
+
+/* ---------- 初期化 ---------- */
+load();
+const now = new Date();
+calY = now.getFullYear(); calM = now.getMonth()+1;
+if(settings.height) hEl.value = settings.height;
+renderStats(); renderCal();
+// 背景タップでシートを閉じる
+document.getElementById("inputOverlay").addEventListener("click", function(e){ if(e.target === this) closeInput(); });
+document.getElementById("confirmOverlay").addEventListener("click", function(e){ if(e.target === this) closeConfirm(); });
+</script>
+</body>
+</html>
