@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Beauty Clip</title>
+<link rel="apple-touch-icon" href="beauty-clip-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Beauty Clip">
+<meta name="theme-color" content="#FDFCFB">
+<style>
+:root{
+  --bg:#FDFCFB; --card:#FFFFFF; --text:#2B2530; --sub:#8A7F87; --line:#EFE8EA;
+  --rose:#B76E79; --rose-soft:#F6E8EA; --gold:#C9A464; --shadow:0 2px 12px rgba(120,80,90,.08);
+  --danger:#C25B5B; --ok:#6FA287;
+}
+html[data-theme="dark"]{
+  --bg:#17141A; --card:#221E27; --text:#F0EAEE; --sub:#9C919B; --line:#332D39;
+  --rose:#D398A1; --rose-soft:#3A2E33; --gold:#D4B57E; --shadow:0 2px 12px rgba(0,0,0,.35);
+  --danger:#E08585; --ok:#8FC2A5;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN",sans-serif;
+  background:var(--bg);color:var(--text);
+  padding-bottom:env(safe-area-inset-bottom);
+  overscroll-behavior-y:none;
+  transition:background .25s;
+}
+button{font-family:inherit;border:none;background:none;color:inherit;cursor:pointer}
+input,textarea,select{font-family:inherit;font-size:16px;color:var(--text)}
+
+/* ---------- Header ---------- */
+header{
+  position:sticky;top:0;z-index:50;background:var(--bg);
+  padding:calc(env(safe-area-inset-top) + 10px) 16px 8px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{font-size:22px;font-weight:700;letter-spacing:.06em}
+.logo em{font-style:normal;color:var(--rose)}
+.hbtns{display:flex;gap:6px}
+.hbtn{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;background:var(--card);box-shadow:var(--shadow)}
+
+/* ---------- Search ---------- */
+.search-wrap{padding:4px 16px 8px}
+.search{
+  display:flex;align-items:center;gap:8px;background:var(--card);
+  border-radius:22px;padding:10px 16px;box-shadow:var(--shadow);
+}
+.search input{flex:1;border:none;outline:none;background:none;font-size:15px}
+.search input::placeholder{color:var(--sub)}
+
+/* ---------- Category chips ---------- */
+.chips{display:flex;gap:8px;overflow-x:auto;padding:6px 16px 12px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  flex:none;padding:8px 15px;border-radius:18px;font-size:13.5px;font-weight:500;
+  background:var(--card);color:var(--sub);box-shadow:var(--shadow);white-space:nowrap;
+}
+.chip.on{background:var(--rose);color:#fff}
+
+/* ---------- Today card ---------- */
+.today{
+  margin:0 16px 16px;border-radius:20px;overflow:hidden;position:relative;
+  box-shadow:var(--shadow);background:var(--card);display:none;
+}
+.today img{width:100%;height:180px;object-fit:cover;display:block}
+.today .tlabel{
+  position:absolute;top:12px;left:12px;background:rgba(255,255,255,.9);color:#B76E79;
+  font-size:11.5px;font-weight:700;padding:5px 12px;border-radius:14px;letter-spacing:.05em;
+}
+.today .ttitle{
+  position:absolute;bottom:0;left:0;right:0;padding:26px 14px 12px;color:#fff;font-size:14px;font-weight:600;
+  background:linear-gradient(transparent,rgba(40,20,25,.65));
+}
+
+/* ---------- Masonry grid ---------- */
+.grid{columns:2;column-gap:10px;padding:0 16px 100px}
+.tile{
+  break-inside:avoid;margin-bottom:10px;border-radius:14px;overflow:hidden;position:relative;
+  background:var(--card);box-shadow:var(--shadow);
+}
+.tile img{width:100%;display:block;min-height:60px;background:var(--rose-soft)}
+.tile .badges{position:absolute;top:7px;right:7px;display:flex;gap:4px}
+.tile .bdg{background:rgba(255,255,255,.92);border-radius:11px;font-size:11px;padding:3px 7px;color:#B76E79}
+.tile .ttl{padding:8px 10px 9px;font-size:12.5px;font-weight:500;line-height:1.4}
+.tile .stars{font-size:10.5px;color:var(--gold);padding:0 10px 8px;margin-top:-4px}
+.tile.selmode::after{
+  content:"";position:absolute;inset:0;border:3px solid transparent;border-radius:14px;pointer-events:none;
+}
+.tile.selected::after{border-color:var(--rose)}
+.tile.selected::before{
+  content:"✓";position:absolute;top:8px;left:8px;width:24px;height:24px;background:var(--rose);color:#fff;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;z-index:2;
+}
+.empty{padding:70px 30px;text-align:center;color:var(--sub);font-size:14.5px;line-height:2}
+.empty .big{font-size:44px;display:block;margin-bottom:10px}
+
+/* ---------- FAB ---------- */
+.fab{
+  position:fixed;right:20px;bottom:calc(env(safe-area-inset-bottom) + 24px);z-index:60;
+  width:60px;height:60px;border-radius:50%;background:var(--rose);color:#fff;font-size:30px;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(183,110,121,.45);
+}
+.comparebar{
+  position:fixed;left:16px;right:96px;bottom:calc(env(safe-area-inset-bottom) + 30px);z-index:60;
+  background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:12px 16px;
+  display:none;align-items:center;justify-content:space-between;font-size:14px;
+}
+.comparebar .go{color:var(--rose);font-weight:700;font-size:14.5px}
+
+/* ---------- Sheet / Modal ---------- */
+.overlay{position:fixed;inset:0;background:rgba(30,20,25,.45);z-index:100;display:none}
+.sheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:101;background:var(--bg);
+  border-radius:22px 22px 0 0;max-height:92dvh;overflow-y:auto;display:none;
+  padding:14px 18px calc(env(safe-area-inset-bottom) + 24px);
+  -webkit-overflow-scrolling:touch;
+}
+.sheet .grab{width:38px;height:4px;background:var(--line);border-radius:2px;margin:0 auto 14px}
+.sheet h2{font-size:17px;font-weight:700;margin-bottom:14px}
+.fld{margin-bottom:14px}
+.fld label{display:block;font-size:12.5px;color:var(--sub);font-weight:600;margin-bottom:6px}
+.fld input[type=text],.fld textarea,.fld select{
+  width:100%;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 13px;outline:none;
+}
+.fld textarea{min-height:70px;resize:vertical}
+.fld input:focus,.fld textarea:focus{border-color:var(--rose)}
+.row2{display:flex;gap:10px}
+.row2>*{flex:1}
+.pickbtns{display:flex;gap:10px;margin-bottom:16px}
+.pickbtn{
+  flex:1;background:var(--card);border:1.5px dashed var(--rose);border-radius:14px;padding:18px 8px;
+  text-align:center;font-size:13.5px;color:var(--rose);font-weight:600;
+}
+.pickbtn .ic{font-size:26px;display:block;margin-bottom:5px}
+.preview{width:100%;max-height:220px;object-fit:contain;border-radius:14px;margin-bottom:14px;display:none;background:var(--card)}
+.starsel{display:flex;gap:6px;font-size:27px;color:var(--line)}
+.starsel span.on{color:var(--gold)}
+.togglerow{display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-bottom:10px;font-size:14.5px}
+.sw{width:48px;height:28px;border-radius:14px;background:var(--line);position:relative;transition:.2s}
+.sw::after{content:"";position:absolute;width:24px;height:24px;border-radius:50%;background:#fff;top:2px;left:2px;transition:.2s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.sw.on{background:var(--rose)}
+.sw.on::after{left:22px}
+.btn{
+  width:100%;padding:14px;border-radius:14px;background:var(--rose);color:#fff;font-size:15.5px;font-weight:700;margin-top:6px;
+}
+.btn.ghost{background:var(--card);color:var(--text);border:1px solid var(--line)}
+.btn.dngr{background:none;color:var(--danger);font-weight:600;margin-top:2px}
+.btn:disabled{opacity:.45}
+
+/* ---------- Viewer ---------- */
+.viewer{position:fixed;inset:0;z-index:110;background:#0E0B0F;display:none;flex-direction:column;touch-action:none}
+.vtop{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:calc(env(safe-area-inset-top) + 10px) 16px 8px;color:#fff;z-index:5;
+}
+.vtop button{font-size:20px;padding:6px 10px;color:#fff}
+.vstage{flex:1;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center}
+.vstage img{max-width:100%;max-height:100%;transform-origin:center;will-change:transform;user-select:none;-webkit-user-select:none}
+.vinfo{
+  background:var(--bg);border-radius:20px 20px 0 0;padding:16px 18px calc(env(safe-area-inset-bottom) + 16px);
+  max-height:44dvh;overflow-y:auto;
+}
+.vinfo h3{font-size:17px;margin-bottom:4px}
+.vinfo .cat{font-size:12.5px;color:var(--rose);font-weight:600;margin-bottom:8px}
+.vinfo .memo{font-size:14px;color:var(--sub);line-height:1.7;white-space:pre-wrap;margin-bottom:8px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.tag{background:var(--rose-soft);color:var(--rose);font-size:12px;padding:4px 11px;border-radius:12px}
+.vstars{color:var(--gold);font-size:16px;margin-bottom:6px}
+.vdone{font-size:12.5px;color:var(--ok);font-weight:600;margin-bottom:8px}
+.vreview{font-size:13.5px;background:var(--card);border-radius:12px;padding:10px 12px;line-height:1.7;white-space:pre-wrap;margin-bottom:10px}
+.vacts{display:flex;gap:8px;margin-top:4px}
+.vacts button{
+  flex:1;padding:11px 4px;border-radius:12px;background:var(--card);border:1px solid var(--line);
+  font-size:13px;font-weight:600;color:var(--text);
+}
+.vacts .favon{color:var(--rose);border-color:var(--rose)}
+
+/* ---------- Compare ---------- */
+.cmp{position:fixed;inset:0;z-index:110;background:var(--bg);display:none;flex-direction:column}
+.cmpgrid{flex:1;display:grid;gap:4px;padding:4px;overflow:hidden}
+.cmpgrid.n2{grid-template-columns:1fr 1fr}
+.cmpgrid.n3{grid-template-columns:1fr 1fr 1fr}
+.cmpgrid.n4{grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
+.cmpcell{position:relative;border-radius:12px;overflow:hidden;background:#000}
+.cmpcell img{width:100%;height:100%;object-fit:contain}
+.cmpcell .cl{position:absolute;bottom:0;left:0;right:0;font-size:11.5px;color:#fff;padding:16px 8px 6px;background:linear-gradient(transparent,rgba(0,0,0,.6))}
+
+/* ---------- Dialog ---------- */
+.dlg{
+  position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:130;background:var(--bg);
+  border-radius:18px;padding:22px 20px;width:min(88vw,320px);display:none;box-shadow:0 10px 40px rgba(0,0,0,.3);
+}
+.dlg p{font-size:14.5px;line-height:1.7;margin-bottom:16px}
+.dlg .drow{display:flex;gap:10px}
+.dlg .drow button{flex:1;padding:12px;border-radius:12px;font-size:14.5px;font-weight:600}
+.dlg .cancel{background:var(--card);border:1px solid var(--line)}
+.dlg .del{background:var(--danger);color:#fff}
+.overlay2{position:fixed;inset:0;background:rgba(30,20,25,.45);z-index:129;display:none}
+
+/* ---------- List rows (collections / categories) ---------- */
+.lrow{
+  display:flex;align-items:center;justify-content:space-between;background:var(--card);
+  border-radius:14px;padding:14px 15px;margin-bottom:9px;box-shadow:var(--shadow);font-size:15px;
+}
+.lrow .cnt{font-size:12.5px;color:var(--sub)}
+.lrow .ract{display:flex;gap:12px;font-size:16px}
+.lrow .ract button{color:var(--sub)}
+.toast{
+  position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 100px);transform:translateX(-50%);
+  background:rgba(45,35,42,.92);color:#fff;font-size:13.5px;padding:10px 20px;border-radius:20px;z-index:140;
+  opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;
+}
+.toast.show{opacity:1}
+.subhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.subhead h2{font-size:17px}
+.subhead .add{color:var(--rose);font-weight:700;font-size:14px}
+.storinfo{background:var(--card);border-radius:14px;padding:14px;font-size:13.5px;color:var(--sub);line-height:1.8;margin-bottom:12px}
+.checkchips{display:flex;flex-wrap:wrap;gap:8px}
+.ckchip{padding:8px 14px;border-radius:16px;background:var(--card);border:1px solid var(--line);font-size:13.5px}
+.ckchip.on{background:var(--rose);color:#fff;border-color:var(--rose)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Beauty <em>Clip</em> 🎀</div>
+  <div class="hbtns">
+    <button class="hbtn" id="btnCompareMode" title="比較">⇄</button>
+    <button class="hbtn" id="btnCollections" title="コレクション">📁</button>
+    <button class="hbtn" id="btnSettings" title="設定">⚙️</button>
+  </div>
+</header>
+
+<div class="search-wrap">
+  <div class="search">🔍<input id="searchInput" type="search" placeholder="タイトル・メモ・タグで検索"></div>
+</div>
+
+<div class="chips" id="chips"></div>
+
+<div class="today" id="todayCard">
+  <img id="todayImg" alt="">
+  <div class="tlabel">✨ 今日のインスピレーション</div>
+  <div class="ttitle" id="todayTitle"></div>
+</div>
+
+<div class="grid" id="grid"></div>
+<div class="empty" id="emptyMsg" style="display:none">
+  <span class="big">🎀</span>
+  まだ画像がありません。<br>右下の＋ボタンから<br>お気に入りの1枚を保存してみてね
+</div>
+
+<button class="fab" id="fab">＋</button>
+<div class="comparebar" id="compareBar">
+  <span id="compareCount">0枚選択中</span>
+  <button class="go" id="compareGo">比較する →</button>
+</div>
+
+<!-- ======== Add / Edit sheet ======== -->
+<div class="overlay" id="overlay"></div>
+<div class="sheet" id="formSheet">
+  <div class="grab"></div>
+  <h2 id="formTitle">画像を追加</h2>
+  <div class="pickbtns" id="pickBtns">
+    <button class="pickbtn" id="pickCamera"><span class="ic">📷</span>カメラで撮影</button>
+    <button class="pickbtn" id="pickLibrary"><span class="ic">🖼</span>写真から選ぶ</button>
+  </div>
+  <input type="file" id="fileCamera" accept="image/*" capture="environment" hidden>
+  <input type="file" id="fileLibrary" accept="image/*,.heic,.heif" hidden>
+  <img class="preview" id="preview">
+  <div class="fld"><label>タイトル</label><input type="text" id="fTitle" placeholder="例）石原さとみ風ナチュラルメイク"></div>
+  <div class="fld"><label>カテゴリー</label><select id="fCategory"></select></div>
+  <div class="fld"><label>タグ（カンマ区切りで複数OK）</label><input type="text" id="fTags" placeholder="例）ピンク, 春, 上品"></div>
+  <div class="fld"><label>メモ</label><textarea id="fMemo" placeholder="どこが素敵だったか、参考ポイントなど"></textarea></div>
+  <div class="fld"><label>★評価</label><div class="starsel" id="fStars"></div></div>
+  <div class="togglerow">❤️ お気に入り<button class="sw" id="fFav"></button></div>
+  <div class="togglerow">✅ 再現済み<button class="sw" id="fDone"></button></div>
+  <div class="fld"><label>感想メモ（再現してみた感想など）</label><textarea id="fReview" placeholder="実際にやってみてどうだったか"></textarea></div>
+  <div class="fld" id="collFld"><label>コレクションに入れる</label><div class="checkchips" id="fColls"></div></div>
+  <button class="btn" id="btnSave">保存する</button>
+  <button class="btn ghost" id="btnCancel">閉じる</button>
+</div>
+
+<!-- ======== Fullscreen viewer ======== -->
+<div class="viewer" id="viewer">
+  <div class="vtop">
+    <button id="vClose">✕</button>
+    <span id="vPos" style="font-size:13px;opacity:.7"></span>
+    <button id="vEdit">✎</button>
+  </div>
+  <div class="vstage" id="vStage"><img id="vImg" alt=""></div>
+  <div class="vinfo">
+    <h3 id="vTitle"></h3>
+    <div class="cat" id="vCat"></div>
+    <div class="vstars" id="vStars"></div>
+    <div class="vdone" id="vDone" style="display:none">✅ 再現済み</div>
+    <div class="memo" id="vMemo"></div>
+    <div class="tags" id="vTags"></div>
+    <div class="vreview" id="vReview" style="display:none"></div>
+    <div class="vacts">
+      <button id="vFav">❤️ お気に入り</button>
+      <button id="vColl">📁 コレクション</button>
+      <button id="vDel" style="color:var(--danger)">🗑 削除</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======== Compare view ======== -->
+<div class="cmp" id="cmpView">
+  <div class="vtop" style="color:var(--text)">
+    <button id="cmpClose" style="color:var(--text)">✕</button>
+    <span style="font-size:15px;font-weight:700">見比べ中</span>
+    <span style="width:40px"></span>
+  </div>
+  <div class="cmpgrid" id="cmpGrid"></div>
+</div>
+
+<!-- ======== Collections sheet ======== -->
+<div class="sheet" id="collSheet">
+  <div class="grab"></div>
+  <div class="subhead"><h2>コレクション</h2><button class="add" id="collAdd">＋ 新規作成</button></div>
+  <div id="collList"></div>
+  <button class="btn ghost" id="collClose">閉じる</button>
+</div>
+
+<!-- ======== Category manage sheet ======== -->
+<div class="sheet" id="catSheet">
+  <div class="grab"></div>
+  <div class="subhead"><h2>カテゴリー管理</h2><button class="add" id="catAdd">＋ 追加</button></div>
+  <div id="catList"></div>
+  <button class="btn ghost" id="catClose">閉じる</button>
+</div>
+
+<!-- ======== Settings sheet ======== -->
+<div class="sheet" id="setSheet">
+  <div class="grab"></div>
+  <h2>設定</h2>
+  <div class="togglerow">🌙 ダークモード<button class="sw" id="setDark"></button></div>
+  <button class="btn ghost" id="setCats" style="margin-bottom:8px">🏷 カテゴリーを編集する</button>
+  <div class="storinfo" id="storInfo">ストレージ使用量を確認中…</div>
+  <button class="btn" id="btnExport">💾 バックアップを書き出す</button>
+  <button class="btn ghost" id="btnImport">📥 バックアップから復元する</button>
+  <input type="file" id="fileImport" accept=".json,application/json" hidden>
+  <button class="btn ghost" id="setClose">閉じる</button>
+  <p style="font-size:12px;color:var(--sub);line-height:1.8;margin-top:14px">
+    💡 画像は自動で圧縮して保存されるので、オリジナルの高画質写真はiPhoneの「写真」アプリにそのまま残ります。端末のストレージにやさしい設計です😊<br>
+    💡 バックアップファイルは「ファイル」アプリのiCloud Driveに保存しておくと、機種変更のときも安心です。
+  </p>
+</div>
+
+<!-- ======== Confirm dialog ======== -->
+<div class="overlay2" id="overlay2"></div>
+<div class="dlg" id="dlg">
+  <p id="dlgMsg"></p>
+  <div class="drow">
+    <button class="cancel" id="dlgCancel">キャンセル</button>
+    <button class="del" id="dlgOk">削除する</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ================= IndexedDB ================= */
+let db;
+const DB_NAME="beautyClipDB", DB_VER=1;
+function openDB(){
+  return new Promise((res,rej)=>{
+    const rq=indexedDB.open(DB_NAME,DB_VER);
+    rq.onupgradeneeded=e=>{
+      const d=e.target.result;
+      d.createObjectStore("items",{keyPath:"id"});
+      d.createObjectStore("thumbs",{keyPath:"id"});
+      d.createObjectStore("fulls",{keyPath:"id"});
+      d.createObjectStore("settings",{keyPath:"key"});
+    };
+    rq.onsuccess=e=>{db=e.target.result;res()};
+    rq.onerror=()=>rej(rq.error);
+  });
+}
+function tx(store,mode){return db.transaction(store,mode).objectStore(store)}
+function idbPut(store,val){return new Promise((res,rej)=>{const r=tx(store,"readwrite").put(val);r.onsuccess=()=>res();r.onerror=()=>rej(r.error)})}
+function idbGet(store,key){return new Promise((res,rej)=>{const r=tx(store,"readonly").get(key);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+function idbDel(store,key){return new Promise((res,rej)=>{const r=tx(store,"readwrite").delete(key);r.onsuccess=()=>res();r.onerror=()=>rej(r.error)})}
+function idbAll(store){return new Promise((res,rej)=>{const r=tx(store,"readonly").getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+
+/* ================= State ================= */
+const DEFAULT_CATS=["メイク","ヘアスタイル","ファッション","バッグ","靴","アクセサリー","ネイル","スキンケア","雰囲気"];
+let items=[];           // all metadata (in memory, sorted new->old)
+let categories=[];
+let collections=[];     // [{id,name}]
+let filterCat="all";    // "all" | "fav" | category name | "coll:<id>"
+let searchQ="";
+let selectMode=false, selectedIds=[];
+let editingId=null;     // null = new
+let pendingImage=null;  // {full:Blob, thumb:Blob, hash, w, h}
+let viewerList=[], viewerIdx=0;
+let thumbURLs=new Map();  // id -> objectURL (revoked on rerender)
+let todayId=null;
+
+/* ================= Utilities ================= */
+const $=id=>document.getElementById(id);
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+function toast(msg){const t=$("toast");t.textContent=msg;t.classList.add("show");clearTimeout(t._tm);t._tm=setTimeout(()=>t.classList.remove("show"),2200)}
+function esc(s){return (s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+
+/* ================= Image processing =================
+   full: 長辺1600px / thumb: 長辺420px。WebP対応ならWebP、なければJPEG。
+   HEIC等もブラウザがデコードできればcanvas経由で軽量形式に変換される。 */
+let webpOK=null;
+async function checkWebp(){
+  if(webpOK!==null)return webpOK;
+  const c=document.createElement("canvas");c.width=c.height=2;
+  const b=await new Promise(r=>c.toBlob(r,"image/webp",.8));
+  webpOK=!!(b&&b.type==="image/webp");return webpOK;
+}
+function loadImageFromFile(file){
+  return new Promise((res,rej)=>{
+    const url=URL.createObjectURL(file);
+    const img=new Image();
+    img.onload=()=>{res({img,url})};
+    img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error("decode"))};
+    img.src=url;
+  });
+}
+function drawScaled(img,maxSide){
+  let w=img.naturalWidth,h=img.naturalHeight;
+  if(Math.max(w,h)>maxSide){const k=maxSide/Math.max(w,h);w=Math.round(w*k);h=Math.round(h*k)}
+  const c=document.createElement("canvas");c.width=w;c.height=h;
+  c.getContext("2d",{alpha:false}).drawImage(img,0,0,w,h);
+  return c;
+}
+function canvasBlob(c,type,q){return new Promise(r=>c.toBlob(r,type,q))}
+/* aHash: 8x8グレースケール平均ハッシュ(重複検出用) */
+function aHash(img){
+  const c=document.createElement("canvas");c.width=c.height=8;
+  const ctx=c.getContext("2d",{alpha:false});
+  ctx.drawImage(img,0,0,8,8);
+  const d=ctx.getImageData(0,0,8,8).data;
+  const g=[];let sum=0;
+  for(let i=0;i<64;i++){const v=(d[i*4]*299+d[i*4+1]*587+d[i*4+2]*114)/1000;g.push(v);sum+=v}
+  const avg=sum/64;
+  return g.map(v=>v>avg?"1":"0").join("");
+}
+function hamming(a,b){let n=0;for(let i=0;i<64;i++)if(a[i]!==b[i])n++;return n}
+
+async function processFile(file){
+  const useWebp=await checkWebp();
+  const type=useWebp?"image/webp":"image/jpeg";
+  const {img,url}=await loadImageFromFile(file);
+  const hash=aHash(img);
+  const fullC=drawScaled(img,1600);
+  const thumbC=drawScaled(img,420);
+  const full=await canvasBlob(fullC,type,.82);
+  const thumb=await canvasBlob(thumbC,type,.7);
+  URL.revokeObjectURL(url);
+  return {full,thumb,hash,w:fullC.width,h:fullC.height};
+}
+
+/* ================= Settings load/save ================= */
+async function loadSettings(){
+  const c=await idbGet("settings","categories");
+  categories=c?c.value:[...DEFAULT_CATS];
+  const co=await idbGet("settings","collections");
+  collections=co?co.value:[];
+  const th=await idbGet("settings","theme");
+  applyTheme(th?th.value:"auto");
+}
+function saveCats(){return idbPut("settings",{key:"categories",value:categories})}
+function saveColls(){return idbPut("settings",{key:"collections",value:collections})}
+function applyTheme(v){
+  const dark = v==="dark" || (v==="auto" && matchMedia("(prefers-color-scheme: dark)").matches);
+  document.documentElement.dataset.theme=dark?"dark":"light";
+  document.querySelector('meta[name=theme-color]').content=dark?"#17141A":"#FDFCFB";
+  $("setDark").classList.toggle("on",dark);
+  currentTheme=v;
+}
+let currentTheme="auto";
+
+/* ================= Render: chips ================= */
+function renderChips(){
+  const el=$("chips");el.innerHTML="";
+  const mk=(label,val)=>{
+    const b=document.createElement("button");
+    b.className="chip"+(filterCat===val?" on":"");
+    b.textContent=label;
+    b.onclick=()=>{filterCat=val;renderChips();renderGrid()};
+    el.appendChild(b);
+  };
+  mk("すべて","all");
+  mk("❤️ お気に入り","fav");
+  categories.forEach(c=>mk(c,c));
+  collections.forEach(c=>mk("📁 "+c.name,"coll:"+c.id));
+}
+
+/* ================= Filtering ================= */
+function filteredItems(){
+  let list=items;
+  if(filterCat==="fav")list=list.filter(i=>i.fav);
+  else if(filterCat.startsWith("coll:")){const cid=filterCat.slice(5);list=list.filter(i=>(i.collections||[]).includes(cid))}
+  else if(filterCat!=="all")list=list.filter(i=>i.category===filterCat);
+  if(searchQ){
+    const q=searchQ.toLowerCase();
+    list=list.filter(i=>
+      (i.title||"").toLowerCase().includes(q)||
+      (i.memo||"").toLowerCase().includes(q)||
+      (i.review||"").toLowerCase().includes(q)||
+      (i.category||"").toLowerCase().includes(q)||
+      (i.tags||[]).some(t=>t.toLowerCase().includes(q))
+    );
+  }
+  return list;
+}
+
+/* ================= Render: grid (lazy) ================= */
+let observer=null;
+function renderGrid(){
+  // revoke old thumb URLs (メモリ解放)
+  for(const u of thumbURLs.values())URL.revokeObjectURL(u);
+  thumbURLs.clear();
+  if(observer)observer.disconnect();
+
+  const list=filteredItems();
+  const g=$("grid");g.innerHTML="";
+  $("emptyMsg").style.display=list.length?"none":"block";
+
+  observer=new IntersectionObserver(entries=>{
+    for(const en of entries){
+      if(en.isIntersecting){
+        const im=en.target;
+        observer.unobserve(im);
+        loadThumbInto(im.dataset.id,im);
+      }
+    }
+  },{rootMargin:"600px"});
+
+  const frag=document.createDocumentFragment();
+  for(const it of list){
+    const t=document.createElement("div");
+    t.className="tile"+(selectMode?" selmode":"")+(selectedIds.includes(it.id)?" selected":"");
+    const ratio=it.h&&it.w?(it.h/it.w*100):100;
+    t.innerHTML=`<img data-id="${it.id}" alt="" style="aspect-ratio:${it.w||1}/${it.h||1}" loading="lazy">
+      <div class="badges">${it.fav?'<span class="bdg">❤️</span>':""}${it.done?'<span class="bdg">✅</span>':""}</div>
+      ${it.title?`<div class="ttl">${esc(it.title)}</div>`:""}
+      ${it.rating?`<div class="stars">${"★".repeat(it.rating)}${"☆".repeat(5-it.rating)}</div>`:""}`;
+    t.onclick=()=>{
+      if(selectMode)toggleSelect(it.id,t);
+      else openViewer(list,list.indexOf(it));
+    };
+    frag.appendChild(t);
+    observer.observe(t.querySelector("img"));
+  }
+  g.appendChild(frag);
+  renderToday(list);
+}
+async function loadThumbInto(id,imgEl){
+  const rec=await idbGet("thumbs",id);
+  if(!rec)return;
+  const u=URL.createObjectURL(rec.blob);
+  thumbURLs.set(id+"_"+Math.random(),u);
+  imgEl.src=u;
+}
+
+/* ================= Today's inspiration ================= */
+async function renderToday(){
+  const card=$("todayCard");
+  if(!items.length){card.style.display="none";return}
+  if(!todayId || !items.find(i=>i.id===todayId)){
+    todayId=items[Math.floor(Math.random()*items.length)].id;
+  }
+  const it=items.find(i=>i.id===todayId);
+  const rec=await idbGet("thumbs",it.id);
+  if(!rec){card.style.display="none";return}
+  const old=$("todayImg").src;
+  if(old&&old.startsWith("blob:"))URL.revokeObjectURL(old);
+  $("todayImg").src=URL.createObjectURL(rec.blob);
+  $("todayTitle").textContent=it.title||"（タイトルなし）";
+  card.style.display="block";
+  card.onclick=()=>{const list=filteredItems();const idx=list.findIndex(x=>x.id===it.id);openViewer(idx>=0?list:[it],idx>=0?idx:0)};
+}
+
+/* ================= Select / Compare ================= */
+function setSelectMode(on){
+  selectMode=on;selectedIds=[];
+  $("compareBar").style.display=on?"flex":"none";
+  $("btnCompareMode").style.background=on?"var(--rose)":"";
+  $("btnCompareMode").style.color=on?"#fff":"";
+  updateCompareBar();renderGrid();
+}
+function toggleSelect(id,tileEl){
+  const i=selectedIds.indexOf(id);
+  if(i>=0)selectedIds.splice(i,1);
+  else{if(selectedIds.length>=4){toast("比較は4枚までだよ");return}selectedIds.push(id)}
+  tileEl.classList.toggle("selected",selectedIds.includes(id));
+  updateCompareBar();
+}
+function updateCompareBar(){
+  $("compareCount").textContent=selectedIds.length+"枚選択中（2〜4枚）";
+  $("compareGo").style.opacity=selectedIds.length>=2?"1":".4";
+}
+$("btnCompareMode").onclick=()=>setSelectMode(!selectMode);
+$("compareGo").onclick=async()=>{
+  if(selectedIds.length<2){toast("2枚以上選んでね");return}
+  const grid=$("cmpGrid");grid.innerHTML="";
+  grid.className="cmpgrid n"+selectedIds.length;
+  for(const id of selectedIds){
+    const it=items.find(i=>i.id===id);
+    const rec=await idbGet("fulls",id);
+    const cell=document.createElement("div");cell.className="cmpcell";
+    const img=document.createElement("img");
+    if(rec)img.src=URL.createObjectURL(rec.blob);
+    cell.appendChild(img);
+    const cl=document.createElement("div");cl.className="cl";cl.textContent=it?.title||"";
+    cell.appendChild(cl);
+    grid.appendChild(cell);
+  }
+  $("cmpView").style.display="flex";
+};
+$("cmpClose").onclick=()=>{
+  $("cmpGrid").querySelectorAll("img").forEach(i=>{if(i.src.startsWith("blob:"))URL.revokeObjectURL(i.src)});
+  $("cmpView").style.display="none";
+  setSelectMode(false);
+};
+
+/* ================= Sheets ================= */
+function openSheet(id){$("overlay").style.display="block";$(id).style.display="block";document.body.style.overflow="hidden"}
+function closeSheets(){
+  $("overlay").style.display="none";
+  ["formSheet","collSheet","catSheet","setSheet"].forEach(s=>$(s).style.display="none");
+  document.body.style.overflow="";
+}
+$("overlay").onclick=closeSheets;
+
+/* ================= Add / Edit form ================= */
+let fRating=0;
+function buildStars(){
+  const el=$("fStars");el.innerHTML="";
+  for(let i=1;i<=5;i++){
+    const s=document.createElement("span");s.textContent="★";
+    s.className=i<=fRating?"on":"";
+    s.onclick=()=>{fRating=(fRating===i)?0:i;buildStars()};
+    el.appendChild(s);
+  }
+}
+function buildCatSelect(sel){
+  const s=$("fCategory");s.innerHTML="";
+  categories.forEach(c=>{const o=document.createElement("option");o.value=o.textContent=c;s.appendChild(o)});
+  if(sel&&categories.includes(sel))s.value=sel;
+}
+function buildCollChips(selIds){
+  const el=$("fColls");el.innerHTML="";
+  if(!collections.length){el.innerHTML='<span style="font-size:12.5px;color:var(--sub)">まだコレクションがないよ（📁ボタンから作れます）</span>';return}
+  collections.forEach(c=>{
+    const b=document.createElement("button");
+    b.className="ckchip"+((selIds||[]).includes(c.id)?" on":"");
+    b.textContent=c.name;b.dataset.cid=c.id;
+    b.onclick=()=>b.classList.toggle("on");
+    el.appendChild(b);
+  });
+}
+function openForm(item){
+  editingId=item?item.id:null;
+  pendingImage=null;
+  $("formTitle").textContent=item?"編集":"画像を追加";
+  $("pickBtns").style.display=item?"none":"flex";
+  $("preview").style.display="none";$("preview").src="";
+  $("fTitle").value=item?.title||"";
+  $("fTags").value=(item?.tags||[]).join(", ");
+  $("fMemo").value=item?.memo||"";
+  $("fReview").value=item?.review||"";
+  fRating=item?.rating||0;buildStars();
+  buildCatSelect(item?.category);
+  buildCollChips(item?.collections);
+  $("fFav").classList.toggle("on",!!item?.fav);
+  $("fDone").classList.toggle("on",!!item?.done);
+  openSheet("formSheet");
+  if(item)showEditPreview(item.id);
+}
+async function showEditPreview(id){
+  const rec=await idbGet("thumbs",id);
+  if(rec){const p=$("preview");if(p.src.startsWith("blob:"))URL.revokeObjectURL(p.src);p.src=URL.createObjectURL(rec.blob);p.style.display="block"}
+}
+$("fab").onclick=()=>{if(selectMode)setSelectMode(false);openForm(null)};
+$("btnCancel").onclick=closeSheets;
+$("fFav").onclick=e=>e.target.classList.toggle("on");
+$("fDone").onclick=e=>e.target.classList.toggle("on");
+$("pickCamera").onclick=()=>$("fileCamera").click();
+$("pickLibrary").onclick=()=>$("fileLibrary").click();
+
+async function handleFile(file){
+  if(!file)return;
+  toast("画像を最適化中…");
+  try{
+    const p=await processFile(file);
+    // 重複検出
+    const dup=items.find(i=>i.hash&&hamming(i.hash,p.hash)<=4);
+    if(dup){
+      toast("⚠️ 同じような画像がすでに保存されているみたい（「"+(dup.title||"タイトルなし")+"」）");
+    }
+    pendingImage=p;
+    const pv=$("preview");
+    if(pv.src.startsWith("blob:"))URL.revokeObjectURL(pv.src);
+    pv.src=URL.createObjectURL(p.thumb);pv.style.display="block";
+    if(!dup)toast("画像の準備ができたよ😊");
+  }catch(e){
+    toast("この画像は読み込めなかったみたい💦 別の画像で試してみてね");
+  }
+}
+$("fileCamera").onchange=e=>{handleFile(e.target.files[0]);e.target.value=""};
+$("fileLibrary").onchange=e=>{handleFile(e.target.files[0]);e.target.value=""};
+
+$("btnSave").onclick=async()=>{
+  if(!editingId&&!pendingImage){toast("先に画像を選んでね📷");return}
+  const collIds=[...$("fColls").querySelectorAll(".ckchip.on")].map(b=>b.dataset.cid);
+  const tags=$("fTags").value.split(/[,、，]/).map(t=>t.trim()).filter(Boolean);
+  if(editingId){
+    const it=items.find(i=>i.id===editingId);
+    Object.assign(it,{
+      title:$("fTitle").value.trim(),memo:$("fMemo").value.trim(),review:$("fReview").value.trim(),
+      category:$("fCategory").value,tags,rating:fRating,
+      fav:$("fFav").classList.contains("on"),done:$("fDone").classList.contains("on"),
+      collections:collIds,updatedAt:Date.now()
+    });
+    await idbPut("items",it);
+    toast("更新したよ✨");
+  }else{
+    const id=uid();
+    const it={
+      id,title:$("fTitle").value.trim(),memo:$("fMemo").value.trim(),review:$("fReview").value.trim(),
+      category:$("fCategory").value,tags,rating:fRating,
+      fav:$("fFav").classList.contains("on"),done:$("fDone").classList.contains("on"),
+      collections:collIds,hash:pendingImage.hash,w:pendingImage.w,h:pendingImage.h,
+      createdAt:Date.now(),updatedAt:Date.now()
+    };
+    await idbPut("items",it);
+    await idbPut("fulls",{id,blob:pendingImage.full});
+    await idbPut("thumbs",{id,blob:pendingImage.thumb});
+    items.unshift(it);
+    toast("保存したよ🎀");
+  }
+  closeSheets();renderChips();renderGrid();
+  if(viewerOpen)refreshViewer();
+};
+
+/* ================= Viewer (swipe + pinch) ================= */
+let viewerOpen=false;
+let vScale=1,vTx=0,vTy=0;
+function openViewer(list,idx){
+  viewerList=list;viewerIdx=idx;viewerOpen=true;
+  $("viewer").style.display="flex";document.body.style.overflow="hidden";
+  showViewerItem();
+}
+async function showViewerItem(){
+  const it=viewerList[viewerIdx];if(!it)return closeViewer();
+  vScale=1;vTx=0;vTy=0;applyTransform();
+  $("vPos").textContent=(viewerIdx+1)+" / "+viewerList.length;
+  $("vTitle").textContent=it.title||"（タイトルなし）";
+  $("vCat").textContent=(it.category||"")+((it.collections||[]).length?"　📁 "+it.collections.map(cid=>collections.find(c=>c.id===cid)?.name).filter(Boolean).join("・"):"");
+  $("vStars").textContent=it.rating?("★".repeat(it.rating)+"☆".repeat(5-it.rating)):"";
+  $("vDone").style.display=it.done?"block":"none";
+  $("vMemo").textContent=it.memo||"";
+  $("vReview").style.display=it.review?"block":"none";
+  $("vReview").textContent=it.review?("💬 "+it.review):"";
+  const tg=$("vTags");tg.innerHTML="";
+  (it.tags||[]).forEach(t=>{const s=document.createElement("span");s.className="tag";s.textContent="#"+t;tg.appendChild(s)});
+  $("vFav").className=it.fav?"favon":"";
+  $("vFav").textContent=it.fav?"❤️ お気に入り中":"🤍 お気に入り";
+  // load full image (全画面時のみ高画質)
+  const img=$("vImg");
+  if(img.src.startsWith("blob:"))URL.revokeObjectURL(img.src);
+  img.src="";
+  const rec=await idbGet("fulls",it.id) || await idbGet("thumbs",it.id);
+  if(rec)img.src=URL.createObjectURL(rec.blob);
+}
+function refreshViewer(){viewerList=filteredItems();if(viewerIdx>=viewerList.length)viewerIdx=Math.max(0,viewerList.length-1);if(!viewerList.length)closeViewer();else showViewerItem()}
+function closeViewer(){
+  viewerOpen=false;
+  const img=$("vImg");if(img.src.startsWith("blob:"))URL.revokeObjectURL(img.src);img.src="";
+  $("viewer").style.display="none";document.body.style.overflow="";
+}
+$("vClose").onclick=closeViewer;
+$("vEdit").onclick=()=>openForm(viewerList[viewerIdx]);
+$("vFav").onclick=async()=>{
+  const it=viewerList[viewerIdx];it.fav=!it.fav;await idbPut("items",it);showViewerItem();renderGrid();
+};
+$("vColl").onclick=()=>openForm(viewerList[viewerIdx]);
+$("vDel").onclick=()=>{
+  const it=viewerList[viewerIdx];
+  confirmDlg(`「${it.title||"この画像"}」を削除する?\nこの操作は元に戻せないよ。`,async()=>{
+    await idbDel("items",it.id);await idbDel("fulls",it.id);await idbDel("thumbs",it.id);
+    items=items.filter(i=>i.id!==it.id);
+    toast("削除したよ");
+    refreshViewer();renderGrid();
+  });
+};
+
+/* touch: swipe & pinch */
+const stage=$("vStage");
+let tStartX=0,tStartY=0,tLastX=0,tLastY=0,pinchDist=0,pinchStartScale=1,isPinch=false,startTx=0,startTy=0;
+function applyTransform(){$("vImg").style.transform=`translate(${vTx}px,${vTy}px) scale(${vScale})`}
+stage.addEventListener("touchstart",e=>{
+  if(e.touches.length===2){
+    isPinch=true;
+    pinchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    pinchStartScale=vScale;
+  }else{
+    isPinch=false;
+    tStartX=tLastX=e.touches[0].clientX;tStartY=tLastY=e.touches[0].clientY;
+    startTx=vTx;startTy=vTy;
+  }
+},{passive:true});
+stage.addEventListener("touchmove",e=>{
+  if(e.touches.length===2){
+    const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    vScale=Math.min(5,Math.max(1,pinchStartScale*d/pinchDist));
+    applyTransform();
+  }else if(!isPinch){
+    tLastX=e.touches[0].clientX;tLastY=e.touches[0].clientY;
+    if(vScale>1){
+      vTx=startTx+(tLastX-tStartX);vTy=startTy+(tLastY-tStartY);
+      applyTransform();
+    }
+  }
+},{passive:true});
+stage.addEventListener("touchend",e=>{
+  if(isPinch){if(vScale<=1.02){vScale=1;vTx=0;vTy=0;applyTransform()}return}
+  const dx=tLastX-tStartX,dy=tLastY-tStartY;
+  if(vScale===1&&Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.4){
+    if(dx<0&&viewerIdx<viewerList.length-1){viewerIdx++;showViewerItem()}
+    else if(dx>0&&viewerIdx>0){viewerIdx--;showViewerItem()}
+  }
+},{passive:true});
+let lastTap=0;
+stage.addEventListener("touchend",()=>{
+  const now=Date.now();
+  if(now-lastTap<300){ // double tap: zoom toggle
+    vScale=vScale>1?1:2.2;vTx=0;vTy=0;applyTransform();
+  }
+  lastTap=now;
+},{passive:true});
+
+/* ================= Confirm dialog ================= */
+function confirmDlg(msg,onOk,okLabel){
+  $("dlgMsg").textContent=msg;
+  $("dlgOk").textContent=okLabel||"削除する";
+  $("overlay2").style.display="block";$("dlg").style.display="block";
+  $("dlgOk").onclick=()=>{hideDlg();onOk()};
+  $("dlgCancel").onclick=hideDlg;
+  $("overlay2").onclick=hideDlg;
+}
+function hideDlg(){$("overlay2").style.display="none";$("dlg").style.display="none"}
+
+/* ================= Collections ================= */
+$("btnCollections").onclick=()=>{renderCollList();openSheet("collSheet")};
+$("collClose").onclick=closeSheets;
+$("collAdd").onclick=()=>{
+  const name=prompt("コレクション名を入力してね\n例）2026夏、秋メイク、真似したい女優");
+  if(!name||!name.trim())return;
+  collections.push({id:uid(),name:name.trim()});
+  saveColls();renderCollList();renderChips();
+  toast("コレクションを作ったよ📁");
+};
+function renderCollList(){
+  const el=$("collList");el.innerHTML="";
+  if(!collections.length){el.innerHTML='<div class="empty" style="padding:30px">まだコレクションがないよ。<br>「＋新規作成」から作ってみてね</div>';return}
+  collections.forEach(c=>{
+    const n=items.filter(i=>(i.collections||[]).includes(c.id)).length;
+    const row=document.createElement("div");row.className="lrow";
+    row.innerHTML=`<div><div>📁 ${esc(c.name)}</div><div class="cnt">${n}枚</div></div>
+      <div class="ract"><button data-a="open">👀</button><button data-a="edit">✎</button><button data-a="del">🗑</button></div>`;
+    row.querySelector('[data-a=open]').onclick=()=>{filterCat="coll:"+c.id;closeSheets();renderChips();renderGrid()};
+    row.querySelector('[data-a=edit]').onclick=()=>{
+      const nn=prompt("新しい名前",c.name);
+      if(nn&&nn.trim()){c.name=nn.trim();saveColls();renderCollList();renderChips()}
+    };
+    row.querySelector('[data-a=del]').onclick=()=>{
+      confirmDlg(`コレクション「${c.name}」を削除する?\n（中の画像は消えないから安心してね）`,async()=>{
+        collections=collections.filter(x=>x.id!==c.id);
+        for(const it of items){
+          if((it.collections||[]).includes(c.id)){
+            it.collections=it.collections.filter(x=>x!==c.id);
+            await idbPut("items",it);
+          }
+        }
+        saveColls();
+        if(filterCat==="coll:"+c.id)filterCat="all";
+        renderCollList();renderChips();renderGrid();
+      });
+    };
+    el.appendChild(row);
+  });
+}
+
+/* ================= Categories ================= */
+$("setCats").onclick=()=>{closeSheets();renderCatList();openSheet("catSheet")};
+$("catClose").onclick=closeSheets;
+$("catAdd").onclick=()=>{
+  const name=prompt("新しいカテゴリー名");
+  if(!name||!name.trim())return;
+  if(categories.includes(name.trim())){toast("同じ名前のカテゴリーがあるよ");return}
+  categories.push(name.trim());saveCats();renderCatList();renderChips();
+};
+function renderCatList(){
+  const el=$("catList");el.innerHTML="";
+  categories.forEach((c,idx)=>{
+    const n=items.filter(i=>i.category===c).length;
+    const row=document.createElement("div");row.className="lrow";
+    row.innerHTML=`<div><div>${esc(c)}</div><div class="cnt">${n}枚</div></div>
+      <div class="ract"><button data-a="edit">✎</button><button data-a="del">🗑</button></div>`;
+    row.querySelector('[data-a=edit]').onclick=()=>{
+      const nn=prompt("新しい名前",c);
+      if(!nn||!nn.trim()||nn.trim()===c)return;
+      const newName=nn.trim();
+      (async()=>{
+        for(const it of items){if(it.category===c){it.category=newName;await idbPut("items",it)}}
+        categories[idx]=newName;saveCats();
+        if(filterCat===c)filterCat=newName;
+        renderCatList();renderChips();renderGrid();
+      })();
+    };
+    row.querySelector('[data-a=del]').onclick=()=>{
+      confirmDlg(`カテゴリー「${c}」を削除する?\n（このカテゴリーの画像は「未分類」になるよ）`,async()=>{
+        for(const it of items){if(it.category===c){it.category="未分類";await idbPut("items",it)}}
+        categories.splice(idx,1);saveCats();
+        if(filterCat===c)filterCat="all";
+        renderCatList();renderChips();renderGrid();
+      });
+    };
+    el.appendChild(row);
+  });
+}
+
+/* ================= Settings ================= */
+$("btnSettings").onclick=()=>{updateStorInfo();openSheet("setSheet")};
+$("setClose").onclick=closeSheets;
+$("setDark").onclick=async()=>{
+  const next=document.documentElement.dataset.theme==="dark"?"light":"dark";
+  applyTheme(next);
+  await idbPut("settings",{key:"theme",value:next});
+};
+async function updateStorInfo(){
+  let msg=`保存枚数：${items.length}枚`;
+  try{
+    const est=await navigator.storage.estimate();
+    const used=(est.usage/1048576).toFixed(1);
+    msg+=`<br>使用中の容量：約 ${used} MB`;
+    if(items.length)msg+=`<br>1枚あたり平均：約 ${(est.usage/1048576/items.length).toFixed(2)} MB`;
+  }catch(e){}
+  $("storInfo").innerHTML=msg;
+}
+
+/* ================= Backup ================= */
+function blobToB64(blob){return new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);fr.readAsDataURL(blob)})}
+function b64ToBlob(b64){
+  const [meta,data]=b64.split(",");
+  const type=meta.match(/data:(.*?);/)[1];
+  const bin=atob(data);const arr=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
+  return new Blob([arr],{type});
+}
+$("btnExport").onclick=async()=>{
+  toast("バックアップを作成中…少し待ってね");
+  const out={app:"BeautyClip",ver:1,exportedAt:new Date().toISOString(),categories,collections,items:[]};
+  for(const it of items){
+    const f=await idbGet("fulls",it.id);
+    const t=await idbGet("thumbs",it.id);
+    out.items.push({...it,fullB64:f?await blobToB64(f.blob):null,thumbB64:t?await blobToB64(t.blob):null});
+  }
+  const blob=new Blob([JSON.stringify(out)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  const d=new Date();
+  a.download=`beautyclip-backup-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,"0")}${String(d.getDate()).padStart(2,"0")}.json`;
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  toast("バックアップができたよ💾 iCloud Driveに保存してね");
+};
+$("btnImport").onclick=()=>$("fileImport").click();
+$("fileImport").onchange=e=>{
+  const file=e.target.files[0];e.target.value="";
+  if(!file)return;
+  confirmDlg("バックアップから復元する?\n今あるデータに追加されるよ（同じ画像は重複しないようスキップ）。",async()=>{
+    try{
+      toast("復元中…");
+      const data=JSON.parse(await file.text());
+      if(data.app!=="BeautyClip")throw 0;
+      // merge categories/collections
+      data.categories?.forEach(c=>{if(!categories.includes(c))categories.push(c)});
+      data.collections?.forEach(c=>{if(!collections.find(x=>x.id===c.id))collections.push(c)});
+      await saveCats();await saveColls();
+      let added=0;
+      for(const it of (data.items||[])){
+        if(items.find(x=>x.id===it.id))continue;
+        const {fullB64,thumbB64,...meta}=it;
+        await idbPut("items",meta);
+        if(fullB64)await idbPut("fulls",{id:it.id,blob:b64ToBlob(fullB64)});
+        if(thumbB64)await idbPut("thumbs",{id:it.id,blob:b64ToBlob(thumbB64)});
+        items.push(meta);added++;
+      }
+      items.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+      renderChips();renderGrid();
+      toast(`復元完了✨ ${added}枚追加したよ`);
+    }catch(err){
+      toast("このファイルは読み込めなかったみたい💦");
+    }
+  },"復元する");
+};
+
+/* ================= Search ================= */
+let searchTm=null;
+$("searchInput").addEventListener("input",e=>{
+  clearTimeout(searchTm);
+  searchTm=setTimeout(()=>{searchQ=e.target.value.trim();renderGrid()},200);
+});
+
+/* ================= Init ================= */
+(async function init(){
+  await openDB();
+  await loadSettings();
+  // persistent storage (ブラウザによるデータ自動削除を防ぐ)
+  try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
+  items=await idbAll("items");
+  items.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  renderChips();
+  renderGrid();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{if(currentTheme==="auto")applyTheme("auto")});
+})();
+</script>
+</body>
+</html>
