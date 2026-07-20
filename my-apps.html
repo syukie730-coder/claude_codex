@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>アプリの玄関</title>
+<link rel="apple-touch-icon" href="my-apps-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="アプリの玄関">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+    background: linear-gradient(160deg, #FFE8EE 0%, #FFF5F7 50%, #FFEAF0 100%);
+    min-height: 100vh;
+    padding: 32px 20px 60px;
+  }
+  header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  header .icon {
+    font-size: 44px;
+  }
+  header h1 {
+    font-size: 22px;
+    color: #D6446B;
+    margin-top: 8px;
+    letter-spacing: 0.02em;
+  }
+  header p {
+    font-size: 13px;
+    color: #B87688;
+    margin-top: 4px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+  .card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 22px 10px;
+    text-decoration: none;
+    box-shadow: 0 4px 14px rgba(214, 68, 107, 0.12);
+    transition: transform 0.15s ease;
+    border: 1px solid #FFE0E8;
+  }
+  .card:active {
+    transform: scale(0.96);
+    background: #FFF5F7;
+  }
+  .card .emoji {
+    font-size: 34px;
+    margin-bottom: 10px;
+  }
+  .card .name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #7A3B4C;
+    text-align: center;
+    line-height: 1.4;
+  }
+  footer {
+    text-align: center;
+    margin-top: 36px;
+    font-size: 11px;
+    color: #CBA3AF;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="icon">🏠</div>
+  <h1>アプリの玄関</h1>
+  <p>いつものアプリは、ここから開けるよ</p>
+</header>
+
+<div class="grid">
+  <a class="card" href="coordinate-diary.html">
+    <div class="emoji">👗</div>
+    <div class="name">コーデ手帳</div>
+  </a>
+  <a class="card" href="recipe-techo.html">
+    <div class="emoji">🍳</div>
+    <div class="name">レシピ手帳</div>
+  </a>
+  <a class="card" href="futari-shisan.html">
+    <div class="emoji">💰</div>
+    <div class="name">ふたり資産手帳</div>
+  </a>
+  <a class="card" href="haitou-king-futari.html">
+    <div class="emoji">📈</div>
+    <div class="name">配当キング<br>ふたり版</div>
+  </a>
+  <a class="card" href="cosme-techo.html">
+    <div class="emoji">💄</div>
+    <div class="name">コスメ手帳</div>
+  </a>
+  <a class="card" href="beauty-clip.html">
+    <div class="emoji">✂️</div>
+    <div class="name">Beauty Clip</div>
+  </a>
+  <a class="card" href="diet-diary.html">
+    <div class="emoji">🥗</div>
+    <div class="name">ダイエット手帳</div>
+  </a>
+  <a class="card" href="gyomu-shopping.html">
+    <div class="emoji">🛒</div>
+    <div class="name">まとめ買い<br>リスト</div>
+  </a>
+  <a class="card" href="life-journal.html">
+    <div class="emoji">📔</div>
+    <div class="name">ライフジャーナル</div>
+  </a>
+  <a class="card" href="omoide-techo.html">
+    <div class="emoji">📷</div>
+    <div class="name">おもいで手帳</div>
+  </a>
+  <a class="card" href="nukege-kiroku.html">
+    <div class="emoji">💇</div>
+    <div class="name">ヘアケア記録</div>
+  </a>
+  <a class="card" href="joubisai.html">
+    <div class="emoji">🩹</div>
+    <div class="name">常備薬メモ</div>
+  </a>
+</div>
+
+<footer>アプリの玄関 &middot; 幸恵ちゃん専用</footer>
+
+</body>
+</html>
