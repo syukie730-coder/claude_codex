@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
+<title>血圧手帳</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="血圧手帳">
+<meta name="theme-color" content="#cfeeff">
+<link rel="apple-touch-icon" href="bp-icon-180.png">
+<link rel="icon" href="bp-icon-180.png">
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22%E8%A1%80%E5%9C%A7%E6%89%8B%E5%B8%B3%22%2C%22short_name%22%3A%22%E8%A1%80%E5%9C%A7%E6%89%8B%E5%B8%B3%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23cfeeff%22%2C%22theme_color%22%3A%22%23cfeeff%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22bp-icon-180.png%22%2C%22sizes%22%3A%22180x180%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
+<style>
+:root{
+  --sky:#e9f7ff; --mint:#d6f2f6; --aqua:#a9ddf5; --blue:#5aa9e6; --deep:#2f7fc4;
+  --ink:#1d3f5c; --sub:#5d7f99; --line:rgba(255,255,255,.72);
+  --glass:rgba(255,255,255,.58); --glass2:rgba(255,255,255,.38);
+  --shadow:0 10px 26px rgba(47,127,196,.16);
+  --shadow-lg:0 18px 40px rgba(47,127,196,.22);
+  --r:24px;
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  color:var(--ink);
+  background:linear-gradient(170deg,#eaf8ff 0%,#dff2fb 38%,#cfeaf7 70%,#e6f6ff 100%);
+  background-attachment:fixed;
+  min-height:100vh;
+  font-size:17px;
+  -webkit-text-size-adjust:100%;
+  overflow-x:hidden;
+}
+/* ---------- ambient decorations ---------- */
+#sky{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.cloud{position:absolute;background:rgba(255,255,255,.55);border-radius:100px;filter:blur(1px);animation:drift linear infinite}
+.cloud:before,.cloud:after{content:"";position:absolute;background:inherit;border-radius:50%}
+@keyframes drift{from{transform:translateX(-30vw)}to{transform:translateX(130vw)}}
+.blob{position:absolute;border-radius:50%;filter:blur(46px);opacity:.5}
+.floatheart{position:fixed;bottom:-40px;font-size:22px;opacity:0;pointer-events:none;z-index:1;animation:rise linear forwards}
+@keyframes rise{
+  0%{opacity:0;transform:translateY(0) scale(.6)}
+  15%{opacity:.85}
+  100%{opacity:0;transform:translateY(-105vh) scale(1.15)}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+}
+/* ---------- layout ---------- */
+#app{position:relative;z-index:2;max-width:560px;margin:0 auto;padding:14px 16px calc(112px + var(--safe-b));}
+header{text-align:center;padding:16px 0 10px}
+header h1{margin:0;font-size:25px;letter-spacing:.04em;font-weight:800;color:var(--deep);text-shadow:0 2px 8px rgba(255,255,255,.9)}
+header p{margin:6px 0 0;font-size:14px;color:var(--sub)}
+.page{display:none;animation:fade .38s cubic-bezier(.22,.9,.3,1)}
+.page.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.card{
+  background:var(--glass);
+  -webkit-backdrop-filter:blur(18px) saturate(150%);
+  backdrop-filter:blur(18px) saturate(150%);
+  border:1.5px solid var(--line);
+  border-radius:var(--r);
+  box-shadow:var(--shadow);
+  padding:20px;margin:0 0 16px;
+  transition:transform .3s cubic-bezier(.22,.9,.3,1),box-shadow .3s;
+}
+.card.pop{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.card h2{margin:0 0 14px;font-size:19px;font-weight:800;display:flex;align-items:center;gap:8px}
+.muted{color:var(--sub);font-size:14px}
+/* ---------- inputs ---------- */
+.today{text-align:center;font-size:16px;color:var(--deep);font-weight:700;margin:0 0 16px;letter-spacing:.03em}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field{margin:0 0 14px}
+.field label{display:block;font-size:16px;font-weight:700;margin:0 0 7px;color:var(--ink)}
+.field .unit{font-size:13px;color:var(--sub);font-weight:500}
+input[type=number],input[type=date],input[type=text],textarea,select{
+  width:100%;font-family:inherit;font-size:19px;color:var(--ink);
+  background:rgba(255,255,255,.78);
+  border:2px solid rgba(255,255,255,.9);
+  border-radius:18px;padding:14px 16px;
+  box-shadow:inset 0 2px 6px rgba(47,127,196,.07);
+  outline:none;transition:border-color .25s,box-shadow .25s,transform .18s;
+}
+input[type=number]{font-size:30px;font-weight:800;text-align:center;padding:12px 8px;letter-spacing:.02em}
+input:focus,textarea:focus,select:focus{border-color:var(--aqua);box-shadow:0 0 0 4px rgba(169,221,245,.45)}
+textarea{min-height:88px;resize:vertical;font-size:17px;line-height:1.6}
+/* ---------- buttons ---------- */
+.btn{
+  display:block;width:100%;border:0;cursor:pointer;font-family:inherit;
+  font-size:20px;font-weight:800;letter-spacing:.06em;color:#fff;
+  padding:18px;border-radius:22px;
+  background:linear-gradient(180deg,#7cc4ef 0%,#4a9ada 55%,#3b87c9 100%);
+  box-shadow:0 8px 0 #2c6ea8,0 14px 24px rgba(47,127,196,.34),inset 0 2px 0 rgba(255,255,255,.55);
+  transition:transform .12s,box-shadow .12s;
+}
+.btn:active{transform:translateY(6px);box-shadow:0 2px 0 #2c6ea8,0 6px 14px rgba(47,127,196,.3),inset 0 2px 0 rgba(255,255,255,.5)}
+.btn.bounce{animation:bounce .42s cubic-bezier(.3,1.5,.5,1)}
+@keyframes bounce{0%{transform:scale(1)}35%{transform:scale(.94)}70%{transform:scale(1.035)}100%{transform:scale(1)}}
+.btn-sm{
+  font-size:15px;padding:11px 16px;border-radius:16px;width:auto;letter-spacing:.03em;
+  background:linear-gradient(180deg,#ffffff 0%,#e8f6ff 100%);color:var(--deep);
+  border:1.5px solid rgba(255,255,255,.95);
+  box-shadow:0 4px 0 #bcdcf0,0 8px 14px rgba(47,127,196,.16);
+}
+.btn-sm:active{transform:translateY(3px);box-shadow:0 1px 0 #bcdcf0}
+.btn-sm.danger{color:#c85b70;box-shadow:0 4px 0 #f0c3cd,0 8px 14px rgba(200,91,112,.14)}
+.btn-sm.danger:active{box-shadow:0 1px 0 #f0c3cd}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap}
+/* ---------- tabbar ---------- */
+nav{
+  position:fixed;left:0;right:0;bottom:0;z-index:20;
+  display:grid;grid-template-columns:repeat(4,1fr);
+  background:rgba(255,255,255,.72);
+  -webkit-backdrop-filter:blur(22px) saturate(160%);
+  backdrop-filter:blur(22px) saturate(160%);
+  border-top:1.5px solid rgba(255,255,255,.9);
+  box-shadow:0 -6px 24px rgba(47,127,196,.14);
+  padding-bottom:var(--safe-b);
+}
+nav button{
+  background:none;border:0;font-family:inherit;cursor:pointer;
+  padding:11px 2px 10px;color:var(--sub);font-size:11.5px;font-weight:700;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  transition:color .25s,transform .25s;
+}
+nav button i{font-style:normal;font-size:25px;line-height:1;transition:transform .3s cubic-bezier(.3,1.4,.5,1)}
+nav button.on{color:var(--deep)}
+nav button.on i{transform:translateY(-4px) scale(1.16)}
+/* ---------- stats ---------- */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;text-align:center}
+.stat{background:rgba(255,255,255,.55);border:1.5px solid var(--line);border-radius:18px;padding:13px 6px}
+.stat b{display:block;font-size:25px;color:var(--deep);letter-spacing:-.01em}
+.stat span{font-size:11.5px;color:var(--sub);font-weight:700}
+.badge{display:inline-block;font-size:13px;font-weight:800;padding:5px 13px;border-radius:999px;margin-left:auto}
+.b-ok{background:rgba(120,205,175,.3);color:#25795f}
+.b-warn{background:rgba(255,205,120,.35);color:#996100}
+.b-hi{background:rgba(255,150,160,.32);color:#a94055}
+/* ---------- graph ---------- */
+.seg{display:flex;gap:6px;background:rgba(255,255,255,.5);padding:5px;border-radius:16px;margin:0 0 16px}
+.seg button{
+  flex:1;border:0;background:none;font-family:inherit;font-size:15px;font-weight:800;
+  color:var(--sub);padding:10px 2px;border-radius:12px;cursor:pointer;transition:all .28s;
+}
+.seg button.on{background:#fff;color:var(--deep);box-shadow:0 3px 8px rgba(47,127,196,.16)}
+svg{display:block;width:100%;height:auto;overflow:visible}
+.gline{fill:none;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:draw 1.1s cubic-bezier(.3,.8,.3,1) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.gdot{opacity:0;animation:dotin .35s ease forwards}
+@keyframes dotin{to{opacity:1}}
+.legend{display:flex;gap:16px;justify-content:center;margin-top:12px;font-size:13.5px;font-weight:700;color:var(--sub);flex-wrap:wrap}
+.legend s{width:16px;height:4px;border-radius:2px;display:inline-block;vertical-align:middle;margin-right:5px;text-decoration:none}
+/* ---------- list ---------- */
+.item{
+  background:rgba(255,255,255,.6);border:1.5px solid var(--line);border-radius:20px;
+  padding:15px 17px;margin:0 0 11px;
+  animation:slidein .4s cubic-bezier(.22,.9,.3,1) backwards;
+}
+@keyframes slidein{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.item .top{display:flex;align-items:center;gap:9px;margin:0 0 7px}
+.item .dt{font-size:14.5px;font-weight:800;color:var(--sub)}
+.item .val{font-size:27px;font-weight:800;color:var(--deep);letter-spacing:-.01em}
+.item .val small{font-size:15px;color:var(--sub);font-weight:700;margin-left:5px}
+.item .memo{font-size:14.5px;color:var(--sub);margin:8px 0 0;line-height:1.55;word-break:break-word}
+.item .acts{display:flex;gap:8px;margin-top:11px}
+/* ---------- calendar ---------- */
+.calhead{display:flex;align-items:center;justify-content:space-between;margin:0 0 14px}
+.calhead b{font-size:19px;font-weight:800}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.cal .wd{font-size:12px;font-weight:800;color:var(--sub);padding:5px 0}
+.cal .d{
+  aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border-radius:14px;font-size:15px;font-weight:700;color:var(--ink);cursor:default;
+  transition:transform .2s,background .2s;
+}
+.cal .d.has{background:linear-gradient(180deg,#8fcdf0,#4a9ada);color:#fff;cursor:pointer;box-shadow:0 4px 10px rgba(47,127,196,.3)}
+.cal .d.has:active{transform:scale(.9)}
+.cal .d.today{outline:2.5px solid var(--aqua);outline-offset:-2.5px}
+.cal .d.empty{visibility:hidden}
+/* ---------- modal / toast ---------- */
+.mask{position:fixed;inset:0;z-index:60;background:rgba(30,80,120,.34);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px}
+.mask.on{display:flex;animation:fade .25s ease}
+.modal{
+  background:rgba(255,255,255,.93);border-radius:26px;padding:24px;max-width:400px;width:100%;
+  max-height:86vh;overflow:auto;box-shadow:var(--shadow-lg);
+  animation:pop .34s cubic-bezier(.3,1.35,.5,1);
+}
+@keyframes pop{from{opacity:0;transform:scale(.9) translateY(16px)}to{opacity:1;transform:none}}
+.modal h3{margin:0 0 16px;font-size:20px;font-weight:800}
+#toast{
+  position:fixed;left:50%;bottom:calc(96px + var(--safe-b));transform:translateX(-50%) translateY(20px);
+  background:rgba(47,127,196,.95);color:#fff;font-size:16px;font-weight:700;
+  padding:14px 26px;border-radius:999px;box-shadow:var(--shadow-lg);
+  opacity:0;pointer-events:none;transition:all .38s cubic-bezier(.3,1.3,.5,1);z-index:80;
+  max-width:88vw;text-align:center;
+}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.empty{text-align:center;padding:34px 12px;color:var(--sub);font-size:16px;line-height:1.8}
+.empty div{font-size:44px;margin-bottom:8px;opacity:.65}
+.hr{height:1.5px;background:rgba(255,255,255,.8);margin:18px 0;border-radius:2px}
+.deco{position:absolute;opacity:.5;pointer-events:none;font-size:20px}
+</style>
+</head>
+<body>
+
+<div id="sky"></div>
+
+<div id="app">
+  <header>
+    <h1>🩵 血圧手帳</h1>
+    <p id="sub">やさしく記録、ゆっくり続けよう</p>
+  </header>
+
+  <!-- ============ HOME ============ -->
+  <section class="page on" id="p-home">
+    <div class="card" id="c-input">
+      <p class="today" id="todayLabel"></p>
+      <div class="row">
+        <div class="field">
+          <label>最高血圧 <span class="unit">mmHg</span></label>
+          <input type="number" id="i-sys" inputmode="numeric" placeholder="120" min="50" max="260">
+        </div>
+        <div class="field">
+          <label>最低血圧 <span class="unit">mmHg</span></label>
+          <input type="number" id="i-dia" inputmode="numeric" placeholder="70" min="30" max="180">
+        </div>
+      </div>
+      <div class="field">
+        <label>脈拍 <span class="unit">拍/分（任意）</span></label>
+        <input type="number" id="i-pul" inputmode="numeric" placeholder="65" min="25" max="200">
+      </div>
+      <div class="field">
+        <label>メモ <span class="unit">体調・お薬・気になること（任意）</span></label>
+        <textarea id="i-memo" placeholder="例）朝いちばん、よく眠れた"></textarea>
+      </div>
+      <div class="field">
+        <label>日付</label>
+        <input type="date" id="i-date">
+      </div>
+      <button class="btn" id="save">🩵 保存する</button>
+    </div>
+
+    <div class="card">
+      <h2>☁️ さいきんの平均<span class="badge" id="avgBadge"></span></h2>
+      <div class="stats">
+        <div class="stat"><b id="s-sys">–</b><span>最高血圧</span></div>
+        <div class="stat"><b id="s-dia">–</b><span>最低血圧</span></div>
+        <div class="stat"><b id="s-pul">–</b><span>脈拍</span></div>
+      </div>
+      <p class="muted" style="text-align:center;margin:12px 0 0" id="avgNote">直近7回の平均です</p>
+    </div>
+
+    <div class="card">
+      <h2>🎯 目標血圧</h2>
+      <div class="row">
+        <div class="field" style="margin:0">
+          <label>最高</label>
+          <input type="number" id="g-sys" inputmode="numeric" min="80" max="200">
+        </div>
+        <div class="field" style="margin:0">
+          <label>最低</label>
+          <input type="number" id="g-dia" inputmode="numeric" min="40" max="140">
+        </div>
+      </div>
+      <div class="hr"></div>
+      <button class="btn-sm" id="saveGoal" style="width:100%">目標を保存</button>
+    </div>
+  </section>
+
+  <!-- ============ GRAPH ============ -->
+  <section class="page" id="p-graph">
+    <div class="card">
+      <h2>💧 血圧の推移</h2>
+      <div class="seg" id="seg">
+        <button data-m="1" class="on">1か月</button>
+        <button data-m="3">3か月</button>
+        <button data-m="6">6か月</button>
+        <button data-m="12">1年</button>
+      </div>
+      <div id="chart"></div>
+      <div class="legend">
+        <span><s style="background:#3b87c9"></s>最高血圧</span>
+        <span><s style="background:#7fc9b8"></s>最低血圧</span>
+        <span><s style="background:#f0a8b8"></s>目標ライン</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CALENDAR ============ -->
+  <section class="page" id="p-cal">
+    <div class="card">
+      <div class="calhead">
+        <button class="btn-sm" id="prevM">‹ 前の月</button>
+        <b id="calTitle"></b>
+        <button class="btn-sm" id="nextM">次の月 ›</button>
+      </div>
+      <div class="cal" id="cal"></div>
+      <p class="muted" style="text-align:center;margin:16px 0 0">🩵 の日をタップすると記録が見られます</p>
+    </div>
+  </section>
+
+  <!-- ============ LIST ============ -->
+  <section class="page" id="p-list">
+    <div class="card">
+      <h2>🌸 記録いちらん</h2>
+      <div id="list"></div>
+    </div>
+    <div class="card">
+      <h2>💾 バックアップ</h2>
+      <p class="muted" style="margin:0 0 14px">記録はこのiPhoneの中だけに保存されます。ときどき控えを取っておくと安心だよ。</p>
+      <div class="btn-row">
+        <button class="btn-sm" id="expJson">バックアップ保存</button>
+        <button class="btn-sm" id="impJson">復元する</button>
+        <button class="btn-sm" id="expCsv">CSV書き出し</button>
+        <button class="btn-sm" id="impCsv">CSV読み込み</button>
+      </div>
+      <div class="hr"></div>
+      <button class="btn-sm danger" id="wipe" style="width:100%">すべての記録を消す</button>
+      <input type="file" id="file" accept=".json,.csv,text/csv,application/json" hidden>
+    </div>
+  </section>
+</div>
+
+<nav>
+  <button class="on" data-p="home"><i>🩵</i>きろく</button>
+  <button data-p="graph"><i>📈</i>グラフ</button>
+  <button data-p="cal"><i>📅</i>カレンダー</button>
+  <button data-p="list"><i>📋</i>いちらん</button>
+</nav>
+
+<div class="mask" id="mask"><div class="modal" id="modal"></div></div>
+<div id="toast"></div>
+
+<script>
+"use strict";
+(function(){
+
+/* ============ storage ============ */
+var KEY="bp_kiroku_v1", GKEY="bp_goal_v1";
+var data=[], goal={sys:130,dia:80};
+
+function load(){
+  try{ data = JSON.parse(localStorage.getItem(KEY)||"[]"); }catch(e){ data=[]; }
+  if(!Array.isArray(data)) data=[];
+  try{ var g=JSON.parse(localStorage.getItem(GKEY)||"null"); if(g&&g.sys) goal=g; }catch(e){}
+  sortData();
+}
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify(data)); }
+  catch(e){ toast("保存できませんでした"); }
+}
+function saveGoal(){ try{ localStorage.setItem(GKEY, JSON.stringify(goal)); }catch(e){} }
+function sortData(){ data.sort(function(a,b){ return a.date<b.date?1:a.date>b.date?-1:(b.t||0)-(a.t||0); }); }
+
+/* ============ helpers ============ */
+function $(s){ return document.querySelector(s); }
+function $$(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); }
+function pad(n){ return n<10?"0"+n:""+n; }
+function iso(d){ return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
+var WD=["日","月","火","水","木","金","土"];
+function jp(s){
+  var p=s.split("-"), d=new Date(+p[0],+p[1]-1,+p[2]);
+  return (+p[1])+"月"+(+p[2])+"日（"+WD[d.getDay()]+"）";
+}
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+function num(v){ var n=parseInt(v,10); return isFinite(n)?n:null; }
+
+var tTimer;
+function toast(msg){
+  var t=$("#toast"); t.textContent=msg; t.classList.add("on");
+  clearTimeout(tTimer); tTimer=setTimeout(function(){ t.classList.remove("on"); },2400);
+}
+function bounce(el){ el.classList.remove("bounce"); void el.offsetWidth; el.classList.add("bounce"); }
+
+/* ============ ambient sky ============ */
+(function sky(){
+  var s=$("#sky"), i, el;
+  var blobs=[[ "-12%","-8%","58vw","rgba(180,230,255,.85)"],
+             ["68%","6%","46vw","rgba(200,245,240,.8)"],
+             ["-18%","62%","62vw","rgba(210,235,255,.75)"],
+             ["58%","76%","50vw","rgba(190,240,250,.7)"]];
+  for(i=0;i<blobs.length;i++){
+    el=document.createElement("div"); el.className="blob";
+    el.style.left=blobs[i][0]; el.style.top=blobs[i][1];
+    el.style.width=blobs[i][2]; el.style.height=blobs[i][2];
+    el.style.background=blobs[i][3];
+    s.appendChild(el);
+  }
+  var clouds=[[8,90,26,52],[30,150,40,74],[62,110,32,63],[80,170,44,88]];
+  for(i=0;i<clouds.length;i++){
+    el=document.createElement("div"); el.className="cloud";
+    el.style.top=clouds[i][0]+"%"; el.style.width=clouds[i][1]+"px";
+    el.style.height=clouds[i][2]+"px";
+    el.style.animationDuration=clouds[i][3]+"s";
+    el.style.animationDelay=(-i*13)+"s";
+    s.appendChild(el);
+  }
+})();
+
+var HEARTS=["🩵","💙","💧","☁️","🤍"];
+function floatHearts(n,delayStep){
+  for(var i=0;i<n;i++){
+    (function(i){
+      setTimeout(function(){
+        var h=document.createElement("div");
+        h.className="floatheart";
+        h.textContent=HEARTS[Math.floor(Math.random()*HEARTS.length)];
+        h.style.left=(6+Math.random()*84)+"vw";
+        h.style.fontSize=(17+Math.random()*17)+"px";
+        h.style.animationDuration=(4.4+Math.random()*2.6)+"s";
+        document.body.appendChild(h);
+        setTimeout(function(){ h.remove(); },7600);
+      }, i*(delayStep||210));
+    })(i);
+  }
+}
+
+/* ============ navigation ============ */
+function go(p){
+  $$(".page").forEach(function(el){ el.classList.toggle("on", el.id==="p-"+p); });
+  $$("nav button").forEach(function(b){ b.classList.toggle("on", b.dataset.p===p); });
+  window.scrollTo({top:0,behavior:"smooth"});
+  if(p==="graph") drawChart();
+  if(p==="cal") drawCal();
+  if(p==="list") drawList();
+}
+$$("nav button").forEach(function(b){
+  b.addEventListener("click", function(){ go(b.dataset.p); });
+});
+
+/* card lift on scroll-in */
+if("IntersectionObserver" in window){
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){ e.target.classList.toggle("pop", e.isIntersecting); });
+  },{threshold:.35});
+  setTimeout(function(){ $$(".card").forEach(function(c){ io.observe(c); }); },400);
+}
+
+/* ============ classification ============ */
+function grade(sys,dia){
+  if(sys>=160||dia>=100) return {c:"b-hi",t:"高めです"};
+  if(sys>=140||dia>=90)  return {c:"b-warn",t:"やや高め"};
+  if(sys>=130||dia>=85)  return {c:"b-warn",t:"少し高め"};
+  return {c:"b-ok",t:"良好です"};
+}
+
+/* ============ home ============ */
+function refreshHome(){
+  var now=new Date();
+  $("#todayLabel").textContent = now.getFullYear()+"年"+(now.getMonth()+1)+"月"+now.getDate()+"日（"+WD[now.getDay()]+"）";
+  $("#g-sys").value=goal.sys; $("#g-dia").value=goal.dia;
+
+  var r=data.slice(0,7);
+  if(!r.length){
+    $("#s-sys").textContent="–"; $("#s-dia").textContent="–"; $("#s-pul").textContent="–";
+    $("#avgBadge").textContent=""; $("#avgBadge").className="badge";
+    $("#avgNote").textContent="まだ記録がありません";
+    return;
+  }
+  var ss=0,dd=0,pp=0,pc=0;
+  r.forEach(function(x){ ss+=x.sys; dd+=x.dia; if(x.pul){ pp+=x.pul; pc++; } });
+  var as=Math.round(ss/r.length), ad=Math.round(dd/r.length);
+  $("#s-sys").textContent=as; $("#s-dia").textContent=ad;
+  $("#s-pul").textContent = pc? Math.round(pp/pc) : "–";
+  var g=grade(as,ad);
+  var b=$("#avgBadge"); b.textContent=g.t; b.className="badge "+g.c;
+  $("#avgNote").textContent="直近"+r.length+"回の平均です";
+}
+
+$("#save").addEventListener("click", function(){
+  var btn=this;
+  var sys=num($("#i-sys").value), dia=num($("#i-dia").value), pul=num($("#i-pul").value);
+  var date=$("#i-date").value || iso(new Date());
+  var memo=$("#i-memo").value.trim();
+
+  if(sys===null||dia===null){ toast("最高血圧と最低血圧を入れてね"); bounce(btn); return; }
+  if(sys<50||sys>260){ toast("最高血圧をご確認ください"); return; }
+  if(dia<30||dia>180){ toast("最低血圧をご確認ください"); return; }
+  if(dia>=sys){ toast("最低血圧が最高血圧以上になっています"); return; }
+  if(pul!==null&&(pul<25||pul>200)){ toast("脈拍をご確認ください"); return; }
+
+  data.push({id:Date.now()+"_"+Math.random().toString(36).slice(2,7), date:date, sys:sys, dia:dia, pul:pul, memo:memo, t:Date.now()});
+  sortData(); save();
+  bounce(btn); floatHearts(9,120);
+  $("#i-sys").value=""; $("#i-dia").value=""; $("#i-pul").value=""; $("#i-memo").value="";
+  $("#i-date").value=iso(new Date());
+  refreshHome();
+  toast("保存しました 🩵");
+});
+
+$("#saveGoal").addEventListener("click", function(){
+  var s=num($("#g-sys").value), d=num($("#g-dia").value);
+  if(s===null||d===null||d>=s){ toast("目標をご確認ください"); return; }
+  goal={sys:s,dia:d}; saveGoal(); bounce(this); toast("目標を保存しました 🎯");
+});
+
+/* ============ chart ============ */
+var months=1;
+$("#seg").addEventListener("click", function(e){
+  var b=e.target.closest("button"); if(!b) return;
+  $$("#seg button").forEach(function(x){ x.classList.remove("on"); });
+  b.classList.add("on"); months=+b.dataset.m; drawChart();
+});
+
+function drawChart(){
+  var box=$("#chart");
+  var from=new Date(); from.setMonth(from.getMonth()-months);
+  var fs=iso(from);
+  var rows=data.filter(function(x){ return x.date>=fs; })
+               .slice().sort(function(a,b){ return a.date<b.date?-1:a.date>b.date?1:(a.t||0)-(b.t||0); });
+
+  if(rows.length<1){
+    box.innerHTML='<div class="empty"><div>💧</div>この期間の記録はまだありません<br>まずは1回、記録してみようね</div>';
+    return;
+  }
+
+  var W=560,H=330,PL=48,PR=16,PT=22,PB=44;
+  var iw=W-PL-PR, ih=H-PT-PB;
+
+  var vals=[]; rows.forEach(function(r){ vals.push(r.sys,r.dia); });
+  vals.push(goal.sys,goal.dia);
+  var mn=Math.min.apply(null,vals), mx=Math.max.apply(null,vals);
+  mn=Math.floor((mn-8)/10)*10; mx=Math.ceil((mx+8)/10)*10;
+  if(mx-mn<40) mx=mn+40;
+
+  function X(i){ return rows.length===1 ? PL+iw/2 : PL + iw*i/(rows.length-1); }
+  function Y(v){ return PT + ih*(mx-v)/(mx-mn); }
+
+  var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="血圧の推移グラフ">';
+  s+='<defs><linearGradient id="fillS" x1="0" y1="0" x2="0" y2="1">'+
+     '<stop offset="0%" stop-color="#5aa9e6" stop-opacity=".26"/>'+
+     '<stop offset="100%" stop-color="#5aa9e6" stop-opacity="0"/></linearGradient></defs>';
+
+  /* grid */
+  var step = (mx-mn)>90?20:10, v;
+  for(v=mn; v<=mx; v+=step){
+    s+='<line x1="'+PL+'" y1="'+Y(v)+'" x2="'+(W-PR)+'" y2="'+Y(v)+'" stroke="rgba(255,255,255,.85)" stroke-width="1.4"/>';
+    s+='<text x="'+(PL-9)+'" y="'+(Y(v)+5)+'" text-anchor="end" font-size="14" fill="#5d7f99" font-weight="700">'+v+'</text>';
+  }
+  /* goal lines */
+  s+='<line x1="'+PL+'" y1="'+Y(goal.sys)+'" x2="'+(W-PR)+'" y2="'+Y(goal.sys)+'" stroke="#f0a8b8" stroke-width="2.4" stroke-dasharray="8 6"/>';
+  s+='<line x1="'+PL+'" y1="'+Y(goal.dia)+'" x2="'+(W-PR)+'" y2="'+Y(goal.dia)+'" stroke="#f0a8b8" stroke-width="2.4" stroke-dasharray="8 6"/>';
+
+  function path(key){
+    return rows.map(function(r,i){ return (i?"L":"M")+X(i).toFixed(1)+" "+Y(r[key]).toFixed(1); }).join(" ");
+  }
+  if(rows.length>1){
+    var ps=path("sys");
+    s+='<path d="'+ps+' L'+X(rows.length-1)+' '+(PT+ih)+' L'+X(0)+' '+(PT+ih)+' Z" fill="url(#fillS)"/>';
+    s+='<path class="gline" style="--len:'+(iw*2.6)+'" d="'+ps+'" stroke="#3b87c9"/>';
+    s+='<path class="gline" style="--len:'+(iw*2.6)+';animation-delay:.16s" d="'+path("dia")+'" stroke="#7fc9b8"/>';
+  }
+  rows.forEach(function(r,i){
+    var d=(0.5+i*0.045).toFixed(2)+"s";
+    s+='<circle class="gdot" style="animation-delay:'+d+'" cx="'+X(i).toFixed(1)+'" cy="'+Y(r.sys).toFixed(1)+'" r="5.4" fill="#fff" stroke="#3b87c9" stroke-width="3"/>';
+    s+='<circle class="gdot" style="animation-delay:'+d+'" cx="'+X(i).toFixed(1)+'" cy="'+Y(r.dia).toFixed(1)+'" r="5.4" fill="#fff" stroke="#7fc9b8" stroke-width="3"/>';
+  });
+  /* x labels */
+  var maxLab=5, stepL=Math.max(1,Math.ceil(rows.length/maxLab));
+  rows.forEach(function(r,i){
+    if(i%stepL!==0 && i!==rows.length-1) return;
+    var p=r.date.split("-");
+    s+='<text x="'+X(i).toFixed(1)+'" y="'+(H-16)+'" text-anchor="middle" font-size="13.5" fill="#5d7f99" font-weight="700">'+(+p[1])+"/"+(+p[2])+'</text>';
+  });
+  s+='</svg>';
+  box.innerHTML=s;
+}
+
+/* ============ calendar ============ */
+var calD=new Date();
+$("#prevM").addEventListener("click", function(){ calD.setMonth(calD.getMonth()-1); drawCal(); });
+$("#nextM").addEventListener("click", function(){ calD.setMonth(calD.getMonth()+1); drawCal(); });
+
+function drawCal(){
+  var y=calD.getFullYear(), m=calD.getMonth();
+  $("#calTitle").textContent=y+"年"+(m+1)+"月";
+  var first=new Date(y,m,1).getDay(), days=new Date(y,m+1,0).getDate();
+  var todayStr=iso(new Date());
+  var map={};
+  data.forEach(function(r){ (map[r.date]=map[r.date]||[]).push(r); });
+
+  var h="", i;
+  for(i=0;i<7;i++) h+='<div class="wd">'+WD[i]+'</div>';
+  for(i=0;i<first;i++) h+='<div class="d empty"></div>';
+  for(i=1;i<=days;i++){
+    var ds=y+"-"+pad(m+1)+"-"+pad(i);
+    var cls="d"+(map[ds]?" has":"")+(ds===todayStr?" today":"");
+    h+='<div class="'+cls+'" data-d="'+ds+'">'+i+'</div>';
+  }
+  var c=$("#cal"); c.innerHTML=h;
+  c.querySelectorAll(".d.has").forEach(function(el){
+    el.addEventListener("click", function(){ showDay(el.dataset.d, map[el.dataset.d]); });
+  });
+}
+
+function showDay(ds,rows){
+  var h='<h3>🩵 '+jp(ds)+'</h3>';
+  rows.forEach(function(r){
+    var g=grade(r.sys,r.dia);
+    h+='<div class="item" style="animation:none"><div class="top">'+
+       '<span class="val">'+r.sys+' / '+r.dia+'<small>mmHg</small></span>'+
+       '<span class="badge '+g.c+'">'+g.t+'</span></div>';
+    if(r.pul) h+='<div class="dt">脈拍 '+r.pul+' 拍/分</div>';
+    if(r.memo) h+='<p class="memo">'+esc(r.memo)+'</p>';
+    h+='</div>';
+  });
+  h+='<button class="btn-sm" style="width:100%;margin-top:10px" data-close>閉じる</button>';
+  openModal(h);
+}
+
+/* ============ list ============ */
+function drawList(){
+  var box=$("#list");
+  if(!data.length){
+    box.innerHTML='<div class="empty"><div>🌸</div>まだ記録がありません<br>「きろく」から始めてみようね</div>';
+    return;
+  }
+  var h="";
+  data.forEach(function(r,i){
+    var g=grade(r.sys,r.dia);
+    h+='<div class="item" style="animation-delay:'+Math.min(i*0.035,0.5)+'s">'+
+       '<div class="top"><span class="dt">'+jp(r.date)+'</span>'+
+       '<span class="badge '+g.c+'">'+g.t+'</span></div>'+
+       '<div class="val">'+r.sys+' / '+r.dia+'<small>mmHg'+(r.pul?'　脈 '+r.pul:'')+'</small></div>';
+    if(r.memo) h+='<p class="memo">'+esc(r.memo)+'</p>';
+    h+='<div class="acts"><button class="btn-sm" data-edit="'+r.id+'">編集</button>'+
+       '<button class="btn-sm danger" data-del="'+r.id+'">削除</button></div></div>';
+  });
+  box.innerHTML=h;
+  box.querySelectorAll("[data-edit]").forEach(function(b){
+    b.addEventListener("click", function(){ editRec(b.dataset.edit); });
+  });
+  box.querySelectorAll("[data-del]").forEach(function(b){
+    b.addEventListener("click", function(){ delRec(b.dataset.del); });
+  });
+}
+
+function editRec(id){
+  var r=data.filter(function(x){ return x.id===id; })[0]; if(!r) return;
+  openModal(
+    '<h3>✏️ 記録を編集</h3>'+
+    '<div class="field"><label>日付</label><input type="date" id="e-date" value="'+r.date+'"></div>'+
+    '<div class="row">'+
+      '<div class="field"><label>最高血圧</label><input type="number" inputmode="numeric" id="e-sys" value="'+r.sys+'"></div>'+
+      '<div class="field"><label>最低血圧</label><input type="number" inputmode="numeric" id="e-dia" value="'+r.dia+'"></div>'+
+    '</div>'+
+    '<div class="field"><label>脈拍</label><input type="number" inputmode="numeric" id="e-pul" value="'+(r.pul||"")+'"></div>'+
+    '<div class="field"><label>メモ</label><textarea id="e-memo">'+esc(r.memo||"")+'</textarea></div>'+
+    '<button class="btn" id="e-ok">保存する</button>'+
+    '<button class="btn-sm" style="width:100%;margin-top:10px" data-close>やめる</button>'
+  );
+  $("#e-ok").addEventListener("click", function(){
+    var s=num($("#e-sys").value), d=num($("#e-dia").value), p=num($("#e-pul").value);
+    var dt=$("#e-date").value;
+    if(s===null||d===null||!dt){ toast("血圧と日付を入れてね"); return; }
+    if(d>=s){ toast("最低血圧が最高血圧以上になっています"); return; }
+    r.sys=s; r.dia=d; r.pul=p; r.date=dt; r.memo=$("#e-memo").value.trim();
+    sortData(); save(); closeModal(); drawList(); refreshHome();
+    toast("更新しました 🩵");
+  });
+}
+
+function delRec(id){
+  var r=data.filter(function(x){ return x.id===id; })[0]; if(!r) return;
+  openModal(
+    '<h3>🗑 この記録を消しますか？</h3>'+
+    '<p class="muted" style="margin:0 0 18px;font-size:16px">'+jp(r.date)+'　'+r.sys+' / '+r.dia+' mmHg<br>消すと元に戻せません。</p>'+
+    '<button class="btn-sm danger" id="d-ok" style="width:100%">削除する</button>'+
+    '<button class="btn-sm" style="width:100%;margin-top:10px" data-close>やめる</button>'
+  );
+  $("#d-ok").addEventListener("click", function(){
+    data=data.filter(function(x){ return x.id!==id; });
+    save(); closeModal(); drawList(); refreshHome(); toast("削除しました");
+  });
+}
+
+/* ============ modal ============ */
+function openModal(html){
+  $("#modal").innerHTML=html;
+  $("#mask").classList.add("on");
+  $("#modal").querySelectorAll("[data-close]").forEach(function(b){
+    b.addEventListener("click", closeModal);
+  });
+}
+function closeModal(){ $("#mask").classList.remove("on"); }
+$("#mask").addEventListener("click", function(e){ if(e.target===this) closeModal(); });
+
+/* ============ backup / csv ============ */
+function download(name, text, mime){
+  var blob=new Blob([text],{type:mime||"text/plain;charset=utf-8"});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement("a"); a.href=url; a.download=name;
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(url); a.remove(); },400);
+}
+function stamp(){ var d=new Date(); return ""+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate()); }
+
+$("#expJson").addEventListener("click", function(){
+  if(!data.length){ toast("記録がありません"); return; }
+  download("ketsuatsu_backup_"+stamp()+".json", JSON.stringify({v:1,goal:goal,data:data},null,2), "application/json");
+  toast("バックアップを保存しました 💾");
+});
+$("#expCsv").addEventListener("click", function(){
+  if(!data.length){ toast("記録がありません"); return; }
+  var lines=["日付,最高血圧,最低血圧,脈拍,メモ"];
+  data.slice().reverse().forEach(function(r){
+    lines.push([r.date,r.sys,r.dia,(r.pul||""),'"'+String(r.memo||"").replace(/"/g,'""')+'"'].join(","));
+  });
+  download("ketsuatsu_"+stamp()+".csv", "\uFEFF"+lines.join("\r\n"), "text/csv;charset=utf-8");
+  toast("CSVを書き出しました 📄");
+});
+
+var impMode="json";
+$("#impJson").addEventListener("click", function(){ impMode="json"; $("#file").value=""; $("#file").click(); });
+$("#impCsv").addEventListener("click", function(){ impMode="csv"; $("#file").value=""; $("#file").click(); });
+
+$("#file").addEventListener("change", function(e){
+  var f=e.target.files&&e.target.files[0]; if(!f) return;
+  var rd=new FileReader();
+  rd.onload=function(){
+    try{
+      var added = impMode==="json" ? importJson(rd.result) : importCsv(rd.result);
+      sortData(); save(); refreshHome(); drawList(); drawCal();
+      toast(added+"件を読み込みました 🩵");
+      floatHearts(6,140);
+    }catch(err){ toast("ファイルを読み込めませんでした"); }
+  };
+  rd.onerror=function(){ toast("ファイルを読み込めませんでした"); };
+  rd.readAsText(f,"UTF-8");
+});
+
+function importJson(txt){
+  var o=JSON.parse(txt);
+  var arr = Array.isArray(o) ? o : o.data;
+  if(!Array.isArray(arr)) throw new Error("bad");
+  if(o && o.goal && o.goal.sys){ goal=o.goal; saveGoal(); }
+  return merge(arr.map(function(r){
+    return {id:r.id||(Date.now()+"_"+Math.random().toString(36).slice(2,7)),
+      date:r.date, sys:+r.sys, dia:+r.dia, pul:r.pul?+r.pul:null,
+      memo:r.memo||"", t:r.t||Date.now()};
+  }));
+}
+
+function splitCsvLine(line){
+  var out=[], cur="", q=false, i, ch;
+  for(i=0;i<line.length;i++){
+    ch=line[i];
+    if(q){
+      if(ch==='"'){ if(line[i+1]==='"'){ cur+='"'; i++; } else q=false; }
+      else cur+=ch;
+    }else{
+      if(ch==='"') q=true;
+      else if(ch===","){ out.push(cur); cur=""; }
+      else cur+=ch;
+    }
+  }
+  out.push(cur);
+  return out;
+}
+
+function importCsv(txt){
+  txt=txt.replace(/^\uFEFF/,"");
+  var lines=txt.split(/\r?\n/).filter(function(l){ return l.trim(); });
+  if(!lines.length) throw new Error("empty");
+  if(/日付|date/i.test(lines[0])) lines.shift();
+  var rows=[];
+  lines.forEach(function(l){
+    var c=splitCsvLine(l);
+    var d=(c[0]||"").trim().replace(/\//g,"-");
+    var s=parseInt(c[1],10), di=parseInt(c[2],10), p=parseInt(c[3],10);
+    if(!/^\d{4}-\d{1,2}-\d{1,2}$/.test(d) || !isFinite(s) || !isFinite(di)) return;
+    var pp=d.split("-");
+    d=pp[0]+"-"+pad(+pp[1])+"-"+pad(+pp[2]);
+    rows.push({id:Date.now()+"_"+Math.random().toString(36).slice(2,7),
+      date:d, sys:s, dia:di, pul:isFinite(p)?p:null, memo:(c[4]||"").trim(), t:Date.now()});
+  });
+  if(!rows.length) throw new Error("none");
+  return merge(rows);
+}
+
+function merge(rows){
+  var seen={};
+  data.forEach(function(r){ seen[r.date+"|"+r.sys+"|"+r.dia]=1; });
+  var n=0;
+  rows.forEach(function(r){
+    if(!r.date || !isFinite(r.sys) || !isFinite(r.dia)) return;
+    var k=r.date+"|"+r.sys+"|"+r.dia;
+    if(seen[k]) return;
+    seen[k]=1; data.push(r); n++;
+  });
+  return n;
+}
+
+$("#wipe").addEventListener("click", function(){
+  openModal(
+    '<h3>⚠️ すべて消しますか？</h3>'+
+    '<p class="muted" style="margin:0 0 18px;font-size:16px">'+data.length+'件の記録がすべて消えます。<br>元に戻せないので、先にバックアップを取っておくと安心だよ。</p>'+
+    '<button class="btn-sm danger" id="w-ok" style="width:100%">すべて削除する</button>'+
+    '<button class="btn-sm" style="width:100%;margin-top:10px" data-close>やめる</button>'
+  );
+  $("#w-ok").addEventListener("click", function(){
+    data=[]; save(); closeModal(); drawList(); drawCal(); refreshHome(); toast("すべて削除しました");
+  });
+});
+
+/* ============ offline (service worker, cache-first) ============ */
+if("serviceWorker" in navigator){
+  var sw="const C='bp-v1';"+
+    "self.addEventListener('install',e=>{self.skipWaiting()});"+
+    "self.addEventListener('activate',e=>{e.waitUntil(self.clients.claim())});"+
+    "self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;"+
+    "e.respondWith(caches.open(C).then(c=>c.match(e.request).then(r=>{"+
+    "const f=fetch(e.request).then(n=>{if(n&&n.status===200)c.put(e.request,n.clone());return n}).catch(()=>r);"+
+    "return r||f})))});";
+  try{
+    var url=URL.createObjectURL(new Blob([sw],{type:"text/javascript"}));
+    navigator.serviceWorker.register(url).catch(function(){});
+  }catch(e){}
+}
+
+/* ============ init ============ */
+load();
+$("#i-date").value=iso(new Date());
+refreshHome();
+window.addEventListener("load", function(){ floatHearts(7,260); });
+
+})();
+</script>
+</body>
+</html>
