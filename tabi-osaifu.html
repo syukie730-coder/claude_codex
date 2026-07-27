@@ -1,0 +1,1744 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
+<title>旅のおさいふ手帳</title>
+
+<!-- ===== PWA 設定 ===== -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="旅のおさいふ">
+<meta name="theme-color" content="#2C1B11">
+<link rel="apple-touch-icon" href="tabi-osaifu-icon.png">
+<link rel="icon" href="tabi-osaifu-icon.png">
+<!-- manifest はデータURIで埋め込み（ファイルを増やさないため） -->
+<link rel="manifest" href='data:application/manifest+json,{"name":"旅のおさいふ手帳","short_name":"旅のおさいふ","start_url":".","display":"standalone","background_color":"%232C1B11","theme_color":"%232C1B11","icons":[{"src":"https://syukie730-coder.github.io/claude_codex/tabi-osaifu-icon.png","sizes":"1024x1024","type":"image/png","purpose":"any maskable"}]}'>
+
+<style>
+/* =========================================================================
+   旅のおさいふ手帳  —  「高級ホテルの旅行ノート」
+   カラー設計：ゴールド（主役）／ブラウン（骨格）／アイボリー（紙）
+   フォント：見出し = Didot系 + 明朝、本文 = ヒラギノ角ゴ / Avenir Next
+   ========================================================================= */
+
+:root{
+  /* ---- 紙とインク ---- */
+  --paper:      #F6EFE0;   /* アイボリーの紙 */
+  --paper-2:    #EFE5D2;   /* 少し沈んだ紙 */
+  --card:       #FFFCF4;   /* カード面 */
+  --card-edge:  #E3D5B8;
+  --ink:        #2E2018;   /* 深いブラウン（文字） */
+  --ink-soft:   #6B5545;
+  --ink-faint:  #A08C77;
+
+  /* ---- ゴールド ---- */
+  --gold:       #C09A3E;
+  --gold-lt:    #E3C97E;
+  --gold-dk:    #8C6E22;
+  --gold-foil:  linear-gradient(135deg,#E8D294 0%,#C09A3E 38%,#F3E4B6 52%,#B98F31 68%,#DCC078 100%);
+
+  /* ---- ブラウン ---- */
+  --brown:      #4A3527;
+  --brown-dk:   #2C1B11;
+
+  --danger:     #A5442E;
+  --ok:         #5C7A4F;
+
+  --shadow-sm: 0 1px 2px rgba(46,32,24,.06), 0 4px 14px rgba(46,32,24,.07);
+  --shadow-md: 0 2px 6px rgba(46,32,24,.08), 0 14px 34px rgba(46,32,24,.12);
+  --r:  18px;
+  --r-s: 12px;
+
+  --font-disp: "Didot","Bodoni 72","Hiragino Mincho ProN","Yu Mincho",YuMincho,"MS PMincho",serif;
+  --font-body: "Hiragino Sans","Avenir Next",-apple-system,BlinkMacSystemFont,"Helvetica Neue","Yu Gothic",sans-serif;
+  --font-num:  "Didot","Bodoni 72",Georgia,"Times New Roman",serif;
+
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-t: env(safe-area-inset-top, 0px);
+}
+
+/* ---- ダークモード（夜の客室のあかり）---- */
+html[data-theme="dark"]{
+  --paper:      #16110D;
+  --paper-2:    #1D1712;
+  --card:       #241C15;
+  --card-edge:  #4A3A28;
+  --ink:        #F1E6D4;
+  --ink-soft:   #C4B3A0;
+  --ink-faint:  #8B7A68;
+  --brown:      #E0CFB6;
+  --brown-dk:   #F1E6D4;
+  --gold:       #D8B75C;
+  --gold-lt:    #F0DCA0;
+  --gold-dk:    #A98A38;
+  --card:       #241C15;
+  --danger:     #D2735A;
+  --ok:         #93B383;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.3), 0 4px 14px rgba(0,0,0,.35);
+  --shadow-md: 0 2px 6px rgba(0,0,0,.35), 0 14px 34px rgba(0,0,0,.45);
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:var(--font-body);
+  color:var(--ink);
+  background:var(--paper);
+  /* 紙の罫線をごく薄く敷く（ホテルのレターセットの質感） */
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(192,154,62,.07), transparent 42%),
+    radial-gradient(circle at 88% 92%, rgba(74,53,39,.06), transparent 46%),
+    repeating-linear-gradient(0deg, rgba(120,90,50,.035) 0 1px, transparent 1px 34px);
+  min-height:100dvh;
+  -webkit-font-smoothing:antialiased;
+  font-size:15px; line-height:1.7;
+  padding-bottom:calc(96px + var(--safe-b));
+  overflow-x:hidden;
+}
+
+/* ============ 共通パーツ ============ */
+.eyebrow{
+  font-family:var(--font-body);
+  font-size:10px; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--gold-dk); font-weight:700;
+}
+html[data-theme="dark"] .eyebrow{color:var(--gold);}
+.jp-label{font-size:12px;color:var(--ink-soft);letter-spacing:.08em;}
+.num{font-family:var(--font-num);font-variant-numeric:tabular-nums;letter-spacing:.01em;}
+.hair{height:1px;background:linear-gradient(90deg,transparent,var(--card-edge) 12%,var(--card-edge) 88%,transparent);border:0;margin:14px 0;}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--card-edge);
+  border-radius:var(--r);
+  box-shadow:var(--shadow-sm);
+  padding:16px 16px;
+  position:relative;
+  overflow:hidden;
+}
+/* カードがふわっと浮き上がる */
+.rise{animation:rise .62s cubic-bezier(.2,.75,.25,1) backwards;}
+@keyframes rise{from{opacity:0;transform:translateY(16px) scale(.985);}to{opacity:1;transform:none;}}
+
+button{font-family:inherit;color:inherit;}
+.btn{
+  border:1px solid var(--card-edge); background:var(--card);
+  border-radius:999px; padding:11px 18px; font-size:14px; font-weight:600;
+  transition:transform .16s cubic-bezier(.34,1.7,.5,1), box-shadow .2s, background .2s;
+  cursor:pointer;
+}
+.btn:active{transform:scale(.93);}     /* ぷにっと弾む */
+.btn-gold{
+  background:var(--gold-foil); color:#2C1B11; border:0; font-weight:800;
+  box-shadow:0 3px 12px rgba(176,138,48,.34);
+  letter-spacing:.04em;
+}
+.btn-ghost{background:transparent;}
+.btn-danger{color:var(--danger);border-color:rgba(165,68,46,.35);background:transparent;}
+.btn-sm{padding:7px 13px;font-size:12.5px;}
+
+input,select,textarea{
+  font-family:inherit;font-size:16px;color:var(--ink);
+  background:var(--paper-2); border:1px solid var(--card-edge);
+  border-radius:var(--r-s); padding:11px 12px; width:100%;
+  -webkit-appearance:none; appearance:none;
+}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--gold-lt);outline-offset:1px;}
+select{background-image:linear-gradient(45deg,transparent 50%,var(--ink-soft) 50%),linear-gradient(135deg,var(--ink-soft) 50%,transparent 50%);
+  background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;background-size:5px 5px,5px 5px;background-repeat:no-repeat;}
+label.fld{display:block;margin-bottom:12px;}
+label.fld > span{display:block;font-size:11.5px;color:var(--ink-soft);letter-spacing:.1em;margin-bottom:5px;}
+
+/* ============ トップバー ============ */
+.topbar{
+  position:sticky;top:0;z-index:40;
+  padding:calc(var(--safe-t) + 10px) 16px 10px;
+  display:flex;align-items:center;gap:10px;
+  background:var(--paper);
+  background:color-mix(in srgb, var(--paper) 82%, transparent);
+  -webkit-backdrop-filter:saturate(1.4) blur(14px); backdrop-filter:saturate(1.4) blur(14px);
+  border-bottom:1px solid transparent;
+  transition:border-color .3s, background .3s;
+}
+.topbar.scrolled{border-bottom-color:var(--card-edge);}
+.mark{width:30px;height:30px;flex:0 0 auto;}
+.trip-pick{
+  flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;
+  background:none;border:0;padding:0;text-align:left;cursor:pointer;
+}
+.trip-pick .nm{
+  font-family:var(--font-disp); font-size:18px; font-weight:600; letter-spacing:.02em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;line-height:1.25;
+}
+.trip-pick .dt{font-size:10.5px;color:var(--ink-faint);letter-spacing:.1em;}
+.icon-btn{
+  width:38px;height:38px;border-radius:50%;border:1px solid var(--card-edge);
+  background:var(--card);display:grid;place-items:center;font-size:16px;cursor:pointer;
+  transition:transform .16s cubic-bezier(.34,1.7,.5,1);
+}
+.icon-btn:active{transform:scale(.88);}
+
+/* ============ ビュー ============ */
+main{padding:6px 16px 0;max-width:620px;margin:0 auto;}
+.view{display:none;}
+.view.on{display:block;animation:viewIn .42s cubic-bezier(.2,.8,.25,1);}
+@keyframes viewIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+@media (min-width:620px){ main{padding-left:0;padding-right:0;} }
+
+/* ============ 署名パーツ：ラゲッジタグ ============ */
+.tag{
+  background:var(--card);
+  border-radius:22px;
+  border:1px solid var(--gold);
+  box-shadow:var(--shadow-md);
+  padding:22px 20px 18px 20px;
+  position:relative; overflow:hidden;
+  margin-top:6px;
+}
+/* 二重の箔押し罫 */
+.tag::before{
+  content:"";position:absolute;inset:6px;border:1px solid rgba(192,154,62,.42);
+  border-radius:16px;pointer-events:none;
+}
+/* 箔のきらめきが一度だけ流れる */
+.tag::after{
+  content:"";position:absolute;top:-60%;left:-70%;width:60%;height:220%;
+  background:linear-gradient(90deg,transparent,rgba(255,246,214,.55),transparent);
+  transform:rotate(18deg); pointer-events:none;
+  animation:foil 2.6s ease-in-out .55s 1 forwards; opacity:0;
+}
+@keyframes foil{0%{left:-70%;opacity:0}12%{opacity:1}55%{left:130%;opacity:.9}100%{left:130%;opacity:0}}
+html[data-theme="dark"] .tag::after{background:linear-gradient(90deg,transparent,rgba(255,232,170,.18),transparent);}
+
+.tag-hole{
+  position:absolute;top:14px;left:50%;transform:translateX(-50%);
+  width:34px;height:9px;border-radius:999px;
+  background:var(--paper); border:1px solid var(--gold-dk); opacity:.5;
+}
+.tag .head{display:flex;justify-content:space-between;align-items:flex-start;margin-top:12px;}
+.tag .trip-name{font-family:var(--font-disp);font-size:20px;font-weight:600;line-height:1.35;}
+.tag .period{font-size:11px;color:var(--ink-faint);letter-spacing:.12em;margin-top:2px;}
+.stamp{
+  border:1.5px solid var(--gold); color:var(--gold-dk); border-radius:8px;
+  padding:3px 8px; font-size:9.5px; letter-spacing:.16em; font-weight:800;
+  transform:rotate(-4deg); white-space:nowrap; opacity:.9;
+}
+html[data-theme="dark"] .stamp{color:var(--gold-lt);}
+
+.big-wrap{display:flex;align-items:center;gap:16px;margin-top:16px;}
+.big-left{flex:1;min-width:0;}
+.big-num{
+  font-family:var(--font-num); font-size:clamp(34px,10.5vw,46px); line-height:1;
+  letter-spacing:-.01em; font-variant-numeric:tabular-nums; display:block;
+}
+.big-num .cur{font-size:.52em;margin-right:.14em;vertical-align:.1em;color:var(--gold-dk);}
+html[data-theme="dark"] .big-num .cur{color:var(--gold);}
+.over .big-num{color:var(--danger);}
+
+/* 予算バー（ホテルの明細のような点リーダー付き） */
+.meter{height:7px;border-radius:99px;background:var(--paper-2);overflow:hidden;margin-top:14px;border:1px solid var(--card-edge);}
+.meter i{display:block;height:100%;width:0;border-radius:99px;background:var(--gold-foil);transition:width 1.1s cubic-bezier(.2,.8,.25,1);}
+.meter.warn i{background:linear-gradient(90deg,#C9803E,#A5442E);}
+.meter-cap{display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink-faint);margin-top:6px;letter-spacing:.06em;}
+
+/* ドーナツ */
+.donut{width:104px;height:104px;flex:0 0 auto;position:relative;}
+.donut svg{transform:rotate(-90deg);overflow:visible;}
+.donut .ring{fill:none;stroke-linecap:round;}
+.donut .ctr{
+  position:absolute;inset:0;display:grid;place-content:center;text-align:center;line-height:1.15;
+}
+.donut .ctr b{font-family:var(--font-num);font-size:19px;display:block;}
+.donut .ctr small{font-size:9px;color:var(--ink-faint);letter-spacing:.14em;}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;}
+.legend div{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink-soft);}
+.legend i{width:9px;height:9px;border-radius:3px;display:inline-block;}
+
+/* ============ ミニ統計カード ============ */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;}
+.mini{
+  background:var(--card);border:1px solid var(--card-edge);border-radius:14px;
+  padding:12px 10px;text-align:center;box-shadow:var(--shadow-sm);
+}
+.mini .k{font-size:10px;color:var(--ink-faint);letter-spacing:.1em;display:block;}
+.mini .v{font-family:var(--font-num);font-size:19px;display:block;margin-top:4px;font-variant-numeric:tabular-nums;}
+.mini .v small{font-size:11px;color:var(--ink-faint);}
+
+/* ============ 貯金箱（積立） ============ */
+.piggy{margin-top:14px;display:flex;align-items:center;gap:14px;}
+.piggy .pot{
+  width:60px;height:60px;flex:0 0 auto;border-radius:18px;
+  background:var(--gold-foil);display:grid;place-items:center;font-size:28px;
+  box-shadow:0 4px 16px rgba(176,138,48,.3); position:relative;
+}
+.piggy .pot.hit{animation:potHit .5s cubic-bezier(.3,1.6,.4,1);}
+@keyframes potHit{0%{transform:none}32%{transform:scale(1.13) rotate(-3deg)}100%{transform:none}}
+.coin{
+  position:fixed;width:20px;height:20px;border-radius:50%;
+  background:radial-gradient(circle at 34% 30%,#FBEFC4,#C09A3E 62%,#8C6E22);
+  box-shadow:0 2px 6px rgba(0,0,0,.25); z-index:70; pointer-events:none;
+}
+
+/* ============ 元帳（明細行） ============ */
+.ledger{margin-top:4px;}
+.day-head{
+  display:flex;align-items:baseline;gap:8px;margin:18px 0 6px;
+}
+.day-head .d{font-family:var(--font-disp);font-size:14px;letter-spacing:.06em;}
+.day-head .w{font-size:10px;color:var(--ink-faint);letter-spacing:.14em;}
+.day-head .s{margin-left:auto;font-family:var(--font-num);font-size:13px;color:var(--ink-soft);}
+.row{
+  display:flex;align-items:center;gap:11px;width:100%;
+  background:var(--card);border:1px solid var(--card-edge);border-radius:14px;
+  padding:11px 13px;margin-bottom:8px;text-align:left;cursor:pointer;
+  transition:transform .16s cubic-bezier(.34,1.6,.5,1), box-shadow .2s, opacity .3s;
+  box-shadow:var(--shadow-sm);
+}
+.row:active{transform:scale(.975);}
+.row .emo{font-size:19px;width:34px;height:34px;flex:0 0 auto;border-radius:11px;background:var(--paper-2);display:grid;place-items:center;}
+.row .mid{flex:1;min-width:0;}
+.row .t1{font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.row .t2{font-size:10.5px;color:var(--ink-faint);letter-spacing:.06em;}
+.row .amt{font-family:var(--font-num);font-size:16px;white-space:nowrap;}
+.row.new{animation:rowIn .5s cubic-bezier(.2,.9,.25,1);}
+@keyframes rowIn{from{opacity:0;transform:translateX(-14px) scale(.97);}to{opacity:1;transform:none;}}
+.row.gone{opacity:0;transform:translateX(28px) scale(.94);}
+
+.empty{
+  text-align:center;padding:34px 18px;color:var(--ink-faint);font-size:13px;
+  border:1px dashed var(--card-edge);border-radius:var(--r);margin-top:14px;
+}
+.empty .big{font-size:30px;display:block;margin-bottom:8px;opacity:.75;}
+
+/* ============ フィルタ ============ */
+.chips{display:flex;gap:7px;overflow-x:auto;padding:10px 0 4px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.chips::-webkit-scrollbar{display:none;}
+.chip{
+  flex:0 0 auto;border:1px solid var(--card-edge);background:var(--card);
+  border-radius:999px;padding:7px 13px;font-size:12.5px;cursor:pointer;white-space:nowrap;
+  transition:transform .15s cubic-bezier(.34,1.7,.5,1),background .2s,color .2s,border-color .2s;
+}
+.chip:active{transform:scale(.9);}
+.chip.on{background:var(--gold-foil);color:#2C1B11;border-color:transparent;font-weight:700;}
+
+/* ============ グラフ ============ */
+.bar{display:flex;align-items:center;gap:10px;margin-bottom:11px;}
+.bar .lb{width:82px;flex:0 0 auto;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bar .tr{flex:1;height:11px;border-radius:99px;background:var(--paper-2);overflow:hidden;border:1px solid var(--card-edge);}
+.bar .tr i{display:block;height:100%;width:0;border-radius:99px;background:var(--gold-foil);transition:width .95s cubic-bezier(.2,.85,.25,1);}
+.bar .vl{width:74px;text-align:right;font-family:var(--font-num);font-size:12.5px;flex:0 0 auto;}
+.chart{width:100%;height:auto;display:block;overflow:visible;}
+.chart .grid{stroke:var(--card-edge);stroke-width:1;}
+.chart .lineG{fill:none;stroke:var(--gold);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:draw 1.5s cubic-bezier(.25,.8,.3,1) forwards;}
+@keyframes draw{to{stroke-dashoffset:0;}}
+.chart .areaG{fill:url(#gfill);opacity:0;animation:fadeIn .9s .5s forwards;}
+@keyframes fadeIn{to{opacity:1;}}
+.chart .budgetLine{stroke:var(--danger);stroke-width:1.4;stroke-dasharray:4 4;opacity:.7;}
+.chart text{font-family:var(--font-body);font-size:9px;fill:var(--ink-faint);letter-spacing:.04em;}
+.chart .dot{fill:var(--card);stroke:var(--gold);stroke-width:2;}
+
+.rank{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px dotted var(--card-edge);}
+.rank:last-child{border-bottom:0;}
+.rank .no{font-family:var(--font-disp);font-size:15px;color:var(--gold-dk);width:22px;}
+html[data-theme="dark"] .rank .no{color:var(--gold);}
+.rank .nm{flex:1;font-size:13px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rank .vl{font-family:var(--font-num);font-size:14px;}
+
+/* ============ タブバー ============ */
+.tabbar{
+  position:fixed;left:0;right:0;bottom:0;z-index:45;
+  padding:8px 10px calc(8px + var(--safe-b));
+  display:flex;justify-content:space-around;align-items:center;
+  background:var(--paper);
+  background:color-mix(in srgb, var(--paper) 86%, transparent);
+  -webkit-backdrop-filter:saturate(1.5) blur(18px); backdrop-filter:saturate(1.5) blur(18px);
+  border-top:1px solid var(--card-edge);
+}
+.tab{
+  background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:5px 12px;color:var(--ink-faint);cursor:pointer;border-radius:14px;
+  transition:color .25s, transform .18s cubic-bezier(.34,1.7,.5,1);
+}
+.tab:active{transform:scale(.9);}
+.tab .ic{font-size:17px;line-height:1;}
+.tab .lb{font-size:9.5px;letter-spacing:.1em;}
+.tab.on{color:var(--gold-dk);}
+html[data-theme="dark"] .tab.on{color:var(--gold-lt);}
+.tab.on .lb{font-weight:800;}
+
+/* 中央の入力ボタン */
+.fab{
+  width:56px;height:56px;border-radius:50%;border:0;margin-top:-22px;
+  background:var(--gold-foil);color:#2C1B11;font-size:26px;font-weight:300;
+  box-shadow:0 6px 20px rgba(140,110,34,.45); cursor:pointer;
+  display:grid;place-items:center; line-height:1;
+  transition:transform .2s cubic-bezier(.34,1.8,.5,1);
+}
+.fab:active{transform:scale(.86);}
+.fab::after{
+  content:"";position:absolute;inset:-6px;border-radius:50%;
+  border:1px solid var(--gold);opacity:0;pointer-events:none;
+}
+.fab.pulse::after{animation:pulse 1.1s ease-out;}
+@keyframes pulse{0%{opacity:.8;transform:scale(.9)}100%{opacity:0;transform:scale(1.5)}}
+
+/* ============ シート／モーダル ============ */
+.scrim{
+  position:fixed;inset:0;z-index:60;background:rgba(30,20,13,.5);
+  -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.scrim.on{opacity:1;pointer-events:auto;}
+.sheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:61;
+  background:var(--card);border-radius:26px 26px 0 0;
+  border-top:1px solid var(--gold);
+  box-shadow:0 -8px 40px rgba(30,20,13,.28);
+  transform:translateY(102%);transition:transform .42s cubic-bezier(.22,.9,.25,1);
+  max-height:92dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:10px 16px calc(18px + var(--safe-b));
+}
+.sheet.on{transform:none;}
+.grab{width:38px;height:4px;border-radius:99px;background:var(--card-edge);margin:2px auto 12px;}
+.sheet h3{font-family:var(--font-disp);font-size:17px;margin:0 0 12px;font-weight:600;letter-spacing:.03em;}
+
+/* カテゴリ選択 */
+.cats{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;}
+.cat{
+  border:1px solid var(--card-edge);background:var(--paper-2);border-radius:13px;
+  padding:9px 2px 7px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;
+  transition:transform .16s cubic-bezier(.34,1.75,.5,1),background .2s,border-color .2s;
+}
+.cat:active{transform:scale(.88);}
+.cat .e{font-size:19px;line-height:1;}
+.cat .n{font-size:9px;letter-spacing:.02em;color:var(--ink-soft);}
+.cat.on{background:var(--gold-foil);border-color:transparent;box-shadow:0 3px 10px rgba(176,138,48,.32);}
+.cat.on .n{color:#2C1B11;font-weight:800;}
+
+/* 金額表示＋テンキー */
+.amount-view{
+  text-align:right;font-family:var(--font-num);font-size:38px;line-height:1.1;
+  padding:8px 4px 6px;border-bottom:1.5px solid var(--gold);margin:14px 0 10px;
+  font-variant-numeric:tabular-nums;
+}
+.amount-view .cur{font-size:.5em;color:var(--gold-dk);margin-right:.2em;}
+html[data-theme="dark"] .amount-view .cur{color:var(--gold);}
+.amount-view.zero{color:var(--ink-faint);}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
+.pad button{
+  border:1px solid var(--card-edge);background:var(--paper-2);border-radius:14px;
+  padding:13px 0;font-family:var(--font-num);font-size:22px;cursor:pointer;
+  transition:transform .13s cubic-bezier(.34,1.8,.5,1),background .15s;
+}
+.pad button:active{transform:scale(.9);background:var(--gold-lt);}
+.pad button.fn{font-family:var(--font-body);font-size:15px;color:var(--ink-soft);}
+.quick{display:flex;gap:7px;margin:10px 0 2px;overflow-x:auto;scrollbar-width:none;}
+.quick::-webkit-scrollbar{display:none;}
+
+/* モーダル（中央） */
+.modal{
+  position:fixed;z-index:62;left:50%;top:50%;transform:translate(-50%,-46%) scale(.94);
+  width:min(560px,calc(100vw - 28px));max-height:88dvh;overflow-y:auto;
+  background:var(--card);border:1px solid var(--gold);border-radius:22px;
+  box-shadow:0 20px 60px rgba(30,20,13,.4);
+  padding:20px 18px calc(18px + var(--safe-b));
+  opacity:0;pointer-events:none;transition:opacity .3s, transform .38s cubic-bezier(.2,.9,.25,1);
+}
+.modal.on{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1);}
+
+/* ============ お知らせ（トースト） ============ */
+#toasts{
+  position:fixed;left:0;right:0;top:calc(var(--safe-t) + 62px);z-index:80;
+  display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;padding:0 16px;
+}
+.toast{
+  background:var(--card);border:1px solid var(--gold);border-radius:16px;
+  padding:11px 16px;font-size:13px;box-shadow:var(--shadow-md);max-width:100%;
+  animation:toastIn .5s cubic-bezier(.2,1.3,.3,1), toastOut .45s 3.3s forwards;
+  text-align:center;
+}
+.toast.badge{background:var(--gold-foil);color:#2C1B11;border-color:transparent;font-weight:700;}
+@keyframes toastIn{from{opacity:0;transform:translateY(-16px) scale(.94);}to{opacity:1;transform:none;}}
+@keyframes toastOut{to{opacity:0;transform:translateY(-12px) scale(.97);}}
+
+/* きらきら */
+.spark{position:fixed;pointer-events:none;z-index:75;font-size:14px;animation:spk .95s ease-out forwards;}
+@keyframes spk{0%{opacity:0;transform:scale(.4) rotate(0)}25%{opacity:1}100%{opacity:0;transform:scale(1.5) translateY(-34px) rotate(38deg)}}
+
+/* 紙吹雪 */
+#confetti{position:fixed;inset:0;z-index:78;pointer-events:none;display:none;}
+
+/* 起動アニメ（飛行機） */
+#splash{
+  position:fixed;inset:0;z-index:100;background:var(--brown-dk);
+  display:grid;place-items:center;overflow:hidden;
+  transition:opacity .55s ease .15s;
+}
+#splash .ttl{
+  font-family:var(--font-disp);color:var(--gold-lt);font-size:21px;letter-spacing:.28em;
+  opacity:0;animation:ttlIn 1.1s .5s forwards;text-align:center;line-height:2;
+}
+#splash .ttl small{display:block;font-family:var(--font-body);font-size:9px;letter-spacing:.4em;color:var(--gold);opacity:.8;}
+@keyframes ttlIn{from{opacity:0;letter-spacing:.5em}to{opacity:1;letter-spacing:.28em}}
+#splash .plane{
+  position:absolute;font-size:26px;left:-14%;top:34%;
+  animation:fly 2.1s cubic-bezier(.4,0,.5,1) .18s forwards;
+}
+@keyframes fly{
+  0%{left:-14%;top:52%;transform:rotate(-14deg) scale(.8);opacity:0}
+  15%{opacity:1}
+  100%{left:112%;top:24%;transform:rotate(-14deg) scale(1.05);opacity:0}
+}
+#splash .trail{
+  position:absolute;left:0;right:0;top:38%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(224,201,126,.5),transparent);
+  transform:scaleX(0);transform-origin:left;animation:trail 2.1s cubic-bezier(.4,0,.5,1) .18s forwards;
+}
+@keyframes trail{0%{transform:scaleX(0)}60%{transform:scaleX(1)}100%{transform:scaleX(1);opacity:0}}
+#splash.gone{opacity:0;pointer-events:none;}
+
+/* 写真 */
+.photos{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px;}
+.ph{aspect-ratio:1;border-radius:10px;overflow:hidden;border:1px solid var(--card-edge);background:var(--paper-2);position:relative;}
+.ph img{width:100%;height:100%;object-fit:cover;display:block;}
+.ph .x{position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;border:0;background:rgba(44,27,17,.72);color:#fff;font-size:11px;line-height:1;cursor:pointer;}
+.ph.add{display:grid;place-items:center;font-size:19px;color:var(--ink-faint);cursor:pointer;border-style:dashed;}
+
+/* 旅リスト */
+.trip-item{display:flex;align-items:center;gap:11px;padding:13px;border:1px solid var(--card-edge);
+  border-radius:16px;background:var(--card);margin-bottom:9px;box-shadow:var(--shadow-sm);}
+.trip-item.active{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset, var(--shadow-sm);}
+.trip-item .info{flex:1;min-width:0;cursor:pointer;}
+.trip-item .nm{font-family:var(--font-disp);font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.trip-item .sub{font-size:10.5px;color:var(--ink-faint);letter-spacing:.06em;}
+.trip-item .acts{display:flex;gap:5px;flex:0 0 auto;}
+.mini-btn{width:32px;height:32px;border-radius:10px;border:1px solid var(--card-edge);background:var(--paper-2);
+  font-size:13px;cursor:pointer;display:grid;place-items:center;transition:transform .15s cubic-bezier(.34,1.7,.5,1);}
+.mini-btn:active{transform:scale(.86);}
+
+/* 締めくくり画面 */
+.finale{text-align:center;}
+.finale .msg{font-family:var(--font-disp);font-size:19px;line-height:1.7;margin:6px 0 4px;}
+.finale .sub{font-size:12px;color:var(--ink-soft);}
+.sum{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:16px 0;}
+.sum div{background:var(--paper-2);border-radius:13px;padding:11px 4px;}
+.sum .k{font-size:9.5px;color:var(--ink-faint);letter-spacing:.1em;display:block;}
+.sum .v{font-family:var(--font-num);font-size:16px;display:block;margin-top:3px;}
+
+/* スクロールの奥行き */
+.depth{transition:opacity .5s, transform .5s;}
+.depth.far{opacity:.55;transform:scale(.985) translateY(4px);}
+
+/* 動きを減らす設定を尊重 */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.05ms !important;}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== 起動演出：飛行機が画面を横切る ===== -->
+<div id="splash">
+  <div class="trail"></div>
+  <div class="plane">✈️</div>
+  <div class="ttl">旅のおさいふ<small>TRAVEL PURSE NOTE</small></div>
+</div>
+
+<!-- ===== トップバー ===== -->
+<header class="topbar" id="topbar">
+  <svg class="mark" viewBox="0 0 40 40" aria-hidden="true">
+    <rect x="7" y="13" width="26" height="19" rx="4" fill="#C09A3E"/>
+    <path d="M15 13v-3a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v3" fill="none" stroke="#C09A3E" stroke-width="2.2"/>
+    <rect x="14" y="13" width="2.4" height="19" fill="#4A3527"/>
+    <rect x="23.6" y="13" width="2.4" height="19" fill="#4A3527"/>
+    <circle cx="20" cy="22.5" r="4.2" fill="#2C1B11"/>
+    <text x="20" y="26" font-size="7" text-anchor="middle" fill="#E3C97E" font-family="serif">¥</text>
+  </svg>
+  <button class="trip-pick" id="tripPick">
+    <span class="nm" id="barName">旅を作りましょう</span>
+    <span class="dt" id="barDate">TAP TO SWITCH</span>
+  </button>
+  <button class="icon-btn" id="themeBtn" title="表示のあかりを切り替える">🌙</button>
+</header>
+
+<main>
+  <!-- ============ ホーム ============ -->
+  <section class="view on" id="v-home">
+    <div id="homeBody"></div>
+  </section>
+
+  <!-- ============ 一覧 ============ -->
+  <section class="view" id="v-list">
+    <div style="margin-top:12px">
+      <input id="q" type="search" placeholder="メモ・カテゴリ・金額でさがす" autocomplete="off">
+    </div>
+    <div class="chips" id="filterChips"></div>
+    <div id="listBody" class="ledger"></div>
+  </section>
+
+  <!-- ============ 集計 ============ -->
+  <section class="view" id="v-stats">
+    <div id="statsBody"></div>
+  </section>
+
+  <!-- ============ 旅の管理 ============ -->
+  <section class="view" id="v-trips">
+    <div id="tripsBody"></div>
+  </section>
+</main>
+
+<!-- ===== タブバー ===== -->
+<nav class="tabbar">
+  <button class="tab on" data-v="home"><span class="ic">🏨</span><span class="lb">ホーム</span></button>
+  <button class="tab" data-v="list"><span class="ic">📖</span><span class="lb">きろく</span></button>
+  <button class="fab" id="fab" aria-label="支出を記録する">＋</button>
+  <button class="tab" data-v="stats"><span class="ic">📊</span><span class="lb">しゅうけい</span></button>
+  <button class="tab" data-v="trips"><span class="ic">🧳</span><span class="lb">旅</span></button>
+</nav>
+
+<!-- ===== 覆い ===== -->
+<div class="scrim" id="scrim"></div>
+
+<!-- ===== 支出入力シート ===== -->
+<div class="sheet" id="entrySheet">
+  <div class="grab"></div>
+  <h3 id="entryTitle">支出を記録する</h3>
+  <div class="cats" id="catGrid"></div>
+
+  <div class="amount-view zero" id="amtView"><span class="cur">¥</span><span id="amtNum">0</span></div>
+  <div class="quick" id="quickAdd"></div>
+  <div class="pad" id="pad">
+    <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+    <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+    <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+    <button data-k="00" class="fn">00</button><button data-k="0">0</button><button data-k="del" class="fn">←</button>
+  </div>
+
+  <div style="display:flex;gap:9px;align-items:center;margin-top:12px">
+    <button class="btn btn-danger btn-sm" id="delBtn" style="display:none">削除</button>
+    <button class="btn btn-gold" id="saveBtn" style="flex:1;padding:14px">保存する</button>
+  </div>
+
+  <!-- 日付・時間・メモは初期値が入っているので、必要なときだけ触れば大丈夫 -->
+  <hr class="hair">
+  <div style="display:flex;gap:8px">
+    <label class="fld" style="flex:1.3;margin-bottom:0"><span>日付</span><input type="date" id="fDate"></label>
+    <label class="fld" style="flex:1;margin-bottom:0"><span>時間</span><input type="time" id="fTime"></label>
+  </div>
+  <label class="fld" style="margin-top:10px"><span>メモ（任意）</span><input type="text" id="fMemo" placeholder="お店の名前や、うれしかったこと" autocomplete="off"></label>
+  <button class="btn btn-ghost btn-sm" id="closeEntry" style="width:100%;border:0;color:var(--ink-faint)">とじる</button>
+</div>
+
+<!-- ===== 旅の切替シート ===== -->
+<div class="sheet" id="tripSheet">
+  <div class="grab"></div>
+  <h3>旅をえらぶ</h3>
+  <div id="tripSwitchBody"></div>
+  <button class="btn btn-ghost btn-sm" id="closeTripSheet" style="width:100%;margin-top:12px;border:0;color:var(--ink-faint)">とじる</button>
+</div>
+
+<!-- ===== 汎用モーダル ===== -->
+<div class="modal" id="modal"><div id="modalBody"></div></div>
+
+<div id="toasts"></div>
+<canvas id="confetti"></canvas>
+
+<script>
+"use strict";
+/* =========================================================================
+   旅のおさいふ手帳 — アプリ本体
+   ・データは localStorage（本体）＋ IndexedDB（写真）に自動保存
+   ・外部ライブラリなし＝オフラインでもそのまま動きます
+   ========================================================================= */
+
+/* ---------- 1. 定数 ---------- */
+const KEY = "tabi_osaifu_v1";          // localStorage のキー
+const DB_NAME = "tabiOsaifuDB";        // 写真用 IndexedDB
+const CATS = [
+  {id:"food",  e:"🍽", n:"食事"},   {id:"cafe", e:"☕️", n:"カフェ"},
+  {id:"drink", e:"🍺", n:"お酒"},   {id:"taxi", e:"🚕", n:"タクシー"},
+  {id:"train", e:"🚃", n:"電車"},   {id:"bus",  e:"🚌", n:"バス"},
+  {id:"park",  e:"🚗", n:"駐車場"}, {id:"gas",  e:"⛽️", n:"ガソリン"},
+  {id:"hotel", e:"🏨", n:"宿泊"},   {id:"gift", e:"🛍", n:"お土産"},
+  {id:"ticket",e:"🎫", n:"入場料"}, {id:"fun",  e:"🎵", n:"娯楽"},
+  {id:"cvs",   e:"🥤", n:"コンビニ"},{id:"med", e:"💊", n:"薬"},
+  {id:"other", e:"✨", n:"その他"}
+];
+const CAT = Object.fromEntries(CATS.map(c=>[c.id,c]));
+
+/* ---------- 2. 旅のメッセージ（合計117種類） ---------- */
+const MSG = {
+  /* 出発前 */
+  pre:[
+    "出発が待ち遠しいですね✈️","準備の時間も、もう旅のうちです🧳","予算を決めたら、あとは楽しむだけ😊",
+    "何を食べるか考える時間、しあわせですよね🍽","荷造りは、無理せずゆっくりで大丈夫です👜",
+    "その日を思うだけで、元気が出ますね🌸","積立、ちゃんと貯まっていますよ💰","旅のしおり、そろそろ仕上げましょうか📖"
+  ],
+  /* 初日 */
+  start:[
+    "旅のはじまりですね✈️ 素敵な思い出になりますように","さあ出発です。今日から特別な時間🌿",
+    "最初の一歩、記録できました😊","旅の扉がひらきましたね🚪","わくわくが止まらない一日になりますように☀️",
+    "初日の空気は、いつだってごちそうですね🍃","荷物より、思い出をたくさん持って帰りましょう🧳",
+    "今日から数日間、日常はお休みです😊","旅の一ページ目、記入できました📖","はじまりの一杯がいちばん美味しいですよね🥂",
+    "移動の時間も、旅のごちそうです🚃","気をつけて、そして思いきり楽しんでくださいね🌸",
+    "予算はちゃんと味方についていますよ💰","初日は少し多めに使っても大丈夫です😊",
+    "見るもの全部が新しい一日ですね👀","旅の空気を、深呼吸してみてください🌬",
+    "記録する習慣、初日から素敵です✨","今日の空の色、覚えておきたいですね☁️",
+    "出発できたこと自体が、もう大成功です🎉","旅の家計簿もスタートです📗",
+    "楽しみにしていた日が、ついに来ましたね🌟","今日のいちばんは、これから見つかります🔎"
+  ],
+  /* 旅の途中 */
+  mid:[
+    "旅の思い出がまた1つ増えました✈️","美味しいものは心の貯金ですね🍽","素敵な景色は一生の宝物🌸",
+    "今日も良い旅になりますように☀️","旅行は経験への投資ですね😊","思い出はプライスレス！",
+    "この瞬間も、大切な思い出です。","使ったぶんだけ、笑顔が増えていますね😊",
+    "記録おつかれさま。あとで見返すのが楽しみですね📖","旅先の一杯は、家で飲む十杯分の価値があります🍺",
+    "迷ったら「やってみる」が旅の正解です🌿","お土産は、誰かの笑顔の前払いですね🛍",
+    "歩いた道の数だけ、物語が増えます👟","予定どおりじゃない日ほど、記憶に残りますよ😊",
+    "今日の出費は、明日の話のタネです🌱","写真より、味とにおいが記憶に残るものですね🍜",
+    "少し贅沢しても、旅ならちょうどいいですね✨","移動もぜんぶ含めて旅ですね🚕",
+    "カフェの休憩は、旅でいちばん贅沢な時間です☕️","節約より、今日の満足を大事にしてくださいね😊",
+    "その一皿、きっと来年も覚えています🍽","旅先の空気は、持ち帰れない贅沢品ですね🌬",
+    "記録する人は、旅を二度楽しめます📗","お金が形を変えて、思い出になりました💫",
+    "ゆっくり歩くほど、街はおもしろくなりますね🚶","今日もひとつ、知らない味に出会えましたか？🍮",
+    "疲れたら休むのも、立派な旅の予定です🛋","地元の人のおすすめは、だいたい当たりですね🌟",
+    "現地でしか買えないもの、迷ったら買いどきです🛍","その景色、目に焼きつけておきましょう🏞",
+    "旅の途中の「なんでもない時間」がいいんですよね☁️","今日の一円は、思い出の一ページ分です📄",
+    "お腹いっぱいは、旅のしあわせの証拠です😋","電車の窓の景色も、ちゃんとごちそうです🚃",
+    "予算は道しるべ。しばるものではないですよ🧭","あとちょっとだけ贅沢しても、許されます✨",
+    "帰ってから話したくなる出来事、増えましたね🗣","天気も旅のスパイスですね☔️",
+    "気になったお店は、入ってみるのが正解です🚪","荷物が増えるのは、楽しんだ証拠ですね🧳",
+    "迷子も、あとで笑い話になりますよ😊","甘いものは、歩いたぶんのごほうびです🍰",
+    "記録が増えるほど、旅が立体的になりますね📊","今しか見られない景色を見ていますね🌅",
+    "休憩もお金も、上手につかえていますよ👏"
+  ],
+  /* 最終日 */
+  last:[
+    "最終日ですね。名残惜しい時間も味わってください🌇","最後の一日、ゆっくり歩きましょう🚶",
+    "帰る前の一杯、いちばん沁みますね🍵","買い忘れたお土産、いまのうちに🛍",
+    "荷物より、気持ちがいっぱいになりましたね😊","最後まで、しっかり楽しみましょう✨",
+    "今日の景色は、しばらく心に残ります🏞","予算をきれいに使いきるのも、旅の作法です💰",
+    "帰り道も、まだ旅のうちですね🚃","最終日の空気は、ちょっと特別ですね🌬",
+    "また来たい理由が、増えましたか？🌸","名残惜しいのは、良い旅だった証拠です😊",
+    "最後のごはん、迷わず好きなものを🍽","お財布より、心が満たされましたね💛",
+    "今日の記録が、旅のしめくくりです📖","帰ったら、この記録を一緒に見返しましょうね😊",
+    "さいごの一枚、写真に残しておきましょう📷","明日からの元気、たっぷり充電できましたか？🔋",
+    "旅の終わりは、次の旅のはじまりです✈️","お土産話の準備は、もうできていますね🗣",
+    "きれいに使えた予算、おみごとです👏","帰り支度も、ゆっくりで大丈夫です🧳"
+  ],
+  /* 旅のあと */
+  after:[
+    "今回の旅行も楽しかったですね！","おつかれさまでした。ゆっくり休んでくださいね😊",
+    "記録が、そのまま旅のアルバムになりました📖","また次の旅が楽しみですね✈️",
+    "使ったお金は、ぜんぶ思い出に変わりました💫","積立、またコツコツ始めましょう🐖",
+    "見返すたびに、旅がよみがえりますね🌸","お土産話、たっぷりできそうですね🗣",
+    "今回の旅、よく歩きましたね👟","予算とのお付き合い、おみごとでした👏",
+    "日常に戻っても、旅の余韻は続きます☁️","この記録は、来年の旅の参考書になりますよ📗",
+    "写真とメモ、あとで一緒に見返しましょう📷","素敵な旅でしたね。心の栄養、満タンです🍀",
+    "次はどこへ行きましょうか？🗺","使いきったぶんだけ、楽しめた証拠です😊",
+    "旅の記録、しっかり残せましたね✨","お財布も心も、いい旅をしました💛",
+    "またひとつ、人生のページが増えましたね📄","おかえりなさい。素敵な旅でしたね🏠"
+  ]
+};
+
+/* ---------- 3. ごほうび（達成演出） ---------- */
+const BADGES = [
+  {id:"c1",  test:s=>s.count>=1,      t:"はじめの一歩！",     s:"旅の記録がスタートしました📖"},
+  {id:"c5",  test:s=>s.count>=5,      t:"記録がなじんできましたね",s:"5件たまりました😊"},
+  {id:"c10", test:s=>s.count>=10,     t:"旅の記録名人！",     s:"10件も残せました✨"},
+  {id:"c20", test:s=>s.count>=20,     t:"記録の達人ですね",   s:"20件。旅が立体的になってきました📊"},
+  {id:"c30", test:s=>s.count>=30,     t:"立派な旅の記録係です",s:"30件！あとで読むのが楽しみですね📗"},
+  {id:"c50", test:s=>s.count>=50,     t:"50件、おみごと！",   s:"旅がまるごと残りましたね🏅"},
+  {id:"m1",  test:s=>s.total>=10000,  t:"思い出が動き出しました",s:"1万円ぶんの経験です✨"},
+  {id:"m3",  test:s=>s.total>=30000,  t:"たっぷり楽しんでいますね",s:"3万円ぶんの思い出です😊"},
+  {id:"m5",  test:s=>s.total>=50000,  t:"思い出がいっぱいですね！",s:"5万円ぶん、心が満タンです💛"},
+  {id:"m10", test:s=>s.total>=100000, t:"特別な旅になりましたね",s:"10万円ぶんの、一生ものの時間🌟"}
+];
+
+/* ---------- 4. 状態（自動保存） ---------- */
+let state = load();
+let view = "home";
+let filterCat = "all";
+let query = "";
+let editingId = null;   // 編集中の支出ID（新規は null）
+let amtStr = "";        // テンキーで入力中の金額
+let pickedCat = null;
+
+function blankState(){
+  return { trips:[], activeId:null, theme:"auto", savings:0, monthly:30000, seenBadges:{} };
+}
+function load(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(!raw) return blankState();
+    const s = JSON.parse(raw);
+    return Object.assign(blankState(), s);
+  }catch(e){ console.warn("読み込みに失敗しました", e); return blankState(); }
+}
+/* 保存は必ずこの関数から。失敗しても操作は止めない（データが消えない設計） */
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify(state)); }
+  catch(e){ toast("保存できませんでした。写真を減らすと直ることがあります"); }
+}
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+/* ---------- 5. 便利関数 ---------- */
+const $  = (s,r)=> (r||document).querySelector(s);
+const $$ = (s,r)=> Array.from((r||document).querySelectorAll(s));
+const yen = n => "¥" + Math.round(n).toLocaleString("ja-JP");
+const num = n => Math.round(n).toLocaleString("ja-JP");
+function todayISO(d){ const x = d?new Date(d):new Date();
+  return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0"); }
+function nowHM(){ const x=new Date(); return String(x.getHours()).padStart(2,"0")+":"+String(x.getMinutes()).padStart(2,"0"); }
+function fmtDate(iso){ if(!iso) return "—"; const [y,m,d]=iso.split("-"); return `${Number(m)}月${Number(d)}日`; }
+function fmtShort(iso){ if(!iso) return ""; const [,m,d]=iso.split("-"); return `${Number(m)}/${Number(d)}`; }
+function weekday(iso){ const w=["日","月","火","水","木","金","土"]; return w[new Date(iso+"T00:00:00").getDay()]; }
+function daysBetween(a,b){ return Math.round((new Date(b+"T00:00:00")-new Date(a+"T00:00:00"))/86400000); }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+const trip = ()=> state.trips.find(t=>t.id===state.activeId) || null;
+const spent = t => (t?t.expenses:[]).reduce((a,e)=>a+e.amount,0);
+
+/* 旅の「いま」がどの時期かを判定してメッセージを出し分ける */
+function phase(t){
+  if(!t) return "pre";
+  if(t.ended) return "after";
+  const today = todayISO();
+  if(t.end && today > t.end) return "after";
+  if(t.start && today < t.start) return "pre";
+  if(t.end && today === t.end) return "last";
+  if(t.start && today === t.start) return "start";
+  return "mid";
+}
+function phaseMsg(t){ return pick(MSG[phase(t)]); }
+
+/* =========================================================================
+   6. 表示：ホーム
+   ========================================================================= */
+function renderHome(){
+  const t = trip();
+  const box = $("#homeBody");
+
+  if(!t){
+    box.innerHTML = `
+      <div class="empty rise" style="margin-top:24px">
+        <span class="big">🧳</span>
+        まだ旅がありません。<br>下の「旅」から、最初の旅を作りましょう。
+        <div style="margin-top:16px"><button class="btn btn-gold" onclick="go('trips')">旅をつくる</button></div>
+      </div>`;
+    return;
+  }
+
+  const total = spent(t);
+  const rest  = t.budget - total;
+  const pct   = t.budget>0 ? Math.min(100, total/t.budget*100) : 0;
+  const today = todayISO();
+  const todaySum = t.expenses.filter(e=>e.date===today).reduce((a,e)=>a+e.amount,0);
+  const over  = rest < 0;
+
+  // 旅の何日目か
+  let dayLabel = "";
+  if(t.start && t.end){
+    const n = daysBetween(t.start, today)+1;
+    const len = daysBetween(t.start, t.end)+1;
+    if(n>=1 && n<=len) dayLabel = `${n}日目 / 全${len}日`;
+    else if(n<1) dayLabel = `出発まであと${1-n}日`;
+    else dayLabel = "旅を終えました";
+  }
+
+  const stampTxt = t.ended ? "COMPLETED" : (phase(t)==="pre" ? "UPCOMING" : "ON TRIP");
+
+  // ドーナツ（支出／残金）
+  const R=44, C=2*Math.PI*R;
+  const useLen = C * (pct/100);
+
+  box.innerHTML = `
+    <div class="tag rise ${over?'over':''}" style="animation-delay:.02s">
+      <div class="tag-hole"></div>
+      <div class="head">
+        <div style="min-width:0">
+          <div class="eyebrow">TRAVEL LEDGER</div>
+          <div class="trip-name">${esc(t.name)}</div>
+          <div class="period">${t.start?fmtDate(t.start):"—"} 〜 ${t.end?fmtDate(t.end):"—"}${dayLabel?"　"+dayLabel:""}</div>
+        </div>
+        <div class="stamp">${stampTxt}</div>
+      </div>
+
+      <div class="big-wrap">
+        <div class="big-left">
+          <div class="jp-label">${over?"予算をこえたぶん":"のこりの予算"}</div>
+          <span class="big-num"><span class="cur">¥</span><span class="cnt" data-to="${Math.abs(rest)}">0</span></span>
+          <div class="meter ${pct>85?'warn':''}"><i data-w="${pct}"></i></div>
+          <div class="meter-cap"><span>つかった ${yen(total)}</span><span>予算 ${yen(t.budget)}</span></div>
+        </div>
+        <div class="donut">
+          <svg viewBox="0 0 100 100" width="104" height="104">
+            <circle class="ring" cx="50" cy="50" r="${R}" stroke="var(--paper-2)" stroke-width="11"/>
+            <circle class="ring dpath" cx="50" cy="50" r="${R}" stroke="url(#goldg)" stroke-width="11"
+              stroke-dasharray="${C}" stroke-dashoffset="${C}" data-off="${C-useLen}"
+              style="transition:stroke-dashoffset 1.2s cubic-bezier(.2,.8,.25,1)"/>
+            <defs><linearGradient id="goldg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#E8D294"/><stop offset="50%" stop-color="#C09A3E"/><stop offset="100%" stop-color="#8C6E22"/>
+            </linearGradient></defs>
+          </svg>
+          <div class="ctr"><b class="cnt" data-to="${Math.round(pct)}" data-suffix="%">0</b><small>USED</small></div>
+        </div>
+      </div>
+
+      <div class="legend">
+        <div><i style="background:linear-gradient(135deg,#E8D294,#8C6E22)"></i>支出 ${yen(total)}</div>
+        <div><i style="background:var(--paper-2);border:1px solid var(--card-edge)"></i>${over?"超過":"残金"} ${yen(Math.abs(rest))}</div>
+        <div><i style="background:var(--brown)"></i>予算 ${yen(t.budget)}</div>
+      </div>
+    </div>
+
+    <div class="grid3">
+      <div class="mini rise" style="animation-delay:.08s"><span class="k">きょう</span><span class="v cnt" data-to="${todaySum}" data-yen="1">¥0</span></div>
+      <div class="mini rise" style="animation-delay:.13s"><span class="k">旅ぜんたい</span><span class="v cnt" data-to="${total}" data-yen="1">¥0</span></div>
+      <div class="mini rise" style="animation-delay:.18s"><span class="k">1日あたり</span><span class="v cnt" data-to="${perDay(t)}" data-yen="1">¥0</span></div>
+    </div>
+
+    <div class="card rise" style="animation-delay:.23s;margin-top:12px">
+      <div class="piggy">
+        <div class="pot" id="pot">🐖</div>
+        <div style="flex:1;min-width:0">
+          <div class="eyebrow">TRAVEL SAVINGS</div>
+          <div style="font-size:12px;color:var(--ink-soft)">旅行積立の残高（毎月 ${yen(state.monthly)}）</div>
+          <div class="num" style="font-size:22px;margin-top:2px"><span class="cnt" data-to="${state.savings}" data-yen="1">¥0</span></div>
+        </div>
+        <button class="mini-btn" id="editSavings" title="積立残高をなおす">✎</button>
+      </div>
+    </div>
+
+    <div class="card rise" style="animation-delay:.28s;margin-top:12px;text-align:center;border-color:var(--gold)">
+      <div class="eyebrow">A NOTE FOR TODAY</div>
+      <div style="font-family:var(--font-disp);font-size:15px;line-height:1.8;margin-top:6px" id="homeMsg">${esc(phaseMsg(t))}</div>
+    </div>
+
+    <div style="margin-top:22px">
+      <div class="eyebrow">RECENT</div>
+      <div id="recent" class="ledger" style="margin-top:8px"></div>
+      ${t.expenses.length>4?'<button class="btn btn-ghost btn-sm" style="width:100%;margin-top:4px" onclick="go(\'list\')">すべての記録を見る</button>':''}
+    </div>
+  `;
+
+  // 直近の記録
+  const recent = [...t.expenses].sort(sortDesc).slice(0,4);
+  $("#recent").innerHTML = recent.length
+    ? recent.map(e=>rowHTML(e)).join("")
+    : `<div class="empty"><span class="big">✏️</span>まだ記録がありません。<br>下の「＋」から最初の1件を残しましょう。</div>`;
+  $$("#recent .row").forEach(r=>r.onclick=()=>openEntry(r.dataset.id));
+
+  $("#editSavings").onclick = editSavings;
+  animateNumbers(box);
+  requestAnimationFrame(()=>{
+    const bar = $(".meter i", box); if(bar) bar.style.width = bar.dataset.w + "%";
+    const dp  = $(".dpath", box);   if(dp)  dp.style.strokeDashoffset = dp.dataset.off;
+  });
+  dropCoins();          // コインが上から落ちて貯金箱へ
+}
+
+function perDay(t){
+  if(!t.expenses.length) return 0;
+  const days = new Set(t.expenses.map(e=>e.date)).size;
+  return Math.round(spent(t)/Math.max(1,days));
+}
+function sortDesc(a,b){ return (b.date+(b.time||"")).localeCompare(a.date+(a.time||"")); }
+
+function rowHTML(e, isNew){
+  const c = CAT[e.cat] || CAT.other;
+  return `<button class="row ${isNew?'new':''}" data-id="${e.id}">
+    <span class="emo">${c.e}</span>
+    <span class="mid">
+      <span class="t1">${esc(e.memo || c.n)}</span>
+      <span class="t2">${fmtShort(e.date)} ${esc(e.time||"")} ・ ${c.n}</span>
+    </span>
+    <span class="amt">${yen(e.amount)}</span>
+  </button>`;
+}
+
+/* =========================================================================
+   7. 表示：一覧
+   ========================================================================= */
+function renderChips(){
+  const used = new Set((trip()?trip().expenses:[]).map(e=>e.cat));
+  const list = [{id:"all",e:"📖",n:"すべて"}].concat(CATS.filter(c=>used.has(c.id)));
+  $("#filterChips").innerHTML = list.map(c=>
+    `<button class="chip ${filterCat===c.id?'on':''}" data-c="${c.id}">${c.e} ${c.n}</button>`).join("");
+  $$("#filterChips .chip").forEach(b=>b.onclick=()=>{ filterCat=b.dataset.c; renderChips(); renderList(); });
+}
+
+function renderList(){
+  const t = trip(), box = $("#listBody");
+  if(!t){ box.innerHTML = `<div class="empty"><span class="big">🧳</span>まず旅を作りましょう。</div>`; return; }
+
+  let items = t.expenses.filter(e=>{
+    if(filterCat!=="all" && e.cat!==filterCat) return false;
+    if(!query) return true;
+    const q = query.toLowerCase();
+    return (e.memo||"").toLowerCase().includes(q)
+        || (CAT[e.cat]||CAT.other).n.includes(query)
+        || String(e.amount).includes(query);
+  }).sort(sortDesc);
+
+  if(!items.length){
+    box.innerHTML = `<div class="empty"><span class="big">🔎</span>${query||filterCat!=="all"?"見つかりませんでした。条件を変えてみてください。":"まだ記録がありません。「＋」から残しましょう。"}</div>`;
+    return;
+  }
+
+  // 日付ごとにまとめて、その日の合計も出す（ホテルの明細のように）
+  const byDay = {};
+  items.forEach(e=>{ (byDay[e.date] = byDay[e.date] || []).push(e); });
+  box.innerHTML = Object.keys(byDay).sort().reverse().map(d=>{
+    const sum = byDay[d].reduce((a,e)=>a+e.amount,0);
+    return `<div class="day-head"><span class="d">${fmtDate(d)}</span><span class="w">${weekday(d)}曜日</span>
+      <span class="s">${yen(sum)}</span></div>` + byDay[d].map(e=>rowHTML(e)).join("");
+  }).join("");
+  $$("#listBody .row").forEach(r=>r.onclick=()=>openEntry(r.dataset.id));
+}
+
+/* =========================================================================
+   8. 表示：集計
+   ========================================================================= */
+function renderStats(){
+  const t = trip(), box = $("#statsBody");
+  if(!t || !t.expenses.length){
+    box.innerHTML = `<div class="empty" style="margin-top:24px"><span class="big">📊</span>記録がたまると、ここにグラフが出ます。</div>`;
+    return;
+  }
+  const total = spent(t);
+
+  /* カテゴリ別 */
+  const byCat = {};
+  t.expenses.forEach(e=>{ byCat[e.cat] = (byCat[e.cat]||0) + e.amount; });
+  const cats = Object.entries(byCat).sort((a,b)=>b[1]-a[1]);
+  const max = cats[0][1];
+
+  /* 日別 */
+  const byDay = {};
+  t.expenses.forEach(e=>{ byDay[e.date] = (byDay[e.date]||0) + e.amount; });
+  let days = Object.keys(byDay).sort();
+  // 旅の期間があれば、使わなかった日も 0 として並べる
+  if(t.start && t.end){
+    const len = daysBetween(t.start, t.end);
+    if(len>=0 && len<60){
+      days = [];
+      for(let i=0;i<=len;i++){
+        const d = new Date(t.start+"T00:00:00"); d.setDate(d.getDate()+i);
+        days.push(todayISO(d));
+      }
+    }
+  }
+  const dayVals = days.map(d=>byDay[d]||0);
+
+  /* 累計推移 */
+  let acc=0; const cum = dayVals.map(v=>(acc+=v));
+
+  box.innerHTML = `
+    <div class="card rise" style="margin-top:14px">
+      <div class="eyebrow">BY CATEGORY</div>
+      <h4 style="font-family:var(--font-disp);font-size:15px;margin:4px 0 14px;font-weight:600">カテゴリ別のうちわけ</h4>
+      ${cats.map(([id,v])=>{
+        const c = CAT[id]||CAT.other;
+        return `<div class="bar"><span class="lb">${c.e} ${c.n}</span>
+          <span class="tr"><i data-w="${v/max*100}"></i></span>
+          <span class="vl">${yen(v)}</span></div>`;
+      }).join("")}
+      <hr class="hair">
+      <div style="display:flex;justify-content:space-between;font-size:12.5px">
+        <span class="jp-label">合計</span><span class="num" style="font-size:15px">${yen(total)}</span>
+      </div>
+    </div>
+
+    <div class="card rise" style="animation-delay:.07s;margin-top:12px">
+      <div class="eyebrow">DAY BY DAY</div>
+      <h4 style="font-family:var(--font-disp);font-size:15px;margin:4px 0 10px;font-weight:600">日別の支出</h4>
+      ${lineChart(days, dayVals, null)}
+    </div>
+
+    <div class="card rise" style="animation-delay:.12s;margin-top:12px">
+      <div class="eyebrow">CUMULATIVE</div>
+      <h4 style="font-family:var(--font-disp);font-size:15px;margin:4px 0 10px;font-weight:600">旅ぜんたいの推移</h4>
+      ${lineChart(days, cum, t.budget)}
+      <div style="font-size:11px;color:var(--ink-faint);margin-top:6px">点線は予算 ${yen(t.budget)} のラインです</div>
+    </div>
+
+    <div class="card rise" style="animation-delay:.17s;margin-top:12px">
+      <div class="eyebrow">TOP SPENDING</div>
+      <h4 style="font-family:var(--font-disp);font-size:15px;margin:4px 0 6px;font-weight:600">支出ランキング</h4>
+      ${[...t.expenses].sort((a,b)=>b.amount-a.amount).slice(0,7).map((e,i)=>{
+        const c = CAT[e.cat]||CAT.other;
+        return `<div class="rank"><span class="no">${i+1}</span>
+          <span class="nm">${c.e} ${esc(e.memo||c.n)}<br><span style="font-size:10px;color:var(--ink-faint)">${fmtShort(e.date)}</span></span>
+          <span class="vl">${yen(e.amount)}</span></div>`;
+      }).join("")}
+    </div>
+  `;
+  requestAnimationFrame(()=>{ $$("#statsBody .bar i").forEach(i=>i.style.width = i.dataset.w + "%"); });
+}
+
+/* 折れ線グラフ（SVGを手作り。滑らかに描き出されます） */
+function lineChart(labels, values, budget){
+  const W=320, H=140, pad={l:6,r:6,t:10,b:18};
+  const n = values.length;
+  if(n===0) return "";
+  const maxV = Math.max(budget||0, ...values, 1) * 1.08;
+  const x = i => pad.l + (n===1?  (W-pad.l-pad.r)/2 : i*(W-pad.l-pad.r)/(n-1));
+  const y = v => H - pad.b - (v/maxV)*(H-pad.t-pad.b);
+
+  const pts = values.map((v,i)=>[x(i),y(v)]);
+  const d = pts.map((p,i)=> (i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+  const area = d + ` L ${pts[n-1][0].toFixed(1)} ${H-pad.b} L ${pts[0][0].toFixed(1)} ${H-pad.b} Z`;
+  const len = Math.round(pts.reduce((a,p,i)=> i? a+Math.hypot(p[0]-pts[i-1][0],p[1]-pts[i-1][1]) : 0, 0)) + 10;
+
+  // ラベルは多すぎると読めないので間引く
+  const step = Math.ceil(n/6);
+  const ticks = labels.map((l,i)=> (i%step===0 || i===n-1)
+    ? `<text x="${x(i).toFixed(1)}" y="${H-4}" text-anchor="middle">${fmtShort(l)}</text>` : "").join("");
+
+  const bline = budget ? `<line class="budgetLine" x1="${pad.l}" y1="${y(budget).toFixed(1)}" x2="${W-pad.r}" y2="${y(budget).toFixed(1)}"/>` : "";
+  const dots = pts.map((p,i)=> values[i]>0 ? `<circle class="dot" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.6"/>`:"").join("");
+
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">
+    <defs><linearGradient id="gfill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#C09A3E" stop-opacity=".34"/>
+      <stop offset="100%" stop-color="#C09A3E" stop-opacity="0"/>
+    </linearGradient></defs>
+    <line class="grid" x1="${pad.l}" y1="${H-pad.b}" x2="${W-pad.r}" y2="${H-pad.b}"/>
+    <path class="areaG" d="${area}"/>
+    ${bline}
+    <path class="lineG" d="${d}" style="--len:${len}"/>
+    ${dots}${ticks}
+  </svg>`;
+}
+
+/* =========================================================================
+   9. 表示：旅の管理
+   ========================================================================= */
+function renderTrips(){
+  const box = $("#tripsBody");
+  const t = trip();
+  box.innerHTML = `
+    <div class="card rise" style="margin-top:14px">
+      <div class="eyebrow">NEW JOURNEY</div>
+      <h4 style="font-family:var(--font-disp);font-size:16px;margin:4px 0 12px;font-weight:600">新しい旅をつくる</h4>
+      <label class="fld"><span>旅の名前</span><input id="nName" placeholder="例：北陸ぐるり旅"></label>
+      <div style="display:flex;gap:8px">
+        <label class="fld" style="flex:1"><span>出発日</span><input type="date" id="nStart" value="${todayISO()}"></label>
+        <label class="fld" style="flex:1"><span>帰る日</span><input type="date" id="nEnd" value="${todayISO()}"></label>
+      </div>
+      <label class="fld"><span>旅の予算</span><input type="number" inputmode="numeric" id="nBudget" placeholder="150000"></label>
+      <button class="btn btn-gold" id="mkTrip" style="width:100%;padding:13px">この旅をはじめる</button>
+    </div>
+
+    <div style="margin-top:22px">
+      <div class="eyebrow">MY JOURNEYS</div>
+      <div id="tripList" style="margin-top:9px"></div>
+    </div>
+
+    ${t && !t.ended ? `
+    <div class="card rise" style="animation-delay:.1s;margin-top:16px;border-color:var(--gold)">
+      <div class="eyebrow">CLOSING THE BOOK</div>
+      <h4 style="font-family:var(--font-disp);font-size:16px;margin:4px 0 6px;font-weight:600">旅を終える</h4>
+      <p style="font-size:12.5px;color:var(--ink-soft);margin:0 0 12px">
+        まとめを表示して、写真とメモを残せます。記録はそのまま残るので、あとから見返せますよ😊</p>
+      <button class="btn btn-gold" id="endTrip" style="width:100%;padding:13px">この旅を終える ✈︎</button>
+    </div>`:""}
+
+    ${t ? `
+    <div class="card rise" style="animation-delay:.14s;margin-top:12px">
+      <div class="eyebrow">SETTINGS & EXPORT</div>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <button class="btn btn-sm" id="editTrip">旅の内容をなおす</button>
+        <button class="btn btn-sm" id="csvBtn">CSVで書き出す</button>
+        <button class="btn btn-sm" id="jsonBtn">まるごとバックアップ</button>
+        ${t.ended?`<button class="btn btn-sm" id="reopen">旅を再開する</button>`:""}
+      </div>
+    </div>`:""}
+    <div style="height:20px"></div>
+  `;
+
+  const list = $("#tripList");
+  list.innerHTML = state.trips.length ? state.trips.slice().sort((a,b)=>(b.start||"").localeCompare(a.start||"")).map(x=>{
+    const s = spent(x);
+    return `<div class="trip-item ${x.id===state.activeId?'active':''}">
+      <div class="info" data-go="${x.id}">
+        <div class="nm">${x.ended?"🏁 ":""}${esc(x.name)}</div>
+        <div class="sub">${x.start?fmtShort(x.start):"—"}〜${x.end?fmtShort(x.end):"—"} ・ ${yen(s)} / ${yen(x.budget)} ・ ${x.expenses.length}件</div>
+      </div>
+      <div class="acts">
+        <button class="mini-btn" data-copy="${x.id}" title="この旅をコピー">⧉</button>
+        <button class="mini-btn" data-del="${x.id}" title="この旅を削除">🗑</button>
+      </div>
+    </div>`;
+  }).join("") : `<div class="empty"><span class="big">🗺</span>まだ旅がありません。</div>`;
+
+  $("#mkTrip").onclick = createTrip;
+  $$("[data-go]",list).forEach(el=>el.onclick=()=>{ state.activeId=el.dataset.go; save(); refresh(); go("home"); toast("旅を切り替えました🧳"); });
+  $$("[data-copy]",list).forEach(el=>el.onclick=()=>copyTrip(el.dataset.copy));
+  $$("[data-del]",list).forEach(el=>el.onclick=()=>deleteTrip(el.dataset.del));
+  if($("#endTrip")) $("#endTrip").onclick = ()=>showFinale(true);
+  if($("#editTrip")) $("#editTrip").onclick = editTrip;
+  if($("#csvBtn"))  $("#csvBtn").onclick  = exportCSV;
+  if($("#jsonBtn")) $("#jsonBtn").onclick = exportJSON;
+  if($("#reopen"))  $("#reopen").onclick  = ()=>{ trip().ended=false; save(); refresh(); toast("旅を再開しました✈️"); };
+}
+
+function createTrip(){
+  const name = $("#nName").value.trim() || "名前のない旅";
+  const budget = Number($("#nBudget").value) || 0;
+  const t = { id:uid(), name, start:$("#nStart").value, end:$("#nEnd").value,
+              budget, expenses:[], memo:"", photos:[], ended:false, badges:{} };
+  state.trips.push(t); state.activeId = t.id; save();
+  refresh(); go("home");
+  confetti(1400); toast("旅ができました！いってらっしゃい✈️");
+}
+
+function copyTrip(id){
+  const src = state.trips.find(x=>x.id===id); if(!src) return;
+  askModal("旅をコピーしますか？", `「${esc(src.name)}」の予算と期間だけをコピーして、新しい旅を作ります。支出は空っぽです。`,
+    "コピーする", ()=>{
+      const t = { id:uid(), name:src.name+"（コピー）", start:src.start, end:src.end,
+                  budget:src.budget, expenses:[], memo:"", photos:[], ended:false, badges:{} };
+      state.trips.push(t); state.activeId=t.id; save(); refresh(); toast("コピーしました⧉");
+    });
+}
+
+function deleteTrip(id){
+  const src = state.trips.find(x=>x.id===id); if(!src) return;
+  askModal("この旅を削除しますか？", `「${esc(src.name)}」の記録 ${src.expenses.length}件がなくなります。もどせません。`,
+    "削除する", ()=>{
+      state.trips = state.trips.filter(x=>x.id!==id);
+      if(state.activeId===id) state.activeId = state.trips.length?state.trips[0].id:null;
+      save(); refresh(); toast("削除しました");
+    }, true);
+}
+
+function editTrip(){
+  const t = trip(); if(!t) return;
+  openModal(`
+    <div class="eyebrow">EDIT</div>
+    <h3 style="font-family:var(--font-disp);font-size:17px;margin:4px 0 14px">旅の内容をなおす</h3>
+    <label class="fld"><span>旅の名前</span><input id="eName" value="${esc(t.name)}"></label>
+    <div style="display:flex;gap:8px">
+      <label class="fld" style="flex:1"><span>出発日</span><input type="date" id="eStart" value="${t.start||""}"></label>
+      <label class="fld" style="flex:1"><span>帰る日</span><input type="date" id="eEnd" value="${t.end||""}"></label>
+    </div>
+    <label class="fld"><span>旅の予算</span><input type="number" inputmode="numeric" id="eBudget" value="${t.budget}"></label>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-sm" style="flex:1" onclick="closeModal()">やめる</button>
+      <button class="btn btn-gold" style="flex:1.4" id="eSave">なおす</button>
+    </div>`);
+  $("#eSave").onclick = ()=>{
+    t.name = $("#eName").value.trim()||t.name;
+    t.start = $("#eStart").value; t.end = $("#eEnd").value;
+    t.budget = Number($("#eBudget").value)||0;
+    save(); closeModal(); refresh(); toast("なおしました😊");
+  };
+}
+
+function editSavings(){
+  openModal(`
+    <div class="eyebrow">TRAVEL SAVINGS</div>
+    <h3 style="font-family:var(--font-disp);font-size:17px;margin:4px 0 14px">積立のことを決める</h3>
+    <label class="fld"><span>いまの積立残高</span><input type="number" inputmode="numeric" id="sBal" value="${state.savings}"></label>
+    <label class="fld"><span>毎月の積立額</span><input type="number" inputmode="numeric" id="sMon" value="${state.monthly}"></label>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-sm" style="flex:1" onclick="closeModal()">やめる</button>
+      <button class="btn btn-gold" style="flex:1.4" id="sSave">保存する</button>
+    </div>`);
+  $("#sSave").onclick = ()=>{
+    state.savings = Number($("#sBal").value)||0;
+    state.monthly = Number($("#sMon").value)||0;
+    save(); closeModal(); renderHome(); toast("積立を更新しました💰");
+  };
+}
+
+/* =========================================================================
+   10. 支出の入力（3タップで完了）
+   ========================================================================= */
+function buildCats(){
+  $("#catGrid").innerHTML = CATS.map(c=>
+    `<button class="cat" data-c="${c.id}"><span class="e">${c.e}</span><span class="n">${c.n}</span></button>`).join("");
+  $$("#catGrid .cat").forEach(b=>b.onclick=()=>{
+    pickedCat = b.dataset.c;
+    $$("#catGrid .cat").forEach(x=>x.classList.toggle("on", x===b));
+  });
+  $("#quickAdd").innerHTML = [500,1000,3000,5000,10000].map(v=>
+    `<button class="chip" data-q="${v}">+${num(v)}</button>`).join("");
+  $$("#quickAdd .chip").forEach(b=>b.onclick=()=>{
+    amtStr = String((Number(amtStr||0)) + Number(b.dataset.q)); drawAmt();
+  });
+}
+
+function drawAmt(){
+  const v = Number(amtStr||0);
+  $("#amtNum").textContent = num(v);
+  $("#amtView").classList.toggle("zero", v===0);
+}
+
+function openEntry(id){
+  const t = trip();
+  if(!t){ toast("さきに旅を作りましょう🧳"); go("trips"); return; }
+  editingId = id || null;
+  const e = id ? t.expenses.find(x=>x.id===id) : null;
+
+  $("#entryTitle").textContent = e ? "記録をなおす" : "支出を記録する";
+  $("#delBtn").style.display = e ? "" : "none";
+  pickedCat = e ? e.cat : null;
+  amtStr = e ? String(e.amount) : "";
+  $("#fDate").value = e ? e.date : clampToTrip(todayISO(), t);
+  $("#fTime").value = e ? (e.time||nowHM()) : nowHM();
+  $("#fMemo").value = e ? (e.memo||"") : "";
+  $$("#catGrid .cat").forEach(x=>x.classList.toggle("on", x.dataset.c===pickedCat));
+  drawAmt();
+  openSheet("#entrySheet");
+}
+
+/* 旅の期間の外の日付で開かないように、そっと寄せる */
+function clampToTrip(d, t){
+  if(t.start && d < t.start) return t.start;
+  if(t.end   && d > t.end)   return t.end;
+  return d;
+}
+
+function saveEntry(){
+  const t = trip(); if(!t) return;
+  const amount = Number(amtStr||0);
+  if(!amount){ toast("金額を入れてくださいね😊"); return; }
+  if(!pickedCat){ toast("カテゴリを選んでくださいね😊"); return; }
+
+  const rec = {
+    id: editingId || uid(),
+    date: $("#fDate").value || todayISO(),
+    time: $("#fTime").value || nowHM(),
+    cat: pickedCat, amount, memo: $("#fMemo").value.trim()
+  };
+
+  if(editingId){
+    const i = t.expenses.findIndex(x=>x.id===editingId);
+    if(i>=0) t.expenses[i] = rec;
+  }else{
+    t.expenses.push(rec);
+  }
+  save();
+  closeSheet("#entrySheet");
+
+  // 演出：財布へコインが入る → メッセージ → ごほうび
+  setTimeout(()=>{
+    coinToWallet();
+    toast(editingId ? "なおしました😊" : phaseMsg(t));
+    if(!editingId) checkBadges(t);
+    refresh();
+  }, 220);
+  editingId = null;
+}
+
+function deleteEntry(){
+  const t = trip(); if(!t || !editingId) return;
+  t.expenses = t.expenses.filter(x=>x.id!==editingId);
+  save(); closeSheet("#entrySheet"); editingId=null;
+  setTimeout(()=>{ refresh(); toast("削除しました"); },200);
+}
+
+/* ---------- ごほうび判定 ---------- */
+function checkBadges(t){
+  t.badges = t.badges || {};
+  const s = { count:t.expenses.length, total:spent(t) };
+  let delay = 700;
+  BADGES.forEach(b=>{
+    if(!t.badges[b.id] && b.test(s)){
+      t.badges[b.id] = true;
+      setTimeout(()=>{ toast(`🏅 ${b.t}　${b.s}`, true); sparkleBurst(); }, delay);
+      delay += 1100;
+    }
+  });
+  // 最終日のはじめての記録は、紙吹雪でねぎらう
+  if(phase(t)==="last" && !t.badges.lastday){
+    t.badges.lastday = true;
+    setTimeout(()=>{ confetti(2200); toast("🎊 おつかれさまでした！最終日も良い一日を", true); }, delay);
+  }
+  save();
+}
+
+/* =========================================================================
+   11. 旅のしめくくり
+   ========================================================================= */
+async function showFinale(markEnd){
+  const t = trip(); if(!t) return;
+  if(markEnd){ t.ended = true; t.endedAt = todayISO(); save(); }
+
+  const total = spent(t), rest = t.budget - total;
+  const byCat = {};
+  t.expenses.forEach(e=>{ byCat[e.cat]=(byCat[e.cat]||0)+e.amount; });
+  const ranking = Object.entries(byCat).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const photos = await getPhotos(t.id);
+
+  openModal(`
+    <div class="finale">
+      <div class="eyebrow">JOURNEY COMPLETED</div>
+      <div class="msg">今回の旅行も<br>楽しかったですね！</div>
+      <div class="sub">${esc(t.name)}　${t.start?fmtDate(t.start):""} 〜 ${t.end?fmtDate(t.end):""}</div>
+      <div class="sum">
+        <div><span class="k">総予算</span><span class="v">${yen(t.budget)}</span></div>
+        <div><span class="k">総支出</span><span class="v">${yen(total)}</span></div>
+        <div><span class="k">${rest>=0?"残金":"超過"}</span><span class="v" style="${rest<0?'color:var(--danger)':''}">${yen(Math.abs(rest))}</span></div>
+      </div>
+    </div>
+    <hr class="hair">
+    <div class="eyebrow">CATEGORY RANKING</div>
+    ${ranking.length?ranking.map(([id,v],i)=>{
+      const c=CAT[id]||CAT.other;
+      return `<div class="rank"><span class="no">${i+1}</span><span class="nm">${c.e} ${c.n}</span>
+        <span class="vl">${yen(v)}</span></div>`;
+    }).join(""):'<div style="font-size:12.5px;color:var(--ink-faint);padding:8px 0">記録がありませんでした。</div>'}
+    <hr class="hair">
+    <div class="eyebrow">PHOTOS（10まい まで）</div>
+    <div class="photos" id="phGrid"></div>
+    <input type="file" id="phInput" accept="image/*" multiple style="display:none">
+    <hr class="hair">
+    <label class="fld"><span>旅のメモ</span>
+      <textarea id="tMemo" rows="4" placeholder="いちばん心に残ったこと、また行きたい場所…">${esc(t.memo||"")}</textarea></label>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-sm" style="flex:1" id="fClose">とじる</button>
+      <button class="btn btn-gold" style="flex:1.4" id="fSave">memoを保存する</button>
+    </div>
+  `);
+
+  drawPhotos(t.id, photos);
+  $("#fSave").onclick = ()=>{ t.memo = $("#tMemo").value; save(); toast("メモを保存しました📖"); };
+  $("#fClose").onclick = ()=>{ closeModal(); refresh(); };
+  if(markEnd){ confetti(3600); setTimeout(()=>toast(pick(MSG.after)), 1500); }
+}
+
+/* ---------- 写真（IndexedDB に保存。localStorage を圧迫しません） ---------- */
+function idb(){
+  return new Promise((res,rej)=>{
+    const r = indexedDB.open(DB_NAME,1);
+    r.onupgradeneeded = ()=>{ if(!r.result.objectStoreNames.contains("photos")) r.result.createObjectStore("photos"); };
+    r.onsuccess = ()=>res(r.result); r.onerror = ()=>rej(r.error);
+  });
+}
+async function getPhotos(tripId){
+  try{
+    const db = await idb();
+    return await new Promise((res)=>{
+      const rq = db.transaction("photos","readonly").objectStore("photos").get(tripId);
+      rq.onsuccess = ()=>res(rq.result||[]); rq.onerror = ()=>res([]);
+    });
+  }catch(e){ return []; }
+}
+async function setPhotos(tripId, arr){
+  try{
+    const db = await idb();
+    db.transaction("photos","readwrite").objectStore("photos").put(arr, tripId);
+  }catch(e){ toast("写真を保存できませんでした"); }
+}
+function drawPhotos(tripId, arr){
+  const g = $("#phGrid"); if(!g) return;
+  g.innerHTML = arr.map((src,i)=>`<div class="ph"><img src="${src}" alt=""><button class="x" data-i="${i}">×</button></div>`).join("")
+    + (arr.length<10 ? `<button class="ph add" id="phAdd">＋</button>` : "");
+  $$("#phGrid .x").forEach(b=>b.onclick=async()=>{
+    arr.splice(Number(b.dataset.i),1); await setPhotos(tripId,arr); drawPhotos(tripId,arr);
+  });
+  if($("#phAdd")) $("#phAdd").onclick = ()=>$("#phInput").click();
+  const inp = $("#phInput");
+  if(inp) inp.onchange = async ()=>{
+    const files = Array.from(inp.files).slice(0, 10-arr.length);
+    for(const f of files){ arr.push(await shrink(f)); }
+    await setPhotos(tripId, arr); drawPhotos(tripId, arr);
+    toast("写真を保存しました📷"); inp.value="";
+  };
+}
+/* 写真は長辺1000pxに縮めてから保存（容量を抑えるため） */
+function shrink(file){
+  return new Promise(res=>{
+    const img = new Image(), fr = new FileReader();
+    fr.onload = ()=>{ img.onload = ()=>{
+      const m = 1000, sc = Math.min(1, m/Math.max(img.width,img.height));
+      const cv = document.createElement("canvas");
+      cv.width = Math.round(img.width*sc); cv.height = Math.round(img.height*sc);
+      cv.getContext("2d").drawImage(img,0,0,cv.width,cv.height);
+      res(cv.toDataURL("image/jpeg",0.72));
+    }; img.src = fr.result; };
+    fr.readAsDataURL(file);
+  });
+}
+
+/* =========================================================================
+   12. 書き出し
+   ========================================================================= */
+function download(name, text, type){
+  const blob = new Blob(["\uFEFF"+text], {type:type||"text/csv;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a"); a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1500);
+}
+function exportCSV(){
+  const t = trip(); if(!t) return;
+  const head = "日付,時間,カテゴリ,金額,メモ\n";
+  const body = [...t.expenses].sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time))
+    .map(e=>[e.date, e.time||"", (CAT[e.cat]||CAT.other).n, e.amount, '"'+(e.memo||"").replace(/"/g,'""')+'"'].join(",")).join("\n");
+  const foot = `\n\n旅の名前,${t.name}\n予算,${t.budget}\n支出合計,${spent(t)}\n残金,${t.budget-spent(t)}`;
+  download(`${t.name}_支出.csv`, head+body+foot);
+  toast("CSVを書き出しました📄");
+}
+function exportJSON(){
+  download(`旅のおさいふ_バックアップ_${todayISO()}.json`, JSON.stringify(state,null,2), "application/json");
+  toast("バックアップを書き出しました💾");
+}
+
+/* =========================================================================
+   13. 演出（上品に、控えめに）
+   ========================================================================= */
+const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* 数字がカウントアップ */
+function animateNumbers(root){
+  $$(".cnt", root).forEach(el=>{
+    const to = Number(el.dataset.to||0), yenFmt = el.dataset.yen==="1", sfx = el.dataset.suffix||"";
+    if(reduced){ el.textContent = (yenFmt?yen(to):num(to))+sfx; return; }
+    const dur = 900, t0 = performance.now();
+    (function step(now){
+      const p = Math.min(1,(now-t0)/dur);
+      const e = 1-Math.pow(1-p,3);              // なめらかに減速
+      const v = Math.round(to*e);
+      el.textContent = (yenFmt?yen(v):num(v))+sfx;
+      if(p<1) requestAnimationFrame(step);
+    })(t0);
+  });
+}
+
+/* コインが上から落ちて貯金箱へ */
+function dropCoins(){
+  const pot = $("#pot"); if(!pot || reduced) return;
+  const r = pot.getBoundingClientRect();
+  for(let i=0;i<5;i++){
+    setTimeout(()=>{
+      const c = document.createElement("div"); c.className = "coin";
+      const sx = r.left + r.width/2 - 10 + (Math.random()*70-35);
+      c.style.left = sx+"px"; c.style.top = "-24px";
+      document.body.appendChild(c);
+      c.animate([
+        {transform:"translate(0,0) rotate(0deg)", opacity:0},
+        {opacity:1, offset:.12},
+        {transform:`translate(${r.left+r.width/2-10-sx}px, ${r.top+14}px) rotate(${360+Math.random()*180}deg)`, opacity:1, offset:.86},
+        {transform:`translate(${r.left+r.width/2-10-sx}px, ${r.top+22}px) scale(.4)`, opacity:0}
+      ], {duration:1100+Math.random()*260, easing:"cubic-bezier(.4,0,.7,1)"}).onfinish = ()=>{
+        c.remove(); pot.classList.add("hit"); setTimeout(()=>pot.classList.remove("hit"),480);
+      };
+    }, 380 + i*130);
+  }
+}
+
+/* 保存したときに財布（＋ボタン）へコインが吸い込まれる */
+function coinToWallet(){
+  const fab = $("#fab"); if(!fab) return;
+  fab.classList.add("pulse"); setTimeout(()=>fab.classList.remove("pulse"),1100);
+  if(reduced) return;
+  const r = fab.getBoundingClientRect();
+  for(let i=0;i<4;i++){
+    const c = document.createElement("div"); c.className="coin";
+    const sx = window.innerWidth/2 - 10 + (Math.random()*120-60);
+    const sy = window.innerHeight*0.42 + (Math.random()*60-30);
+    c.style.left = sx+"px"; c.style.top = sy+"px";
+    document.body.appendChild(c);
+    c.animate([
+      {transform:"scale(.5)", opacity:0},
+      {opacity:1, offset:.2},
+      {transform:`translate(${r.left+r.width/2-10-sx}px, ${r.top+r.height/2-10-sy}px) scale(.3) rotate(420deg)`, opacity:0}
+    ], {duration:720+i*90, easing:"cubic-bezier(.4,0,.3,1)"}).onfinish = ()=>c.remove();
+  }
+}
+
+/* ゴールドのきらきら */
+function sparkleBurst(){
+  if(reduced) return;
+  for(let i=0;i<9;i++){
+    const s = document.createElement("div"); s.className="spark"; s.textContent = pick(["✨","·","✦","✧"]);
+    s.style.left = (window.innerWidth/2 - 60 + Math.random()*120)+"px";
+    s.style.top  = (110 + Math.random()*70)+"px";
+    s.style.color = "#C09A3E"; s.style.animationDelay = (i*40)+"ms";
+    document.body.appendChild(s); setTimeout(()=>s.remove(),1200);
+  }
+}
+
+/* 紙吹雪（ゴールドとブラウンの上品な配色） */
+function confetti(ms){
+  if(reduced) return;
+  const cv = $("#confetti"), ctx = cv.getContext("2d");
+  cv.style.display = "block";
+  const dpr = Math.min(2, window.devicePixelRatio||1);
+  cv.width = innerWidth*dpr; cv.height = innerHeight*dpr;
+  cv.style.width = innerWidth+"px"; cv.style.height = innerHeight+"px";
+  ctx.scale(dpr,dpr);
+  const cols = ["#C09A3E","#E3C97E","#8C6E22","#F3E4B6","#4A3527","#FFF6DE"];
+  const N = 90, ps = [];
+  for(let i=0;i<N;i++) ps.push({
+    x:Math.random()*innerWidth, y:-20-Math.random()*innerHeight*.5,
+    w:5+Math.random()*7, h:8+Math.random()*8,
+    vy:1.4+Math.random()*2.4, vx:(Math.random()-.5)*1.3,
+    a:Math.random()*6.28, va:(Math.random()-.5)*.18, c:pick(cols)
+  });
+  const t0 = performance.now();
+  (function loop(now){
+    ctx.clearRect(0,0,innerWidth,innerHeight);
+    ps.forEach(p=>{
+      p.y+=p.vy; p.x+=p.vx+Math.sin((now-t0)/620+p.a)*.5; p.a+=p.va;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.a);
+      ctx.fillStyle=p.c; ctx.globalAlpha=.92;
+      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx.restore();
+    });
+    if(now-t0 < (ms||2500)) requestAnimationFrame(loop);
+    else { ctx.clearRect(0,0,innerWidth,innerHeight); cv.style.display="none"; }
+  })(t0);
+}
+
+/* お知らせ */
+function toast(text, isBadge){
+  const d = document.createElement("div");
+  d.className = "toast" + (isBadge?" badge":"");
+  d.textContent = text;
+  $("#toasts").appendChild(d);
+  setTimeout(()=>d.remove(), 3900);
+}
+
+/* =========================================================================
+   14. シート／モーダルの開閉
+   ========================================================================= */
+let openSheetSel = null;
+function openSheet(sel){ $(sel).classList.add("on"); $("#scrim").classList.add("on"); openSheetSel = sel; }
+function closeSheet(sel){ $(sel||openSheetSel).classList.remove("on"); $("#scrim").classList.remove("on"); openSheetSel=null; }
+function openModal(html){ $("#modalBody").innerHTML = html; $("#modal").classList.add("on"); $("#scrim").classList.add("on"); }
+function closeModal(){ $("#modal").classList.remove("on"); $("#scrim").classList.remove("on"); }
+function askModal(title, body, okLabel, onOK, danger){
+  openModal(`
+    <h3 style="font-family:var(--font-disp);font-size:17px;margin:0 0 8px">${title}</h3>
+    <p style="font-size:13px;color:var(--ink-soft);line-height:1.8;margin:0 0 16px">${body}</p>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-sm" style="flex:1" id="askNo">やめる</button>
+      <button class="btn ${danger?'btn-danger':'btn-gold'} btn-sm" style="flex:1.3" id="askYes">${okLabel}</button>
+    </div>`);
+  $("#askNo").onclick = closeModal;
+  $("#askYes").onclick = ()=>{ closeModal(); onOK(); };
+}
+
+/* =========================================================================
+   15. 画面切替と初期化
+   ========================================================================= */
+function go(v){
+  view = v;
+  $$(".view").forEach(s=>s.classList.toggle("on", s.id==="v-"+v));
+  $$(".tab").forEach(b=>b.classList.toggle("on", b.dataset.v===v));
+  window.scrollTo({top:0, behavior:reduced?"auto":"smooth"});
+  refresh();
+}
+window.go = go; window.closeModal = closeModal;   // HTML内の onclick から使うため
+
+function refresh(){
+  const t = trip();
+  $("#barName").textContent = t ? t.name : "旅を作りましょう";
+  $("#barDate").textContent = t ? ((t.start?fmtShort(t.start):"—")+" 〜 "+(t.end?fmtShort(t.end):"—")+(t.ended?" ・ 終了":"")) : "TAP TO SWITCH";
+  if(view==="home")  renderHome();
+  if(view==="list"){ renderChips(); renderList(); }
+  if(view==="stats") renderStats();
+  if(view==="trips") renderTrips();
+}
+
+/* テーマ（自動 → ライト → ダーク の順に切り替え） */
+function applyTheme(){
+  const t = state.theme;
+  const dark = t==="dark" || (t==="auto" && matchMedia("(prefers-color-scheme: dark)").matches);
+  document.documentElement.dataset.theme = dark ? "dark" : "light";
+  $("#themeBtn").textContent = t==="auto" ? "🌗" : (t==="dark" ? "☀️" : "🌙");
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if(meta) meta.setAttribute("content", dark ? "#16110D" : "#F6EFE0");
+}
+
+/* ---------- 起動 ---------- */
+function boot(){
+  buildCats();
+  applyTheme();
+  refresh();
+
+  // タブ
+  $$(".tab").forEach(b=>b.onclick=()=>go(b.dataset.v));
+  $("#fab").onclick = ()=>openEntry(null);
+
+  // 入力シート
+  $$("#pad button").forEach(b=>b.onclick=()=>{
+    const k = b.dataset.k;
+    if(k==="del") amtStr = amtStr.slice(0,-1);
+    else if(amtStr.length < 9) amtStr = (amtStr==="0"?"":amtStr) + k;
+    drawAmt();
+  });
+  $("#saveBtn").onclick  = saveEntry;
+  $("#delBtn").onclick   = deleteEntry;
+  $("#closeEntry").onclick = ()=>closeSheet("#entrySheet");
+
+  // 旅の切替シート
+  $("#tripPick").onclick = ()=>{
+    $("#tripSwitchBody").innerHTML = state.trips.length ? state.trips.slice()
+      .sort((a,b)=>(b.start||"").localeCompare(a.start||"")).map(x=>
+      `<div class="trip-item ${x.id===state.activeId?'active':''}">
+        <div class="info" data-sw="${x.id}">
+          <div class="nm">${x.ended?"🏁 ":""}${esc(x.name)}</div>
+          <div class="sub">${x.start?fmtShort(x.start):"—"}〜${x.end?fmtShort(x.end):"—"} ・ ${yen(spent(x))}</div>
+        </div></div>`).join("")
+      : `<div class="empty"><span class="big">🧳</span>まだ旅がありません。</div>`;
+    $$("[data-sw]").forEach(el=>el.onclick=()=>{
+      state.activeId = el.dataset.sw; save(); closeSheet("#tripSheet"); go("home"); toast("旅を切り替えました🧳");
+    });
+    openSheet("#tripSheet");
+  };
+  $("#closeTripSheet").onclick = ()=>closeSheet("#tripSheet");
+
+  // 覆いをタップで閉じる
+  $("#scrim").onclick = ()=>{ if(openSheetSel) closeSheet(openSheetSel); closeModal(); };
+
+  // 検索
+  $("#q").oninput = e=>{ query = e.target.value.trim(); renderList(); };
+
+  // テーマ切替
+  $("#themeBtn").onclick = ()=>{
+    state.theme = state.theme==="auto" ? "light" : (state.theme==="light" ? "dark" : "auto");
+    save(); applyTheme();
+    toast(state.theme==="auto"?"端末の設定に合わせます🌗":(state.theme==="dark"?"夜のあかりにしました🌙":"昼のあかりにしました☀️"));
+  };
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ()=>{ if(state.theme==="auto") applyTheme(); });
+
+  // スクロールで奥行きを出す
+  let ticking = false;
+  window.addEventListener("scroll", ()=>{
+    if(ticking) return; ticking = true;
+    requestAnimationFrame(()=>{
+      $("#topbar").classList.toggle("scrolled", window.scrollY>6);
+      if(!reduced) $$(".card, .tag").forEach(el=>{
+        const r = el.getBoundingClientRect();
+        el.classList.toggle("depth", true);
+        el.classList.toggle("far", r.bottom < 90 || r.top > innerHeight-40);
+      });
+      ticking = false;
+    });
+  }, {passive:true});
+
+  // 起動演出をしまう
+  setTimeout(()=>{
+    const sp = $("#splash"); sp.classList.add("gone");
+    setTimeout(()=>sp.remove(), 800);
+    const t = trip();
+    if(t) setTimeout(()=>toast(phaseMsg(t)), 500);
+  }, reduced ? 200 : 2100);
+
+  // 画面に戻ってきたら日付まわりを描き直す
+  document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) refresh(); });
+}
+
+document.addEventListener("DOMContentLoaded", boot);
+</script>
+</body>
+</html>
