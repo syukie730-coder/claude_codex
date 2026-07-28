@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>血圧ノート</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="血圧ノート">
+<meta name="theme-color" content="#F2FAF6">
+<link rel="apple-touch-icon" href="bp-note-icon.png">
+<link rel="icon" type="image/png" href="bp-note-icon.png">
+<style>
+:root{
+  --pine:#1E5945;        /* 深い緑：文字 */
+  --emerald:#17A97C;     /* メイン緑 */
+  --mint:#7FD3B2;        /* ミント */
+  --leaf:#D9F0E5;        /* 淡い葉 */
+  --mist:#F2FAF6;        /* 背景 */
+  --white:#FFFFFF;
+  --gold:#D9A441;        /* ごほうび */
+  --coral:#E8746A;       /* ハート・低め */
+  --ink:#2C4A40;
+  --gray:#7C948B;
+  --shadow:0 10px 30px rgba(30,89,69,.10), 0 2px 8px rgba(30,89,69,.06);
+  --radius:26px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:"Hiragino Maru Gothic ProN","ヒラギノ丸ゴ ProN",-apple-system,"Hiragino Sans","Yu Gothic",sans-serif;
+  background:var(--mist);
+  color:var(--ink);
+  font-size:17px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+/* ふんわり舞う葉っぱ */
+#leaves{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.leaf{position:absolute;font-size:20px;opacity:0;animation:leafFall linear infinite;}
+@keyframes leafFall{
+  0%{transform:translateY(-40px) rotate(0deg);opacity:0;}
+  10%{opacity:.5;}
+  90%{opacity:.35;}
+  100%{transform:translateY(105vh) rotate(320deg);opacity:0;}
+}
+.wrap{position:relative;z-index:1;max-width:520px;margin:0 auto;padding:0 16px 130px;}
+
+/* ヘッダー */
+header{
+  position:relative;text-align:center;
+  padding:calc(env(safe-area-inset-top) + 18px) 0 6px;
+}
+.steth{font-size:38px;display:inline-block;transform-origin:50% 10%;animation:sway 4.5s ease-in-out infinite;}
+@keyframes sway{0%,100%{transform:rotate(-7deg);}50%{transform:rotate(7deg);}}
+h1{margin:2px 0 2px;font-size:24px;letter-spacing:.08em;color:var(--pine);font-weight:700;}
+.sub{margin:0;font-size:13px;color:var(--gray);letter-spacing:.04em;}
+#streakChip{
+  display:inline-flex;align-items:center;gap:6px;margin-top:10px;
+  background:var(--white);border-radius:999px;padding:7px 16px;
+  font-size:14px;color:var(--pine);box-shadow:var(--shadow);font-weight:700;
+}
+
+/* カード共通 */
+.card{
+  background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:20px 18px;margin-top:16px;
+}
+.card h2{
+  margin:0 0 14px;font-size:17px;color:var(--pine);font-weight:700;
+  display:flex;align-items:center;gap:8px;letter-spacing:.03em;
+}
+
+/* 今日の血圧 */
+.gauge-wrap{position:relative;width:100%;max-width:290px;margin:0 auto 4px;}
+#gauge{width:100%;display:block;}
+#needle{transform-origin:150px 150px;transition:transform 1.1s cubic-bezier(.2,.9,.25,1);}
+.gauge-center{
+  position:absolute;left:0;right:0;top:52%;text-align:center;
+}
+.gauge-center .heart{font-size:22px;display:inline-block;animation:beat 2.4s ease-in-out infinite;}
+@keyframes beat{0%,100%{transform:scale(1);}12%{transform:scale(1.22);}24%{transform:scale(1);}36%{transform:scale(1.14);}}
+#statusLabel{font-size:15px;font-weight:700;margin-top:2px;}
+
+.vitals{display:flex;justify-content:center;gap:6px;margin-top:6px;}
+.vital{flex:1;text-align:center;padding:10px 2px;border-radius:18px;background:var(--mist);}
+.vital .lab{font-size:12px;color:var(--gray);letter-spacing:.06em;}
+.vital .num{font-size:38px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums;color:var(--pine);}
+.vital .unit{font-size:11px;color:var(--gray);}
+.vital.sys .num{color:#0E7C5A;}
+.vital.dia .num{color:#3FA9C9;}
+.vital.pul .num{color:var(--coral);}
+#todayTime{text-align:center;font-size:13px;color:var(--gray);margin-top:8px;}
+#noToday{text-align:center;color:var(--gray);font-size:15px;padding:6px 0 2px;}
+
+/* 入力 */
+.stampline{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--leaf);border-radius:16px;padding:10px 14px;font-size:14px;color:var(--pine);
+}
+.stampline button{
+  background:transparent;border:none;color:var(--emerald);font:inherit;font-weight:700;
+  text-decoration:underline;padding:4px;cursor:pointer;
+}
+.editrow{display:none;gap:8px;margin-top:10px;}
+.editrow.on{display:flex;}
+.editrow input{
+  flex:1;font:inherit;font-size:16px;padding:10px;border:2px solid var(--leaf);
+  border-radius:14px;background:var(--white);color:var(--ink);
+}
+.field{margin-top:14px;}
+.field .flabel{font-size:15px;color:var(--pine);font-weight:700;margin-bottom:6px;display:block;}
+.stepper{display:flex;align-items:center;gap:10px;}
+.stepper button{
+  width:58px;height:58px;border-radius:50%;border:none;flex:0 0 auto;
+  background:var(--leaf);color:var(--pine);font-size:28px;font-weight:700;
+  box-shadow:0 3px 8px rgba(30,89,69,.10);cursor:pointer;
+}
+.stepper button:active{transform:scale(.92);background:var(--mint);}
+.stepper input{
+  flex:1;min-width:0;text-align:center;font:inherit;font-size:40px;font-weight:700;
+  font-variant-numeric:tabular-nums;color:var(--pine);
+  border:2px solid var(--leaf);border-radius:18px;padding:8px 0;background:var(--white);
+}
+.stepper input:focus{outline:none;border-color:var(--mint);}
+textarea{
+  width:100%;font:inherit;font-size:16px;padding:12px;border:2px solid var(--leaf);
+  border-radius:16px;resize:none;background:var(--white);color:var(--ink);
+}
+textarea:focus{outline:none;border-color:var(--mint);}
+.memochips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.memochips button{
+  border:none;background:var(--mist);color:var(--pine);font:inherit;font-size:13px;
+  padding:7px 12px;border-radius:999px;cursor:pointer;
+}
+.memochips button:active{background:var(--leaf);}
+#saveBtn{
+  width:100%;margin-top:18px;padding:20px;border:none;border-radius:22px;
+  background:linear-gradient(135deg,#1FB98A,#0E7C5A);color:#fff;
+  font:inherit;font-size:22px;font-weight:700;letter-spacing:.14em;
+  box-shadow:0 8px 20px rgba(14,124,90,.30);cursor:pointer;
+  transition:transform .15s ease;
+}
+#saveBtn:active{transform:scale(.97);}
+
+/* 平均 */
+.avgrow{display:flex;gap:10px;}
+.avgbox{flex:1;background:var(--mist);border-radius:18px;padding:12px 8px;text-align:center;}
+.avgbox .t{font-size:12px;color:var(--gray);}
+.avgbox .v{font-size:26px;font-weight:700;color:var(--pine);font-variant-numeric:tabular-nums;line-height:1.25;}
+.avgbox .s{font-size:11px;color:var(--gray);}
+
+/* 記録一覧 */
+.rec{
+  display:flex;align-items:center;gap:12px;padding:13px 4px;border-bottom:1px solid var(--leaf);
+}
+.rec:last-child{border-bottom:none;}
+.rec .d{flex:0 0 74px;font-size:13px;color:var(--gray);line-height:1.35;}
+.rec .v{flex:1;font-size:19px;font-weight:700;color:var(--pine);font-variant-numeric:tabular-nums;}
+.rec .v small{font-size:13px;color:var(--gray);font-weight:400;margin-left:6px;}
+.rec .m{font-size:12px;color:var(--gray);font-weight:400;display:block;margin-top:2px;}
+.rec .del{
+  border:none;background:var(--mist);color:var(--gray);border-radius:999px;
+  width:34px;height:34px;font-size:16px;flex:0 0 auto;cursor:pointer;
+}
+.dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto;}
+.empty{text-align:center;color:var(--gray);padding:18px 0;font-size:15px;}
+
+/* グラフ */
+.seg{display:flex;background:var(--mist);border-radius:999px;padding:5px;gap:4px;margin-bottom:14px;}
+.seg button{
+  flex:1;border:none;background:transparent;font:inherit;font-size:15px;font-weight:700;
+  color:var(--gray);padding:11px 0;border-radius:999px;cursor:pointer;transition:.2s;
+}
+.seg button.on{background:var(--white);color:var(--pine);box-shadow:0 2px 6px rgba(30,89,69,.12);}
+#chart{width:100%;height:250px;display:block;}
+.legend{display:flex;justify-content:center;gap:18px;margin-top:10px;font-size:13px;color:var(--gray);}
+.legend span{display:inline-flex;align-items:center;gap:6px;}
+.legend i{width:14px;height:4px;border-radius:2px;display:inline-block;}
+
+/* 設定 */
+.btnlist button{
+  width:100%;margin-bottom:10px;padding:16px;border:none;border-radius:18px;
+  background:var(--mist);color:var(--pine);font:inherit;font-size:16px;font-weight:700;
+  text-align:left;cursor:pointer;
+}
+.btnlist button:active{background:var(--leaf);}
+.btnlist button.danger{color:var(--coral);}
+.note{font-size:12px;color:var(--gray);line-height:1.7;margin:10px 2px 0;}
+
+/* タブバー */
+nav{
+  position:fixed;left:0;right:0;bottom:0;z-index:20;
+  background:rgba(255,255,255,.94);backdrop-filter:blur(14px);
+  box-shadow:0 -6px 20px rgba(30,89,69,.08);
+  padding-bottom:env(safe-area-inset-bottom);
+  display:flex;
+}
+nav button{
+  flex:1;border:none;background:transparent;font:inherit;font-size:11px;color:var(--gray);
+  padding:10px 0 8px;cursor:pointer;letter-spacing:.05em;
+}
+nav button b{display:block;font-size:24px;font-weight:400;line-height:1.25;filter:grayscale(1);opacity:.55;}
+nav button.on{color:var(--emerald);font-weight:700;}
+nav button.on b{filter:none;opacity:1;}
+
+.page{display:none;}
+.page.on{display:block;animation:fadeUp .35s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+
+/* 演出 */
+#fx{position:fixed;inset:0;pointer-events:none;z-index:60;}
+#toast{
+  position:fixed;left:50%;bottom:110px;transform:translate(-50%,20px);
+  background:var(--pine);color:#fff;padding:14px 26px;border-radius:999px;
+  font-size:16px;font-weight:700;opacity:0;transition:.35s;z-index:70;white-space:nowrap;
+  box-shadow:0 8px 24px rgba(30,89,69,.3);
+}
+#toast.on{opacity:1;transform:translate(-50%,0);}
+#reward{
+  position:fixed;inset:0;z-index:80;display:none;
+  align-items:center;justify-content:center;background:rgba(30,89,69,.35);backdrop-filter:blur(3px);
+}
+#reward.on{display:flex;}
+.rewardcard{
+  background:#fff;border-radius:32px;padding:34px 28px;text-align:center;max-width:300px;
+  box-shadow:0 20px 50px rgba(30,89,69,.3);animation:pop .5s cubic-bezier(.2,1.3,.4,1) both;
+}
+@keyframes pop{from{opacity:0;transform:scale(.7);}to{opacity:1;transform:scale(1);}}
+.rewardcard .ic{font-size:64px;display:block;animation:beat 2s ease-in-out infinite;}
+.rewardcard h3{margin:10px 0 6px;font-size:22px;color:var(--pine);}
+.rewardcard p{margin:0 0 20px;font-size:15px;color:var(--gray);}
+.rewardcard button{
+  border:none;background:linear-gradient(135deg,#1FB98A,#0E7C5A);color:#fff;font:inherit;
+  font-size:17px;font-weight:700;padding:14px 34px;border-radius:999px;cursor:pointer;
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none !important;transition:none !important;}
+  #leaves{display:none;}
+}
+</style>
+</head>
+<body>
+<div id="leaves"></div>
+
+<div class="wrap">
+  <header>
+    <span class="steth">🩺</span>
+    <h1>血圧ノート</h1>
+    <p class="sub">けいいちさんの毎日の記録</p>
+    <div id="streakChip">🌱 今日から はじめよう</div>
+  </header>
+
+  <!-- ================= ホーム ================= -->
+  <section class="page on" id="page-home">
+
+    <div class="card">
+      <h2>🩺 今日の血圧</h2>
+      <div class="gauge-wrap">
+        <svg id="gauge" viewBox="0 0 300 175">
+          <defs>
+            <linearGradient id="arcg" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#7FD3B2"/>
+              <stop offset="0.5" stop-color="#17A97C"/>
+              <stop offset="0.78" stop-color="#E2C46A"/>
+              <stop offset="1" stop-color="#E8746A"/>
+            </linearGradient>
+          </defs>
+          <path d="M30,150 A120,120 0 0 1 270,150" fill="none" stroke="#EDF6F1" stroke-width="20" stroke-linecap="round"/>
+          <path d="M30,150 A120,120 0 0 1 270,150" fill="none" stroke="url(#arcg)" stroke-width="12" stroke-linecap="round" opacity=".9"/>
+          <text x="30" y="172" font-size="12" fill="#7C948B" text-anchor="middle">80</text>
+          <text x="150" y="26" font-size="12" fill="#7C948B" text-anchor="middle">140</text>
+          <text x="270" y="172" font-size="12" fill="#7C948B" text-anchor="middle">200</text>
+          <g id="needle" transform="rotate(-90)">
+            <line x1="150" y1="150" x2="150" y2="55" stroke="#1E5945" stroke-width="5" stroke-linecap="round"/>
+          </g>
+          <circle cx="150" cy="150" r="9" fill="#1E5945"/>
+          <circle cx="150" cy="150" r="4" fill="#fff"/>
+        </svg>
+        <div class="gauge-center">
+          <span class="heart">💚</span>
+          <div id="statusLabel">まだ記録がありません</div>
+        </div>
+      </div>
+
+      <div id="todayBlock" style="display:none">
+        <div class="vitals">
+          <div class="vital sys"><div class="lab">最高</div><div class="num" id="tSys">--</div><div class="unit">mmHg</div></div>
+          <div class="vital dia"><div class="lab">最低</div><div class="num" id="tDia">--</div><div class="unit">mmHg</div></div>
+          <div class="vital pul"><div class="lab">脈拍</div><div class="num" id="tPul">--</div><div class="unit">回/分</div></div>
+        </div>
+        <div id="todayTime"></div>
+      </div>
+      <div id="noToday">下の欄に入れて「保存する」を押してね😊</div>
+    </div>
+
+    <div class="card">
+      <h2>✏️ 記録する</h2>
+      <div class="stampline">
+        <span id="stamp">—</span>
+        <button type="button" id="editTimeBtn">日時を変える</button>
+      </div>
+      <div class="editrow" id="editRow">
+        <input type="date" id="inDate">
+        <input type="time" id="inTime">
+      </div>
+
+      <div class="field">
+        <span class="flabel">最高血圧（上）</span>
+        <div class="stepper">
+          <button type="button" data-t="sys" data-v="-1">−</button>
+          <input type="number" id="inSys" inputmode="numeric" pattern="[0-9]*" placeholder="120">
+          <button type="button" data-t="sys" data-v="1">＋</button>
+        </div>
+      </div>
+      <div class="field">
+        <span class="flabel">最低血圧（下）</span>
+        <div class="stepper">
+          <button type="button" data-t="dia" data-v="-1">−</button>
+          <input type="number" id="inDia" inputmode="numeric" pattern="[0-9]*" placeholder="78">
+          <button type="button" data-t="dia" data-v="1">＋</button>
+        </div>
+      </div>
+      <div class="field">
+        <span class="flabel">脈拍</span>
+        <div class="stepper">
+          <button type="button" data-t="pul" data-v="-1">−</button>
+          <input type="number" id="inPul" inputmode="numeric" pattern="[0-9]*" placeholder="68">
+          <button type="button" data-t="pul" data-v="1">＋</button>
+        </div>
+      </div>
+      <div class="field">
+        <span class="flabel">メモ（なくてもOK）</span>
+        <textarea id="inMemo" rows="2" placeholder="体調・お薬・気になったこと"></textarea>
+        <div class="memochips">
+          <button type="button">薬を飲んだ</button>
+          <button type="button">よく眠れた</button>
+          <button type="button">お酒あり</button>
+          <button type="button">仕事の後</button>
+          <button type="button">体調いい</button>
+          <button type="button">少しだるい</button>
+        </div>
+      </div>
+      <button id="saveBtn">保存する</button>
+    </div>
+
+    <div class="card">
+      <h2>📊 平均をみる</h2>
+      <div class="avgrow">
+        <div class="avgbox"><div class="t">この1週間</div><div class="v" id="avgW">--</div><div class="s" id="avgWn">記録なし</div></div>
+        <div class="avgbox"><div class="t">この1か月</div><div class="v" id="avgM">--</div><div class="s" id="avgMn">記録なし</div></div>
+      </div>
+      <p class="note">上／下（mmHg）の平均です。家庭での目安は 135／85 未満。気になる数字が続くときは、かかりつけの先生に相談してくださいね。</p>
+    </div>
+
+    <div class="card">
+      <h2>📖 これまでの記録</h2>
+      <div id="recList"><div class="empty">まだ記録がありません</div></div>
+      <button class="showmore" id="moreBtn" style="display:none;width:100%;margin-top:12px;padding:14px;border:none;border-radius:16px;background:var(--mist);color:var(--pine);font:inherit;font-weight:700;">もっと見る</button>
+    </div>
+  </section>
+
+  <!-- ================= グラフ ================= -->
+  <section class="page" id="page-chart">
+    <div class="card">
+      <h2>📈 血圧のうごき</h2>
+      <div class="seg" id="rangeSeg">
+        <button class="on" data-d="7">1週間</button>
+        <button data-d="30">1か月</button>
+        <button data-d="90">3か月</button>
+      </div>
+      <canvas id="chart"></canvas>
+      <div class="legend">
+        <span><i style="background:#0E7C5A"></i>最高血圧</span>
+        <span><i style="background:#3FA9C9"></i>最低血圧</span>
+        <span><i style="background:#E2C46A"></i>目安 135/85</span>
+      </div>
+      <p class="note" id="chartNote"></p>
+    </div>
+    <div class="card">
+      <h2>🍃 期間のまとめ</h2>
+      <div class="avgrow">
+        <div class="avgbox"><div class="t">平均 上／下</div><div class="v" id="sumAvg">--</div><div class="s">mmHg</div></div>
+        <div class="avgbox"><div class="t">いちばん高い日</div><div class="v" id="sumMax">--</div><div class="s" id="sumMaxD">-</div></div>
+      </div>
+      <div class="avgrow" style="margin-top:10px">
+        <div class="avgbox"><div class="t">平均 脈拍</div><div class="v" id="sumPul">--</div><div class="s">回/分</div></div>
+        <div class="avgbox"><div class="t">記録した日数</div><div class="v" id="sumDays">--</div><div class="s">日</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 設定 ================= -->
+  <section class="page" id="page-set">
+    <div class="card">
+      <h2>💾 データ</h2>
+      <div class="btnlist">
+        <button id="csvBtn">📄　CSVで書き出す</button>
+        <button id="backupBtn">🧳　バックアップを作る</button>
+        <button id="restoreBtn">♻️　バックアップから戻す</button>
+        <input type="file" id="restoreFile" accept="application/json,.json" style="display:none">
+        <button id="clearBtn" class="danger">🗑　すべての記録を消す</button>
+      </div>
+      <p class="note">記録はこのiPhoneの中だけに保存されます。機種変更の前には「バックアップを作る」でファイルを保存しておくと安心です😊</p>
+    </div>
+    <div class="card">
+      <h2>🏆 がんばりの記録</h2>
+      <div class="avgrow">
+        <div class="avgbox"><div class="t">連続記録</div><div class="v" id="stStreak">0</div><div class="s">日</div></div>
+        <div class="avgbox"><div class="t">いちばん続いた</div><div class="v" id="stBest">0</div><div class="s">日</div></div>
+      </div>
+      <div class="avgrow" style="margin-top:10px">
+        <div class="avgbox"><div class="t">記録した日数</div><div class="v" id="stDays">0</div><div class="s">日</div></div>
+        <div class="avgbox"><div class="t">ぜんぶの記録</div><div class="v" id="stAll">0</div><div class="s">件</div></div>
+      </div>
+      <p class="note">7日つづくと 🏆、30日つづくと 🌟 のごほうびが出ます。</p>
+    </div>
+    <div class="card">
+      <h2>🌿 このアプリについて</h2>
+      <p class="note" style="margin-top:0">血圧ノート / けいいちさん専用。<br>血圧は毎日おなじ時間・おなじ姿勢ではかると、うごきが分かりやすくなります。表示される目安は家庭血圧の一般的な基準で、診断ではありません。心配なときは医療機関で相談してくださいね。</p>
+    </div>
+  </section>
+</div>
+
+<nav>
+  <button class="on" data-p="home"><b>🏠</b>ホーム</button>
+  <button data-p="chart"><b>📈</b>グラフ</button>
+  <button data-p="set"><b>⚙️</b>設定</button>
+</nav>
+
+<canvas id="fx"></canvas>
+<div id="toast"></div>
+<div id="reward"><div class="rewardcard">
+  <span class="ic" id="rwIcon">🏆</span>
+  <h3 id="rwTitle"></h3>
+  <p id="rwText"></p>
+  <button id="rwClose">ありがとう</button>
+</div></div>
+
+<script>
+"use strict";
+const KEY = "bp_note_keiichi_v1";
+const MKEY = "bp_note_keiichi_milestones";
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+
+let records = [];
+let shownMs = [];
+let listLimit = 10;
+let range = 7;
+
+/* ---------- 保存・読み込み ---------- */
+function load(){
+  try{ records = JSON.parse(localStorage.getItem(KEY) || "[]"); }catch(e){ records = []; }
+  try{ shownMs = JSON.parse(localStorage.getItem(MKEY) || "[]"); }catch(e){ shownMs = []; }
+  sortRecords();
+}
+function save(){ localStorage.setItem(KEY, JSON.stringify(records)); }
+function sortRecords(){
+  records.sort((a,b)=> (b.date+b.time).localeCompare(a.date+a.time));
+}
+
+/* ---------- 日付ユーティリティ ---------- */
+function pad(n){ return String(n).padStart(2,"0"); }
+function ymd(d){ return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
+function hm(d){ return pad(d.getHours())+":"+pad(d.getMinutes()); }
+function jpDate(s){
+  const p = s.split("-");
+  return Number(p[1])+"月"+Number(p[2])+"日";
+}
+function weekday(s){
+  const d = new Date(s+"T00:00:00");
+  return "日月火水木金土".charAt(d.getDay());
+}
+function daysAgo(n){
+  const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-n); return d;
+}
+
+/* ---------- 判定 ---------- */
+function judge(sys,dia){
+  if(sys < 90 || dia < 55) return {t:"すこし低めです", c:"#3FA9C9", e:"🫧"};
+  if(sys >= 160 || dia >= 100) return {t:"かなり高めです", c:"#E8746A", e:"🩺"};
+  if(sys >= 135 || dia >= 85) return {t:"高めです", c:"#D9A441", e:"🍂"};
+  if(sys >= 125 || dia >= 80) return {t:"すこし高めです", c:"#8CBF6B", e:"🌿"};
+  return {t:"とても良いです", c:"#17A97C", e:"💚"};
+}
+
+/* ---------- 画面更新 ---------- */
+function render(){
+  renderToday();
+  renderStreak();
+  renderAverages();
+  renderList();
+  renderStats();
+  if($("#page-chart").classList.contains("on")) drawChart();
+}
+
+function renderToday(){
+  const today = ymd(new Date());
+  const t = records.find(r => r.date === today);
+  const block = $("#todayBlock"), none = $("#noToday");
+  if(t){
+    block.style.display = "block"; none.style.display = "none";
+    $("#tSys").textContent = t.sys;
+    $("#tDia").textContent = t.dia;
+    $("#tPul").textContent = t.pulse || "--";
+    $("#todayTime").textContent = t.time + " に記録しました";
+    const j = judge(t.sys, t.dia);
+    $("#statusLabel").textContent = j.t;
+    $("#statusLabel").style.color = j.c;
+    $(".gauge-center .heart").textContent = j.e;
+    setNeedle(t.sys);
+  }else{
+    block.style.display = "none"; none.style.display = "block";
+    $("#statusLabel").textContent = "今日の記録はまだです";
+    $("#statusLabel").style.color = "#7C948B";
+    $(".gauge-center .heart").textContent = "💚";
+    setNeedle(records.length ? records[0].sys : 120);
+  }
+}
+function setNeedle(sys){
+  const v = Math.max(80, Math.min(200, Number(sys)||120));
+  const deg = -90 + (v - 80) / 120 * 180;
+  $("#needle").setAttribute("transform","rotate("+deg.toFixed(1)+" 150 150)");
+}
+
+function streakInfo(){
+  const days = Array.from(new Set(records.map(r=>r.date))).sort().reverse();
+  if(!days.length) return {cur:0, best:0, days:0};
+  const today = ymd(new Date());
+  const yest = ymd(daysAgo(1));
+  let cur = 0;
+  if(days[0] === today || days[0] === yest){
+    let d = new Date(days[0]+"T00:00:00");
+    for(const day of days){
+      if(day === ymd(d)){ cur++; d.setDate(d.getDate()-1); }
+      else break;
+    }
+  }
+  let best = 1, run = 1;
+  for(let i=1;i<days.length;i++){
+    const prev = new Date(days[i-1]+"T00:00:00");
+    prev.setDate(prev.getDate()-1);
+    if(ymd(prev) === days[i]) run++; else run = 1;
+    if(run > best) best = run;
+  }
+  return {cur:cur, best:Math.max(best,cur), days:days.length};
+}
+
+function renderStreak(){
+  const s = streakInfo();
+  const chip = $("#streakChip");
+  if(s.cur >= 30) chip.textContent = "🌟 " + s.cur + "日つづいています";
+  else if(s.cur >= 7) chip.textContent = "🏆 " + s.cur + "日つづいています";
+  else if(s.cur > 0) chip.textContent = "🌿 " + s.cur + "日つづいています";
+  else chip.textContent = "🌱 今日から はじめよう";
+}
+
+function avgOf(list){
+  if(!list.length) return null;
+  const n = list.length;
+  const s = Math.round(list.reduce((a,r)=>a+r.sys,0)/n);
+  const d = Math.round(list.reduce((a,r)=>a+r.dia,0)/n);
+  const pl = list.filter(r=>r.pulse);
+  const p = pl.length ? Math.round(pl.reduce((a,r)=>a+r.pulse,0)/pl.length) : null;
+  return {sys:s, dia:d, pulse:p, n:n};
+}
+function inLastDays(n){
+  const from = ymd(daysAgo(n-1));
+  return records.filter(r => r.date >= from);
+}
+function renderAverages(){
+  const w = avgOf(inLastDays(7)), m = avgOf(inLastDays(30));
+  $("#avgW").textContent = w ? w.sys + " / " + w.dia : "--";
+  $("#avgWn").textContent = w ? w.n + "件の平均" : "記録なし";
+  $("#avgM").textContent = m ? m.sys + " / " + m.dia : "--";
+  $("#avgMn").textContent = m ? m.n + "件の平均" : "記録なし";
+}
+
+function renderList(){
+  const box = $("#recList");
+  if(!records.length){
+    box.innerHTML = '<div class="empty">まだ記録がありません</div>';
+    $("#moreBtn").style.display = "none";
+    return;
+  }
+  const view = records.slice(0, listLimit);
+  box.innerHTML = view.map(r=>{
+    const j = judge(r.sys, r.dia);
+    return '<div class="rec">'
+      + '<span class="dot" style="background:'+j.c+'"></span>'
+      + '<div class="d">'+jpDate(r.date)+'（'+weekday(r.date)+'）<br>'+r.time+'</div>'
+      + '<div class="v">'+r.sys+' / '+r.dia+'<small>'+(r.pulse? '脈 '+r.pulse : '')+'</small>'
+      + (r.memo ? '<span class="m">'+escapeHtml(r.memo)+'</span>' : '') + '</div>'
+      + '<button class="del" data-id="'+r.id+'">✕</button>'
+      + '</div>';
+  }).join("");
+  $("#moreBtn").style.display = records.length > listLimit ? "block" : "none";
+  $$("#recList .del").forEach(b=>{
+    b.onclick = ()=>{
+      if(confirm("この記録を消しますか？")){
+        records = records.filter(r=>String(r.id) !== b.dataset.id);
+        save(); render(); toast("記録を消しました");
+      }
+    };
+  });
+}
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+function renderStats(){
+  const s = streakInfo();
+  $("#stStreak").textContent = s.cur;
+  $("#stBest").textContent = s.best;
+  $("#stDays").textContent = s.days;
+  $("#stAll").textContent = records.length;
+}
+
+/* ---------- 入力 ---------- */
+function refreshStamp(){
+  const now = new Date();
+  $("#inDate").value = ymd(now);
+  $("#inTime").value = hm(now);
+  updateStamp();
+}
+function updateStamp(){
+  const d = $("#inDate").value, t = $("#inTime").value;
+  if(!d) return;
+  const h = Number((t||"12:00").split(":")[0]);
+  const part = h < 11 ? "朝" : (h < 17 ? "昼" : "夜");
+  $("#stamp").textContent = jpDate(d) + "（" + weekday(d) + "）" + t + "　" + part;
+}
+$("#editTimeBtn").onclick = ()=>{
+  const on = $("#editRow").classList.toggle("on");
+  $("#editTimeBtn").textContent = on ? "自動にもどす" : "日時を変える";
+  if(!on) refreshStamp();
+};
+$("#inDate").oninput = updateStamp;
+$("#inTime").oninput = updateStamp;
+
+$$(".stepper button").forEach(b=>{
+  b.onclick = ()=>{
+    const map = {sys:"#inSys", dia:"#inDia", pul:"#inPul"};
+    const el = $(map[b.dataset.t]);
+    const def = {sys:120, dia:78, pul:68}[b.dataset.t];
+    const cur = el.value === "" ? def : Number(el.value);
+    el.value = Math.max(0, cur + Number(b.dataset.v));
+  };
+});
+$$(".memochips button").forEach(b=>{
+  b.onclick = ()=>{
+    const t = $("#inMemo");
+    t.value = t.value ? t.value + " / " + b.textContent : b.textContent;
+  };
+});
+
+$("#saveBtn").onclick = ()=>{
+  const sys = Number($("#inSys").value), dia = Number($("#inDia").value);
+  const pulse = $("#inPul").value === "" ? null : Number($("#inPul").value);
+  if(!sys || !dia){ toast("上と下の血圧を入れてね"); return; }
+  if(sys < 50 || sys > 260 || dia < 30 || dia > 200){ toast("数字をもう一度たしかめてね"); return; }
+  const rec = {
+    id: Date.now(),
+    date: $("#inDate").value || ymd(new Date()),
+    time: $("#inTime").value || hm(new Date()),
+    sys: sys, dia: dia, pulse: pulse,
+    memo: $("#inMemo").value.trim()
+  };
+  const before = streakInfo().cur;
+  records.push(rec);
+  sortRecords(); save();
+  $("#inMemo").value = "";
+  $("#editRow").classList.remove("on");
+  $("#editTimeBtn").textContent = "日時を変える";
+  refreshStamp();
+  render();
+  celebrate();
+  toast("🎉 今日も記録できました！");
+  const after = streakInfo().cur;
+  setTimeout(()=>checkMilestone(after, before), 1500);
+  window.scrollTo({top:0, behavior:"smooth"});
+};
+
+/* ---------- ごほうび ---------- */
+function checkMilestone(cur, before){
+  const marks = [
+    {n:3,  ic:"🌿", t:"3日つづきました", x:"いい習慣が芽を出しています。"},
+    {n:7,  ic:"🏆", t:"7日連続達成！",   x:"1週間つづきました。すばらしいです！"},
+    {n:14, ic:"🌸", t:"2週間つづきました", x:"血圧のうごきが見えてきましたね。"},
+    {n:30, ic:"🌟", t:"健康管理マスター！", x:"30日連続達成。ほんとうにお見事です。"},
+    {n:100,ic:"👑", t:"100日つづきました", x:"毎日の積み重ねが、いちばんの薬です。"}
+  ];
+  for(const m of marks){
+    if(cur >= m.n && before < m.n && !shownMs.includes(m.n)){
+      shownMs.push(m.n);
+      localStorage.setItem(MKEY, JSON.stringify(shownMs));
+      $("#rwIcon").textContent = m.ic;
+      $("#rwTitle").textContent = m.t;
+      $("#rwText").textContent = m.x;
+      $("#reward").classList.add("on");
+      confetti(90);
+      break;
+    }
+  }
+}
+$("#rwClose").onclick = ()=> $("#reward").classList.remove("on");
+
+/* ---------- 演出 ---------- */
+const fx = $("#fx"), fxc = fx.getContext("2d");
+let parts = [], raf = null;
+function sizeFx(){
+  fx.width = innerWidth * devicePixelRatio;
+  fx.height = innerHeight * devicePixelRatio;
+  fx.style.width = innerWidth + "px";
+  fx.style.height = innerHeight + "px";
+  fxc.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+}
+addEventListener("resize", ()=>{ sizeFx(); if($("#page-chart").classList.contains("on")) drawChart(); });
+sizeFx();
+
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+function confetti(n){
+  if(reduce) return;
+  const colors = ["#17A97C","#7FD3B2","#D9F0E5","#D9A441","#E8746A","#FFFFFF"];
+  for(let i=0;i<n;i++){
+    parts.push({
+      x: innerWidth/2 + (Math.random()-0.5)*140,
+      y: innerHeight*0.34,
+      vx: (Math.random()-0.5)*7,
+      vy: -Math.random()*9 - 3,
+      r: Math.random()*6 + 3,
+      a: 1,
+      rot: Math.random()*Math.PI,
+      vr: (Math.random()-0.5)*0.3,
+      c: colors[(Math.random()*colors.length)|0],
+      sp: Math.random() < 0.25
+    });
+  }
+  if(!raf) raf = requestAnimationFrame(tick);
+}
+function tick(){
+  fxc.clearRect(0,0,innerWidth,innerHeight);
+  parts = parts.filter(p=>p.a > 0.02);
+  for(const p of parts){
+    p.x += p.vx; p.y += p.vy; p.vy += 0.32; p.vx *= 0.99;
+    p.rot += p.vr; p.a -= 0.012;
+    fxc.save(); fxc.translate(p.x,p.y); fxc.rotate(p.rot);
+    fxc.globalAlpha = Math.max(0,p.a); fxc.fillStyle = p.c;
+    if(p.sp){
+      fxc.beginPath();
+      for(let i=0;i<4;i++){
+        const a = i*Math.PI/2;
+        fxc.lineTo(Math.cos(a)*p.r, Math.sin(a)*p.r);
+        fxc.lineTo(Math.cos(a+Math.PI/4)*p.r*0.35, Math.sin(a+Math.PI/4)*p.r*0.35);
+      }
+      fxc.closePath(); fxc.fill();
+    }else{
+      fxc.fillRect(-p.r/2,-p.r/2,p.r,p.r*0.6);
+    }
+    fxc.restore();
+  }
+  if(parts.length) raf = requestAnimationFrame(tick);
+  else { raf = null; fxc.clearRect(0,0,innerWidth,innerHeight); }
+}
+function celebrate(){
+  confetti(55);
+  if(navigator.vibrate) navigator.vibrate(18);
+}
+let toastT = null;
+function toast(msg){
+  const t = $("#toast");
+  t.textContent = msg; t.classList.add("on");
+  clearTimeout(toastT);
+  toastT = setTimeout(()=>t.classList.remove("on"), 2200);
+}
+
+/* 葉っぱ */
+(function leaves(){
+  if(reduce) return;
+  const box = $("#leaves"), kinds = ["🍃","🌿","🍃","✨"];
+  for(let i=0;i<7;i++){
+    const s = document.createElement("span");
+    s.className = "leaf";
+    s.textContent = kinds[(Math.random()*kinds.length)|0];
+    s.style.left = (Math.random()*100) + "vw";
+    s.style.animationDuration = (14 + Math.random()*12) + "s";
+    s.style.animationDelay = (-Math.random()*20) + "s";
+    s.style.fontSize = (14 + Math.random()*12) + "px";
+    box.appendChild(s);
+  }
+})();
+
+/* ---------- タブ ---------- */
+$$("nav button").forEach(b=>{
+  b.onclick = ()=>{
+    $$("nav button").forEach(x=>x.classList.remove("on"));
+    b.classList.add("on");
+    $$(".page").forEach(p=>p.classList.remove("on"));
+    $("#page-"+b.dataset.p).classList.add("on");
+    window.scrollTo({top:0});
+    if(b.dataset.p === "chart") drawChart();
+  };
+});
+$("#moreBtn").onclick = ()=>{ listLimit += 20; renderList(); };
+$$("#rangeSeg button").forEach(b=>{
+  b.onclick = ()=>{
+    $$("#rangeSeg button").forEach(x=>x.classList.remove("on"));
+    b.classList.add("on");
+    range = Number(b.dataset.d);
+    drawChart();
+  };
+});
+
+/* ---------- グラフ ---------- */
+function drawChart(){
+  const cv = $("#chart"), ctx = cv.getContext("2d");
+  const W = cv.clientWidth, H = 250;
+  cv.width = W * devicePixelRatio; cv.height = H * devicePixelRatio;
+  cv.style.height = H + "px";
+  ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  ctx.clearRect(0,0,W,H);
+
+  const data = inLastDays(range).slice().reverse();
+  const sum = avgOf(data);
+  $("#sumAvg").textContent = sum ? sum.sys + " / " + sum.dia : "--";
+  $("#sumPul").textContent = sum && sum.pulse ? sum.pulse : "--";
+  $("#sumDays").textContent = data.length ? new Set(data.map(r=>r.date)).size : "--";
+  if(data.length){
+    const mx = data.reduce((a,r)=> r.sys > a.sys ? r : a, data[0]);
+    $("#sumMax").textContent = mx.sys;
+    $("#sumMaxD").textContent = jpDate(mx.date);
+  }else{
+    $("#sumMax").textContent = "--"; $("#sumMaxD").textContent = "-";
+  }
+
+  const padL = 34, padR = 12, padT = 14, padB = 30;
+  const cw = W - padL - padR, ch = H - padT - padB;
+
+  if(data.length < 1){
+    ctx.fillStyle = "#7C948B"; ctx.font = "15px sans-serif"; ctx.textAlign = "center";
+    ctx.fillText("この期間の記録はまだありません", W/2, H/2);
+    $("#chartNote").textContent = "";
+    return;
+  }
+
+  let lo = 50, hi = 170;
+  data.forEach(r=>{ lo = Math.min(lo, r.dia - 10); hi = Math.max(hi, r.sys + 10); });
+  lo = Math.floor(lo/10)*10; hi = Math.ceil(hi/10)*10;
+  const X = i => padL + (data.length === 1 ? cw/2 : cw * i/(data.length-1));
+  const Y = v => padT + ch * (1 - (v - lo)/(hi - lo));
+
+  // 目盛り
+  ctx.strokeStyle = "#EDF6F1"; ctx.lineWidth = 1;
+  ctx.fillStyle = "#A8BDB4"; ctx.font = "11px sans-serif"; ctx.textAlign = "right";
+  for(let v = lo; v <= hi; v += 20){
+    ctx.beginPath(); ctx.moveTo(padL, Y(v)); ctx.lineTo(W - padR, Y(v)); ctx.stroke();
+    ctx.fillText(String(v), padL - 6, Y(v) + 4);
+  }
+  // 目安ライン
+  ctx.setLineDash([5,5]); ctx.strokeStyle = "#E2C46A"; ctx.lineWidth = 1.5;
+  [135,85].forEach(v=>{
+    if(v >= lo && v <= hi){
+      ctx.beginPath(); ctx.moveTo(padL, Y(v)); ctx.lineTo(W - padR, Y(v)); ctx.stroke();
+    }
+  });
+  ctx.setLineDash([]);
+
+  function line(key, color, fill){
+    ctx.beginPath();
+    data.forEach((r,i)=>{ i ? ctx.lineTo(X(i), Y(r[key])) : ctx.moveTo(X(i), Y(r[key])); });
+    if(fill){
+      ctx.save();
+      const g = ctx.createLinearGradient(0,padT,0,padT+ch);
+      g.addColorStop(0, fill); g.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.lineTo(X(data.length-1), padT+ch); ctx.lineTo(X(0), padT+ch); ctx.closePath();
+      ctx.fillStyle = g; ctx.fill(); ctx.restore();
+      ctx.beginPath();
+      data.forEach((r,i)=>{ i ? ctx.lineTo(X(i), Y(r[key])) : ctx.moveTo(X(i), Y(r[key])); });
+    }
+    ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.lineJoin = "round"; ctx.lineCap = "round";
+    ctx.stroke();
+    if(data.length <= 45){
+      data.forEach((r,i)=>{
+        ctx.beginPath(); ctx.arc(X(i), Y(r[key]), 4, 0, Math.PI*2);
+        ctx.fillStyle = "#fff"; ctx.fill();
+        ctx.lineWidth = 2.5; ctx.strokeStyle = color; ctx.stroke();
+      });
+    }
+  }
+  line("sys", "#0E7C5A", "rgba(23,169,124,.16)");
+  line("dia", "#3FA9C9", null);
+
+  // 日付ラベル
+  ctx.fillStyle = "#A8BDB4"; ctx.font = "11px sans-serif"; ctx.textAlign = "center";
+  const step = Math.max(1, Math.ceil(data.length/5));
+  data.forEach((r,i)=>{
+    if(i % step === 0 || i === data.length-1){
+      ctx.fillText(jpDate(r.date), X(i), H - 10);
+    }
+  });
+
+  const first = data[0], last = data[data.length-1];
+  const diff = last.sys - first.sys;
+  $("#chartNote").textContent = data.length >= 2
+    ? "この期間の最高血圧は、はじめの日より " + (diff > 0 ? "＋" + diff : diff) + " mmHg です。"
+    : "記録がふえると、うごきが線になって見えてきます😊";
+}
+
+/* ---------- CSV・バックアップ ---------- */
+function download(name, text, type){
+  const blob = new Blob([text], {type:type});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 800);
+}
+$("#csvBtn").onclick = ()=>{
+  if(!records.length){ toast("まだ記録がありません"); return; }
+  const rows = [["日付","時刻","最高血圧","最低血圧","脈拍","メモ"]];
+  records.slice().reverse().forEach(r=>{
+    rows.push([r.date, r.time, r.sys, r.dia, r.pulse ?? "", (r.memo||"").replace(/"/g,'""')]);
+  });
+  const csv = "\uFEFF" + rows.map(r=>r.map(c=>'"'+c+'"').join(",")).join("\r\n");
+  download("血圧ノート_" + ymd(new Date()) + ".csv", csv, "text/csv;charset=utf-8");
+  toast("CSVを書き出しました");
+};
+$("#backupBtn").onclick = ()=>{
+  const data = {app:"血圧ノート", version:1, saved:new Date().toISOString(), records:records, milestones:shownMs};
+  download("血圧ノート_バックアップ_" + ymd(new Date()) + ".json", JSON.stringify(data,null,2), "application/json");
+  toast("バックアップを作りました");
+};
+$("#restoreBtn").onclick = ()=> $("#restoreFile").click();
+$("#restoreFile").onchange = e=>{
+  const f = e.target.files[0];
+  if(!f) return;
+  const rd = new FileReader();
+  rd.onload = ()=>{
+    try{
+      const d = JSON.parse(rd.result);
+      const list = Array.isArray(d) ? d : d.records;
+      if(!Array.isArray(list)) throw 0;
+      const ids = new Set(records.map(r=>String(r.id)));
+      let add = 0;
+      list.forEach(r=>{
+        if(r && r.date && r.sys && !ids.has(String(r.id))){
+          records.push({
+            id: r.id || (Date.now() + Math.random()),
+            date: r.date, time: r.time || "00:00",
+            sys: Number(r.sys), dia: Number(r.dia),
+            pulse: r.pulse ? Number(r.pulse) : null,
+            memo: r.memo || ""
+          });
+          add++;
+        }
+      });
+      if(d.milestones) shownMs = Array.from(new Set(shownMs.concat(d.milestones)));
+      localStorage.setItem(MKEY, JSON.stringify(shownMs));
+      sortRecords(); save(); render();
+      toast(add + "件を戻しました");
+    }catch(err){
+      toast("このファイルは読み込めません");
+    }
+    e.target.value = "";
+  };
+  rd.readAsText(f);
+};
+$("#clearBtn").onclick = ()=>{
+  if(!confirm("すべての記録を消します。もとに戻せません。よろしいですか？")) return;
+  if(!confirm("本当に消してよろしいですか？")) return;
+  records = []; shownMs = [];
+  save(); localStorage.setItem(MKEY,"[]");
+  render(); toast("すべての記録を消しました");
+};
+
+/* ---------- 起動 ---------- */
+load();
+refreshStamp();
+render();
+setNeedle(records.length ? records[0].sys : 120);
+</script>
+</body>
+</html>
