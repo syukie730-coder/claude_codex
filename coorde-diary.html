@@ -19,7 +19,7 @@
 
 <style>
 /* ============================================================
-   1. デザイントークン（色・字・かたち）
+   1. デザイントークン（色・字・かたち）※前のままです
    ============================================================ */
 :root{
   --cream:#FFFBF0;
@@ -27,7 +27,7 @@
   --butter:#FFE9A8;
   --gold:#E3AE3C;
   --gold-deep:#B98518;
-  --ink:#6B5218;          /* 文字色（濃いゴールドブラウン） */
+  --ink:#6B5218;
   --ink-soft:#9C8449;
   --white:#FFFFFF;
   --blush:#F6B8C6;
@@ -47,7 +47,6 @@
 
   --tab-h:calc(74px + env(safe-area-inset-bottom));
 }
-/* 季節ごとの背景（クリーム＆ゴールドは保ったまま、空気だけ変える） */
 body.s-spring{--bg1:#FFFCF4;--bg2:#FFEDDB;--tint:#FFDCE8;}
 body.s-summer{--bg1:#FFFEF6;--bg2:#FFF3C4;--tint:#D9F0FA;}
 body.s-autumn{--bg1:#FFFBF0;--bg2:#FFE4BE;--tint:#FFD8B0;}
@@ -66,7 +65,6 @@ body{
   font-size:17px;
   line-height:1.7;
 }
-/* うっすら光るグラデ背景 */
 body::before{
   content:"";position:fixed;inset:0;z-index:-2;
   background:
@@ -80,7 +78,7 @@ button{border:none;background:none;cursor:pointer;}
 h1,h2,h3{font-family:var(--font-display);margin:0;letter-spacing:.02em;}
 
 /* ============================================================
-   2. 背景を流れるモチーフ（ハート・星・季節）
+   2. 背景を流れるモチーフ
    ============================================================ */
 #ambient{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;}
 #ambient span{
@@ -99,7 +97,7 @@ h1,h2,h3{font-family:var(--font-display);margin:0;letter-spacing:.02em;}
 }
 
 /* ============================================================
-   3. オープニング（ドレスがふわっと登場）
+   3. オープニング
    ============================================================ */
 #splash{
   position:fixed;inset:0;z-index:90;display:grid;place-items:center;
@@ -132,7 +130,6 @@ h1,h2,h3{font-family:var(--font-display);margin:0;letter-spacing:.02em;}
   margin-top:8px;animation:fadeUp .9s .95s both;
 }
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
-/* 登場と同時にキラキラが飛び散る */
 .burst{position:absolute;left:50%;top:38%;width:1px;height:1px;}
 .burst i{
   position:absolute;font-size:16px;opacity:0;
@@ -163,9 +160,9 @@ h1,h2,h3{font-family:var(--font-display);margin:0;letter-spacing:.02em;}
 }
 
 /* ============================================================
-   5. 画面（ビュー）共通
+   5. 画面共通
    ============================================================ */
-main{padding:4px 18px calc(var(--tab-h) + 26px);max-width:620px;margin:0 auto;}
+main{padding:4px 16px calc(var(--tab-h) + 26px);max-width:620px;margin:0 auto;}
 .view{display:none;}
 .view.is-active{display:block;animation:viewIn .38s cubic-bezier(.22,.85,.28,1) both;}
 @keyframes viewIn{from{opacity:0;transform:translateY(16px) scale(.985);}to{opacity:1;transform:none;}}
@@ -195,7 +192,6 @@ main{padding:4px 18px calc(var(--tab-h) + 26px);max-width:620px;margin:0 auto;}
 .input:focus{border-color:var(--gold);background:var(--white);box-shadow:0 0 0 4px rgba(227,174,60,.14);}
 textarea.input{resize:none;line-height:1.75;}
 
-/* さっと選べる合言葉チップ */
 .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;}
 .chip{
   font-size:14px;font-weight:500;color:var(--gold-deep);
@@ -204,7 +200,6 @@ textarea.input{resize:none;line-height:1.75;}
 }
 .chip:active{transform:scale(.93);background:var(--butter);}
 
-/* 日付 */
 .date-pill{
   position:relative;display:flex;align-items:center;justify-content:center;gap:8px;
   background:linear-gradient(135deg,#FFF6DC,#FFE9A8);
@@ -214,7 +209,6 @@ textarea.input{resize:none;line-height:1.75;}
 .date-pill input{position:absolute;inset:0;opacity:0;width:100%;height:100%;border:none;}
 .date-pill .tap{font-size:11.5px;font-weight:400;color:var(--ink-soft);letter-spacing:.08em;}
 
-/* 写真 */
 .photo-add{
   width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
   background:var(--cream-2);border:2.5px dashed rgba(227,174,60,.5);
@@ -237,7 +231,6 @@ textarea.input{resize:none;line-height:1.75;}
 }
 .photo-count{font-size:13px;color:var(--ink-soft);text-align:right;margin-top:2px;}
 
-/* お気に入り★ */
 .stars{display:flex;justify-content:center;gap:6px;padding:4px 0 2px;}
 .stars button{
   font-size:38px;line-height:1;color:#EADCB6;transition:transform .18s cubic-bezier(.2,1.6,.4,1), color .18s;
@@ -246,7 +239,6 @@ textarea.input{resize:none;line-height:1.75;}
 .stars button.pop{transform:scale(1.35) rotate(12deg);}
 .stars-note{text-align:center;font-size:13.5px;color:var(--ink-soft);min-height:1.7em;}
 
-/* 保存ボタン */
 .save-btn{
   width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
   background:linear-gradient(135deg,#FFDF8E 0%,var(--gold) 55%,#D69A20 100%);
@@ -259,22 +251,99 @@ textarea.input{resize:none;line-height:1.75;}
 .cancel-edit{display:block;width:100%;text-align:center;font-size:14px;color:var(--ink-soft);padding:14px 0 0;text-decoration:underline;}
 
 /* ============================================================
-   6. 一覧（カード）
+   6. カレンダー（ここがホーム画面）
    ============================================================ */
+.cal-head{
+  display:flex;align-items:center;gap:8px;
+  background:var(--white);border-radius:var(--r-lg);box-shadow:var(--shadow);
+  border:1.5px solid rgba(227,174,60,.16);
+  padding:10px 12px;margin-bottom:14px;
+}
+.cal-head .nav{
+  width:46px;height:46px;flex:none;border-radius:50%;
+  background:var(--cream-2);color:var(--gold-deep);font-size:22px;font-weight:700;
+  display:grid;place-items:center;transition:transform .16s, background .2s;
+}
+.cal-head .nav:active{transform:scale(.9);background:var(--butter);}
+.cal-title{
+  flex:1;text-align:center;font-family:var(--font-display);font-weight:900;
+  font-size:21px;color:var(--gold-deep);line-height:1.25;
+}
+.cal-title small{display:block;font-size:11.5px;font-weight:400;color:var(--ink-soft);letter-spacing:.16em;}
+.to-today{
+  display:block;margin:-6px auto 14px;font-size:13.5px;color:var(--gold-deep);
+  background:var(--white);border:2px solid var(--butter);border-radius:999px;
+  padding:6px 18px;font-weight:700;box-shadow:0 4px 12px rgba(190,143,40,.14);
+}
+
+.cal-wrap{
+  background:var(--white);border-radius:var(--r-lg);box-shadow:var(--shadow);
+  border:1.5px solid rgba(227,174,60,.16);padding:12px 10px 14px;margin-bottom:16px;
+}
+.week-row{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:6px;}
+.week-row span{
+  text-align:center;font-family:var(--font-display);font-weight:700;font-size:12.5px;color:var(--ink-soft);
+}
+.week-row span.sun{color:#D98A8A;}
+.week-row span.sat{color:#8AA6C4;}
+
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;}
+.cal-grid .pad{aspect-ratio:3/4;}
+.day{
+  position:relative;aspect-ratio:3/4;border-radius:12px;overflow:hidden;
+  background:var(--cream-2);border:1.5px solid rgba(227,174,60,.14);
+  display:block;padding:0;transition:transform .16s, box-shadow .2s;
+  animation:popIn .34s cubic-bezier(.2,1.3,.4,1) both;
+}
+.day:active{transform:scale(.92);box-shadow:var(--shadow);}
+.day img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.day .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.72) 0 34%, rgba(0,0,0,0) 62%);}
+.day .dnum{
+  position:absolute;top:2px;left:0;right:0;text-align:center;
+  font-family:var(--font-display);font-weight:700;font-size:14px;color:var(--ink);
+  text-shadow:0 1px 2px rgba(255,255,255,.9);
+}
+.day.sun .dnum{color:#C97878;}
+.day.sat .dnum{color:#7F9CBC;}
+.day .dress{position:absolute;left:50%;top:56%;transform:translate(-50%,-50%);width:64%;opacity:.85;}
+.day .mk{
+  position:absolute;bottom:2px;left:0;right:0;text-align:center;
+  font-size:11px;color:var(--gold);line-height:1;text-shadow:0 1px 3px rgba(255,255,255,.95);
+}
+.day.has{background:linear-gradient(160deg,#FFF8E6,#FFE9A8);border-color:rgba(227,174,60,.34);}
+.day.today{border:2.5px solid var(--gold);box-shadow:0 0 0 3px rgba(227,174,60,.18);}
+.day.today .dnum{color:var(--gold-deep);font-weight:900;font-size:15px;}
+.day.other{opacity:.34;}
+
+/* 今月のまとめ */
+.stat-card{
+  background:linear-gradient(135deg,#FFF9EA,#FFEFC6);
+  border:1.5px solid rgba(227,174,60,.26);border-radius:var(--r-lg);
+  box-shadow:var(--shadow);padding:16px 14px;margin-bottom:16px;
+}
+.stat-card h3{font-size:15px;color:var(--gold-deep);text-align:center;margin-bottom:10px;}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.stat-row div{text-align:center;background:rgba(255,255,255,.72);border-radius:18px;padding:10px 4px;}
+.stat-row b{display:block;font-family:var(--font-display);font-weight:900;font-size:26px;color:var(--gold-deep);line-height:1.15;}
+.stat-row small{font-size:12px;color:var(--ink-soft);}
+
+/* 今日をきろく */
+.today-btn{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
+  background:linear-gradient(135deg,#FFDF8E 0%,var(--gold) 55%,#D69A20 100%);
+  color:#5A4210;font-family:var(--font-display);font-weight:900;font-size:19px;
+  border-radius:999px;padding:16px;box-shadow:var(--shadow-lift);margin-bottom:18px;
+  transition:transform .16s;
+}
+.today-btn:active{transform:scale(.965);}
+.today-btn svg{width:24px;flex:none;}
+
+/* さがす */
 .search-bar{
   background:var(--white);border-radius:var(--r-lg);box-shadow:var(--shadow);
-  padding:14px 16px 16px;margin-bottom:18px;border:1.5px solid rgba(227,174,60,.16);
+  padding:14px 16px;margin-bottom:18px;border:1.5px solid rgba(227,174,60,.16);
 }
-.search-row{display:flex;gap:9px;}
-.search-row .input{padding:11px 13px;font-size:15.5px;}
-.search-row .input.month{max-width:47%;}
-.filter-chips{display:flex;gap:7px;margin-top:11px;overflow-x:auto;padding-bottom:2px;}
-.filter-chips::-webkit-scrollbar{display:none;}
-.filter-chips .chip{flex:none;}
-.filter-chips .chip.active{background:var(--gold);border-color:var(--gold);color:var(--white);}
-
 .result-note{font-size:13.5px;color:var(--ink-soft);margin:0 4px 12px;}
-
 .cards{display:grid;gap:16px;}
 .entry-card{
   position:relative;border-radius:var(--r-lg);overflow:hidden;background:var(--white);
@@ -288,10 +357,6 @@ textarea.input{resize:none;line-height:1.75;}
 .entry-card .ph img{width:100%;height:100%;object-fit:cover;display:block;}
 .entry-card .ph .noimg{position:absolute;inset:0;display:grid;place-items:center;}
 .entry-card .ph .noimg svg{width:70px;opacity:.75;}
-.entry-card .ph .n{
-  position:absolute;bottom:9px;right:10px;background:rgba(255,255,255,.9);color:var(--gold-deep);
-  font-size:12px;font-weight:700;border-radius:999px;padding:3px 10px;
-}
 .entry-card .body{padding:13px 16px 15px;display:flex;align-items:flex-start;gap:12px;}
 .entry-card .date{
   font-family:var(--font-display);font-weight:900;color:var(--gold-deep);
@@ -305,19 +370,16 @@ textarea.input{resize:none;line-height:1.75;}
 .entry-card .who{font-size:13.5px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .entry-card .rate{color:var(--gold);font-size:15px;letter-spacing:2px;margin-top:2px;}
 
-/* 何もないとき */
 .empty{text-align:center;padding:38px 20px 30px;}
 .empty svg{width:118px;animation:dressSway 4s ease-in-out infinite;}
 .empty p{font-family:var(--font-display);font-weight:700;color:var(--gold-deep);font-size:18px;margin:16px 0 6px;}
 .empty small{color:var(--ink-soft);font-size:14px;}
-.empty .go{margin-top:20px;display:inline-block;background:var(--gold);color:#fff;font-weight:700;
-  border-radius:999px;padding:13px 28px;box-shadow:var(--shadow);}
 
 .backup{text-align:center;margin:26px 0 6px;font-size:13px;color:var(--ink-soft);}
 .backup button{text-decoration:underline;color:var(--ink-soft);font-size:13px;padding:6px 8px;}
 
 /* ============================================================
-   7. アルバム（雑誌レイアウト）
+   7. アルバム（そのまま）
    ============================================================ */
 .mag{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
 .mag figure{
@@ -398,6 +460,12 @@ textarea.input{resize:none;line-height:1.75;}
 .sheet-actions button{flex:1;border-radius:999px;padding:14px;font-family:var(--font-display);font-weight:700;font-size:16px;}
 .btn-edit{background:var(--butter);color:var(--gold-deep);}
 .btn-del{background:var(--white);color:#C77A7A;border:2px solid rgba(199,122,122,.34);}
+.entry-block + .entry-block{margin-top:26px;padding-top:22px;border-top:2px dashed rgba(227,174,60,.3);}
+.sheet-add{
+  display:block;width:100%;text-align:center;margin-top:18px;
+  background:var(--white);border:2px solid var(--butter);border-radius:999px;
+  padding:13px;color:var(--gold-deep);font-family:var(--font-display);font-weight:700;font-size:15.5px;
+}
 
 /* ライトボックス */
 #lightbox{
@@ -439,7 +507,6 @@ textarea.input{resize:none;line-height:1.75;}
 }
 .praise-sub{font-size:14px;color:var(--ink-soft);margin-top:6px;}
 
-/* トースト */
 #toast{
   position:fixed;left:50%;bottom:calc(var(--tab-h) + 18px);transform:translate(-50%,20px);
   z-index:70;background:var(--white);color:var(--gold-deep);font-weight:700;font-size:15px;
@@ -448,12 +515,6 @@ textarea.input{resize:none;line-height:1.75;}
 }
 #toast.on{opacity:1;visibility:visible;transform:translate(-50%,0);}
 
-/* 画面が広いとき */
-@media (min-width:560px){
-  .cards{grid-template-columns:1fr 1fr;}
-  .entry-card .ph{aspect-ratio:1/1;}
-}
-/* 動きを控えたい設定のとき */
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;}
   #ambient{display:none;}
@@ -462,7 +523,7 @@ textarea.input{resize:none;line-height:1.75;}
 </head>
 <body>
 
-<!-- ドレスのシンボル（アプリ全体で使い回す） -->
+<!-- ドレスのシンボル -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="ico-dress" viewBox="0 0 200 240">
     <g fill="none" stroke="#E3AE3C" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
@@ -504,9 +565,54 @@ textarea.input{resize:none;line-height:1.75;}
 </header>
 
 <main>
-  <!-- ============ きろく ============ -->
-  <section class="view is-active" id="view-write">
-    <h2 class="view-title">今日のきろく</h2>
+  <!-- ============ カレンダー（ホーム） ============ -->
+  <section class="view is-active" id="view-cal">
+
+    <div class="cal-head">
+      <button class="nav" id="prevM" aria-label="前の月">‹</button>
+      <div class="cal-title" id="calTitle">—</div>
+      <button class="nav" id="nextM" aria-label="次の月">›</button>
+    </div>
+    <button class="to-today" id="toToday" hidden>今月にもどる</button>
+
+    <div class="cal-wrap">
+      <div class="week-row">
+        <span class="sun">日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span class="sat">土</span>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+
+    <button class="today-btn" id="todayBtn">
+      <svg viewBox="0 0 200 240"><use href="#ico-dress"/></svg>
+      今日をきろくする
+    </button>
+
+    <div class="stat-card">
+      <h3 id="statTitle">今月の記録</h3>
+      <div class="stat-row">
+        <div><b id="stDays">0</b><small>👗 記録した日</small></div>
+        <div><b id="stPhotos">0</b><small>📷 写真</small></div>
+        <div><b id="stFav">0</b><small>⭐ お気に入り</small></div>
+      </div>
+    </div>
+
+    <div class="search-bar">
+      <div class="field-label">🔍 場所でさがす</div>
+      <input class="input" type="search" id="sPlace" placeholder="カフェ・お仕事…" autocomplete="off">
+    </div>
+
+    <p class="result-note" id="resultNote"></p>
+    <div class="cards" id="cards"></div>
+
+    <div class="backup">
+      <button id="btnExport">バックアップを書き出す</button>・<button id="btnImport">読み込む</button>
+      <input type="file" id="fImport" accept="application/json" hidden>
+    </div>
+  </section>
+
+  <!-- ============ きろく（日付をタップすると開きます） ============ -->
+  <section class="view" id="view-write">
+    <h2 class="view-title" id="writeTitle">この日のきろく</h2>
     <p class="view-lead" id="writeLead">30秒でおしまい。気軽に残そう😊</p>
 
     <div class="card">
@@ -561,36 +667,7 @@ textarea.input{resize:none;line-height:1.75;}
       <svg viewBox="0 0 200 240"><use href="#ico-dress"/></svg>
       <span id="saveLabel">この日を保存する</span>
     </button>
-    <button class="cancel-edit" id="cancelEdit" hidden>編集をやめて新しく書く</button>
-  </section>
-
-  <!-- ============ いちらん ============ -->
-  <section class="view" id="view-list">
-    <h2 class="view-title">おしゃれの記録</h2>
-    <p class="view-lead">カードをタップすると、写真も大きく見られます。</p>
-
-    <div class="search-bar">
-      <div class="search-row">
-        <input class="input month" type="month" id="sMonth" aria-label="月でしぼる">
-        <input class="input" type="search" id="sPlace" placeholder="場所でさがす" autocomplete="off">
-      </div>
-      <div class="filter-chips" id="starFilter">
-        <button class="chip active" data-min="0">すべて</button>
-        <button class="chip" data-min="5">★5だけ</button>
-        <button class="chip" data-min="4">★4以上</button>
-        <button class="chip" data-min="3">★3以上</button>
-        <button class="chip" data-reset="1">しぼり込みを消す</button>
-      </div>
-    </div>
-
-    <p class="result-note" id="resultNote"></p>
-    <div class="cards" id="cards"></div>
-    <div id="listEmpty"></div>
-
-    <div class="backup">
-      <button id="btnExport">バックアップを書き出す</button>・<button id="btnImport">読み込む</button>
-      <input type="file" id="fImport" accept="application/json" hidden>
-    </div>
+    <button class="cancel-edit" id="cancelEdit">やめてカレンダーにもどる</button>
   </section>
 
   <!-- ============ アルバム ============ -->
@@ -609,13 +686,15 @@ textarea.input{resize:none;line-height:1.75;}
 
 <!-- ===== タブバー ===== -->
 <nav id="tabbar">
-  <button data-tab="write" class="active">
-    <svg viewBox="0 0 200 240"><use href="#ico-dress"/></svg>きろく
-  </button>
-  <button data-tab="list">
+  <button data-tab="cal" class="active">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="3" y="4" width="18" height="16" rx="4"/><path d="M3 10h18M9 20V10"/>
-    </svg>いちらん
+      <rect x="3" y="4.5" width="18" height="16" rx="4"/><path d="M3 9.5h18M8 2.6v3.4M16 2.6v3.4"/>
+      <circle cx="8.4" cy="13.4" r="1.1" fill="currentColor" stroke="none"/>
+      <circle cx="12" cy="13.4" r="1.1" fill="currentColor" stroke="none"/>
+      <circle cx="15.6" cy="13.4" r="1.1" fill="currentColor" stroke="none"/>
+      <circle cx="8.4" cy="17" r="1.1" fill="currentColor" stroke="none"/>
+      <circle cx="12" cy="17" r="1.1" fill="currentColor" stroke="none"/>
+    </svg>カレンダー
   </button>
   <button data-tab="album">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -655,14 +734,13 @@ textarea.input{resize:none;line-height:1.75;}
 const $  = (s, r=document) => r.querySelector(s);
 const $$ = (s, r=document) => [...r.querySelectorAll(s)];
 const WEEK = ["日","月","火","水","木","金","土"];
-const todayStr = () => {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-};
+const pad2 = n => String(n).padStart(2,"0");
+const ymd = d => `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+const todayStr = () => ymd(new Date());
 const parseDate = s => { const [y,m,d] = s.split("-").map(Number); return new Date(y, m-1, d); };
 const fmtLong  = s => { const d = parseDate(s); return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${WEEK[d.getDay()]}）`; };
 const fmtShort = s => { const d = parseDate(s); return {my:`${d.getMonth()+1}月`, day:d.getDate(), w:WEEK[d.getDay()]}; };
-const fmtMag   = s => { const d = parseDate(s); return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,"0")}.${String(d.getDate()).padStart(2,"0")}`; };
+const fmtMag   = s => { const d = parseDate(s); return `${d.getFullYear()}.${pad2(d.getMonth()+1)}.${pad2(d.getDate())}`; };
 const escapeHtml = t => String(t).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
 function toast(msg){
@@ -672,7 +750,7 @@ function toast(msg){
 }
 
 /* ============================================================
-   B. 季節の空気（背景とモチーフ）
+   B. 季節の空気
    ============================================================ */
 const SEASONS = {
   spring:{cls:"s-spring", badge:"🌸 春", motifs:["🌸","🌷","💛","✨","💗","⭐️"]},
@@ -698,8 +776,6 @@ function applySeason(){
     box.appendChild(el);
   }
 }
-
-/* オープニングのキラキラ */
 function buildBurst(){
   const box = $("#burst");
   const marks = ["✨","⭐️","💫","💗","✨","⭐️","💛","✨","💫","💗"];
@@ -719,7 +795,7 @@ function buildBurst(){
    C. データの保管（IndexedDB）
    ============================================================ */
 const DB_NAME = "coordeDiary", STORE = "entries";
-let db = null, entries = [];
+let db = null, entries = [], byDate = new Map();
 
 function openDB(){
   return new Promise((resolve, reject)=>{
@@ -744,7 +820,12 @@ function dbDel(id){
 }
 async function reload(){
   entries = await dbAll();
-  entries.sort((a,b)=> a.date === b.date ? (b.createdAt||0)-(a.createdAt||0) : (a.date < b.date ? 1 : -1));
+  entries.sort((a,b)=> a.date === b.date ? (a.createdAt||0)-(b.createdAt||0) : (a.date < b.date ? 1 : -1));
+  byDate = new Map();
+  entries.forEach(e=>{
+    if(!byDate.has(e.date)) byDate.set(e.date, []);
+    byDate.get(e.date).push(e);
+  });
 }
 
 /* ============================================================
@@ -754,7 +835,7 @@ const MAX_PHOTOS = 5, MAX_SIDE = 1280, TARGET_BYTES = 380000;
 
 async function loadBitmap(file){
   if(window.createImageBitmap){
-    try{ return await createImageBitmap(file, {imageOrientation:"from-image"}); }catch(e){ /* 次の方法へ */ }
+    try{ return await createImageBitmap(file, {imageOrientation:"from-image"}); }catch(e){}
   }
   return await new Promise((res, rej)=>{
     const url = URL.createObjectURL(file);
@@ -781,7 +862,69 @@ async function compress(file){
 }
 
 /* ============================================================
-   E. 入力フォーム
+   E. カレンダー（ホーム画面）
+   ============================================================ */
+let viewY, viewM;   // 表示している年・月（0はじまり）
+
+function setMonth(y, m){
+  viewY = y; viewM = m;
+  renderCalendar();
+}
+function renderCalendar(){
+  const now = new Date();
+  const isThis = (viewY === now.getFullYear() && viewM === now.getMonth());
+  $("#calTitle").innerHTML = `${viewY}年 ${viewM+1}月<small>${["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"][viewM]}</small>`;
+  $("#toToday").hidden = isThis;
+
+  const first = new Date(viewY, viewM, 1);
+  const lead = first.getDay();
+  const days = new Date(viewY, viewM+1, 0).getDate();
+  const t = todayStr();
+
+  let html = "";
+  for(let i=0;i<lead;i++) html += `<div class="pad"></div>`;
+  for(let d=1; d<=days; d++){
+    const ds = `${viewY}-${pad2(viewM+1)}-${pad2(d)}`;
+    const list = byDate.get(ds) || [];
+    const wd = new Date(viewY, viewM, d).getDay();
+    const photo = list.flatMap(e=>e.photos||[])[0];
+    const maxStar = list.reduce((a,e)=>Math.max(a, e.stars||0), 0);
+    const cls = ["day"];
+    if(list.length) cls.push("has");
+    if(ds === t) cls.push("today");
+    if(wd === 0) cls.push("sun"); if(wd === 6) cls.push("sat");
+    const mark = list.length ? (maxStar ? "★" : "•") : "";
+    html += `<button class="${cls.join(" ")}" data-date="${ds}" style="animation-delay:${Math.min(d*10,260)}ms">
+      ${photo ? `<img src="${photo}" alt=""><div class="veil"></div>` : ""}
+      ${(!photo && list.length) ? `<svg class="dress" viewBox="0 0 200 240"><use href="#ico-dress"/></svg>` : ""}
+      <span class="dnum">${d}</span>
+      <span class="mk">${mark}</span>
+    </button>`;
+  }
+  $("#calGrid").innerHTML = html;
+  $$("#calGrid .day").forEach(b => b.onclick = ()=>onDayTap(b.dataset.date));
+
+  renderStats(days);
+}
+function renderStats(daysInMonth){
+  const pre = `${viewY}-${pad2(viewM+1)}-`;
+  const list = entries.filter(e => e.date.startsWith(pre));
+  const dayset = new Set(list.map(e=>e.date));
+  const photos = list.reduce((a,e)=>a+(e.photos||[]).length, 0);
+  const fav = list.filter(e=>(e.stars||0) === 5).length;
+  $("#statTitle").textContent = `${viewM+1}月の記録`;
+  $("#stDays").textContent = dayset.size;
+  $("#stPhotos").textContent = photos;
+  $("#stFav").textContent = fav;
+}
+function onDayTap(ds){
+  const list = byDate.get(ds) || [];
+  if(list.length) openSheet(ds);
+  else openWrite(ds, null);
+}
+
+/* ============================================================
+   F. 入力フォーム
    ============================================================ */
 let draft = { id:null, photos:[], stars:0 };
 const STAR_WORDS = ["タップで選べます","記録できたね😊","いい感じ🌼","お気に入り✨","とっても素敵💛","最高のコーデ🌟"];
@@ -804,29 +947,28 @@ function renderThumbs(){
     `<div class="thumb"><img src="${src}" alt="コーデ写真${i+1}"><button class="del" data-i="${i}" aria-label="削除">✕</button></div>`
   ).join("");
 }
-function resetForm(){
-  draft = { id:null, photos:[], stars:0 };
-  setDate(todayStr());
-  $("#fPlace").value = ""; $("#fWho").value = ""; $("#fMemo").value = "";
-  renderStars(); renderThumbs();
-  $("#saveLabel").textContent = "この日を保存する";
-  $("#cancelEdit").hidden = true;
-  $("#writeLead").textContent = "30秒でおしまい。気軽に残そう😊";
-  renderSuggestChips();
-}
-function loadForEdit(e){
-  draft = { id:e.id, photos:[...(e.photos||[])], stars:e.stars||0 };
-  setDate(e.date);
-  $("#fPlace").value = e.place || ""; $("#fWho").value = e.who || ""; $("#fMemo").value = e.memo || "";
-  renderStars(); renderThumbs();
-  $("#saveLabel").textContent = "この記録を上書きする";
-  $("#cancelEdit").hidden = false;
-  $("#writeLead").textContent = "この日の記録を直しています📝";
+/* 新規（e=null）でも 編集（e=記録）でも、この1つで開きます */
+function openWrite(dateStr, e){
+  if(e){
+    draft = { id:e.id, photos:[...(e.photos||[])], stars:e.stars||0 };
+    setDate(e.date);
+    $("#fPlace").value = e.place || ""; $("#fWho").value = e.who || ""; $("#fMemo").value = e.memo || "";
+    $("#writeTitle").textContent = "きろくをなおす";
+    $("#writeLead").textContent = "この日の記録を直しています📝";
+    $("#saveLabel").textContent = "この記録を上書きする";
+  }else{
+    draft = { id:null, photos:[], stars:0 };
+    setDate(dateStr || todayStr());
+    $("#fPlace").value = ""; $("#fWho").value = ""; $("#fMemo").value = "";
+    const isToday = (dateStr || todayStr()) === todayStr();
+    $("#writeTitle").textContent = isToday ? "今日のきろく" : "この日のきろく";
+    $("#writeLead").textContent = "30秒でおしまい。気軽に残そう😊";
+    $("#saveLabel").textContent = "この日を保存する";
+  }
+  renderStars(); renderThumbs(); renderSuggestChips();
   switchTab("write");
-  window.scrollTo({top:0, behavior:"smooth"});
 }
 
-/* よく使う言葉をチップで出す（入力を短くするため） */
 function renderSuggestChips(){
   const pick = key => {
     const seen = [];
@@ -867,13 +1009,14 @@ async function save(){
     return;
   }
   await reload();
-  resetForm();
-  renderList(); renderAlbum();
+  const d = parseDate(date);
+  setMonth(d.getFullYear(), d.getMonth());
+  renderAlbum(); renderSearch();
   celebrate(wasEdit);
 }
 
 /* ============================================================
-   F. ごほうび演出（紙吹雪・キラキラ・ドレスがくるっと）
+   G. ごほうび演出
    ============================================================ */
 const cv = $("#confetti"), cx = cv.getContext("2d");
 let pieces = [], animId = null;
@@ -919,8 +1062,7 @@ function celebrate(wasEdit){
       rot: Math.random()*Math.PI*2,
       vr: (Math.random()-0.5)*0.28,
       c: colors[i % colors.length],
-      shape: i%7===0 ? "heart" : i%3===0 ? "star" : "rect",
-      life: 0
+      shape: i%7===0 ? "heart" : i%3===0 ? "star" : "rect"
     });
   }
   cancelAnimationFrame(animId);
@@ -929,7 +1071,7 @@ function celebrate(wasEdit){
     const t = now - start;
     cx.clearRect(0,0,innerWidth,innerHeight);
     pieces.forEach(o=>{
-      o.vy += o.g; o.x += o.vx; o.y += o.vy; o.vx *= 0.995; o.rot += o.vr; o.life = t;
+      o.vy += o.g; o.x += o.vx; o.y += o.vy; o.vx *= 0.995; o.rot += o.vr;
       cx.globalAlpha = Math.max(0, 1 - t/2400);
       cx.fillStyle = o.c;
       if(o.shape === "rect"){
@@ -945,48 +1087,32 @@ function celebrate(wasEdit){
 
   setTimeout(()=>{
     p.classList.remove("on"); cv.classList.remove("on");
-    switchTab("list");
+    switchTab("cal");
   }, 2100);
 }
 
 /* ============================================================
-   G. 一覧
+   H. 場所でさがす
    ============================================================ */
-const filter = { month:"", place:"", min:0 };
-
-function filtered(){
-  return entries.filter(e=>{
-    if(filter.month && !e.date.startsWith(filter.month)) return false;
-    if(filter.place && !(e.place||"").toLowerCase().includes(filter.place.toLowerCase())) return false;
-    if(filter.min && (e.stars||0) < filter.min) return false;
-    return true;
-  });
-}
-function renderList(){
-  const list = filtered(), box = $("#cards"), empty = $("#listEmpty");
-  const hasFilter = filter.month || filter.place || filter.min;
-  $("#resultNote").textContent = entries.length ? `${list.length}件${hasFilter ? "（しぼり込み中）" : ""}` : "";
-
+let searchWord = "";
+function renderSearch(){
+  const box = $("#cards"), note = $("#resultNote");
+  if(!searchWord){ box.innerHTML = ""; note.textContent = ""; return; }
+  const list = entries.filter(e => (e.place||"").toLowerCase().includes(searchWord.toLowerCase()));
+  note.textContent = `「${searchWord}」の記録 ${list.length}件`;
   if(!list.length){
-    box.innerHTML = "";
-    empty.innerHTML = entries.length
-      ? `<div class="empty"><svg viewBox="0 0 200 240"><use href="#ico-dress"/></svg>
-           <p>見つかりませんでした</p><small>しぼり込みを消すと、ぜんぶ見られます😊</small></div>`
-      : `<div class="empty"><svg viewBox="0 0 200 240"><use href="#ico-dress"/></svg>
-           <p>まだ記録がありません</p><small>今日のコーデから、はじめてみよう🌷</small>
-           <div><button class="go" id="goWrite">今日をきろくする</button></div></div>`;
-    const g = $("#goWrite"); if(g) g.onclick = ()=>switchTab("write");
+    box.innerHTML = `<div class="empty"><svg viewBox="0 0 200 240"><use href="#ico-dress"/></svg>
+      <p>見つかりませんでした</p><small>ちがう言葉でも さがしてみてね😊</small></div>`;
     return;
   }
-  empty.innerHTML = "";
   box.innerHTML = list.map((e,i)=>{
     const d = fmtShort(e.date);
     const n = (e.photos||[]).length;
     const ph = n
       ? `<img src="${e.photos[0]}" alt="${escapeHtml(e.place||"コーデ")}の写真" loading="lazy">`
       : `<div class="noimg"><svg viewBox="0 0 200 240"><use href="#ico-dress"/></svg></div>`;
-    return `<button class="entry-card" data-id="${e.id}" style="animation-delay:${Math.min(i*45,420)}ms">
-      <div class="ph">${ph}${n>1?`<span class="n">📷 ${n}枚</span>`:""}</div>
+    return `<button class="entry-card" data-date="${e.date}" style="animation-delay:${Math.min(i*45,420)}ms">
+      <div class="ph">${ph}</div>
       <div class="body">
         <div class="date">${d.my}<b>${d.day}</b>${d.w}</div>
         <div class="meta">
@@ -997,11 +1123,11 @@ function renderList(){
       </div>
     </button>`;
   }).join("");
-  $$("#cards .entry-card").forEach(b => b.onclick = ()=>openSheet(b.dataset.id));
+  $$("#cards .entry-card").forEach(b => b.onclick = ()=>openSheet(b.dataset.date));
 }
 
 /* ============================================================
-   H. アルバム（雑誌レイアウト）
+   I. アルバム
    ============================================================ */
 function allPhotos(){
   const out = [];
@@ -1029,62 +1155,65 @@ function renderAlbum(){
 }
 
 /* ============================================================
-   I. 詳細シート
+   J. その日の詳細シート
    ============================================================ */
-let sheetId = null;
+function openSheet(ds){
+  const list = byDate.get(ds) || [];
+  if(!list.length) return;
 
-function openSheet(id){
-  const e = entries.find(x=>x.id===id); if(!e) return;
-  sheetId = id;
-  const photos = e.photos || [];
-  $("#sheet").innerHTML = `
-    <div class="grip"></div>
-    ${photos.length ? `
-      <div class="swiper" id="sheetSwiper">
-        ${photos.map((s,i)=>`<div><img src="${s}" alt="コーデ写真${i+1}"></div>`).join("")}
+  const blocks = list.map((e, bi)=>{
+    const photos = e.photos || [];
+    return `<div class="entry-block">
+      ${photos.length ? `
+        <div class="swiper" id="sw${bi}">
+          ${photos.map((s,i)=>`<div><img src="${s}" alt="コーデ写真${i+1}"></div>`).join("")}
+        </div>
+        ${photos.length>1 ? `<div class="dots" id="dt${bi}">${photos.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</div>` : `<div style="height:8px"></div>`}
+      ` : ""}
+      ${bi===0 ? `<h3>${fmtLong(e.date)}</h3>` : `<h3 style="font-size:17px">この日のもう1つの記録</h3>`}
+      <div class="s-rate">${e.stars ? "★".repeat(e.stars) + "☆".repeat(5-e.stars) : "☆☆☆☆☆"}</div>
+      <div class="s-row"><span>📍 場所</span><span>${escapeHtml(e.place || "—")}</span></div>
+      <div class="s-row"><span>😊 会った人</span><span>${escapeHtml(e.who || "—")}</span></div>
+      ${e.memo ? `<div class="s-memo">${escapeHtml(e.memo)}</div>` : ""}
+      <div class="sheet-actions">
+        <button class="btn-edit" data-edit="${e.id}">なおす</button>
+        <button class="btn-del" data-del="${e.id}">削除する</button>
       </div>
-      ${photos.length>1 ? `<div class="dots" id="sheetDots">${photos.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</div>` : `<div style="height:8px"></div>`}
-    ` : ""}
-    <h3>${fmtLong(e.date)}</h3>
-    <div class="s-rate">${e.stars ? "★".repeat(e.stars) + "☆".repeat(5-e.stars) : "☆☆☆☆☆"}</div>
-    <div class="s-row"><span>📍 場所</span><span>${escapeHtml(e.place || "—")}</span></div>
-    <div class="s-row"><span>😊 会った人</span><span>${escapeHtml(e.who || "—")}</span></div>
-    ${e.memo ? `<div class="s-memo">${escapeHtml(e.memo)}</div>` : ""}
-    <div class="sheet-actions">
-      <button class="btn-edit" id="sEdit">なおす</button>
-      <button class="btn-del" id="sDel">削除する</button>
     </div>`;
+  }).join("");
+
+  $("#sheet").innerHTML = `<div class="grip"></div>${blocks}
+    <button class="sheet-add" data-add="${ds}">＋ この日にもう1つ記録する</button>`;
   $("#sheet").classList.add("open");
   $("#backdrop").classList.add("open");
 
-  if(photos.length){
-    const sw = $("#sheetSwiper");
-    sw.onclick = () => {
-      const idx = Math.round(sw.scrollLeft / sw.clientWidth);
-      openLightbox(id, idx);
-    };
-    if(photos.length>1){
-      const dots = $$("#sheetDots i");
+  list.forEach((e, bi)=>{
+    const sw = $("#sw"+bi); if(!sw) return;
+    sw.onclick = () => openLightbox(e.id, Math.round(sw.scrollLeft / sw.clientWidth));
+    const dots = $$("#dt"+bi+" i");
+    if(dots.length){
       sw.onscroll = () => {
         const idx = Math.round(sw.scrollLeft / sw.clientWidth);
         dots.forEach((d,i)=> d.classList.toggle("on", i===idx));
       };
     }
-  }
-  $("#sEdit").onclick = () => { closeSheet(); loadForEdit(e); };
-  $("#sDel").onclick = async () => {
+  });
+  $$("#sheet [data-edit]").forEach(b => b.onclick = ()=>{
+    const e = entries.find(x=>x.id===b.dataset.edit);
+    closeSheet(); if(e) openWrite(e.date, e);
+  });
+  $$("#sheet [data-del]").forEach(b => b.onclick = async ()=>{
     if(!confirm("この記録を削除します。よろしいですか？")) return;
-    await dbDel(id); await reload();
-    closeSheet(); renderList(); renderAlbum(); toast("削除しました");
-  };
+    await dbDel(b.dataset.del); await reload();
+    closeSheet(); renderCalendar(); renderAlbum(); renderSearch(); toast("削除しました");
+  });
+  $("#sheet [data-add]").onclick = ()=>{ closeSheet(); openWrite(ds, null); };
 }
 function closeSheet(){
-  sheetId = null;
   $("#sheet").classList.remove("open");
   $("#backdrop").classList.remove("open");
 }
 
-/* ライトボックス */
 function openLightbox(id, index){
   const e = entries.find(x=>x.id===id); if(!e) return;
   const photos = e.photos || []; if(!photos.length) return;
@@ -1099,11 +1228,11 @@ function openLightbox(id, index){
 $("#lbClose").onclick = ()=> $("#lightbox").classList.remove("open");
 
 /* ============================================================
-   J. バックアップ
+   K. バックアップ
    ============================================================ */
 function exportJSON(){
   if(!entries.length){ toast("まだ記録がありません"); return; }
-  const blob = new Blob([JSON.stringify({app:"coorde-diary", version:1, entries}, null, 0)], {type:"application/json"});
+  const blob = new Blob([JSON.stringify({app:"coorde-diary", version:2, entries}, null, 0)], {type:"application/json"});
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = `コーデ日記_${todayStr()}.json`;
@@ -1120,7 +1249,7 @@ async function importJSON(file){
       if(!e || !e.id || !e.date) continue;
       await dbPut({photos:[], stars:0, ...e});
     }
-    await reload(); renderList(); renderAlbum(); renderSuggestChips();
+    await reload(); renderCalendar(); renderAlbum(); renderSearch(); renderSuggestChips();
     toast(`${list.length}件 読み込みました✨`);
   }catch(err){
     toast("読み込めませんでした。ファイルを確かめてね");
@@ -1128,19 +1257,28 @@ async function importJSON(file){
 }
 
 /* ============================================================
-   K. 画面の切り替え
+   L. 画面の切り替え
    ============================================================ */
 function switchTab(name){
   $$("#tabbar button").forEach(b => b.classList.toggle("active", b.dataset.tab === name));
-  ["write","list","album"].forEach(n => $("#view-"+n).classList.toggle("is-active", n === name));
+  ["cal","write","album"].forEach(n => $("#view-"+n).classList.toggle("is-active", n === name));
   window.scrollTo({top:0, behavior:"instant"});
 }
 
 /* ============================================================
-   L. 画面のイベント
+   M. 画面のイベント
    ============================================================ */
 $$("#tabbar button").forEach(b => b.onclick = ()=>switchTab(b.dataset.tab));
 $("#backdrop").onclick = closeSheet;
+
+$("#prevM").onclick = ()=>{ const d = new Date(viewY, viewM-1, 1); setMonth(d.getFullYear(), d.getMonth()); };
+$("#nextM").onclick = ()=>{ const d = new Date(viewY, viewM+1, 1); setMonth(d.getFullYear(), d.getMonth()); };
+$("#toToday").onclick = ()=>{ const n = new Date(); setMonth(n.getFullYear(), n.getMonth()); };
+$("#todayBtn").onclick = ()=>{
+  const t = todayStr();
+  const list = byDate.get(t) || [];
+  if(list.length) openSheet(t); else openWrite(t, null);
+};
 
 const onDate = e => setDate(e.target.value || todayStr());
 $("#fDate").onchange = onDate;
@@ -1148,7 +1286,7 @@ $("#fDate").oninput  = onDate;
 
 $$("#fStars button").forEach(b => b.onclick = () => {
   const v = Number(b.dataset.v);
-  draft.stars = (draft.stars === v) ? v-1 : v;   // 同じ星をもう一度押すと1つ減る
+  draft.stars = (draft.stars === v) ? v-1 : v;
   renderStars();
   b.classList.add("pop");
   setTimeout(()=>b.classList.remove("pop"), 220);
@@ -1180,28 +1318,15 @@ $("#thumbs").onclick = e => {
 };
 
 $("#saveBtn").onclick = save;
-$("#cancelEdit").onclick = () => { resetForm(); toast("新しく書けます😊"); };
+$("#cancelEdit").onclick = () => switchTab("cal");
 
-$("#sMonth").oninput = e => { filter.month = e.target.value; renderList(); };
-$("#sPlace").oninput = e => { filter.place = e.target.value.trim(); renderList(); };
-$$("#starFilter .chip").forEach(b => b.onclick = () => {
-  if(b.dataset.reset){
-    filter.month = ""; filter.place = ""; filter.min = 0;
-    $("#sMonth").value = ""; $("#sPlace").value = "";
-    $$("#starFilter .chip").forEach(x=>x.classList.remove("active"));
-    $('#starFilter .chip[data-min="0"]').classList.add("active");
-    renderList(); return;
-  }
-  filter.min = Number(b.dataset.min);
-  $$("#starFilter .chip[data-min]").forEach(x=>x.classList.toggle("active", x===b));
-  renderList();
-});
+$("#sPlace").oninput = e => { searchWord = e.target.value.trim(); renderSearch(); };
 
 $("#btnExport").onclick = exportJSON;
 $("#btnImport").onclick = ()=> $("#fImport").click();
 $("#fImport").onchange = e => { const f = e.target.files[0]; e.target.value=""; if(f) importJSON(f); };
 
-/* ホーム画面追加のための manifest（アイコンは同じフォルダのPNG） */
+/* ホーム画面追加のための manifest */
 (function addManifest(){
   try{
     const base = location.href.split("?")[0].split("#")[0];
@@ -1219,11 +1344,11 @@ $("#fImport").onchange = e => { const f = e.target.files[0]; e.target.value=""; 
     link.rel = "manifest";
     link.href = URL.createObjectURL(new Blob([JSON.stringify(m)], {type:"application/manifest+json"}));
     document.head.appendChild(link);
-  }catch(e){ /* 追加できなくても本体は動きます */ }
+  }catch(e){}
 })();
 
 /* ============================================================
-   M. はじまり
+   N. はじまり
    ============================================================ */
 (async function init(){
   applySeason();
@@ -1239,8 +1364,9 @@ $("#fImport").onchange = e => { const f = e.target.files[0]; e.target.value=""; 
   }catch(e){
     toast("データを開けませんでした");
   }
+  const n = new Date();
+  setMonth(n.getFullYear(), n.getMonth());
   renderSuggestChips();
-  renderList();
   renderAlbum();
 
   const splash = $("#splash");
