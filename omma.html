@@ -121,8 +121,38 @@
   }
   .photo:nth-child(odd){transform:rotate(-1.6deg)}
   .photo:nth-child(even){transform:rotate(1.4deg)}
-  .photo img{display:block;width:100%;height:auto}
-  .photo span{
+  .photo{opacity:0;transition:opacity 1.7s ease}
+  .photo.on{opacity:1}
+
+  /* the print itself breathes very slowly */
+  .frame{position:relative;display:block;overflow:hidden}
+  .frame img{
+    display:block;width:100%;height:auto;
+    transform:scale(1.10);
+    transition:transform 2.8s cubic-bezier(.22,.61,.36,1);
+    will-change:transform;
+  }
+  .photo.on .frame img{
+    transform:scale(1.045);
+    animation:breath 20s ease-in-out 2.8s infinite;
+  }
+  @keyframes breath{
+    0%,100%{transform:scale(1.045)}
+    50%{transform:scale(1.075)}
+  }
+  /* a soft light drifts across the print */
+  .frame::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(105deg,transparent 32%,rgba(255,252,244,.42) 47%,rgba(255,248,236,.16) 56%,transparent 68%);
+    transform:translateX(-115%);
+    animation:sheen 15s ease-in-out 3.4s infinite;
+  }
+  @keyframes sheen{
+    0%{transform:translateX(-115%)}
+    36%{transform:translateX(115%)}
+    100%{transform:translateX(115%)}
+  }
+  .photo > span:last-child{
     display:block;text-align:center;margin-top:14px;
     font-family:"Klee One",serif;font-weight:600;font-size:.88rem;color:var(--ink-soft);
   }
@@ -217,6 +247,10 @@
   @media (prefers-reduced-motion:reduce){
     .petals{display:none}
     .lamp .glow,.lamp .core{animation:none}
+    .photo{opacity:1;transition:none}
+    .frame img{transform:none;transition:none}
+    .photo.on .frame img{transform:none;animation:none}
+    .frame::after{display:none}
     .reveal{opacity:1;transform:none;transition:none}
     html{scroll-behavior:auto}
   }
@@ -257,10 +291,10 @@
   <section>
     <div class="label reveal">おもいで</div>
     <div class="prints" id="prints">
-      <figure class="photo"><img src="photo1.jpg" alt="" onerror="this.closest('.photo').remove()"><span>この笑顔が、ずっと心に</span></figure>
-      <figure class="photo"><img src="photo2.jpg" alt="" onerror="this.closest('.photo').remove()"><span>やさしい笑顔のまま</span></figure>
-      <figure class="photo"><img src="photo3.jpg" alt="" onerror="this.closest('.photo').remove()"><span>あたたかい時間</span></figure>
-      <figure class="photo"><img src="photo4.jpg" alt="" onerror="this.closest('.photo').remove()"><span>大切な一枚</span></figure>
+      <figure class="photo"><span class="frame"><img src="photo1.jpg" alt="" onerror="this.closest('.photo').remove()"></span><span>この笑顔が、ずっと心に</span></figure>
+      <figure class="photo"><span class="frame"><img src="photo2.jpg" alt="" onerror="this.closest('.photo').remove()"></span><span>やさしい笑顔のまま</span></figure>
+      <figure class="photo"><span class="frame"><img src="photo3.jpg" alt="" onerror="this.closest('.photo').remove()"></span><span>あたたかい時間</span></figure>
+      <figure class="photo"><span class="frame"><img src="photo4.jpg" alt="" onerror="this.closest('.photo').remove()"></span><span>大切な一枚</span></figure>
     </div>
     <p class="nophoto" id="nophoto">写真はこれから加わります。</p>
   </section>
@@ -342,7 +376,7 @@
   var io = new IntersectionObserver(function(es){
     es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target); } });
   }, {threshold:0.15});
-  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  document.querySelectorAll('.reveal, .photo').forEach(function(el){ io.observe(el); });
 
   // year line fills with scroll
   var fill = document.getElementById('fill');
