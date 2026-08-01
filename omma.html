@@ -194,10 +194,10 @@
   <section>
     <div class="label reveal">おもいで</div>
     <div class="prints" id="prints">
-      <figure class="photo"><img src="photo1.jpg" alt="オンマの写真"><span>この笑顔が、ずっと心に</span></figure>
-      <figure class="photo"><img src="photo2.jpg" alt=""><span>みんなで過ごした日</span></figure>
-      <figure class="photo"><img src="photo3.jpg" alt=""><span>あたたかい時間</span></figure>
-      <figure class="photo"><img src="photo4.jpg" alt=""><span>大切な一枚</span></figure>
+      <figure class="photo"><img src="photo1.jpg" alt="" onerror="this.closest('.photo').remove()"><span>この笑顔が、ずっと心に</span></figure>
+      <figure class="photo"><img src="photo2.jpg" alt="" onerror="this.closest('.photo').remove()"><span>やさしい笑顔のまま</span></figure>
+      <figure class="photo"><img src="photo3.jpg" alt="" onerror="this.closest('.photo').remove()"><span>あたたかい時間</span></figure>
+      <figure class="photo"><img src="photo4.jpg" alt="" onerror="this.closest('.photo').remove()"><span>大切な一枚</span></figure>
     </div>
     <p class="nophoto" id="nophoto">写真はこれから加わります。</p>
   </section>
@@ -256,17 +256,24 @@
     }
   }
 
-  // hide photos that don't exist
-  var imgs = document.querySelectorAll('.photo img');
-  imgs.forEach(function(im){
-    im.addEventListener('error', function(){
-      var fig = im.closest('.photo');
-      if(fig) fig.remove();
-      if(document.querySelectorAll('.photo').length === 0){
-        document.getElementById('nophoto').style.display = 'block';
+  // sweep out any photo slot whose image failed or is empty
+  function sweep(){
+    document.querySelectorAll('.photo img').forEach(function(im){
+      if(im.complete && im.naturalWidth === 0){
+        var fig = im.closest('.photo');
+        if(fig) fig.remove();
       }
     });
-  });
+    if(document.querySelectorAll('.photo').length === 0){
+      document.getElementById('nophoto').style.display = 'block';
+    } else {
+      document.getElementById('nophoto').style.display = 'none';
+    }
+  }
+  sweep();
+  window.addEventListener('load', sweep);
+  setTimeout(sweep, 1200);
+  setTimeout(sweep, 3000);
 
   // scroll reveal
   var io = new IntersectionObserver(function(es){
