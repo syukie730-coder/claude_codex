@@ -164,6 +164,26 @@
 
   hr.rule{border:0;height:1px;background:rgba(201,122,130,.22);max-width:120px;margin:0 auto}
 
+  /* music box button */
+  #music{
+    position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:9;
+    display:inline-flex;align-items:center;gap:7px;
+    padding:11px 17px;border-radius:999px;
+    background:rgba(255,252,247,.94);
+    border:1px solid rgba(201,122,130,.34);
+    color:var(--rose);
+    font-family:"Shippori Mincho B1",serif;font-size:.82rem;letter-spacing:.08em;
+    box-shadow:0 6px 18px -8px rgba(74,58,62,.4);
+    cursor:pointer;-webkit-tap-highlight-color:transparent;
+    backdrop-filter:blur(6px);
+    transition:background .3s ease,color .3s ease;
+  }
+  #music:focus-visible{outline:2px solid var(--rose);outline-offset:3px}
+  #music.on{background:rgba(201,122,130,.94);color:#FFF8F1;border-color:transparent}
+  #music .dot{width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.55}
+  #music.on .dot{animation:pulse 1.9s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.35)}}
+
   @media (prefers-reduced-motion:reduce){
     .petals{display:none}
     .lamp .glow,.lamp .core{animation:none}
@@ -175,6 +195,8 @@
 <body>
 
 <div class="petals" id="petals" aria-hidden="true"></div>
+
+<button id="music" type="button" aria-pressed="false"><span class="dot"></span><span id="musicLabel">音楽をながす</span></button>
 
 <div class="wrap">
 
@@ -290,6 +312,123 @@
   }
   window.addEventListener('scroll', onScroll, {passive:true});
   onScroll();
+
+  /* ---------- music box (original, generated in the browser) ---------- */
+  var SEMI = {C:0,'C#':1,D:2,'D#':3,E:4,F:5,'F#':6,G:7,'G#':8,A:9,'A#':10,B:11};
+  function hz(name){
+    var m = name.match(/^([A-G]#?)(\d)$/);
+    var n = SEMI[m[1]] + (parseInt(m[2],10) + 1) * 12;   // MIDI number
+    return 440 * Math.pow(2, (n - 69) / 12);
+  }
+
+  var BPM = 66, BEAT = 60 / BPM, BARS = 16, LOOP = BARS * 3 * BEAT;
+
+  var MELODY = [
+    [0,'G4',3],[3,'A4',1],[4,'B4',1],[5,'C5',1],[6,'D5',2],[8,'C5',1],[9,'B4',3],
+    [12,'C5',3],[15,'B4',1],[16,'A4',1],[17,'G4',1],[18,'A4',3],[21,'G4',3],
+    [24,'E5',3],[27,'D5',1],[28,'C5',1],[29,'B4',1],[30,'C5',2],[32,'D5',1],[33,'E5',3],
+    [36,'D5',3],[39,'C5',1],[40,'B4',1],[41,'A4',1],[42,'G4',3],[45,'G4',3]
+  ];
+
+  var CHORDS = [
+    ['C3','G3','E4'],['F2','C3','A3'],['G2','D3','B3'],['E3','B3','G3'],
+    ['C3','G3','E4'],['A2','E3','C4'],['D3','A3','F3'],['G2','D3','B3'],
+    ['A2','E3','C4'],['F2','C3','A3'],['G2','D3','B3'],['C3','G3','E4'],
+    ['G2','D3','B3'],['A2','E3','C4'],['F2','C3','A3'],['G2','D3','B3']
+  ];
+
+  var ac = null, master = null, playing = false, timer = null, nextLoop = 0;
+
+  function chime(freq, when, dur, vol){
+    var g = ac.createGain();
+    g.gain.setValueAtTime(0.0001, when);
+    g.gain.exponentialRampToValueAtTime(vol, when + 0.006);
+    g.gain.exponentialRampToValueAtTime(0.0001, when + dur);
+    var lp = ac.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.setValueAtTime(2600, when);
+    g.connect(lp); lp.connect(master);
+    [[1,1],[2,0.26],[3,0.09],[4.2,0.04]].forEach(function(p){
+      var o = ac.createOscillator();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(freq * p[0], when);
+      var pg = ac.createGain();
+      pg.gain.setValueAtTime(p[1], when);
+      o.connect(pg); pg.connect(g);
+      o.start(when); o.stop(when + dur + 0.05);
+    });
+  }
+
+  function scheduleLoop(t0){
+    MELODY.forEach(function(n){
+      chime(hz(n[1]), t0 + n[0] * BEAT, Math.max(1.7, n[2] * BEAT * 1.5), 0.19);
+    });
+    CHORDS.forEach(function(ch, bar){
+      ch.forEach(function(note, i){
+        chime(hz(note), t0 + (bar * 3 + i) * BEAT, 2.4, 0.055);
+      });
+    });
+  }
+
+  function tick(){
+    while(nextLoop < ac.currentTime + 2){
+      scheduleLoop(nextLoop);
+      nextLoop += LOOP;
+    }
+  }
+
+  function start(){
+    if(!ac){
+      ac = new (window.AudioContext || window.webkitAudioContext)();
+      master = ac.createGain();
+      master.gain.value = 0.0001;
+      var delay = ac.createDelay(1.0);
+      delay.delayTime.value = 0.29;
+      var fb = ac.createGain(); fb.gain.value = 0.24;
+      var wet = ac.createGain(); wet.gain.value = 0.20;
+      master.connect(ac.destination);
+      master.connect(delay); delay.connect(fb); fb.connect(delay);
+      delay.connect(wet); wet.connect(ac.destination);
+    }
+    if(ac.state === 'suspended') ac.resume();
+    nextLoop = ac.currentTime + 0.25;
+    tick();
+    timer = setInterval(tick, 500);
+    master.gain.cancelScheduledValues(ac.currentTime);
+    master.gain.setValueAtTime(Math.max(0.0001, master.gain.value), ac.currentTime);
+    master.gain.exponentialRampToValueAtTime(0.9, ac.currentTime + 1.6);
+    playing = true;
+  }
+
+  function stop(){
+    if(!ac) return;
+    clearInterval(timer);
+    master.gain.cancelScheduledValues(ac.currentTime);
+    master.gain.setValueAtTime(master.gain.value, ac.currentTime);
+    master.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + 1.1);
+    setTimeout(function(){ if(!playing && ac) ac.suspend(); }, 1300);
+    playing = false;
+  }
+
+  var btn = document.getElementById('music');
+  var lbl = document.getElementById('musicLabel');
+  btn.addEventListener('click', function(){
+    if(playing){
+      stop();
+      btn.classList.remove('on');
+      btn.setAttribute('aria-pressed','false');
+      lbl.textContent = '音楽をながす';
+    } else {
+      start();
+      btn.classList.add('on');
+      btn.setAttribute('aria-pressed','true');
+      lbl.textContent = '音楽をとめる';
+    }
+  });
+
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden && playing) btn.click();
+  });
 })();
 </script>
 </body>
