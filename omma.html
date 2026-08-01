@@ -124,33 +124,46 @@
   .photo{opacity:0;transition:opacity 1.7s ease}
   .photo.on{opacity:1}
 
-  /* the print itself breathes very slowly */
-  .frame{position:relative;display:block;overflow:hidden}
+  /* the print drifts and breathes */
+  .frame{position:relative;display:block;overflow:hidden;background:#FBF4EC}
   .frame img{
     display:block;width:100%;height:auto;
-    transform:scale(1.10);
-    transition:transform 2.8s cubic-bezier(.22,.61,.36,1);
+    transform:scale(1.16);
+    transition:transform 2.6s cubic-bezier(.22,.61,.36,1);
     will-change:transform;
   }
   .photo.on .frame img{
-    transform:scale(1.045);
-    animation:breath 20s ease-in-out 2.8s infinite;
+    transform:scale(1.06);
+    animation:drift 11s ease-in-out 2.6s infinite;
   }
-  @keyframes breath{
-    0%,100%{transform:scale(1.045)}
-    50%{transform:scale(1.075)}
+  @keyframes drift{
+    0%   {transform:scale(1.06) translate(0,0)}
+    50%  {transform:scale(1.17) translate(-1.6%,-2.4%)}
+    100% {transform:scale(1.06) translate(0,0)}
   }
+
+  /* the cross-fading stage (two photos in one print) */
+  .stage .frame{aspect-ratio:3/4}
+  .stage .layer{
+    position:absolute;inset:0;
+    width:100%;height:100%;object-fit:cover;
+    opacity:0;transition:opacity 2.4s ease;
+  }
+  .stage .layer.show{opacity:1}
+  .stage .p1{object-position:center 24%}
+  .stage .p2{object-position:center 34%}
+
   /* a soft light drifts across the print */
   .frame::after{
-    content:"";position:absolute;inset:0;pointer-events:none;
-    background:linear-gradient(105deg,transparent 32%,rgba(255,252,244,.42) 47%,rgba(255,248,236,.16) 56%,transparent 68%);
-    transform:translateX(-115%);
-    animation:sheen 15s ease-in-out 3.4s infinite;
+    content:"";position:absolute;inset:0;pointer-events:none;z-index:2;
+    background:linear-gradient(102deg,transparent 26%,rgba(255,253,247,.78) 45%,rgba(255,246,230,.34) 57%,transparent 72%);
+    transform:translateX(-120%);
+    animation:sheen 9s ease-in-out 2.2s infinite;
   }
   @keyframes sheen{
-    0%{transform:translateX(-115%)}
-    36%{transform:translateX(115%)}
-    100%{transform:translateX(115%)}
+    0%{transform:translateX(-120%)}
+    45%{transform:translateX(120%)}
+    100%{transform:translateX(120%)}
   }
   .photo > span:last-child{
     display:block;text-align:center;margin-top:14px;
@@ -250,6 +263,7 @@
     .photo{opacity:1;transition:none}
     .frame img{transform:none;transition:none}
     .photo.on .frame img{transform:none;animation:none}
+    .stage .layer{transition:none}
     .frame::after{display:none}
     .reveal{opacity:1;transform:none;transition:none}
     html{scroll-behavior:auto}
@@ -291,8 +305,10 @@
   <section>
     <div class="label reveal">おもいで</div>
     <div class="prints" id="prints">
-      <figure class="photo"><span class="frame"><img src="photo1.jpg" alt="" onerror="this.closest('.photo').remove()"></span><span>この笑顔が、ずっと心に</span></figure>
-      <figure class="photo"><span class="frame"><img src="photo2.jpg" alt="" onerror="this.closest('.photo').remove()"></span><span>やさしい笑顔のまま</span></figure>
+      <figure class="photo stage"><span class="frame">
+        <img class="layer show p1" src="photo1.jpg" alt="" onerror="this.remove()">
+        <img class="layer p2" src="photo2.jpg" alt="" onerror="this.remove()">
+      </span><span>この笑顔が、ずっと心に</span></figure>
       <figure class="photo"><span class="frame"><img src="photo3.jpg" alt="" onerror="this.closest('.photo').remove()"></span><span>あたたかい時間</span></figure>
       <figure class="photo"><span class="frame"><img src="photo4.jpg" alt="" onerror="this.closest('.photo').remove()"></span><span>大切な一枚</span></figure>
     </div>
@@ -504,6 +520,25 @@
   document.addEventListener('visibilitychange', function(){
     if(document.hidden && playing) btn.click();
   });
+
+  /* two photos take turns on the stage */
+  (function(){
+    var stage = document.querySelector('.stage');
+    if(!stage) return;
+    function run(){
+      var layers = stage.querySelectorAll('.layer');
+      if(layers.length === 0){ stage.remove(); return; }
+      if(layers.length === 1){ layers[0].classList.add('show'); return; }
+      var i = 0;
+      layers.forEach(function(l,n){ l.classList.toggle('show', n === 0); });
+      setInterval(function(){
+        layers[i].classList.remove('show');
+        i = (i + 1) % layers.length;
+        layers[i].classList.add('show');
+      }, 6500);
+    }
+    setTimeout(run, 2500);
+  })();
 
   /* opening gate: any touch starts the music */
   var gate = document.getElementById('gate');
