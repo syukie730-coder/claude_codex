@@ -171,6 +171,24 @@
   }
   .nophoto{display:none;text-align:center;color:var(--ink-soft);font-size:.86rem}
 
+  /* wide print: the whole picture stays visible, no zoom */
+  .photo.wide{
+    max-width:540px;
+    transform:none;
+    padding:14px 14px 44px;
+  }
+  .photo.wide .frame img{
+    transform:none;
+    transition:none;
+  }
+  .photo.wide.on .frame img{
+    transform:none;
+    animation:none;
+  }
+  .photo.wide .frame::after{
+    animation:sheen 13s ease-in-out 3s infinite;
+  }
+
   /* letter */
   .letter{
     background:linear-gradient(180deg,#FFFCF7,#FBF3EA);
@@ -311,6 +329,7 @@
       </span><span>この笑顔が、ずっと心に</span></figure>
       <figure class="photo"><span class="frame"><img src="photo3.jpg" alt="" onerror="this.closest('.photo').remove()"></span><span>あたたかい時間</span></figure>
       <figure class="photo"><span class="frame"><img src="photo4.jpg" alt="" onerror="this.closest('.photo').remove()"></span><span>大切な一枚</span></figure>
+      <figure class="photo wide"><span class="frame"><img src="photo5.jpg" alt="" onerror="this.closest('.photo').remove()"></span><span>みんなで見送った日</span></figure>
     </div>
     <p class="nophoto" id="nophoto">写真はこれから加わります。</p>
   </section>
