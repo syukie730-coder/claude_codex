@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>脳梗塞チェック</title>
+<link rel="apple-touch-icon" href="noukousoku-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="脳梗塞チェック">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#7FC8E8">
+<style>
+:root{
+  --sky:#E6F4FB;
+  --paper:#FFFFFF;
+  --ink:#3C4E63;
+  --soft:#78899E;
+  --alert:#FF6B6B;
+  --deep:#E8484D;
+  --sun:#FFC94D;
+  --mint:#5AC9A3;
+  --pink:#FFB6C6;
+  --line:#E2ECF3;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;}
+body{
+  font-family:"Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic",sans-serif;
+  background:var(--sky);
+  color:var(--ink);
+  line-height:1.65;
+  padding:0 14px calc(30px + env(safe-area-inset-bottom));
+}
+.wrap{max-width:470px;margin:0 auto;}
+
+/* ヘッダー */
+.hero{
+  padding:calc(20px + env(safe-area-inset-top)) 4px 6px;
+  text-align:center;
+}
+.hero h1{
+  font-size:26px;font-weight:800;letter-spacing:.02em;
+}
+.hero h1 small{display:block;font-size:13px;font-weight:700;color:var(--soft);letter-spacing:.16em;margin-bottom:4px;}
+.hero p{
+  margin-top:10px;background:#fff;border-radius:18px;padding:12px 14px;
+  font-size:13.5px;font-weight:700;color:var(--deep);
+  box-shadow:0 2px 0 #D9E8F2;
+}
+
+/* ナビ */
+nav{
+  position:sticky;top:0;z-index:9;
+  display:flex;gap:7px;padding:10px 0;background:var(--sky);
+}
+nav a{
+  flex:1;text-align:center;text-decoration:none;
+  background:#fff;color:var(--ink);font-size:12.5px;font-weight:800;
+  padding:9px 2px;border-radius:14px;box-shadow:0 2px 0 #D9E8F2;
+}
+nav a.hot{background:var(--alert);color:#fff;box-shadow:0 2px 0 #D9484D;}
+
+/* カード */
+.card{
+  background:var(--paper);border-radius:22px;padding:18px 16px;margin-top:14px;
+  box-shadow:0 3px 0 #D9E8F2;
+}
+.chip{
+  display:inline-block;font-size:11.5px;font-weight:800;
+  padding:5px 12px;border-radius:999px;color:#fff;
+}
+.chip.red{background:var(--alert);}
+.chip.sun{background:var(--sun);color:#6B4B00;}
+.chip.mint{background:var(--mint);}
+h2{font-size:20px;font-weight:800;margin:10px 0 3px;}
+.sub{font-size:13px;color:var(--soft);margin-bottom:12px;}
+
+/* BE-FAST 項目 */
+.item{
+  display:flex;gap:12px;align-items:center;
+  padding:12px 0;border-top:2px dotted var(--line);
+}
+.item:first-of-type{border-top:none;padding-top:4px;}
+.pic{
+  flex:0 0 88px;width:88px;height:88px;border-radius:20px;
+  background:#F4FAFD;display:flex;align-items:center;justify-content:center;
+}
+.txt h3{font-size:16px;font-weight:800;display:flex;align-items:center;gap:7px;}
+.txt h3 em{
+  font-style:normal;font-family:Helvetica,Arial,sans-serif;
+  background:var(--alert);color:#fff;width:24px;height:24px;border-radius:9px;
+  display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;
+}
+.txt p{font-size:13.5px;margin-top:3px;}
+
+/* 表 */
+table{width:100%;border-collapse:separate;border-spacing:0 6px;font-size:13px;}
+th,td{padding:9px 8px;text-align:left;vertical-align:top;}
+thead th{font-size:11.5px;color:var(--soft);padding-bottom:0;}
+tbody th{background:#F4FAFD;border-radius:12px 0 0 12px;font-weight:800;width:30%;}
+tbody td{background:#F4FAFD;}
+tbody td.hit{background:#FFF0F0;color:var(--deep);font-weight:800;border-radius:0 12px 12px 0;}
+
+/* 手順 */
+ol.steps{list-style:none;}
+ol.steps li{
+  display:flex;gap:11px;align-items:flex-start;padding:11px 0;
+  border-top:2px dotted var(--line);
+}
+ol.steps li:first-child{border-top:none;}
+.num{
+  flex:0 0 30px;width:30px;height:30px;border-radius:11px;background:var(--alert);color:#fff;
+  font-family:Helvetica,Arial,sans-serif;font-weight:900;font-size:15px;
+  display:flex;align-items:center;justify-content:center;
+}
+ol.steps b{display:block;font-size:15px;font-weight:800;}
+ol.steps span{font-size:13px;color:#54677D;}
+
+ul.list{list-style:none;}
+ul.list li{
+  display:flex;gap:10px;align-items:flex-start;
+  padding:10px 0;font-size:14px;border-top:2px dotted var(--line);
+}
+ul.list li:first-child{border-top:none;}
+.mk{
+  flex:0 0 26px;width:26px;height:26px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:900;color:#fff;
+}
+.mk.x{background:var(--alert);}
+.mk.o{background:var(--mint);}
+
+.note{
+  border-radius:16px;padding:13px 14px;margin-top:13px;font-size:13.5px;
+  background:#FFF0F0;
+}
+.note.sun{background:#FFF7E3;}
+.note.mint{background:#EDF9F5;}
+.note b{font-weight:800;}
+
+.tel{
+  margin-top:15px;background:var(--alert);border-radius:20px;padding:16px;text-align:center;color:#fff;
+  box-shadow:0 3px 0 #D9484D;
+}
+.tel .n{font-family:Helvetica,Arial,sans-serif;font-size:46px;font-weight:900;line-height:1;letter-spacing:.05em;}
+.tel .t{font-size:12.5px;font-weight:700;margin-top:7px;}
+
+footer{text-align:center;font-size:11px;color:var(--soft);padding:20px 10px 0;line-height:1.8;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <h1><small>ＢＥ ＦＡＳＴ</small>脳梗塞チェック</h1>
+    <p>「突然」はじまって「片側」だけ。<br>1分ごとに約190万個の脳細胞が減っていきます。</p>
+  </div>
+
+  <nav>
+    <a href="#sign">サイン</a>
+    <a href="#natsu">夏の注意</a>
+    <a href="#doit" class="hot">やること</a>
+  </nav>
+
+  <!-- ================= BE-FAST ================= -->
+  <div class="card" id="sign">
+    <span class="chip red">6つのうち1つでも</span>
+    <h2>こんな様子はない？</h2>
+    <p class="sub">ぜんぶそろわなくて大丈夫。ひとつでもあれば脳梗塞を疑ってね。</p>
+
+    <!-- B -->
+    <div class="item">
+      <div class="pic">
+        <svg width="76" height="76" viewBox="0 0 100 100">
+          <g stroke="#3C4E63" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none">
+            <g transform="rotate(-14 50 80)">
+              <circle cx="50" cy="26" r="17" fill="#FFE3CC"/>
+              <circle cx="44" cy="26" r="2.6" fill="#3C4E63" stroke="none"/>
+              <circle cx="56" cy="26" r="2.6" fill="#3C4E63" stroke="none"/>
+              <circle cx="38" cy="32" r="3.4" fill="#FFB6C6" stroke="none"/>
+              <circle cx="62" cy="32" r="3.4" fill="#FFB6C6" stroke="none"/>
+              <path d="M46 34 q4 3 8 0"/>
+              <path d="M50 43 v20" />
+              <path d="M50 48 l-13 6 M50 48 l13 6"/>
+              <path d="M50 63 l-8 15 M50 63 l8 15"/>
+            </g>
+            <path d="M14 40 q4 6 0 12 M86 40 q-4 6 0 12" stroke="#FF6B6B" stroke-width="3.4"/>
+            <path d="M22 88 h56" stroke="#C9DDEA"/>
+          </g>
+        </svg>
+      </div>
+      <div class="txt">
+        <h3><em>B</em>ふらつく</h3>
+        <p>まっすぐ歩けない。体が片方に傾く。急にめまいがする。</p>
+      </div>
+    </div>
+
+    <!-- E -->
+    <div class="item">
+      <div class="pic">
+        <svg width="76" height="76" viewBox="0 0 100 100">
+          <path d="M10 50 q40 -32 80 0 q-40 32 -80 0Z" fill="#fff" stroke="#3C4E63" stroke-width="4" stroke-linejoin="round"/>
+          <circle cx="50" cy="50" r="13" fill="#7FC8E8" stroke="#3C4E63" stroke-width="4"/>
+          <circle cx="50" cy="50" r="5" fill="#3C4E63"/>
+          <path d="M50 24 q23 6 33 26 q-10 20 -33 26Z" fill="#B9CBD8" opacity=".85"/>
+          <path d="M74 74 q6 -6 0 -12" stroke="#FF6B6B" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <text x="76" y="30" font-size="26" font-weight="bold" fill="#FF6B6B" font-family="Helvetica">?</text>
+        </svg>
+      </div>
+      <div class="txt">
+        <h3><em>E</em>見えにくい</h3>
+        <p>片目が見えない。視野の半分が欠ける。ものが二重に見える。</p>
+      </div>
+    </div>
+
+    <!-- F -->
+    <div class="item">
+      <div class="pic">
+        <svg width="76" height="76" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="32" fill="#FFE3CC" stroke="#3C4E63" stroke-width="4"/>
+          <circle cx="38" cy="44" r="3.4" fill="#3C4E63"/>
+          <path d="M56 44 q5 4 9 0" stroke="#3C4E63" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <circle cx="30" cy="55" r="4.5" fill="#FFB6C6"/>
+          <circle cx="70" cy="55" r="4.5" fill="#FFB6C6"/>
+          <path d="M36 62 q12 8 26 -4" stroke="#FF6B6B" stroke-width="4.4" fill="none" stroke-linecap="round"/>
+          <path d="M64 70 q3 6 -1 9" stroke="#7FC8E8" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="txt">
+        <h3><em>F</em>顔がゆがむ</h3>
+        <p>「イー」で片方の口角が下がる。よだれがこぼれる。</p>
+      </div>
+    </div>
+
+    <!-- A -->
+    <div class="item">
+      <div class="pic">
+        <svg width="76" height="76" viewBox="0 0 100 100">
+          <g stroke="#3C4E63" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none">
+            <circle cx="50" cy="24" r="15" fill="#FFE3CC"/>
+            <circle cx="45" cy="24" r="2.6" fill="#3C4E63" stroke="none"/>
+            <circle cx="55" cy="24" r="2.6" fill="#3C4E63" stroke="none"/>
+            <path d="M50 39 v30"/>
+            <path d="M50 46 l-26 -6"/>
+            <path d="M50 46 l22 16" stroke="#FF6B6B"/>
+            <path d="M50 69 l-9 18 M50 69 l9 18"/>
+            <path d="M82 44 q5 12 -6 20 M76 64 l-2 -8 M76 64 l8 -1" stroke="#FF6B6B" stroke-width="3.4"/>
+          </g>
+        </svg>
+      </div>
+      <div class="txt">
+        <h3><em>A</em>腕が下がる</h3>
+        <p>目を閉じて両腕を前に。片方だけスーッと落ちてくる。</p>
+      </div>
+    </div>
+
+    <!-- S -->
+    <div class="item">
+      <div class="pic">
+        <svg width="76" height="76" viewBox="0 0 100 100">
+          <circle cx="34" cy="62" r="22" fill="#FFE3CC" stroke="#3C4E63" stroke-width="4"/>
+          <circle cx="27" cy="58" r="2.6" fill="#3C4E63"/>
+          <circle cx="41" cy="58" r="2.6" fill="#3C4E63"/>
+          <ellipse cx="34" cy="70" rx="6" ry="4.5" fill="#FF6B6B"/>
+          <path d="M56 14 h36 v26 H72 l-8 9 v-9 h-8Z" fill="#fff" stroke="#3C4E63" stroke-width="4" stroke-linejoin="round"/>
+          <path d="M63 27 l5 5 l5 -8 l5 8 l5 -5" stroke="#FF6B6B" stroke-width="3.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="txt">
+        <h3><em>S</em>話せない</h3>
+        <p>ろれつが回らない。言葉が出ない。言われた事がわからない。</p>
+      </div>
+    </div>
+
+    <!-- T -->
+    <div class="item">
+      <div class="pic">
+        <svg width="76" height="76" viewBox="0 0 100 100">
+          <circle cx="46" cy="50" r="30" fill="#fff" stroke="#FF6B6B" stroke-width="5"/>
+          <path d="M46 30 v20 l15 8" stroke="#3C4E63" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="46" cy="50" r="3.4" fill="#3C4E63"/>
+          <path d="M26 22 l-6 -8 M66 22 l6 -8" stroke="#FFC94D" stroke-width="5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="txt">
+        <h3><em>T</em>時間をメモ</h3>
+        <p>「最後にいつも通りだった時刻」を書きとめて、すぐ119番。</p>
+      </div>
+    </div>
+
+    <div class="note">
+      <b>キーワードは「突然」と「片側」。</b><br>
+      じわじわではなく、時計が読めるくらいハッキリした瞬間に始まるのが、脳の血管が詰まったサインです。
+    </div>
+  </div>
+
+  <!-- ================= 夏 ================= -->
+  <div class="card" id="natsu">
+    <span class="chip sun">夏はここでまちがえる</span>
+    <h2>熱中症と見分ける</h2>
+    <p class="sub">汗で血がドロドロになり、夏も脳梗塞は起こります。症状が似ていて見逃されがち。</p>
+    <table>
+      <thead><tr><th>見るところ</th><th>熱中症</th><th>脳梗塞かも</th></tr></thead>
+      <tbody>
+        <tr><th>左右</th><td>両側・全身</td><td class="hit">片側だけ</td></tr>
+        <tr><th>涼んで休む</th><td>よくなる</td><td class="hit">よくならない</td></tr>
+        <tr><th>始まり方</th><td>じわじわ</td><td class="hit">突然</td></tr>
+        <tr><th>話し方</th><td>ふつう</td><td class="hit">ろれつが回らない</td></tr>
+        <tr><th>手足</th><td>だるい・つる</td><td class="hit">力が入らない</td></tr>
+      </tbody>
+    </table>
+    <div class="note sun">
+      <b>眠くないのに出る「生あくび」に注意。</b>脳に届く酸素が足りないサインのことがあります。<br>
+      頭痛・吐き気・めまいは、どちらの病気でも出ます。<b>迷ったら脳梗塞として動くのが正解</b>だよ。
+    </div>
+  </div>
+
+  <!-- ================= 対処 ================= -->
+  <div class="card" id="doit">
+    <span class="chip red">見つけたら</span>
+    <h2>すぐやること</h2>
+    <p class="sub">上から順番に。ぜんぶで1分もかかりません。</p>
+    <ol class="steps">
+      <li><span class="num">1</span><div><b>119番に電話</b><span>「脳梗塞かもしれません」と最初に伝えると、運ぶ病院が早く決まります。</span></div></li>
+      <li><span class="num">2</span><div><b>時刻をメモ</b><span>わからなければ「最後にいつも通りだった時刻」。治療できるか決める大事な情報。</span></div></li>
+      <li><span class="num">3</span><div><b>横向きに寝かせる</b><span>吐いても詰まらないように。麻痺のある側を上に、服やベルトをゆるめる。</span></div></li>
+      <li><span class="num">4</span><div><b>そばで見守る</b><span>呼びかけへの反応と呼吸を確認。お薬手帳と保険証を用意しておく。</span></div></li>
+    </ol>
+
+    <h2 style="margin-top:20px">してはいけないこと</h2>
+    <ul class="list">
+      <li><span class="mk x">×</span><div>水・食べ物・薬を飲ませる（飲み込めず、のどに詰まります）</div></li>
+      <li><span class="mk x">×</span><div>自家用車で病院へ運ぶ／本人に運転させる</div></li>
+      <li><span class="mk x">×</span><div>「少し休めば治るかも」と様子を見る</div></li>
+      <li><span class="mk x">×</span><div>体を強くゆさぶる、無理に立たせる</div></li>
+    </ul>
+
+    <div class="tel">
+      <div class="n">119</div>
+      <div class="t">迷ったら救急相談 ＃7119（対応地域のみ）</div>
+    </div>
+  </div>
+
+  <!-- ================= TIA ================= -->
+  <div class="card">
+    <span class="chip red">いちばん危ない見逃し</span>
+    <h2>治っても、病院へ</h2>
+    <p class="sub">一過性脳虚血発作（ＴＩＡ）</p>
+    <p style="font-size:14px">詰まった血のかたまりが自然に溶けると、症状は数分〜数十分で<b>きれいに消えます</b>。治ったのではなく、<b>本番の予告</b>だよ。</p>
+    <div class="note">
+      ＴＩＡを起こした人の約<b>15〜20％が3か月以内に脳梗塞</b>を発症し、その多くが<b>最初の48時間</b>に集中します。<br>
+      症状が消えても、その日のうちに受診を。夜なら救急外来へ。
+    </div>
+  </div>
+
+  <!-- ================= 予防 ================= -->
+  <div class="card">
+    <span class="chip mint">夏の予防</span>
+    <h2>詰まらせない習慣</h2>
+    <ul class="list">
+      <li><span class="mk o">✓</span><div>寝る前・起きてすぐ・お風呂の前後にコップ1杯の水</div></li>
+      <li><span class="mk o">✓</span><div>のどが渇く前に飲む（渇いた時点で脱水ぎみ）</div></li>
+      <li><span class="mk o">✓</span><div>寝ている間もエアコンはつけたまま</div></li>
+      <li><span class="mk o">✓</span><div>お酒とコーヒーは水分に数えない（おしっこで出てしまう）</div></li>
+      <li><span class="mk o">✓</span><div>血圧・血糖・コレステロールを定期的に確認</div></li>
+    </ul>
+    <div class="note mint">水分制限のある持病がある方は、主治医の指示がいちばん優先です。</div>
+  </div>
+
+  <footer>
+    2026年8月2日放送「健康カプセル！ゲンキの時間」<br>
+    〜経験者が語る！生死の分かれ道 脳梗塞 見逃さなかった「サイン」〜 をもとに作成<br>
+    ※一般的な知識のまとめです。実際の判断は医療機関の指示に従ってください。
+  </footer>
+
+</div>
+</body>
+</html>
