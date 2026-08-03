@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>夫の薬管理 💊</title>
+
+<!-- iPhoneのホーム画面に追加したときの設定 -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="夫の薬管理">
+<meta name="theme-color" content="#EFF1F3">
+<link rel="apple-touch-icon" href="kusuri-icon.png">
+<link rel="icon" href="kusuri-icon.png">
+
+<style>
+/* =========================================================
+   カラー設定（ライトグレー基調＋ホワイト・ダークグレー・
+   シルバー・ブルーグレーのアクセント）
+   ========================================================= */
+:root{
+  --bg:#EFF1F3;         /* 背景のライトグレー */
+  --card:#FFFFFF;       /* カードの白 */
+  --ink:#2E3439;        /* 文字のダークグレー */
+  --ink2:#6C7A87;       /* 薄い文字 */
+  --silver:#D9DEE3;     /* 罫線・シルバー */
+  --blue:#7E92A6;       /* ブルーグレー（アクセント） */
+  --blue-d:#5F7387;     /* 濃いブルーグレー */
+  --blue-l:#EAEFF4;     /* 淡いブルーグレー */
+  --ok:#6E9A8D;         /* 飲んだ日の色 */
+  --miss:#C4A98C;       /* 飲み忘れの色 */
+  --radius:20px;
+  --shadow:0 4px 16px rgba(90,105,120,.10);
+}
+
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;
+  font-size:17px;
+  line-height:1.7;
+  padding-bottom:100px;   /* 下のメニューぶん空ける */
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---------- ヘッダー ---------- */
+header{
+  position:sticky; top:0; z-index:50;
+  background:rgba(239,241,243,.92);
+  backdrop-filter:blur(10px);
+  padding:calc(env(safe-area-inset-top) + 12px) 16px 12px;
+  display:flex; align-items:center; gap:10px;
+  border-bottom:1px solid var(--silver);
+}
+header img{width:38px;height:38px;border-radius:10px;box-shadow:var(--shadow);}
+header h1{font-size:21px;margin:0;font-weight:700;letter-spacing:.02em;}
+
+/* ---------- 共通パーツ ---------- */
+.wrap{padding:16px;max-width:560px;margin:0 auto;}
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:18px;
+  margin-bottom:16px;
+}
+.card h2{font-size:20px;margin:0 0 12px;font-weight:700;}
+.sub{color:var(--ink2);font-size:14px;}
+
+button{font-family:inherit;font-size:17px;cursor:pointer;}
+.btn{
+  display:block; width:100%; border:none; border-radius:16px;
+  background:var(--blue); color:#fff; font-weight:700;
+  padding:16px; margin-top:10px; box-shadow:var(--shadow);
+}
+.btn:active{transform:scale(.98);}
+.btn.sub-btn{background:#fff;color:var(--blue-d);border:2px solid var(--silver);}
+.btn.gray{background:#8D99A5;}
+
+input,select,textarea{
+  width:100%; font-family:inherit; font-size:17px; color:var(--ink);
+  padding:13px; border:2px solid var(--silver); border-radius:14px;
+  background:#fff; margin-top:6px;
+}
+label{display:block;margin-top:14px;font-weight:700;font-size:15px;}
+
+/* ---------- 今日のお薬 ---------- */
+.today-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;}
+.today-head .date{color:var(--ink2);font-size:15px;font-weight:700;}
+.med-card{
+  border:2px solid var(--silver); border-radius:18px;
+  padding:14px; margin-top:12px; background:#fff;
+}
+.med-name{font-size:19px;font-weight:700;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.left-days{
+  font-size:13px;font-weight:700;color:var(--blue-d);
+  background:var(--blue-l);border-radius:999px;padding:4px 12px;white-space:nowrap;
+}
+.memo{font-size:14px;color:var(--ink2);margin-top:4px;}
+.slots{display:grid;grid-template-columns:repeat(auto-fit,minmax(72px,1fr));gap:8px;margin-top:12px;}
+.slot{
+  border:2px solid var(--silver); background:#fff; border-radius:16px;
+  padding:12px 4px; text-align:center; font-weight:700; color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.3;
+}
+.slot .emoji{font-size:22px;}
+.slot .label{font-size:14px;}
+.slot .state{font-size:12px;color:var(--ink2);}
+.slot.done{background:var(--ok);border-color:var(--ok);color:#fff;}
+.slot.done .state{color:#EAF3F0;}
+.slot:active{transform:scale(.96);}
+
+/* ---------- 連続日数バー ---------- */
+.streak{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:linear-gradient(135deg,#F7F9FB,#E9EEF3);
+  border-radius:16px;padding:14px 16px;margin-top:14px;
+}
+.streak b{font-size:26px;color:var(--blue-d);}
+
+/* ---------- カレンダー ---------- */
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.cal-head button{
+  border:none;background:#fff;border:2px solid var(--silver);
+  border-radius:12px;width:46px;height:42px;font-size:20px;color:var(--blue-d);font-weight:700;
+}
+.cal-title{font-size:20px;font-weight:700;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.cal-dow{text-align:center;font-size:13px;color:var(--ink2);font-weight:700;padding:4px 0;}
+.cal-dow.sun{color:#C08B8B;} .cal-dow.sat{color:#8B9FC0;}
+.cell{
+  aspect-ratio:1/1.25; border-radius:12px; background:#F7F8F9;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:13px; color:var(--ink2); position:relative; overflow:hidden;
+}
+.cell.empty{background:transparent;}
+.cell .d{font-weight:700;font-size:14px;}
+.cell .mark{font-size:17px;line-height:1;margin-top:1px;}
+.cell.done{background:#EAF2EF;color:var(--ok);}
+.cell.done .mark{color:var(--ok);}
+.cell.partial{background:#F4F1EC;color:var(--miss);}
+.cell.miss{background:#F6F0EA;color:var(--miss);}
+.cell.future{background:#F4F5F6;color:#BFC7CE;}
+.cell.today{
+  background:#fff;border:3px solid var(--blue);
+  transform:scale(1.06); box-shadow:0 4px 12px rgba(126,146,166,.28); z-index:2;
+}
+.cell.today .d{font-size:18px;color:var(--blue-d);}
+.cell.start{padding-top:20px;}
+.cell.start .startflag{
+  position:absolute;left:0;right:0;top:0;
+  font-size:7px;font-weight:700;color:var(--blue-d);
+  background:var(--blue-l);border-bottom:1px solid var(--blue);
+  line-height:1.35;text-align:center;letter-spacing:-.04em;padding:1px 0;
+}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;font-size:13px;color:var(--ink2);}
+.legend span{white-space:nowrap;}
+
+/* ---------- グラフ ---------- */
+.bars{display:flex;align-items:flex-end;gap:10px;height:168px;margin-top:14px;}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;}
+.bar{
+  width:100%;max-width:44px;border-radius:10px 10px 4px 4px;
+  background:linear-gradient(180deg,#93A6B8,#6F8598); min-height:4px;
+  display:flex;align-items:flex-start;justify-content:center;
+}
+.bar-val{font-size:12px;font-weight:700;color:var(--ink2);margin-bottom:4px;}
+.bar-lab{font-size:12px;color:var(--ink2);margin-top:6px;}
+.rank{font-size:15px;font-weight:700;color:var(--blue-d);text-align:center;margin-top:14px;}
+
+/* ---------- ごほうび ---------- */
+.rewards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:8px;}
+.rw{
+  background:#F7F8F9;border-radius:16px;padding:14px 6px;text-align:center;
+  border:2px solid var(--silver);
+}
+.rw.got{background:linear-gradient(160deg,#FFFFFF,#EAEFF4);border-color:var(--blue);}
+.rw .ic{font-size:32px;filter:grayscale(1);opacity:.35;}
+.rw.got .ic{filter:none;opacity:1;}
+.rw .t{font-size:13px;font-weight:700;margin-top:4px;}
+.rw .s{font-size:11px;color:var(--ink2);}
+
+/* ---------- 登録した薬の一覧 ---------- */
+.med-row{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  border-bottom:1px solid var(--silver);padding:12px 0;
+}
+.med-row:last-child{border-bottom:none;}
+.med-row .nm{font-weight:700;}
+.med-row .dt{font-size:13px;color:var(--ink2);}
+.mini{
+  border:2px solid var(--silver);background:#fff;color:var(--blue-d);
+  border-radius:12px;padding:8px 14px;font-size:14px;font-weight:700;white-space:nowrap;
+}
+
+/* ---------- 下のメニュー ---------- */
+nav{
+  position:fixed;left:0;right:0;bottom:0;z-index:60;
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(10px);
+  border-top:1px solid var(--silver);
+  display:grid;grid-template-columns:repeat(4,1fr);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+nav button{
+  border:none;background:none;padding:10px 0 8px;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  color:var(--ink2);font-size:12px;font-weight:700;
+}
+nav button .ni{font-size:22px;}
+nav button.on{color:var(--blue-d);}
+nav button.on .ni{transform:translateY(-2px);}
+
+/* ---------- 画面切り替え ---------- */
+.view{display:none;}
+.view.on{display:block;animation:fade .25s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+/* ---------- お祝いの演出 ---------- */
+#fx{position:fixed;inset:0;pointer-events:none;z-index:200;overflow:hidden;}
+.p{position:absolute;will-change:transform,opacity;}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:0;}}
+@keyframes rise{to{transform:translateY(-110vh) rotate(30deg);opacity:0;}}
+@keyframes pop{
+  0%{transform:translate(0,0) scale(.3);opacity:1;}
+  100%{transform:translate(var(--dx),var(--dy)) scale(1.2);opacity:0;}
+}
+#toast{
+  position:fixed;left:50%;top:34%;transform:translate(-50%,-50%) scale(.7);
+  background:rgba(255,255,255,.97);color:var(--blue-d);
+  font-size:22px;font-weight:700;padding:18px 26px;border-radius:22px;
+  box-shadow:0 10px 30px rgba(80,95,110,.22);
+  opacity:0;pointer-events:none;z-index:210;white-space:nowrap;
+  transition:opacity .25s, transform .25s;
+}
+#toast.on{opacity:1;transform:translate(-50%,-50%) scale(1);}
+
+/* ---------- ミニアニメーション ---------- */
+#mini{
+  position:fixed;left:0;right:0;bottom:0;height:30vh;
+  z-index:190;pointer-events:none;overflow:hidden;opacity:0;
+  transition:opacity .5s;
+}
+#mini.on{opacity:1;}
+#mini .ground{position:absolute;inset:0;}
+.walker{position:absolute;bottom:14%;font-size:46px;}
+@keyframes walkR{from{left:-70px;}to{left:105%;}}
+@keyframes walkL{from{left:105%;}to{left:-70px;}}
+@keyframes hop{0%,100%{transform:translateY(0) rotate(-3deg);}50%{transform:translateY(-26px) rotate(3deg);}}
+@keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+@keyframes swim{0%,100%{transform:translateY(0) scaleX(-1);}50%{transform:translateY(-16px) scaleX(-1);}}
+@keyframes flyUp{from{left:-60px;bottom:8%;}to{left:105%;bottom:60%;}}
+@keyframes sway{0%,100%{transform:rotate(-12deg);}50%{transform:rotate(12deg);}}
+@keyframes bloom{from{transform:scale(0) rotate(-40deg);opacity:0;}to{transform:scale(1) rotate(0);opacity:1;}}
+@keyframes shoot{from{transform:translate(0,0) rotate(20deg);opacity:1;}to{transform:translate(-70vw,50vh) rotate(20deg);opacity:0;}}
+@keyframes drift{
+  0%{transform:translate(0,-20px) rotate(0);opacity:1;}
+  100%{transform:translate(var(--dx),40vh) rotate(360deg);opacity:0;}
+}
+@keyframes rainbowIn{from{transform:translateY(40px) scale(.8);opacity:0;}to{transform:translateY(0) scale(1);opacity:.9;}}
+
+/* ---------- モーダル ---------- */
+.modal{
+  position:fixed;inset:0;z-index:300;display:none;
+  background:rgba(46,52,57,.45);backdrop-filter:blur(3px);
+  align-items:flex-end;
+}
+.modal.on{display:flex;}
+.sheet{
+  background:var(--bg);width:100%;max-height:92vh;overflow-y:auto;
+  border-radius:26px 26px 0 0;padding:20px 18px calc(28px + env(safe-area-inset-bottom));
+  animation:up .3s ease;
+}
+@keyframes up{from{transform:translateY(40px);opacity:.6;}to{transform:none;opacity:1;}}
+.sheet h2{margin:4px 0 4px;font-size:22px;}
+.dow-pick{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:8px;}
+.dow-pick button{
+  border:2px solid var(--silver);background:#fff;border-radius:12px;
+  padding:10px 0;font-weight:700;color:var(--ink2);font-size:15px;
+}
+.dow-pick button.on{background:var(--blue);border-color:var(--blue);color:#fff;}
+.time-pick{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:8px;}
+.time-pick button{
+  border:2px solid var(--silver);background:#fff;border-radius:14px;
+  padding:14px 6px;font-weight:700;color:var(--ink2);font-size:16px;
+}
+.time-pick button.on{background:var(--blue);border-color:var(--blue);color:#fff;}
+</style>
+</head>
+<body>
+
+<!-- ============ ヘッダー ============ -->
+<header>
+  <img src="kusuri-icon.png" alt="">
+  <h1>夫の薬管理</h1>
+</header>
+
+<!-- ============ ホーム画面 ============ -->
+<div class="view on" id="v-home">
+  <div class="wrap">
+
+    <!-- 今日のお薬 -->
+    <div class="card">
+      <div class="today-head">
+        <h2 style="margin:0">今日のお薬</h2>
+        <div class="date" id="todayLabel"></div>
+      </div>
+      <div id="todayList"></div>
+      <div class="streak" id="streakBox" style="display:none">
+        <div>
+          <div class="sub">連続で飲めた日数</div>
+          <b><span id="streakNum">0</span> 日</b>
+        </div>
+        <div style="text-align:right" class="sub" id="nextGoal"></div>
+      </div>
+    </div>
+
+    <!-- カレンダー -->
+    <div class="card">
+      <div class="cal-head">
+        <button id="prevM">‹</button>
+        <div class="cal-title" id="calTitle"></div>
+        <button id="nextM">›</button>
+      </div>
+      <div class="cal-grid" id="calDow"></div>
+      <div class="cal-grid" id="calBody" style="margin-top:4px"></div>
+      <div class="legend">
+        <span>✔ 飲めた日</span>
+        <span>△ 一部のみ</span>
+        <span>○ 飲み忘れ</span>
+        <span>🚩 はじめた日</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ グラフ画面 ============ -->
+<div class="view" id="v-chart">
+  <div class="wrap">
+    <div class="card">
+      <h2>月ごとの服薬率</h2>
+      <div class="sub">飲む予定のうち、飲めた割合だよ📊</div>
+      <div class="bars" id="bars"></div>
+      <div class="cal-grid" id="barLabs" style="grid-template-columns:repeat(6,1fr);margin-top:2px"></div>
+      <div class="rank" id="rankMsg"></div>
+    </div>
+    <div class="card">
+      <h2>今月のようす</h2>
+      <div id="monthDetail" class="sub"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ごほうび画面 ============ -->
+<div class="view" id="v-reward">
+  <div class="wrap">
+    <div class="card">
+      <h2>ごほうびコレクション</h2>
+      <div class="sub">連続で飲めた日数でメダルが増えていくよ🏅</div>
+      <div class="streak" style="margin-top:14px">
+        <div>
+          <div class="sub">いまの連続記録</div>
+          <b><span id="streakNum2">0</span> 日</b>
+        </div>
+        <div style="text-align:right">
+          <div class="sub">これまでの最高</div>
+          <b style="font-size:22px"><span id="bestNum">0</span> 日</b>
+        </div>
+      </div>
+      <div class="rewards" id="rewardGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 設定・登録画面 ============ -->
+<div class="view" id="v-set">
+  <div class="wrap">
+
+    <div class="card">
+      <h2>お薬の登録</h2>
+      <div id="medList"></div>
+      <button class="btn" id="addMed">＋ お薬を追加する</button>
+    </div>
+
+    <div class="card">
+      <h2>お知らせの時間</h2>
+      <div class="sub">この時間になったらお知らせするよ🔔<br>（アプリを開いている間だけ届きます）</div>
+      <label>朝 <input type="time" id="t_m"></label>
+      <label>昼 <input type="time" id="t_n"></label>
+      <label>夕 <input type="time" id="t_e"></label>
+      <label>寝る前 <input type="time" id="t_b"></label>
+      <button class="btn" id="notifyBtn">🔔 お知らせを受け取る</button>
+      <div class="sub" id="notifyState" style="margin-top:8px"></div>
+    </div>
+
+    <div class="card">
+      <h2>バックアップ</h2>
+      <div class="sub">記録は自動でこの端末に保存されるよ。念のため、ときどきバックアップを取っておくと安心💾</div>
+      <button class="btn sub-btn" id="backupBtn">📄 バックアップを書き出す</button>
+      <button class="btn sub-btn" id="restoreBtn">↩️ バックアップから戻す</button>
+      <textarea id="backupArea" rows="4" placeholder="ここにバックアップの文字が入ります" style="margin-top:12px"></textarea>
+      <button class="btn gray" id="resetBtn" style="margin-top:16px">🗑 記録を全部消す</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ 下のメニュー ============ -->
+<nav>
+  <button class="on" data-v="home"><span class="ni">📅</span>ホーム</button>
+  <button data-v="chart"><span class="ni">📊</span>グラフ</button>
+  <button data-v="reward"><span class="ni">🏅</span>ごほうび</button>
+  <button data-v="set"><span class="ni">⚙️</span>設定</button>
+</nav>
+
+<!-- ============ 薬の登録シート ============ -->
+<div class="modal" id="medModal">
+  <div class="sheet">
+    <h2 id="sheetTitle">お薬の登録</h2>
+    <label>お薬の名前
+      <input type="text" id="f_name" placeholder="例）血圧のお薬">
+    </label>
+    <label>飲みはじめる日
+      <input type="date" id="f_start">
+    </label>
+    <label>飲み終わる日（決まっていなければ空でOK）
+      <input type="date" id="f_end">
+    </label>
+    <label>飲むタイミング</label>
+    <div class="time-pick" id="f_slots">
+      <button data-s="m">☀️ 朝</button>
+      <button data-s="n">🍚 昼</button>
+      <button data-s="e">🌇 夕</button>
+      <button data-s="b">🌙 寝る前</button>
+    </div>
+    <label>飲む曜日</label>
+    <div class="dow-pick" id="f_days">
+      <button data-d="0">日</button><button data-d="1">月</button><button data-d="2">火</button>
+      <button data-d="3">水</button><button data-d="4">木</button><button data-d="5">金</button>
+      <button data-d="6">土</button>
+    </div>
+    <label>メモ（自由に）
+      <input type="text" id="f_memo" placeholder="例）食後にコップ1杯の水で">
+    </label>
+    <button class="btn" id="saveMed">保存する</button>
+    <button class="btn sub-btn" id="delMed" style="display:none">このお薬を削除する</button>
+    <button class="btn sub-btn" id="closeMed">閉じる</button>
+  </div>
+</div>
+
+<!-- 演出用の入れ物 -->
+<div id="fx"></div>
+<div id="toast"></div>
+<div id="mini"><div class="ground"></div></div>
+
+<script>
+/* =========================================================
+   1. データの保存まわり
+   ========================================================= */
+const KEY = 'ottoKusuriV1';
+
+// 初期データ
+let DB = {
+  meds: [],       // 登録したお薬
+  records: {},    // 飲んだ記録 { "2026-08-04": { "id_m": true } }
+  settings: { times:{m:'08:00', n:'12:00', e:'18:00', b:'21:00'} },
+  got: []         // 獲得したごほうび
+};
+
+// 読み込み
+function load(){
+  try{
+    const s = localStorage.getItem(KEY);
+    if(s){
+      const d = JSON.parse(s);
+      DB = Object.assign(DB, d);
+      DB.settings = Object.assign({times:{m:'08:00',n:'12:00',e:'18:00',b:'21:00'}}, d.settings||{});
+    }
+  }catch(e){ console.log('読み込みに失敗', e); }
+}
+// 保存
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify(DB)); }
+  catch(e){ alert('保存できませんでした。空き容量を確認してね'); }
+}
+
+/* =========================================================
+   2. 日付のべんりな道具
+   ========================================================= */
+const SLOTS = [
+  {k:'m', label:'朝',    emoji:'☀️'},
+  {k:'n', label:'昼',    emoji:'🍚'},
+  {k:'e', label:'夕',    emoji:'🌇'},
+  {k:'b', label:'寝る前', emoji:'🌙'}
+];
+const DOW = ['日','月','火','水','木','金','土'];
+
+function ymd(d){
+  const y=d.getFullYear(), m=('0'+(d.getMonth()+1)).slice(-2), dd=('0'+d.getDate()).slice(-2);
+  return y+'-'+m+'-'+dd;
+}
+function parse(s){ const a=s.split('-'); return new Date(+a[0], +a[1]-1, +a[2]); }
+function addDays(d, n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
+const TODAY = ymd(new Date());
+
+/* =========================================================
+   3. 「その日に飲む予定」を計算する
+   ========================================================= */
+// その日に予定されている（お薬 × タイミング）の一覧
+function plannedOf(dateStr){
+  const w = parse(dateStr).getDay();
+  const list = [];
+  DB.meds.forEach(med=>{
+    if(dateStr < med.start) return;
+    if(med.end && dateStr > med.end) return;
+    if(med.days && med.days.length && med.days.indexOf(w) < 0) return;
+    SLOTS.forEach(s=>{ if(med.slots[s.k]) list.push({med:med, slot:s.k}); });
+  });
+  return list;
+}
+// 飲んだかどうか
+function isTaken(dateStr, medId, slot){
+  const r = DB.records[dateStr];
+  return !!(r && r[medId+'_'+slot]);
+}
+// その日の状態を返す
+function dayStatus(dateStr){
+  const p = plannedOf(dateStr);
+  if(p.length === 0) return 'none';
+  if(dateStr > TODAY) return 'future';
+  let done = 0;
+  p.forEach(x=>{ if(isTaken(dateStr, x.med.id, x.slot)) done++; });
+  if(done === p.length) return 'done';
+  if(done === 0) return 'miss';
+  return 'partial';
+}
+// はじめた日（いちばん早い開始日）
+function startDay(){
+  let s = null;
+  DB.meds.forEach(m=>{ if(!s || m.start < s) s = m.start; });
+  return s;
+}
+// 連続で飲めた日数
+function streak(){
+  const st = startDay();
+  if(!st) return 0;
+  let n = 0;
+  let d = new Date();
+  // 今日がまだ途中なら昨日から数える
+  if(dayStatus(TODAY) !== 'done') d = addDays(d, -1);
+  for(let i=0; i<800; i++){
+    const s = ymd(d);
+    if(s < st) break;
+    const st2 = dayStatus(s);
+    if(st2 === 'done'){ n++; }
+    else if(st2 === 'none'){ /* 予定のない日はとばす */ }
+    else break;
+    d = addDays(d, -1);
+  }
+  return n;
+}
+
+/* =========================================================
+   4. 今日のお薬を表示
+   ========================================================= */
+function renderToday(){
+  const box = document.getElementById('todayList');
+  const t = new Date();
+  document.getElementById('todayLabel').textContent =
+    (t.getMonth()+1)+'月'+t.getDate()+'日（'+DOW[t.getDay()]+'）';
+
+  const p = plannedOf(TODAY);
+  if(DB.meds.length === 0){
+    box.innerHTML = '<div class="sub" style="padding:14px 0">まだお薬が登録されていないよ。'
+      + '下の⚙️設定から「＋ お薬を追加する」で登録してね😊</div>';
+    document.getElementById('streakBox').style.display='none';
+    return;
+  }
+  if(p.length === 0){
+    box.innerHTML = '<div class="sub" style="padding:14px 0">今日は飲む予定のお薬はないよ☕️ ゆっくり過ごしてね</div>';
+  }else{
+    // お薬ごとにまとめる
+    const byMed = {};
+    p.forEach(x=>{ (byMed[x.med.id] = byMed[x.med.id] || {med:x.med, slots:[]}).slots.push(x.slot); });
+    let html = '';
+    Object.keys(byMed).forEach(id=>{
+      const m = byMed[id].med;
+      html += '<div class="med-card">'
+        + '<div class="med-name"><span>💊 '+esc(m.name)+'</span>'
+        + '<span class="left-days">'+leftLabel(m)+'</span></div>'
+        + (m.memo ? '<div class="memo">📝 '+esc(m.memo)+'</div>' : '')
+        + '<div class="slots">';
+      byMed[id].slots.forEach(sk=>{
+        const s = SLOTS.find(x=>x.k===sk);
+        const done = isTaken(TODAY, m.id, sk);
+        html += '<button class="slot'+(done?' done':'')+'" data-med="'+m.id+'" data-slot="'+sk+'">'
+          + '<span class="emoji">'+(done?'✅':s.emoji)+'</span>'
+          + '<span class="label">'+s.label+'</span>'
+          + '<span class="state">'+(done?'のんだ':'まだ')+'</span></button>';
+      });
+      html += '</div></div>';
+    });
+    box.innerHTML = html;
+  }
+
+  // 連続日数
+  const n = streak();
+  document.getElementById('streakBox').style.display = 'flex';
+  document.getElementById('streakNum').textContent = n;
+  const next = GOALS.find(g=>g.d > n);
+  document.getElementById('nextGoal').innerHTML = next
+    ? '次の'+next.icon+'まで<br><b style="font-size:18px">あと '+(next.d-n)+' 日</b>'
+    : 'ぜんぶ達成🎉すごい！';
+}
+// 残り日数の表示
+function leftLabel(m){
+  if(!m.end) return 'ずっと';
+  const diff = Math.round((parse(m.end) - parse(TODAY)) / 86400000);
+  if(diff < 0) return '終了';
+  return '残り '+(diff+1)+' 日';
+}
+function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+// 飲んだ／取り消しの操作
+document.getElementById('todayList').addEventListener('click', e=>{
+  const b = e.target.closest('.slot');
+  if(!b) return;
+  const id = b.dataset.med, sk = b.dataset.slot;
+  DB.records[TODAY] = DB.records[TODAY] || {};
+  const key = id+'_'+sk;
+  if(DB.records[TODAY][key]){
+    // もう一度押したら取り消し
+    delete DB.records[TODAY][key];
+    save(); renderAll();
+  }else{
+    DB.records[TODAY][key] = true;
+    save(); renderAll();
+    celebrate();          // お祝いの演出
+    checkRewards();       // ごほうび判定
+  }
+});
+
+/* =========================================================
+   5. カレンダー
+   ========================================================= */
+let calY = new Date().getFullYear();
+let calM = new Date().getMonth();
+
+function renderCal(){
+  document.getElementById('calTitle').textContent = calY+'年 '+(calM+1)+'月';
+  // 曜日の行
+  const dowBox = document.getElementById('calDow');
+  dowBox.innerHTML = DOW.map((d,i)=>
+    '<div class="cal-dow'+(i===0?' sun':i===6?' sat':'')+'">'+d+'</div>').join('');
+
+  const first = new Date(calY, calM, 1);
+  const lastDate = new Date(calY, calM+1, 0).getDate();
+  const st = startDay();
+  let html = '';
+  for(let i=0; i<first.getDay(); i++) html += '<div class="cell empty"></div>';
+
+  for(let d=1; d<=lastDate; d++){
+    const ds = ymd(new Date(calY, calM, d));
+    const s = dayStatus(ds);
+    let cls = 'cell';
+    let mark = '';
+    if(s === 'done'){ cls+=' done'; mark = '✔'; }
+    else if(s === 'partial'){ cls+=' partial'; mark = '△'; }
+    else if(s === 'miss'){ cls+=' miss'; mark = '○'; }
+    else if(s === 'future'){ cls+=' future'; }
+    if(ds === TODAY) cls += ' today';
+    if(ds === st) cls += ' start';
+    html += '<div class="'+cls+'"><span class="d">'+d+'</span>'
+      + (mark ? '<span class="mark">'+mark+'</span>' : '')
+      + (ds === st ? '<span class="startflag">🚩💊<br>START</span>' : '')
+      + '</div>';
+  }
+  document.getElementById('calBody').innerHTML = html;
+}
+document.getElementById('prevM').onclick = ()=>{ calM--; if(calM<0){calM=11;calY--;} renderCal(); };
+document.getElementById('nextM').onclick = ()=>{ calM++; if(calM>11){calM=0;calY++;} renderCal(); };
+
+/* =========================================================
+   6. グラフ（月ごとの服薬率）
+   ========================================================= */
+function monthRate(y, m){
+  const last = new Date(y, m+1, 0).getDate();
+  let plan = 0, done = 0;
+  for(let d=1; d<=last; d++){
+    const ds = ymd(new Date(y, m, d));
+    if(ds > TODAY) continue;
+    const p = plannedOf(ds);
+    plan += p.length;
+    p.forEach(x=>{ if(isTaken(ds, x.med.id, x.slot)) done++; });
+  }
+  return {plan:plan, done:done, rate: plan ? Math.round(done/plan*100) : null};
+}
+function renderChart(){
+  const bars = document.getElementById('bars');
+  const labs = document.getElementById('barLabs');
+  const now = new Date();
+  let bh = '', lh = '';
+  for(let i=5; i>=0; i--){
+    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
+    const r = monthRate(d.getFullYear(), d.getMonth());
+    const v = r.rate === null ? 0 : r.rate;
+    bh += '<div class="bar-col">'
+      + '<div class="bar-val">'+(r.rate===null?'—':v+'%')+'</div>'
+      + (r.rate===null ? '' : '<div class="bar" style="height:'+Math.max(3,v*0.84)+'%"></div>')
+      + '</div>';
+    lh += '<div class="cal-dow">'+(d.getMonth()+1)+'月</div>';
+  }
+  bars.innerHTML = bh;
+  labs.innerHTML = lh;
+
+  // 今月の評価
+  const cur = monthRate(now.getFullYear(), now.getMonth());
+  const msg = document.getElementById('rankMsg');
+  if(cur.rate === null){ msg.textContent = 'まだ記録がないよ。今日から始めよう😊'; }
+  else if(cur.rate === 100){ msg.textContent = '🏆 Perfect！ 今月はかんぺきだね！'; }
+  else if(cur.rate >= 95){ msg.textContent = '🌟 Excellent！ すばらしい続き方だよ！'; }
+  else if(cur.rate >= 80){ msg.textContent = '👍 いい調子！ この調子で続けよう'; }
+  else { msg.textContent = '🍀 だいじょうぶ、今日から積み上げていこう'; }
+
+  document.getElementById('monthDetail').innerHTML =
+    cur.rate === null ? 'まだ記録がありません。'
+    : '飲む予定 <b>'+cur.plan+'</b> 回のうち、飲めたのは <b>'+cur.done+'</b> 回だよ💊<br>'
+      + '連続記録は <b>'+streak()+'</b> 日、これまでの最高は <b>'+bestStreak()+'</b> 日です✨';
+}
+
+/* =========================================================
+   7. ごほうび
+   ========================================================= */
+const GOALS = [
+  {d:7,   icon:'🏅', name:'1週間メダル'},
+  {d:14,  icon:'🏅', name:'2週間メダル'},
+  {d:30,  icon:'👑', name:'1か月の王冠'},
+  {d:60,  icon:'👑', name:'2か月の王冠'},
+  {d:90,  icon:'🏆', name:'3か月トロフィー'},
+  {d:100, icon:'🏆', name:'100日トロフィー'},
+  {d:180, icon:'💐', name:'半年の花束'},
+  {d:365, icon:'💐', name:'1年の花束'}
+];
+// これまでの最高記録（保存しておく）
+function bestStreak(){
+  const n = streak();
+  if(!DB.best || n > DB.best){ DB.best = n; save(); }
+  return DB.best || 0;
+}
+function checkRewards(){
+  const n = streak();
+  GOALS.forEach(g=>{
+    if(n >= g.d && DB.got.indexOf(g.d) < 0){
+      DB.got.push(g.d); save();
+      setTimeout(()=>{
+        toast(g.icon+' '+g.name+' 獲得！');
+        burst('star');
+      }, 2200);
+    }
+  });
+}
+function renderRewards(){
+  const n = streak();
+  document.getElementById('streakNum2').textContent = n;
+  document.getElementById('bestNum').textContent = bestStreak();
+  document.getElementById('rewardGrid').innerHTML = GOALS.map(g=>{
+    const got = DB.got.indexOf(g.d) >= 0;
+    return '<div class="rw'+(got?' got':'')+'">'
+      + '<div class="ic">'+g.icon+'</div>'
+      + '<div class="t">'+g.d+'日</div>'
+      + '<div class="s">'+(got ? g.name : 'あと'+Math.max(0,g.d-n)+'日')+'</div></div>';
+  }).join('');
+}
+
+/* =========================================================
+   8. 飲んだときの演出（毎回ランダム）
+   ========================================================= */
+const PRAISE = ['今日もバッチリ！','その調子！','継続は力なり！','健康ポイントGET！',
+  '今日も100点！','えらい！','ナイス習慣✨','よく続いてるね！'];
+const EFFECTS = ['confetti','sparkle','star','balloon','sakura','clover','rainbow','firework'];
+
+function celebrate(){
+  burst(EFFECTS[Math.floor(Math.random()*EFFECTS.length)]);
+  toast(PRAISE[Math.floor(Math.random()*PRAISE.length)]);
+  setTimeout(playMini, 1400);   // 少し遅れてミニアニメ
+}
+function toast(text){
+  const t = document.getElementById('toast');
+  t.textContent = text;
+  t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'), 1600);
+}
+// 1〜2秒の演出
+function burst(kind){
+  const fx = document.getElementById('fx');
+  const N = 26;
+  const w = window.innerWidth, h = window.innerHeight;
+  for(let i=0; i<N; i++){
+    const el = document.createElement('div');
+    el.className = 'p';
+    const dur = (1 + Math.random()).toFixed(2)+'s';
+    if(kind === 'confetti'){
+      const colors = ['#7E92A6','#B9C6D2','#6E9A8D','#C4A98C','#8D99A5','#E4B7B2'];
+      el.style.cssText = 'width:9px;height:14px;border-radius:2px;background:'
+        + colors[i%colors.length] + ';left:'+(Math.random()*100)+'%;top:-20px;'
+        + 'animation:fall '+dur+' linear forwards;';
+    }else if(kind === 'balloon'){
+      el.textContent = ['🎈','🎈','🎊'][i%3];
+      el.style.cssText = 'font-size:'+(20+Math.random()*16)+'px;left:'+(Math.random()*100)
+        + '%;top:100vh;animation:rise '+(1.2+Math.random())+'s ease-in forwards;';
+    }else if(kind === 'sakura' || kind === 'clover'){
+      el.textContent = kind === 'sakura' ? '🌸' : '🍀';
+      el.style.cssText = 'font-size:'+(18+Math.random()*14)+'px;left:'+(Math.random()*100)
+        + '%;top:-20px;animation:fall '+(1.2+Math.random())+'s linear forwards;';
+    }else if(kind === 'rainbow'){
+      if(i > 6) break;
+      el.textContent = '🌈';
+      el.style.cssText = 'font-size:'+(26+i*6)+'px;left:'+(10+i*12)+'%;top:'+(20+Math.random()*30)
+        + '%;animation:rainbowIn .8s ease forwards;';
+    }else{
+      // キラキラ・星・花火は中心から飛び散る
+      const icon = kind === 'sparkle' ? '✨' : kind === 'star' ? '⭐️' : '🎆';
+      el.textContent = icon;
+      const ang = Math.random()*Math.PI*2, dist = 90 + Math.random()*170;
+      el.style.cssText = 'font-size:'+(16+Math.random()*18)+'px;left:50%;top:38%;'
+        + '--dx:'+Math.cos(ang)*dist+'px;--dy:'+Math.sin(ang)*dist+'px;'
+        + 'animation:pop '+dur+' ease-out forwards;';
+    }
+    fx.appendChild(el);
+    setTimeout(()=>el.remove(), 2600);
+  }
+}
+
+/* =========================================================
+   9. ミニアニメーション（5〜8秒・季節で背景が変わる）
+   ========================================================= */
+function seasonBg(){
+  const m = new Date().getMonth()+1;
+  if(m>=3 && m<=5)  return {bg:'linear-gradient(180deg,rgba(255,244,247,0),rgba(250,226,232,.55))', deco:'🌸'};
+  if(m>=6 && m<=8)  return {bg:'linear-gradient(180deg,rgba(233,246,252,0),rgba(207,233,245,.55))', deco:'🌿'};
+  if(m>=9 && m<=11) return {bg:'linear-gradient(180deg,rgba(253,244,233,0),rgba(245,224,199,.55))', deco:'🍁'};
+  return {bg:'linear-gradient(180deg,rgba(244,248,252,0),rgba(224,234,244,.6))', deco:'❄️'};
+}
+const MINI = ['dog','cat','fish','penguin','chick','bird','clover','flower','shooting','rainbow','sakura','momiji','snow'];
+
+function playMini(){
+  const box = document.getElementById('mini');
+  const g = box.querySelector('.ground');
+  const kind = MINI[Math.floor(Math.random()*MINI.length)];
+  const s = seasonBg();
+  g.style.background = s.bg;
+  g.innerHTML = '';
+
+  const dur = 5 + Math.random()*3;   // 5〜8秒
+  const add = (html)=>{ g.insertAdjacentHTML('beforeend', html); };
+
+  if(kind==='dog' || kind==='cat' || kind==='penguin' || kind==='chick'){
+    const face = {dog:'🐕', cat:'🐈', penguin:'🐧', chick:'🐣'}[kind];
+    const move = (kind==='cat') ? 'hop .6s ease-in-out infinite' : 'bob .5s ease-in-out infinite';
+    add('<div class="walker" style="animation:walkR '+dur+'s linear forwards">'
+      + '<span style="display:inline-block;animation:'+move+'">'+face+'</span></div>');
+    add('<div style="position:absolute;bottom:12%;left:0;right:0;height:2px;background:rgba(126,146,166,.25)"></div>');
+  }else if(kind==='fish'){
+    for(let i=0;i<3;i++){
+      add('<div class="walker" style="bottom:'+(15+i*18)+'%;font-size:'+(34+i*6)+'px;'
+        + 'animation:walkL '+(dur+i)+'s linear forwards">'
+        + '<span style="display:inline-block;animation:swim 1.2s ease-in-out infinite">🐠</span></div>');
+    }
+  }else if(kind==='bird'){
+    add('<div class="walker" style="font-size:40px;animation:flyUp '+dur+'s ease-out forwards">'
+      + '<span style="display:inline-block;animation:bob .4s ease-in-out infinite">🐦</span></div>');
+  }else if(kind==='clover'){
+    for(let i=0;i<7;i++){
+      add('<div style="position:absolute;bottom:8%;left:'+(6+i*13)+'%;font-size:34px;'
+        + 'animation:sway '+(1.6+Math.random())+'s ease-in-out infinite;transform-origin:bottom center">🍀</div>');
+    }
+  }else if(kind==='flower'){
+    const f = ['🌷','🌼','🌻','🌸','🌺'];
+    for(let i=0;i<6;i++){
+      add('<div style="position:absolute;bottom:10%;left:'+(6+i*15)+'%;font-size:38px;opacity:0;'
+        + 'animation:bloom .8s ease '+(i*0.35)+'s forwards">'+f[i%f.length]+'</div>');
+    }
+  }else if(kind==='shooting'){
+    for(let i=0;i<4;i++){
+      add('<div style="position:absolute;top:'+(Math.random()*20)+'%;right:'+(Math.random()*30)+'%;font-size:30px;'
+        + 'animation:shoot 1.8s ease-in '+(i*1.1)+'s forwards">🌠</div>');
+    }
+  }else if(kind==='rainbow'){
+    add('<div style="position:absolute;bottom:6%;left:50%;transform:translateX(-50%);font-size:96px;'
+      + 'animation:rainbowIn 1s ease forwards">🌈</div>');
+  }else{
+    const p = {sakura:'🌸', momiji:'🍁', snow:'❄️'}[kind];
+    for(let i=0;i<18;i++){
+      add('<div style="position:absolute;top:-20px;left:'+(Math.random()*100)+'%;font-size:'
+        + (16+Math.random()*16)+'px;--dx:'+(-40+Math.random()*80)+'px;'
+        + 'animation:drift '+(3+Math.random()*3)+'s linear '+(Math.random()*2)+'s forwards">'+p+'</div>');
+    }
+  }
+
+  box.classList.add('on');
+  clearTimeout(playMini._t);
+  playMini._t = setTimeout(()=>{
+    box.classList.remove('on');
+    setTimeout(()=>{ g.innerHTML=''; }, 600);
+  }, dur*1000);
+}
+
+/* =========================================================
+   10. お薬の登録シート
+   ========================================================= */
+let editId = null;
+
+function openSheet(id){
+  editId = id || null;
+  const m = id ? DB.meds.find(x=>x.id===id) : null;
+  document.getElementById('sheetTitle').textContent = m ? 'お薬の編集' : 'お薬の登録';
+  document.getElementById('f_name').value  = m ? m.name : '';
+  document.getElementById('f_start').value = m ? m.start : TODAY;
+  document.getElementById('f_end').value   = m && m.end ? m.end : '';
+  document.getElementById('f_memo').value  = m && m.memo ? m.memo : '';
+  // タイミング
+  document.querySelectorAll('#f_slots button').forEach(b=>{
+    const on = m ? !!m.slots[b.dataset.s] : (b.dataset.s === 'm');
+    b.classList.toggle('on', on);
+  });
+  // 曜日（新規は毎日）
+  document.querySelectorAll('#f_days button').forEach(b=>{
+    const on = m ? m.days.indexOf(+b.dataset.d) >= 0 : true;
+    b.classList.toggle('on', on);
+  });
+  document.getElementById('delMed').style.display = m ? 'block' : 'none';
+  document.getElementById('medModal').classList.add('on');
+}
+function closeSheet(){ document.getElementById('medModal').classList.remove('on'); }
+
+document.getElementById('f_slots').addEventListener('click', e=>{
+  const b = e.target.closest('button'); if(b) b.classList.toggle('on');
+});
+document.getElementById('f_days').addEventListener('click', e=>{
+  const b = e.target.closest('button'); if(b) b.classList.toggle('on');
+});
+document.getElementById('addMed').onclick  = ()=> openSheet(null);
+document.getElementById('closeMed').onclick = closeSheet;
+
+document.getElementById('saveMed').onclick = ()=>{
+  const name = document.getElementById('f_name').value.trim();
+  if(!name){ alert('お薬の名前を入れてね'); return; }
+  const slots = {};
+  document.querySelectorAll('#f_slots button.on').forEach(b=> slots[b.dataset.s] = true);
+  if(Object.keys(slots).length === 0){ alert('飲むタイミングを1つ以上えらんでね'); return; }
+  const days = [];
+  document.querySelectorAll('#f_days button.on').forEach(b=> days.push(+b.dataset.d));
+  if(days.length === 0){ alert('飲む曜日を1つ以上えらんでね'); return; }
+
+  const data = {
+    id: editId || ('m'+Date.now()),
+    name: name,
+    start: document.getElementById('f_start').value || TODAY,
+    end:   document.getElementById('f_end').value || '',
+    slots: slots,
+    days:  days,
+    memo:  document.getElementById('f_memo').value.trim()
+  };
+  if(editId){
+    const i = DB.meds.findIndex(x=>x.id===editId);
+    DB.meds[i] = data;
+  }else{
+    DB.meds.push(data);
+  }
+  save(); closeSheet(); renderAll();
+  toast('登録できました💊');
+};
+document.getElementById('delMed').onclick = ()=>{
+  if(!editId) return;
+  if(!confirm('このお薬を削除しますか？（記録は残ります）')) return;
+  DB.meds = DB.meds.filter(x=>x.id!==editId);
+  save(); closeSheet(); renderAll();
+};
+
+function renderMedList(){
+  const box = document.getElementById('medList');
+  if(DB.meds.length === 0){
+    box.innerHTML = '<div class="sub">まだ登録がありません。下のボタンから追加してね😊</div>';
+    return;
+  }
+  box.innerHTML = DB.meds.map(m=>{
+    const st = SLOTS.filter(s=>m.slots[s.k]).map(s=>s.label).join('・');
+    const dd = m.days.length === 7 ? '毎日' : m.days.map(d=>DOW[d]).join('');
+    return '<div class="med-row"><div>'
+      + '<div class="nm">💊 '+esc(m.name)+'</div>'
+      + '<div class="dt">'+st+' ／ '+dd+' ／ '+m.start+(m.end?' 〜 '+m.end:' 〜')+'</div></div>'
+      + '<button class="mini" data-edit="'+m.id+'">編集</button></div>';
+  }).join('');
+}
+document.getElementById('medList').addEventListener('click', e=>{
+  const b = e.target.closest('[data-edit]');
+  if(b) openSheet(b.dataset.edit);
+});
+
+/* =========================================================
+   11. 通知
+   ========================================================= */
+const NOTIFY_MSG = ['💊 お薬タイムです😊','今日も健康チャレンジ！','あと少しで皆勤賞！',
+  '今日も元気にいきましょう！','お薬、忘れていませんか？🍀','コップ一杯のお水と一緒に💧'];
+
+function initNotify(){
+  const t = DB.settings.times;
+  document.getElementById('t_m').value = t.m;
+  document.getElementById('t_n').value = t.n;
+  document.getElementById('t_e').value = t.e;
+  document.getElementById('t_b').value = t.b;
+  ['m','n','e','b'].forEach(k=>{
+    document.getElementById('t_'+k).onchange = e=>{
+      DB.settings.times[k] = e.target.value; save(); toast('時間を変えたよ⏰');
+    };
+  });
+  showNotifyState();
+}
+function showNotifyState(){
+  const el = document.getElementById('notifyState');
+  if(!('Notification' in window)){ el.textContent = 'この端末では通知が使えません。'; return; }
+  el.textContent = Notification.permission === 'granted'
+    ? '✅ お知らせを受け取る設定になっています'
+    : 'ボタンを押して「許可」を選んでね';
+}
+document.getElementById('notifyBtn').onclick = ()=>{
+  if(!('Notification' in window)){ alert('この端末では通知が使えません'); return; }
+  Notification.requestPermission().then(()=> showNotifyState());
+};
+// 1分ごとに時間をチェック
+let lastFired = '';
+setInterval(()=>{
+  if(!('Notification' in window) || Notification.permission !== 'granted') return;
+  const now = new Date();
+  const hm = ('0'+now.getHours()).slice(-2)+':'+('0'+now.getMinutes()).slice(-2);
+  const t = DB.settings.times;
+  const hit = Object.keys(t).find(k=> t[k] === hm);
+  if(!hit) return;
+  const tag = TODAY+'_'+hit;
+  if(lastFired === tag) return;
+  // その時間に飲む予定があるときだけ知らせる
+  const p = plannedOf(ymd(now)).filter(x=> x.slot === hit);
+  if(p.length === 0) return;
+  const yet = p.filter(x=> !isTaken(ymd(now), x.med.id, x.slot));
+  if(yet.length === 0) return;
+  lastFired = tag;
+  const label = SLOTS.find(s=>s.k===hit).label;
+  try{
+    new Notification(NOTIFY_MSG[Math.floor(Math.random()*NOTIFY_MSG.length)],
+      { body: label+'のお薬：'+yet.map(x=>x.med.name).join('、'), icon:'kusuri-icon.png' });
+  }catch(e){ /* 通知が出せない場合は何もしない */ }
+}, 20000);
+
+/* =========================================================
+   12. バックアップ
+   ========================================================= */
+document.getElementById('backupBtn').onclick = ()=>{
+  document.getElementById('backupArea').value = JSON.stringify(DB);
+  toast('書き出したよ📄');
+  alert('下の枠の文字をぜんぶコピーして、メモアプリなどに貼って保存しておいてね😊');
+};
+document.getElementById('restoreBtn').onclick = ()=>{
+  const v = document.getElementById('backupArea').value.trim();
+  if(!v){ alert('下の枠にバックアップの文字を貼ってから押してね'); return; }
+  if(!confirm('いまの記録を、貼り付けた内容で置きかえます。よろしいですか？')) return;
+  try{
+    const d = JSON.parse(v);
+    if(!d.meds) throw new Error('形式ちがい');
+    DB = Object.assign(DB, d); save(); renderAll(); initNotify();
+    toast('もどしました✨');
+  }catch(e){ alert('うまく読み取れませんでした。文字がすべて貼られているか確認してね'); }
+};
+document.getElementById('resetBtn').onclick = ()=>{
+  if(!confirm('お薬と記録をぜんぶ消します。本当によろしいですか？')) return;
+  if(!confirm('もとに戻せません。本当に消してもいいですか？')) return;
+  DB = {meds:[], records:{}, settings:{times:{m:'08:00',n:'12:00',e:'18:00',b:'21:00'}}, got:[], best:0};
+  save(); renderAll(); initNotify();
+};
+
+/* =========================================================
+   13. 画面の切り替え
+   ========================================================= */
+document.querySelector('nav').addEventListener('click', e=>{
+  const b = e.target.closest('button'); if(!b) return;
+  document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  document.getElementById('v-'+b.dataset.v).classList.add('on');
+  window.scrollTo(0,0);
+  renderAll();
+});
+
+/* =========================================================
+   14. 全部まとめて描き直す
+   ========================================================= */
+function renderAll(){
+  renderToday();
+  renderCal();
+  renderChart();
+  renderRewards();
+  renderMedList();
+}
+
+// 起動
+load();
+initNotify();
+renderAll();
+</script>
+</body>
+</html>
