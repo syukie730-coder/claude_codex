@@ -108,6 +108,14 @@ button.big:active{transform:scale(.98);}
   border-radius:22px 22px 0 0; padding:22px 18px calc(30px + env(safe-area-inset-bottom));}
 #steps h3{font-family:"Yomogi",cursive; font-size:19px; color:var(--accent-deep); margin-bottom:6px;}
 #steps p{font-size:13px; color:var(--ink-soft); line-height:1.8; margin-bottom:12px;}
+#steps .cmdwrap{position:relative; margin:6px 0 12px;}
+#steps .copy{position:absolute; top:8px; right:8px; z-index:2;
+  background:rgba(255,243,201,.16); border:1.5px solid rgba(255,243,201,.45); color:#FFF3C9;
+  border-radius:9px; padding:7px 10px; font-family:inherit; font-size:12.5px; cursor:pointer; line-height:1;}
+#steps .copy:active{background:rgba(255,243,201,.34);}
+#steps .copy.done{background:#8FC07A; border-color:#8FC07A; color:#fff;}
+#steps .cmdwrap .cmd{margin:0; padding-right:74px;}
+#steps .oneshot{background:#FFF4CE; border:2px solid var(--accent); border-radius:16px; padding:14px; margin:8px 0 4px;}
 #steps .cmd{background:#463A22; color:#FFF3C9; font-family:ui-monospace,Menlo,monospace; font-size:13px;
   padding:12px 14px; border-radius:11px; margin:6px 0 12px; word-break:break-all; line-height:1.6;}
 #steps .st{font-size:13.5px; font-weight:700; margin-top:14px;}
@@ -778,22 +786,50 @@ $("btnSave").onclick = ()=>{
   setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
   toast(fname()+" を保存したよ💾");
 };
+function cmdBox(text){
+  return '<div class="cmdwrap"><button class="copy" data-c="'+text.replace(/"/g,"&quot;")+'">⧉ コピー</button>'
+       + '<div class="cmd">'+text+'</div></div>';
+}
 $("btnSteps").onclick = ()=>{
-  const f = fname();
+  const f = fname(), msg = f.replace(".html","");
+  const all = 'cd ~/claude_codex && mv -f ~/Downloads/'+f+' ~/claude_codex/ && git add . && git commit -m "'+msg+'" && git push';
   $("stepsInner").innerHTML = ''
   + '<h3>📖 友だちに送るまでの手順</h3>'
-  + '<p>「💾 ファイルに保存する」を押したあと、この順番で進めてね😊<br>コマンドは長押しでコピーできるよ。</p>'
-  + '<div class="st">① iPhoneのファイルアプリからMacBookへAirDrop</div>'
-  + '<p style="margin:4px 0 0">「ダウンロード」の中の <b>'+f+'</b> を送ってね📤</p>'
-  + '<div class="st">② いつものフォルダに移動する</div><div class="cmd">cd ~/claude_codex</div>'
-  + '<div class="st">③ 届いているか確認する</div><div class="cmd">ls ~/Downloads</div>'
-  + '<div class="st">④ ファイルを移す</div><div class="cmd">mv -f ~/Downloads/'+f+' ~/claude_codex/</div>'
-  + '<div class="st">⑤ 変更をまとめる</div><div class="cmd">git add .</div>'
-  + '<div class="st">⑥ 記録する</div><div class="cmd">git commit -m "'+f.replace(".html","")+' を追加"</div>'
-  + '<div class="st">⑦ 公開する</div><div class="cmd">git push</div>'
-  + '<div class="st">⑧ このURLをLINEで送る</div><div class="cmd">https://syukie730-coder.github.io/claude_codex/'+f+'</div>'
-  + '<p style="margin-top:16px">⑥で「nothing to commit」と出たら、④の移動ができていないサインだよ⚠️ ③に戻ってファイル名を確かめてね😊</p>'
+  + '<p>「📤 MacBookにAirDropで送る」で送ったあと、MacBookのターミナルで作業してね😊<br>「⧉ コピー」を押すと、そのままコピーできるよ✨</p>'
+  + '<div class="oneshot"><div class="st" style="margin-top:0">⭐️ かんたん！これ1つで公開まで終わるよ</div>'
+  + '<p style="margin:6px 0 0">下のコピーを押して、ターミナルに貼って [return] を押すだけ😊</p>'
+  + cmdBox(all)
+  + '<p style="margin:0">うまくいかないときは、下の①〜⑦を1つずつ進めてね🌷</p></div>'
+  + '<div class="st">① AirDropでMacBookに送る</div>'
+  + '<p style="margin:4px 0 0">送るファイルは <b>'+f+'</b> だよ📤</p>'
+  + '<div class="st">② いつものフォルダに移動する</div>' + cmdBox("cd ~/claude_codex")
+  + '<div class="st">③ 届いているか確認する</div>' + cmdBox("ls ~/Downloads")
+  + '<p style="margin:0 0 4px">ここに <b>'+f+'</b> があるか見てね👀 名前が違っていたら④を直してね</p>'
+  + '<div class="st">④ ファイルを移す</div>' + cmdBox("mv -f ~/Downloads/"+f+" ~/claude_codex/")
+  + '<div class="st">⑤ 変更をまとめる</div>' + cmdBox("git add .")
+  + '<div class="st">⑥ 記録する</div>' + cmdBox('git commit -m "'+msg+'"')
+  + '<div class="st">⑦ 公開する</div>' + cmdBox("git push")
+  + '<div class="st">⑧ 1〜2分待ってからLINEで送る</div>'
+  + '<p style="margin:4px 0 8px">下の「🔗 公開したURLをLINEで送る」ボタンが便利だよ😊 URLはこれ👇</p>'
+  + cmdBox("https://syukie730-coder.github.io/claude_codex/"+f)
+  + '<p style="margin-top:16px">⑥で「nothing to commit」と出たら、④の移動ができていないサインだよ⚠️ ③に戻ってファイル名を確かめてね😊<br>404が出たときは、1〜2分待ってからもう一度開いてみてね⏰</p>'
   + '<button class="big second" style="margin-top:6px" onclick="document.getElementById(\'steps\').classList.remove(\'on\')">閉じる</button>';
+
+  $("stepsInner").querySelectorAll(".copy").forEach(b=>{
+    b.onclick = async ()=>{
+      const txt = b.dataset.c;
+      try{ await navigator.clipboard.writeText(txt); }
+      catch(e){
+        const ta = document.createElement("textarea");
+        ta.value = txt; ta.style.position="fixed"; ta.style.opacity="0";
+        document.body.appendChild(ta); ta.select();
+        try{ document.execCommand("copy"); }catch(e2){}
+        ta.remove();
+      }
+      b.textContent = "✓ コピーした"; b.classList.add("done");
+      setTimeout(()=>{ b.textContent = "⧉ コピー"; b.classList.remove("done"); }, 1800);
+    };
+  });
   $("steps").classList.add("on");
 };
 $("steps").addEventListener("click", e=>{ if(e.target.id==="steps") $("steps").classList.remove("on"); });
