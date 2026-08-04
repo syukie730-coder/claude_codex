@@ -73,6 +73,13 @@ textarea{line-height:1.85; resize:vertical;}
   background:#fff; color:var(--accent-deep); font-size:15px; cursor:pointer;}
 .song .pl.on{background:var(--accent); color:#fff; border-color:var(--accent);}
 
+.chips{display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;}
+.chip{font-family:inherit; font-size:12.5px; color:var(--accent-deep); background:var(--pale);
+  border:1.5px solid var(--line); border-radius:999px; padding:8px 13px; cursor:pointer;}
+.chip:active{background:var(--pale2);}
+.resetbar{max-width:560px; margin:0 auto; padding:0 16px 14px;}
+.resetbar button{width:100%; font-family:inherit; font-size:14px; font-weight:700; color:var(--accent-deep);
+  background:#fff; border:1.5px solid var(--line); border-radius:999px; padding:13px; cursor:pointer;}
 .photos{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:4px;}
 .ph{position:relative; aspect-ratio:1/1; border-radius:12px; overflow:hidden; background:#FFFDF6;
   border:1.5px dashed var(--line); display:flex; align-items:center; justify-content:center;}
@@ -117,6 +124,10 @@ button.big:active{transform:scale(.98);}
   <p>背景・かざり・曲をえらんで、<br>音楽つきの動くカードを作ろう🌻</p>
 </div>
 
+<div class="resetbar">
+  <button id="btnReset">🆕 新しいカードを作りはじめる（今の入力を消す）</button>
+</div>
+
 <div class="wrap">
 
   <section class="card">
@@ -147,6 +158,7 @@ button.big:active{transform:scale(.98);}
     <input type="text" id="to" placeholder="○○ちゃんへ">
     <label class="f">大きな見出し</label>
     <input type="text" id="title" placeholder="暑中お見舞い申し上げます🌻">
+    <div class="chips" id="chipsTitle"></div>
     <label class="f">小さな一言（見出しの下）</label>
     <input type="text" id="sub" placeholder="まだまだ暑い日が続きますね">
   </section>
@@ -165,6 +177,7 @@ button.big:active{transform:scale(.98);}
     <p class="hint">1行あける（空の行を入れる）と、そこで区切られて、スクロールに合わせてふわっと出てくるよ✨</p>
     <label class="f">差出人・結びの言葉</label>
     <input type="text" id="sign" placeholder="またね！ 🌻">
+    <div class="chips" id="chipsSign"></div>
   </section>
 
   <section class="card">
@@ -302,17 +315,23 @@ const SONG_ORDER = ["natsu","birthday","oiwai","pop","arigatou","yasuragi","yuki
 /* ================= おすすめセット ================= */
 const SETS = {
   summer:{ name:"夏のおたより", emoji:"🌻", bg:"natsuzora", deco:"sunflower", song:"natsu",
-    place:{to:"○○ちゃんへ",title:"暑中お見舞い申し上げます🌻",sub:"まだまだ暑い日が続きますね",cap:"楽しい時間をありがとう！",sign:"またね！ 🌻",fname:"natsu"} },
+    place:{to:"○○ちゃんへ",title:"暑中お見舞い申し上げます🌻",sub:"まだまだ暑い日が続きますね",cap:"楽しい時間をありがとう！",sign:"またね！ 🌻",fname:"natsu"},
+    tips:{title:["暑中お見舞い申し上げます🌻","残暑お見舞い申し上げます🍧","元気にしてる？😊"],sign:["またね！🌻","またみんなで会おうね💕","体に気をつけてね😊"]} },
   birthday:{ name:"お誕生日", emoji:"🎂", bg:"yasashii", deco:"heart", song:"birthday",
-    place:{to:"○○ちゃんへ",title:"お誕生日おめでとう🎂",sub:"すてきな一年になりますように",cap:"いつもありがとう！",sign:"またお祝いしようね🎉",fname:"omedetou"} },
+    place:{to:"○○ちゃんへ",title:"お誕生日おめでとう🎂",sub:"すてきな一年になりますように",cap:"いつもありがとう！",sign:"またお祝いしようね🎉",fname:"omedetou"},
+    tips:{title:["お誕生日おめでとう🎂","Happy Birthday🎉","すてきな一年になりますように🎈"],sign:["またお祝いしようね🎉","これからもよろしくね💕","大好きだよ😊"]} },
   thanks:{ name:"ありがとう", emoji:"💐", bg:"wakaba", deco:"flower", song:"arigatou",
-    place:{to:"○○さんへ",title:"ありがとう💐",sub:"感謝の気持ちをこめて",cap:"また会える日を楽しみに",sign:"心をこめて",fname:"arigatou"} },
+    place:{to:"○○さんへ",title:"ありがとう💐",sub:"感謝の気持ちをこめて",cap:"また会える日を楽しみに",sign:"心をこめて",fname:"arigatou"},
+    tips:{title:["ありがとう💐","心からありがとう🌷","お世話になりました😊"],sign:["心をこめて","またお会いしましょう🌸","本当にありがとう💐"]} },
   autumn:{ name:"秋のたより", emoji:"🍁", bg:"akiiro", deco:"leaf", song:"yasuragi",
-    place:{to:"○○さんへ",title:"秋のごあいさつ🍁",sub:"朝晩は涼しくなりましたね",cap:"ゆっくりお話ししたいね",sign:"またね😊",fname:"aki"} },
+    place:{to:"○○さんへ",title:"秋のごあいさつ🍁",sub:"朝晩は涼しくなりましたね",cap:"ゆっくりお話ししたいね",sign:"またね😊",fname:"aki"},
+    tips:{title:["秋のごあいさつ🍁","実りの秋だね🌰","お元気ですか？😊"],sign:["またね😊","ゆっくりお話ししようね🍵","風邪ひかないでね🍁"]} },
   winter:{ name:"冬・お正月", emoji:"❄️", bg:"yuki", deco:"snow", song:"yukiuta",
-    place:{to:"○○ちゃんへ",title:"あけましておめでとう❄️",sub:"今年もよろしくお願いします",cap:"今年も笑顔いっぱいの一年に",sign:"またね😊",fname:"newyear"} },
+    place:{to:"○○ちゃんへ",title:"あけましておめでとう❄️",sub:"今年もよろしくお願いします",cap:"今年も笑顔いっぱいの一年に",sign:"またね😊",fname:"newyear"},
+    tips:{title:["あけましておめでとう❄️","良いお年をお迎えください🎍","メリークリスマス🎄"],sign:["今年もよろしくね😊","またね❄️","良い一年になりますように🎍"]} },
   memory:{ name:"しのぶ", emoji:"🕊️", bg:"kinari", deco:"petalw", song:"omoide",
-    place:{to:"○○さんへ",title:"あなたを想う日に",sub:"やさしい時間を、もう一度",cap:"ずっと忘れないよ",sign:"心をこめて",fname:"omoide"} }
+    place:{to:"○○さんへ",title:"あなたを想う日に",sub:"やさしい時間を、もう一度",cap:"ずっと忘れないよ",sign:"心をこめて",fname:"omoide"},
+    tips:{title:["あなたを想う日に","忘れないよ🕊️","また会う日まで"],sign:["心をこめて","ずっと想っています","またね"]} }
 };
 const SET_ORDER = ["summer","birthday","thanks","autumn","winter","memory"];
 
@@ -405,7 +424,14 @@ function applyPlaceholders(){
   $("to").placeholder=p.to; $("title").placeholder=p.title; $("sub").placeholder=p.sub;
   $("cap").placeholder=p.cap; $("sign").placeholder=p.sign; $("fname").placeholder=p.fname;
 }
-function paintAll(){ paintSets(); paintBgs(); paintDecos(); paintSongs(); applyPlaceholders(); }
+function paintChips(){
+  const t = SETS[S.set].tips;
+  $("chipsTitle").innerHTML = t.title.map(x=>'<button class="chip" data-v="'+x+'">'+x+'</button>').join("");
+  $("chipsSign").innerHTML  = t.sign.map(x=>'<button class="chip" data-v="'+x+'">'+x+'</button>').join("");
+  $("chipsTitle").querySelectorAll(".chip").forEach(b=> b.onclick = ()=>{ $("title").value=b.dataset.v; save(); toast("見出しに入れたよ✨"); });
+  $("chipsSign").querySelectorAll(".chip").forEach(b=> b.onclick = ()=>{ $("sign").value=b.dataset.v; save(); toast("結びの言葉に入れたよ✨"); });
+}
+function paintAll(){ paintSets(); paintBgs(); paintDecos(); paintSongs(); applyPlaceholders(); paintChips(); }
 
 /* ================= 試聴プレイヤー ================= */
 const Prev = (function(){
@@ -712,6 +738,16 @@ function toast(msg){
   const t = $("toast"); t.textContent = msg; t.classList.add("on");
   clearTimeout(t._t); t._t = setTimeout(()=>t.classList.remove("on"), 2600);
 }
+$("btnReset").onclick = ()=>{
+  if(!confirm("今の入力と写真をぜんぶ消して、新しく作りはじめる？")) return;
+  Prev.stop();
+  KEYS.forEach(k=> $(k).value = "");
+  S.photos = [];
+  try{ localStorage.removeItem("cardStudio2"); }catch(e){}
+  paintAll(); paintPhotos(); save();
+  toast("まっさらになったよ🆕");
+  window.scrollTo({top:0, behavior:"smooth"});
+};
 $("btnPreview").onclick = ()=>{
   Prev.stop(); paintSongs();
   $("pvFrame").srcdoc = build();
