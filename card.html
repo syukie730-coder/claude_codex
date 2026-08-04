@@ -190,6 +190,7 @@ button.big:active{transform:scale(.98);}
 
 <div class="btns">
   <button class="big primary" id="btnPreview">👀 できあがりを見てみる</button>
+  <button class="big primary" id="btnAir">📤 MacBookにAirDropで送る</button>
   <button class="big second" id="btnSave">💾 ファイルに保存する</button>
   <button class="big second" id="btnSteps">📖 送るまでの手順を見る</button>
   <button class="big second" id="btnShare">🔗 公開したURLをLINEで送る</button>
@@ -756,6 +757,19 @@ $("btnPreview").onclick = ()=>{
   $("pv").classList.add("on");
 };
 $("pvClose").onclick = ()=>{ $("pv").classList.remove("on"); $("pvFrame").srcdoc=""; };
+$("btnAir").onclick = async ()=>{
+  try{
+    const file = new File([build()], fname(), {type:"text/html"});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file]});
+      return;
+    }
+    toast("この画面では使えないみたい💦 Safariで開いて試してね");
+  }catch(err){
+    if(err && err.name === "AbortError") return;
+    toast("うまくいかなかったよ💦「保存する」を使ってね");
+  }
+};
 $("btnSave").onclick = ()=>{
   const blob = new Blob([build()], {type:"text/html"});
   const a = document.createElement("a");
