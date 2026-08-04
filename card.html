@@ -7,141 +7,106 @@
 <link rel="apple-touch-icon" href="card-icon.png">
 <link rel="icon" href="card-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#FFF6CD">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Yomogi&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --pale:#FFF9E3;
-  --pale2:#FFF3C9;
-  --line:#F0DFA6;
-  --accent:#E8A33D;
-  --accent-deep:#C97F1C;
-  --ink:#5C4B2E;
-  --ink-soft:#948063;
-  --card:#FFFFFF;
+  --pale:#FFF9E3; --pale2:#FFF3C9; --line:#F0DFA6;
+  --accent:#E8A33D; --accent-deep:#C97F1C;
+  --ink:#5C4B2E; --ink-soft:#948063; --card:#FFFFFF;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 body{
-  font-family:"Zen Maru Gothic",-apple-system,sans-serif;
-  color:var(--ink);
-  background:linear-gradient(180deg,#FFF9E3 0%,#FFF3C9 100%);
-  background-attachment:fixed;
-  min-height:100vh;
-  padding-bottom:120px;
-  -webkit-text-size-adjust:100%;
+  font-family:"Zen Maru Gothic",-apple-system,sans-serif; color:var(--ink);
+  background:linear-gradient(180deg,#FFF9E3 0%,#FFF3C9 100%); background-attachment:fixed;
+  min-height:100vh; padding-bottom:120px; -webkit-text-size-adjust:100%;
 }
-.head{
-  text-align:center; padding:calc(26px + env(safe-area-inset-top)) 20px 18px;
-}
-.head h1{
-  font-family:"Yomogi",cursive; font-size:26px; font-weight:400; color:var(--accent-deep);
-  letter-spacing:.04em;
-}
+.head{text-align:center; padding:calc(26px + env(safe-area-inset-top)) 20px 18px;}
+.head h1{font-family:"Yomogi",cursive; font-size:26px; font-weight:400; color:var(--accent-deep); letter-spacing:.04em;}
 .head p{font-size:13px; color:var(--ink-soft); margin-top:6px; line-height:1.7;}
-
 .wrap{max-width:560px; margin:0 auto; padding:0 16px;}
-
-.card{
-  background:var(--card); border:1.5px solid var(--line); border-radius:20px;
-  padding:20px 18px; margin-bottom:16px;
-  box-shadow:0 6px 18px rgba(200,170,90,.13);
-}
-.card h2{
-  font-size:15.5px; font-weight:700; color:var(--accent-deep);
-  display:flex; align-items:center; gap:8px; margin-bottom:14px;
-}
-.card h2 .n{
-  background:var(--pale2); color:var(--accent-deep); font-size:12.5px;
-  width:24px; height:24px; border-radius:50%;
-  display:flex; align-items:center; justify-content:center; flex:none;
-}
+.card{background:var(--card); border:1.5px solid var(--line); border-radius:20px;
+  padding:20px 18px; margin-bottom:16px; box-shadow:0 6px 18px rgba(200,170,90,.13);}
+.card h2{font-size:15.5px; font-weight:700; color:var(--accent-deep); display:flex; align-items:center; gap:8px; margin-bottom:14px;}
+.card h2 .n{background:var(--pale2); color:var(--accent-deep); font-size:12.5px; width:24px; height:24px;
+  border-radius:50%; display:flex; align-items:center; justify-content:center; flex:none;}
 label.f{display:block; font-size:12.5px; color:var(--ink-soft); margin:14px 0 5px;}
 label.f:first-of-type{margin-top:0;}
-input[type=text],textarea,select{
-  width:100%; font-family:inherit; font-size:16px; color:var(--ink);
-  background:#FFFDF6; border:1.5px solid var(--line); border-radius:12px;
-  padding:11px 13px; outline:none;
-}
+input[type=text],textarea{width:100%; font-family:inherit; font-size:16px; color:var(--ink);
+  background:#FFFDF6; border:1.5px solid var(--line); border-radius:12px; padding:11px 13px; outline:none;}
 input[type=text]:focus,textarea:focus{border-color:var(--accent);}
 textarea{line-height:1.85; resize:vertical;}
-.hint{font-size:11.5px; color:var(--ink-soft); margin-top:6px; line-height:1.6;}
+.hint{font-size:11.5px; color:var(--ink-soft); margin-top:8px; line-height:1.6;}
 
-/* テーマ選択 */
-.themes{display:grid; grid-template-columns:repeat(auto-fill,minmax(94px,1fr)); gap:9px;}
-.th{
-  border:2px solid var(--line); border-radius:15px; background:#FFFDF6;
-  padding:12px 6px 10px; text-align:center; cursor:pointer; transition:.18s;
-}
-.th .e{font-size:26px; display:block; line-height:1.2;}
-.th .t{font-size:12px; margin-top:5px; color:var(--ink);}
-.th.on{border-color:var(--accent); background:var(--pale2); transform:translateY(-2px);
-  box-shadow:0 6px 14px rgba(232,163,61,.25);}
+/* おすすめセット */
+.sets{display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:9px;}
+.set{border:2px solid var(--line); border-radius:15px; background:#FFFDF6; padding:12px 6px 10px; text-align:center; cursor:pointer; transition:.18s;}
+.set .e{font-size:25px; display:block; line-height:1.2;}
+.set .t{font-size:11.5px; margin-top:5px; display:block;}
+.set.on{border-color:var(--accent); background:var(--pale2); transform:translateY(-2px); box-shadow:0 6px 14px rgba(232,163,61,.25);}
 
-/* 写真 */
+/* 背景えらび */
+.bgs{display:grid; grid-template-columns:repeat(auto-fill,minmax(88px,1fr)); gap:9px;}
+.bg{border:2px solid var(--line); border-radius:15px; overflow:hidden; cursor:pointer; background:#fff; transition:.18s;}
+.bg .sw{height:52px; display:block;}
+.bg .t{display:block; font-size:11.5px; text-align:center; padding:6px 2px 7px;}
+.bg.on{border-color:var(--accent); transform:translateY(-2px); box-shadow:0 6px 14px rgba(232,163,61,.25);}
+
+/* かざりえらび */
+.decos{display:grid; grid-template-columns:repeat(auto-fill,minmax(84px,1fr)); gap:9px;}
+.deco{border:2px solid var(--line); border-radius:15px; background:#FFFDF6; padding:9px 4px 8px; text-align:center; cursor:pointer; transition:.18s;}
+.deco svg{display:block; margin:0 auto;}
+.deco .t{font-size:11.5px; margin-top:4px; display:block;}
+.deco.on{border-color:var(--accent); background:var(--pale2); transform:translateY(-2px); box-shadow:0 6px 14px rgba(232,163,61,.25);}
+
+/* 曲えらび */
+.song{display:flex; align-items:center; gap:11px; border:2px solid var(--line); border-radius:15px;
+  background:#FFFDF6; padding:11px 12px; margin-bottom:8px; cursor:pointer; transition:.18s;}
+.song.on{border-color:var(--accent); background:var(--pale2);}
+.song .e{font-size:22px; flex:none;}
+.song .tx{flex:1; min-width:0;}
+.song .nm{font-size:14.5px; font-weight:700; display:block;}
+.song .ds{font-size:11.5px; color:var(--ink-soft); margin-top:2px; display:block;}
+.song .pl{flex:none; width:42px; height:42px; border-radius:50%; border:1.5px solid var(--line);
+  background:#fff; color:var(--accent-deep); font-size:15px; cursor:pointer;}
+.song .pl.on{background:var(--accent); color:#fff; border-color:var(--accent);}
+
 .photos{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:4px;}
-.ph{
-  position:relative; aspect-ratio:1/1; border-radius:12px; overflow:hidden;
-  background:#FFFDF6; border:1.5px dashed var(--line);
-  display:flex; align-items:center; justify-content:center;
-}
+.ph{position:relative; aspect-ratio:1/1; border-radius:12px; overflow:hidden; background:#FFFDF6;
+  border:1.5px dashed var(--line); display:flex; align-items:center; justify-content:center;}
 .ph img{width:100%;height:100%;object-fit:cover;}
-.ph .del{
-  position:absolute; top:3px; right:3px; width:22px; height:22px; border-radius:50%;
-  background:rgba(0,0,0,.55); color:#fff; border:none; font-size:13px; line-height:1; cursor:pointer;
-}
-.addph{
-  font-size:26px; color:var(--line); background:none; border:none; width:100%; height:100%;
-  cursor:pointer; display:flex; align-items:center; justify-content:center;
-}
+.ph .del{position:absolute; top:3px; right:3px; width:22px; height:22px; border-radius:50%;
+  background:rgba(0,0,0,.55); color:#fff; border:none; font-size:13px; line-height:1; cursor:pointer;}
+.addph{font-size:26px; color:var(--line); background:none; border:none; width:100%; height:100%; cursor:pointer;}
 
-/* ボタン */
 .btns{max-width:560px; margin:0 auto; padding:4px 16px 30px;}
-button.big{
-  width:100%; font-family:inherit; font-weight:700; font-size:16px;
-  border:none; border-radius:999px; padding:16px; cursor:pointer; margin-bottom:11px;
-  letter-spacing:.03em;
-}
-.primary{background:linear-gradient(180deg,#FFD265,#E8A33D); color:#fff;
-  box-shadow:0 8px 20px rgba(232,163,61,.38);}
+button.big{width:100%; font-family:inherit; font-weight:700; font-size:16px; border:none; border-radius:999px;
+  padding:16px; cursor:pointer; margin-bottom:11px; letter-spacing:.03em;}
+.primary{background:linear-gradient(180deg,#FFD265,#E8A33D); color:#fff; box-shadow:0 8px 20px rgba(232,163,61,.38);}
 .second{background:#fff; color:var(--accent-deep); border:1.5px solid var(--line)!important;}
 button.big:active{transform:scale(.98);}
 
-/* プレビュー */
 #pv{position:fixed; inset:0; z-index:100; background:#000; display:none;}
 #pv.on{display:block;}
 #pv iframe{width:100%; height:100%; border:none; display:block;}
-#pvClose{
-  position:fixed; top:calc(12px + env(safe-area-inset-top)); left:14px; z-index:101;
-  background:rgba(255,255,255,.92); border:none; border-radius:999px;
-  padding:10px 18px; font-family:inherit; font-size:14px; font-weight:700; color:var(--accent-deep);
-  box-shadow:0 4px 14px rgba(0,0,0,.25); cursor:pointer;
-}
-/* 手順モーダル */
-#steps{
-  position:fixed; inset:0; z-index:110; background:rgba(70,55,30,.55);
-  display:none; align-items:flex-end;
-}
+#pvClose{position:fixed; top:calc(12px + env(safe-area-inset-top)); left:14px; z-index:101;
+  background:rgba(255,255,255,.92); border:none; border-radius:999px; padding:10px 18px;
+  font-family:inherit; font-size:14px; font-weight:700; color:var(--accent-deep);
+  box-shadow:0 4px 14px rgba(0,0,0,.25); cursor:pointer;}
+#steps{position:fixed; inset:0; z-index:110; background:rgba(70,55,30,.55); display:none; align-items:flex-end;}
 #steps.on{display:flex;}
-#steps .inner{
-  background:var(--pale); width:100%; max-height:86vh; overflow:auto;
-  border-radius:22px 22px 0 0; padding:22px 18px calc(30px + env(safe-area-inset-bottom));
-}
+#steps .inner{background:var(--pale); width:100%; max-height:86vh; overflow:auto;
+  border-radius:22px 22px 0 0; padding:22px 18px calc(30px + env(safe-area-inset-bottom));}
 #steps h3{font-family:"Yomogi",cursive; font-size:19px; color:var(--accent-deep); margin-bottom:6px;}
 #steps p{font-size:13px; color:var(--ink-soft); line-height:1.8; margin-bottom:12px;}
-#steps .cmd{
-  background:#463A22; color:#FFF3C9; font-family:ui-monospace,Menlo,monospace;
-  font-size:13px; padding:12px 14px; border-radius:11px; margin:6px 0 12px;
-  word-break:break-all; line-height:1.6;
-}
+#steps .cmd{background:#463A22; color:#FFF3C9; font-family:ui-monospace,Menlo,monospace; font-size:13px;
+  padding:12px 14px; border-radius:11px; margin:6px 0 12px; word-break:break-all; line-height:1.6;}
 #steps .st{font-size:13.5px; font-weight:700; margin-top:14px;}
-.toast{
-  position:fixed; left:50%; bottom:34px; transform:translateX(-50%) translateY(20px);
-  background:rgba(70,55,30,.92); color:#fff; font-size:13.5px;
-  padding:12px 22px; border-radius:999px; opacity:0; transition:.3s; z-index:200; pointer-events:none;
-}
+.toast{position:fixed; left:50%; bottom:34px; transform:translateX(-50%) translateY(20px);
+  background:rgba(70,55,30,.92); color:#fff; font-size:13.5px; padding:12px 22px; border-radius:999px;
+  opacity:0; transition:.3s; z-index:200; pointer-events:none;}
 .toast.on{opacity:1; transform:translateX(-50%) translateY(0);}
 </style>
 </head>
@@ -149,20 +114,37 @@ button.big:active{transform:scale(.98);}
 
 <div class="head">
   <h1>💌 メッセージカード工房</h1>
-  <p>写真とメッセージを入れるだけで、<br>音楽つきの動くカードができるよ🌻</p>
+  <p>背景・かざり・曲をえらんで、<br>音楽つきの動くカードを作ろう🌻</p>
 </div>
 
 <div class="wrap">
 
   <section class="card">
-    <h2><span class="n">1</span>どんなカードにする？</h2>
-    <div class="themes" id="themes"></div>
+    <h2><span class="n">1</span>おすすめの組み合わせ</h2>
+    <div class="sets" id="sets"></div>
+    <p class="hint">まずはここを選ぶと、背景・かざり・曲がまとめて決まるよ😊 このあと1つずつ好きに変えられます✨</p>
   </section>
 
   <section class="card">
-    <h2><span class="n">2</span>だれに、なんて伝える？</h2>
+    <h2><span class="n">2</span>背景をえらぶ 🎨</h2>
+    <div class="bgs" id="bgs"></div>
+  </section>
+
+  <section class="card">
+    <h2><span class="n">3</span>舞うかざりをえらぶ ✨</h2>
+    <div class="decos" id="decos"></div>
+  </section>
+
+  <section class="card">
+    <h2><span class="n">4</span>曲をえらぶ 🎵</h2>
+    <div id="songs"></div>
+    <p class="hint">▶️ を押すと試聴できるよ🎧</p>
+  </section>
+
+  <section class="card">
+    <h2><span class="n">5</span>だれに、なんて伝える？</h2>
     <label class="f">相手の名前（宛名）</label>
-    <input type="text" id="to" placeholder="ボンナンちゃんへ">
+    <input type="text" id="to" placeholder="○○ちゃんへ">
     <label class="f">大きな見出し</label>
     <input type="text" id="title" placeholder="暑中お見舞い申し上げます🌻">
     <label class="f">小さな一言（見出しの下）</label>
@@ -170,25 +152,25 @@ button.big:active{transform:scale(.98);}
   </section>
 
   <section class="card">
-    <h2><span class="n">3</span>写真を入れる</h2>
+    <h2><span class="n">6</span>写真を入れる</h2>
     <div class="photos" id="photos"></div>
     <p class="hint">4枚まで入るよ📸 2枚以上入れると、ゆっくり切り替わって表示されます</p>
     <label class="f">写真の下に入れる一言</label>
-    <input type="text" id="cap" placeholder="私たちの楽しい時間、これからもよろしくね！">
+    <input type="text" id="cap" placeholder="楽しい時間をありがとう！">
   </section>
 
   <section class="card">
-    <h2><span class="n">4</span>メッセージ本文</h2>
-    <textarea id="body" rows="10" placeholder="ボンナンちゃん😊✨&#10;暑中お見舞いありがとう〜🌻💕&#10;&#10;（1行あけると、次のかたまりになるよ）"></textarea>
+    <h2><span class="n">7</span>メッセージ本文</h2>
+    <textarea id="body" rows="10" placeholder="○○ちゃん😊✨&#10;暑中お見舞いありがとう〜🌻💕&#10;&#10;（1行あけると、次のかたまりになるよ）"></textarea>
     <p class="hint">1行あける（空の行を入れる）と、そこで区切られて、スクロールに合わせてふわっと出てくるよ✨</p>
     <label class="f">差出人・結びの言葉</label>
     <input type="text" id="sign" placeholder="またね！ 🌻">
   </section>
 
   <section class="card">
-    <h2><span class="n">5</span>ファイルの名前</h2>
-    <input type="text" id="fname" placeholder="natsu2026">
-    <p class="hint">英語の小文字と数字で付けてね（例：natsu2026）。<br>自動で「.html」が付きます😊</p>
+    <h2><span class="n">8</span>ファイルの名前</h2>
+    <input type="text" id="fname" placeholder="natsu">
+    <p class="hint">英語の小文字と数字で付けてね（例：natsu2026）。自動で「.html」が付きます😊</p>
   </section>
 
 </div>
@@ -200,22 +182,54 @@ button.big:active{transform:scale(.98);}
 </div>
 
 <div id="pv"><button id="pvClose">✕ 閉じる</button><iframe id="pvFrame"></iframe></div>
-
 <div id="steps"><div class="inner" id="stepsInner"></div></div>
 <div class="toast" id="toast"></div>
-
 <input type="file" id="file" accept="image/*" multiple style="display:none">
 
 <script>
-/* ================= テーマ設定 ================= */
-const THEMES = {
-  summer:{
-    name:"夏・暑中見舞い", emoji:"🌻",
-    bg:["#A8E4F7","#DFF3FB","#FFF6DC","#FFEFC0"],
-    accent:"#F2960C", head:"#3F6E8C", ink:"#5A452F", soft:"#8A745A",
-    glow:"255,244,190", tape:"255,214,79",
-    item:"sunflower", field:"sunflower", font:"fun",
-    bpm:116, wave:"triangle", shaker:true, gain:.16,
+/* ================= 背景 10種 ================= */
+const BGS = {
+  natsuzora:{ name:"なつぞら", bg:["#A8E4F7","#DFF3FB","#FFF6DC","#FFEFC0"],
+    accent:"#F2960C", head:"#3F6E8C", ink:"#5A452F", soft:"#8A745A", glow:"255,244,190", tape:"255,214,79", font:"fun", dark:false },
+  yuyake:{ name:"ゆうやけ", bg:["#FF9E7A","#FFC49B","#FFE3C4","#FFF1DC"],
+    accent:"#C9502A", head:"#A03C22", ink:"#5B4232", soft:"#8C6A55", glow:"255,215,170", tape:"255,190,140", font:"fun", dark:false },
+  sakura:{ name:"さくら", bg:["#FFDCE9","#FFECF3","#FFF7EC","#FFF0DC"],
+    accent:"#E4568A", head:"#C2417A", ink:"#6B4657", soft:"#A2798A", glow:"255,220,240", tape:"255,190,215", font:"fun", dark:false },
+  wakaba:{ name:"わかば", bg:["#D5EFD9","#EBF7E6","#FFFAE9","#FFF3D8"],
+    accent:"#4E9A6B", head:"#3E7D5A", ink:"#4F5A46", soft:"#7C8A72", glow:"238,255,215", tape:"200,230,170", font:"fun", dark:false },
+  yuki:{ name:"ゆき", bg:["#CBE4F6","#EAF4FC","#FBFDFF","#F2F8FF"],
+    accent:"#5C86B8", head:"#3A5F8A", ink:"#4A5566", soft:"#7C8A9C", glow:"255,255,255", tape:"200,225,245", font:"fun", dark:false },
+  umi:{ name:"うみ", bg:["#5EBEE1","#9BD8EE","#D6F0F8","#F0FAFD"],
+    accent:"#106C90", head:"#0C5470", ink:"#3D5561", soft:"#6E8B98", glow:"215,245,255", tape:"150,215,235", font:"fun", dark:false },
+  akiiro:{ name:"あきいろ", bg:["#F2B172","#F9D3A4","#FFEDD4","#FDE6C6"],
+    accent:"#B4551F", head:"#8A3F19", ink:"#5A4230", soft:"#8A6B52", glow:"255,225,180", tape:"245,190,130", font:"fun", dark:false },
+  yozora:{ name:"よぞら", bg:["#152442","#28395F","#41476F","#5D5478"],
+    accent:"#FFD98A", head:"#FFF3D2", ink:"#EFE9F3", soft:"#C4BDD2", glow:"255,240,200", tape:"120,110,150", font:"calm", dark:true },
+  yasashii:{ name:"やさしいピンク", bg:["#FFD3E1","#FFE7EF","#FFF6F8","#FFFCFA"],
+    accent:"#D9527E", head:"#B23E66", ink:"#5F4650", soft:"#9A7C88", glow:"255,225,238", tape:"255,200,220", font:"fun", dark:false },
+  kinari:{ name:"きなり", bg:["#F1E4D4","#F8F0E5","#FFF9F3","#F7EDE6"],
+    accent:"#C08A9B", head:"#8A6B76", ink:"#5C4B44", soft:"#8E7A70", glow:"255,235,215", tape:"235,215,225", font:"calm", dark:false }
+};
+const BG_ORDER = ["natsuzora","yuyake","sakura","wakaba","yuki","umi","akiiro","yozora","yasashii","kinari"];
+
+/* ================= 舞うかざり 9種 ================= */
+const DECOS = {
+  sunflower:{ name:"ひまわり", item:"sunflower", field:"sunflower" },
+  petal:{ name:"さくら", item:"petal", field:"flower" },
+  flower:{ name:"白い花", item:"flower", field:"flower" },
+  snow:{ name:"雪の結晶", item:"snow", field:"snow" },
+  heart:{ name:"ハート", item:"heart", field:"none" },
+  star:{ name:"星", item:"star", field:"none" },
+  leaf:{ name:"もみじ", item:"leaf", field:"none" },
+  bubble:{ name:"シャボン玉", item:"bubble", field:"none" },
+  petalw:{ name:"白い花びら", item:"petalw", field:"light" }
+};
+const DECO_ORDER = ["sunflower","petal","flower","snow","heart","star","leaf","bubble","petalw"];
+
+/* ================= 曲 8種 ================= */
+const SONGS = {
+  natsu:{ emoji:"🌻", name:"なつのマリンバ", desc:"明るくて元気な夏の曲",
+    bpm:116, wave:"triangle", shaker:true, gain:.16, loop:32,
     mel:[[0,'G4',.5],[.5,'A4',.5],[1,'G4',.5],[1.5,'E4',.5],[2,'G4',1],[3,'C5',1],
          [4,'A4',.5],[4.5,'C5',.5],[5,'A4',.5],[5.5,'G4',.5],[6,'E4',1.5],
          [8,'F4',.5],[8.5,'A4',.5],[9,'C5',1],[10,'A4',.5],[10.5,'G4',.5],[11,'F4',1],
@@ -224,15 +238,17 @@ const THEMES = {
          [20,'A4',1],[21,'C5',.5],[21.5,'E5',.5],[22,'D5',1.75],
          [24,'F4',.5],[24.5,'G4',.5],[25,'A4',.5],[25.5,'C5',.5],[26,'A4',1],[27,'G4',1],
          [28,'D5',.5],[28.5,'C5',.5],[29,'B4',.5],[29.5,'A4',.5],[30,'G4',1.75]],
-    bass:['C3','C3','A3','A3','F3','F3','G3','G3','C3','C3','A3','A3','F3','F3','G3','G3']
-  },
-  celebrate:{
-    name:"お祝い・誕生日", emoji:"🎉",
-    bg:["#FFE3EF","#FFF0F5","#FFF7E8","#FFEDD6"],
-    accent:"#E4568A", head:"#C2417A", ink:"#6B4657", soft:"#A2798A",
-    glow:"255,220,240", tape:"255,190,215",
-    item:"petal", field:"flower", font:"fun",
-    bpm:126, wave:"triangle", shaker:true, gain:.15,
+    bass:['C3','C3','A3','A3','F3','F3','G3','G3','C3','C3','A3','A3','F3','F3','G3','G3'] },
+  birthday:{ emoji:"🎂", name:"ハッピーバースデー", desc:"だれもが知ってる誕生日の定番",
+    bpm:108, wave:"triangle", shaker:false, gain:.18, loop:24,
+    mel:[[0,'G4',.5],[.5,'G4',.5],[1,'A4',1],[2,'G4',1],[3,'C5',1],[4,'B4',2],
+         [6,'G4',.5],[6.5,'G4',.5],[7,'A4',1],[8,'G4',1],[9,'D5',1],[10,'C5',2],
+         [12,'G4',.5],[12.5,'G4',.5],[13,'G5',1],[14,'E5',1],[15,'C5',1],[16,'B4',1],[17,'A4',1],
+         [18,'F5',.5],[18.5,'F5',.5],[19,'E5',1],[20,'C5',1],[21,'D5',1],[22,'C5',2]],
+    bass:[[1,'C3',2.6],[4,'G3',2.6],[7,'G3',2.6],[10,'C3',2.6],
+          [13,'C3',2.6],[16,'F3',2.6],[19,'C3',2.6],[22,'C3',2]] },
+  oiwai:{ emoji:"🎉", name:"おいわいマーチ", desc:"華やかで楽しいお祝いの曲",
+    bpm:126, wave:"triangle", shaker:true, gain:.15, loop:32,
     mel:[[0,'C5',.5],[.5,'D5',.5],[1,'E5',1],[2,'G5',1],[3,'E5',1],
          [4,'D5',.5],[4.5,'E5',.5],[5,'D5',1],[6,'B4',2],
          [8,'C5',.5],[8.5,'E5',.5],[9,'A5',1],[10,'G5',.5],[10.5,'E5',.5],[11,'C5',1],
@@ -241,106 +257,217 @@ const THEMES = {
          [20,'A5',1],[21,'G5',.5],[21.5,'F5',.5],[22,'D5',1.75],
          [24,'A4',.5],[24.5,'C5',.5],[25,'E5',1],[26,'F5',.5],[26.5,'A5',.5],[27,'G5',1],
          [28,'D5',.5],[28.5,'E5',.5],[29,'F5',.5],[29.5,'G5',.5],[30,'C5',1.75]],
-    bass:['C3','C3','G3','G3','A3','A3','F3','F3','C3','C3','G3','G3','A3','A3','G3','G3']
-  },
-  thanks:{
-    name:"ありがとう", emoji:"💐",
-    bg:["#DFF3E4","#F1F9EC","#FFFAE9","#FFF3D8"],
-    accent:"#4E9A6B", head:"#3E7D5A", ink:"#4F5A46", soft:"#7C8A72",
-    glow:"238,255,215", tape:"200,230,170",
-    item:"flower", field:"flower", font:"fun",
-    bpm:84, wave:"sine", shaker:false, gain:.19,
-    mel:[[0,'F4',1],[1,'A4',1],[2,'C5',2],
-         [4,'D5',1],[5,'C5',1],[6,'A4',2],
-         [8,'Bb4',1],[9,'D5',1],[10,'C5',1],[11,'A4',1],
-         [12,'G4',1],[13,'A4',1],[14,'G4',2],
-         [16,'C5',1],[17,'F5',1],[18,'E5',1],[19,'C5',1],
-         [20,'D5',1.5],[21.5,'C5',.5],[22,'A4',2],
-         [24,'Bb4',1],[25,'A4',1],[26,'G4',2],
-         [28,'A4',1],[29,'G4',1],[30,'F4',2]],
-    bass:['F3','F3','D3','D3','Bb3','Bb3','C3','C3','F3','F3','D3','D3','Bb3','Bb3','C3','C3']
-  },
-  winter:{
-    name:"冬・お正月", emoji:"❄️",
-    bg:["#CBE4F6","#EAF4FC","#FBFDFF","#F2F8FF"],
-    accent:"#5C86B8", head:"#3A5F8A", ink:"#4A5566", soft:"#7C8A9C",
-    glow:"255,255,255", tape:"200,225,245",
-    item:"snow", field:"snow", font:"fun",
-    bpm:92, wave:"sine", shaker:false, gain:.18,
-    mel:[[0,'G4',1],[1,'C5',1],[2,'E5',1.5],[3.5,'D5',.5],
-         [4,'C5',1],[5,'D5',1],[6,'E5',2],
-         [8,'F5',1],[9,'E5',1],[10,'D5',1],[11,'C5',1],
-         [12,'D5',1],[13,'B4',1],[14,'G4',2],
-         [16,'C5',1],[17,'E5',1],[18,'G5',2],
-         [20,'A5',1],[21,'G5',1],[22,'E5',2],
-         [24,'F5',1],[25,'A5',1],[26,'G5',1],[27,'E5',1],
-         [28,'D5',1],[29,'B4',1],[30,'C5',2]],
-    bass:['C3','C3','A3','A3','F3','F3','G3','G3','C3','C3','A3','A3','F3','F3','G3','G3']
-  },
-  memory:{
-    name:"しのぶ・追悼", emoji:"🕊️",
-    bg:["#F6EDE2","#FBF5EC","#FFF8F2","#F7EDE6"],
-    accent:"#C08A9B", head:"#8A6B76", ink:"#5C4B44", soft:"#8E7A70",
-    glow:"255,235,215", tape:"235,215,225",
-    item:"petalw", field:"light", font:"calm",
-    bpm:66, wave:"sine", shaker:false, gain:.2,
-    mel:[[0,'A4',2],[2,'C5',1],[3,'B4',1],
-         [4,'A4',2],[6,'G4',2],
-         [8,'E4',1],[9,'G4',1],[10,'C5',2],
-         [12,'B4',1],[13,'A4',1],[14,'G4',2],
-         [16,'A4',1],[17,'C5',1],[18,'E5',2],
-         [20,'D5',1],[21,'C5',1],[22,'A4',2],
-         [24,'F4',1],[25,'A4',1],[26,'G4',2],
-         [28,'E4',1],[29,'G4',1],[30,'A4',2]],
-    bass:['A3','A3','F3','F3','C3','C3','G3','G3','A3','A3','F3','F3','D3','D3','G3','G3']
-  }
+    bass:['C3','C3','G3','G3','A3','A3','F3','F3','C3','C3','G3','G3','A3','A3','G3','G3'] },
+  pop:{ emoji:"🎈", name:"ポップステップ", desc:"はずむ感じのポップな曲",
+    bpm:132, wave:"square", shaker:true, gain:.11, loop:32,
+    mel:[[0,'G4',.5],[.5,'C5',.5],[1,'E5',.5],[1.5,'C5',.5],[2,'D5',1],[3,'E5',1],
+         [4,'A4',.5],[4.5,'C5',.5],[5,'E5',.5],[5.5,'D5',.5],[6,'C5',2],
+         [8,'F4',.5],[8.5,'A4',.5],[9,'C5',.5],[9.5,'A4',.5],[10,'G4',1],[11,'A4',1],
+         [12,'B4',.5],[12.5,'D5',.5],[13,'G5',1],[14,'D5',2],
+         [16,'E5',.5],[16.5,'G5',.5],[17,'E5',.5],[17.5,'C5',.5],[18,'G5',2],
+         [20,'A5',.5],[20.5,'G5',.5],[21,'E5',1],[22,'C5',2],
+         [24,'A4',.5],[24.5,'C5',.5],[25,'F5',1],[26,'E5',.5],[26.5,'C5',.5],[27,'A4',1],
+         [28,'G4',.5],[28.5,'B4',.5],[29,'D5',.5],[29.5,'G5',.5],[30,'C5',2]],
+    bass:['C3','C3','A3','A3','F3','F3','G3','G3','C3','C3','A3','A3','F3','F3','G3','G3'] },
+  arigatou:{ emoji:"💐", name:"ありがとうオルゴール", desc:"やさしくてあたたかい曲",
+    bpm:84, wave:"sine", shaker:false, gain:.19, loop:32,
+    mel:[[0,'F4',1],[1,'A4',1],[2,'C5',2],[4,'D5',1],[5,'C5',1],[6,'A4',2],
+         [8,'Bb4',1],[9,'D5',1],[10,'C5',1],[11,'A4',1],[12,'G4',1],[13,'A4',1],[14,'G4',2],
+         [16,'C5',1],[17,'F5',1],[18,'E5',1],[19,'C5',1],[20,'D5',1.5],[21.5,'C5',.5],[22,'A4',2],
+         [24,'Bb4',1],[25,'A4',1],[26,'G4',2],[28,'A4',1],[29,'G4',1],[30,'F4',2]],
+    bass:['F3','F3','D3','D3','Bb3','Bb3','C3','C3','F3','F3','D3','D3','Bb3','Bb3','C3','C3'] },
+  yasuragi:{ emoji:"🌙", name:"やすらぎ", desc:"ゆっくり癒される曲",
+    bpm:62, wave:"sine", shaker:false, gain:.2, loop:32,
+    mel:[[0,'D5',2],[2,'B4',2],[4,'G4',2],[6,'B4',2],[8,'E5',2],[10,'D5',2],
+         [12,'B4',1],[13,'A4',1],[14,'G4',2],[16,'G4',1],[17,'B4',1],[18,'D5',2],
+         [20,'E5',2],[22,'D5',2],[24,'C5',1],[25,'B4',1],[26,'A4',2],[28,'A4',1],[29,'B4',1],[30,'G4',2]],
+    bass:['G3','G3','E3','E3','C3','C3','D3','D3','G3','G3','E3','E3','C3','C3','D3','D3'] },
+  yukiuta:{ emoji:"❄️", name:"雪のオルゴール", desc:"静かできらきらした曲",
+    bpm:92, wave:"sine", shaker:false, gain:.18, loop:32,
+    mel:[[0,'G4',1],[1,'C5',1],[2,'E5',1.5],[3.5,'D5',.5],[4,'C5',1],[5,'D5',1],[6,'E5',2],
+         [8,'F5',1],[9,'E5',1],[10,'D5',1],[11,'C5',1],[12,'D5',1],[13,'B4',1],[14,'G4',2],
+         [16,'C5',1],[17,'E5',1],[18,'G5',2],[20,'A5',1],[21,'G5',1],[22,'E5',2],
+         [24,'F5',1],[25,'A5',1],[26,'G5',1],[27,'E5',1],[28,'D5',1],[29,'B4',1],[30,'C5',2]],
+    bass:['C3','C3','A3','A3','F3','F3','G3','G3','C3','C3','A3','A3','F3','F3','G3','G3'] },
+  omoide:{ emoji:"🕊️", name:"おもいでのしらべ", desc:"しっとり静かな曲",
+    bpm:66, wave:"sine", shaker:false, gain:.2, loop:32,
+    mel:[[0,'A4',2],[2,'C5',1],[3,'B4',1],[4,'A4',2],[6,'G4',2],
+         [8,'E4',1],[9,'G4',1],[10,'C5',2],[12,'B4',1],[13,'A4',1],[14,'G4',2],
+         [16,'A4',1],[17,'C5',1],[18,'E5',2],[20,'D5',1],[21,'C5',1],[22,'A4',2],
+         [24,'F4',1],[25,'A4',1],[26,'G4',2],[28,'E4',1],[29,'G4',1],[30,'A4',2]],
+    bass:['A3','A3','F3','F3','C3','C3','G3','G3','A3','A3','F3','F3','D3','D3','G3','G3'] }
 };
+const SONG_ORDER = ["natsu","birthday","oiwai","pop","arigatou","yasuragi","yukiuta","omoide"];
 
-const PLACE = {
-  summer:{to:"○○ちゃんへ",title:"暑中お見舞い申し上げます🌻",sub:"まだまだ暑い日が続きますね",cap:"楽しい時間をありがとう！",sign:"またね！ 🌻",fname:"natsu"},
-  celebrate:{to:"○○ちゃんへ",title:"お誕生日おめでとう🎉",sub:"すてきな一年になりますように",cap:"いつもありがとう！",sign:"またお祝いしようね🎂",fname:"omedetou"},
-  thanks:{to:"○○さんへ",title:"ありがとう💐",sub:"感謝の気持ちをこめて",cap:"また会える日を楽しみに",sign:"心をこめて",fname:"arigatou"},
-  winter:{to:"○○ちゃんへ",title:"あけましておめでとう❄️",sub:"今年もよろしくお願いします",cap:"今年も笑顔いっぱいの一年に",sign:"またね😊",fname:"newyear"},
-  memory:{to:"○○さんへ",title:"あなたを想う日に",sub:"やさしい時間を、もう一度",cap:"ずっと忘れないよ",sign:"心をこめて",fname:"omoide"}
+/* ================= おすすめセット ================= */
+const SETS = {
+  summer:{ name:"夏のおたより", emoji:"🌻", bg:"natsuzora", deco:"sunflower", song:"natsu",
+    place:{to:"○○ちゃんへ",title:"暑中お見舞い申し上げます🌻",sub:"まだまだ暑い日が続きますね",cap:"楽しい時間をありがとう！",sign:"またね！ 🌻",fname:"natsu"} },
+  birthday:{ name:"お誕生日", emoji:"🎂", bg:"yasashii", deco:"heart", song:"birthday",
+    place:{to:"○○ちゃんへ",title:"お誕生日おめでとう🎂",sub:"すてきな一年になりますように",cap:"いつもありがとう！",sign:"またお祝いしようね🎉",fname:"omedetou"} },
+  thanks:{ name:"ありがとう", emoji:"💐", bg:"wakaba", deco:"flower", song:"arigatou",
+    place:{to:"○○さんへ",title:"ありがとう💐",sub:"感謝の気持ちをこめて",cap:"また会える日を楽しみに",sign:"心をこめて",fname:"arigatou"} },
+  autumn:{ name:"秋のたより", emoji:"🍁", bg:"akiiro", deco:"leaf", song:"yasuragi",
+    place:{to:"○○さんへ",title:"秋のごあいさつ🍁",sub:"朝晩は涼しくなりましたね",cap:"ゆっくりお話ししたいね",sign:"またね😊",fname:"aki"} },
+  winter:{ name:"冬・お正月", emoji:"❄️", bg:"yuki", deco:"snow", song:"yukiuta",
+    place:{to:"○○ちゃんへ",title:"あけましておめでとう❄️",sub:"今年もよろしくお願いします",cap:"今年も笑顔いっぱいの一年に",sign:"またね😊",fname:"newyear"} },
+  memory:{ name:"しのぶ", emoji:"🕊️", bg:"kinari", deco:"petalw", song:"omoide",
+    place:{to:"○○さんへ",title:"あなたを想う日に",sub:"やさしい時間を、もう一度",cap:"ずっと忘れないよ",sign:"心をこめて",fname:"omoide"} }
 };
+const SET_ORDER = ["summer","birthday","thanks","autumn","winter","memory"];
+
+/* ================= かざりの絵（アプリと完成ページで共通） ================= */
+const ICON_BODY = [
+'var s="",i,a;',
+'if(kind==="sunflower"){for(i=0;i<14;i++){a=i*(360/14);',
+'s+=\'<ellipse cx="50" cy="22" rx="7" ry="18" fill="#FFD64F" stroke="#F2960C" stroke-width="1" transform="rotate(\'+a+\' 50 50)"/>\';}',
+'s+=\'<circle cx="50" cy="50" r="17" fill="#7A4A26"/><circle cx="50" cy="50" r="11" fill="#9A6634"/>\';}',
+'else if(kind==="petal"||kind==="petalw"){var c=(kind==="petal")?"#FFC0D4":"#FFF6F3",e=(kind==="petal")?"#F49CBB":"#E4CFD4";',
+'s=\'<path d="M50 10 C70 28 74 56 50 88 C26 56 30 28 50 10 Z" fill="\'+c+\'" stroke="\'+e+\'" stroke-width="2"/>\';}',
+'else if(kind==="flower"){for(i=0;i<6;i++){a=i*60;',
+'s+=\'<ellipse cx="50" cy="26" rx="12" ry="21" fill="#FFFFFF" stroke="#E2DCC8" stroke-width="1.5" transform="rotate(\'+a+\' 50 50)"/>\';}',
+'s+=\'<circle cx="50" cy="50" r="11" fill="#FFD86B"/>\';}',
+'else if(kind==="snow"){for(i=0;i<6;i++){a=i*60;',
+'s+=\'<g transform="rotate(\'+a+\' 50 50)"><line x1="50" y1="50" x2="50" y2="10" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round"/>\'',
+'+\'<line x1="50" y1="24" x2="38" y2="14" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/>\'',
+'+\'<line x1="50" y1="24" x2="62" y2="14" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/></g>\';}}',
+'else if(kind==="heart"){s=\'<path d="M50 88 C18 66 8 44 22 30 C33 19 46 23 50 34 C54 23 67 19 78 30 C92 44 82 66 50 88 Z" fill="#FF9AB4" stroke="#F2789A" stroke-width="2"/>\';}',
+'else if(kind==="star"){s=\'<path d="M50 6 L61 38 L95 38 L67 58 L78 92 L50 71 L22 92 L33 58 L5 38 L39 38 Z" fill="#FFE27E" stroke="#F2C14E" stroke-width="2"/>\';}',
+'else if(kind==="leaf"){s=\'<path d="M50 6 L59 30 L76 21 L69 42 L92 45 L72 57 L84 76 L61 69 L54 94 L50 76 L46 94 L39 69 L16 76 L28 57 L8 45 L31 42 L24 21 L41 30 Z" fill="#E2703A" stroke="#C4542A" stroke-width="1.5"/>\';}',
+'else if(kind==="bubble"){s=\'<circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.32)" stroke="rgba(255,255,255,0.9)" stroke-width="3"/><circle cx="36" cy="34" r="9" fill="rgba(255,255,255,0.92)"/>\';}',
+'else{s=\'<circle cx="50" cy="50" r="26" fill="#FFE9B0"/><circle cx="50" cy="50" r="14" fill="#FFF6D8"/>\';}',
+'return \'<svg width="\'+size+\'" height="\'+size+\'" viewBox="0 0 100 100">\'+s+\'</svg>\';'
+].join("\n");
+const icon = new Function("kind","size", ICON_BODY);
 
 /* ================= 状態 ================= */
-let S = {theme:"summer", photos:[]};
+let S = {set:"summer", bg:"natsuzora", deco:"sunflower", song:"natsu", photos:[]};
 const $ = id => document.getElementById(id);
 
-/* テーマのボタンを並べる */
+/* おすすめセット */
 (function(){
-  let h = "";
-  for(const k in THEMES){
-    h += '<div class="th" data-k="'+k+'"><span class="e">'+THEMES[k].emoji+'</span><span class="t">'+THEMES[k].name+'</span></div>';
-  }
-  $("themes").innerHTML = h;
-  $("themes").addEventListener("click", e=>{
-    const el = e.target.closest(".th"); if(!el) return;
-    S.theme = el.dataset.k; paintThemes(); applyPlaceholders(); save();
+  let h="";
+  SET_ORDER.forEach(k=>{ h += '<div class="set" data-k="'+k+'"><span class="e">'+SETS[k].emoji+'</span><span class="t">'+SETS[k].name+'</span></div>'; });
+  $("sets").innerHTML = h;
+  $("sets").addEventListener("click", e=>{
+    const el = e.target.closest(".set"); if(!el) return;
+    const k = el.dataset.k, s = SETS[k];
+    S.set=k; S.bg=s.bg; S.deco=s.deco; S.song=s.song;
+    Prev.stop(); paintAll(); save();
   });
 })();
-function paintThemes(){
-  document.querySelectorAll(".th").forEach(el=>el.classList.toggle("on", el.dataset.k===S.theme));
+
+function paintSets(){ document.querySelectorAll(".set").forEach(el=>el.classList.toggle("on", el.dataset.k===S.set)); }
+
+function paintBgs(){
+  let h="";
+  BG_ORDER.forEach(k=>{
+    const b = BGS[k];
+    const grad = "linear-gradient(180deg,"+b.bg[0]+" 0%,"+b.bg[1]+" 42%,"+b.bg[2]+" 78%,"+b.bg[3]+" 100%)";
+    h += '<div class="bg'+(k===S.bg?' on':'')+'" data-k="'+k+'"><span class="sw" style="background:'+grad+'"></span><span class="t">'+b.name+'</span></div>';
+  });
+  $("bgs").innerHTML = h;
+  $("bgs").querySelectorAll(".bg").forEach(el=> el.onclick = ()=>{ S.bg = el.dataset.k; paintBgs(); save(); });
+}
+
+function paintDecos(){
+  let h="";
+  DECO_ORDER.forEach(k=>{
+    h += '<div class="deco'+(k===S.deco?' on':'')+'" data-k="'+k+'">'+icon(DECOS[k].item,36)+'<span class="t">'+DECOS[k].name+'</span></div>';
+  });
+  $("decos").innerHTML = h;
+  $("decos").querySelectorAll(".deco").forEach(el=> el.onclick = ()=>{ S.deco = el.dataset.k; paintDecos(); save(); });
+}
+
+function paintSongs(){
+  let h="";
+  SONG_ORDER.forEach(k=>{
+    const s = SONGS[k];
+    h += '<div class="song'+(k===S.song?' on':'')+'" data-k="'+k+'">'
+       + '<span class="e">'+s.emoji+'</span>'
+       + '<span class="tx"><span class="nm">'+s.name+'</span><span class="ds">'+s.desc+'</span></span>'
+       + '<button class="pl'+(Prev.now()===k?' on':'')+'" data-play="'+k+'">'+(Prev.now()===k?'■':'▶️')+'</button></div>';
+  });
+  $("songs").innerHTML = h;
+  $("songs").querySelectorAll(".song").forEach(el=>{
+    el.onclick = e=>{ if(e.target.closest("[data-play]")) return; S.song = el.dataset.k; paintSongs(); save(); };
+  });
+  $("songs").querySelectorAll("[data-play]").forEach(b=>{
+    b.onclick = e=>{ e.stopPropagation();
+      const k = b.dataset.play;
+      if(Prev.now()===k){ Prev.stop(); } else { Prev.play(k); }
+      paintSongs();
+    };
+  });
 }
 function applyPlaceholders(){
-  const p = PLACE[S.theme];
+  const p = SETS[S.set].place;
   $("to").placeholder=p.to; $("title").placeholder=p.title; $("sub").placeholder=p.sub;
   $("cap").placeholder=p.cap; $("sign").placeholder=p.sign; $("fname").placeholder=p.fname;
 }
+function paintAll(){ paintSets(); paintBgs(); paintDecos(); paintSongs(); applyPlaceholders(); }
+
+/* ================= 試聴プレイヤー ================= */
+const Prev = (function(){
+  const F = {C3:130.81,D3:146.83,E3:164.81,F3:174.61,G3:196,A3:220,Bb3:233.08,B3:246.94,
+    C4:261.63,D4:293.66,E4:329.63,F4:349.23,G4:392,A4:440,Bb4:466.16,B4:493.88,
+    C5:523.25,D5:587.33,E5:659.25,F5:698.46,G5:783.99,A5:880,Bb5:932.33,B5:987.77,C6:1046.5};
+  let ax=null, ms=null, tm=null, nt=0, cur=null;
+  function tone(f,t,du,g,ty){
+    const o=ax.createOscillator(),o2=ax.createOscillator(),gn=ax.createGain(),g2=ax.createGain();
+    o.type=ty;o.frequency.value=f;o2.type="sine";o2.frequency.value=f*2.005;g2.gain.value=.26;
+    o.connect(gn);o2.connect(g2);g2.connect(gn);gn.connect(ms);
+    gn.gain.setValueAtTime(.0001,t);gn.gain.exponentialRampToValueAtTime(g,t+.014);
+    gn.gain.exponentialRampToValueAtTime(.0001,t+du);
+    o.start(t);o2.start(t);o.stop(t+du+.05);o2.stop(t+du+.05);
+  }
+  function bs(f,t,du,g){
+    const o=ax.createOscillator(),gn=ax.createGain();o.type="sine";o.frequency.value=f;
+    o.connect(gn);gn.connect(ms);gn.gain.setValueAtTime(.0001,t);
+    gn.gain.exponentialRampToValueAtTime(g,t+.02);gn.gain.exponentialRampToValueAtTime(.0001,t+du);
+    o.start(t);o.stop(t+du+.05);
+  }
+  function sh(t,g){
+    const ln=Math.floor(ax.sampleRate*.06),b=ax.createBuffer(1,ln,ax.sampleRate),d=b.getChannelData(0);
+    for(let i=0;i<ln;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/ln,3);
+    const s=ax.createBufferSource();s.buffer=b;
+    const hp=ax.createBiquadFilter();hp.type="highpass";hp.frequency.value=5200;
+    const gn=ax.createGain();gn.gain.value=g;s.connect(hp);hp.connect(gn);gn.connect(ms);s.start(t);
+  }
+  function loop(C,t0){
+    const SPB=60/C.bpm;
+    C.mel.forEach(m=>{ tone(F[m[1]],t0+m[0]*SPB,m[2]*SPB*.95,C.gain,C.wave);
+      tone(F[m[1]]*2,t0+m[0]*SPB,m[2]*SPB*.5,C.gain*.28,"sine"); });
+    C.bass.forEach((b,i)=>{ if(typeof b==="string") bs(F[b],t0+i*2*SPB,SPB*1.4,.15);
+      else bs(F[b[1]],t0+b[0]*SPB,SPB*(b[2]||1.4),.15); });
+    if(C.shaker) for(let i=0;i<C.loop;i+=.5) sh(t0+i*SPB,(i%1===0)?.03:.06);
+  }
+  function tick(){
+    const C = SONGS[cur]; if(!C) return;
+    const SPB=60/C.bpm, ah = ax.currentTime+.7;
+    while(nt < ah){ loop(C,nt); nt += C.loop*SPB; }
+  }
+  return {
+    now(){ return cur; },
+    play(k){
+      if(!ax){ ax = new (window.AudioContext||window.webkitAudioContext)();
+        ms = ax.createGain(); ms.gain.value=.5;
+        const cp = ax.createDynamicsCompressor(); ms.connect(cp); cp.connect(ax.destination); }
+      ax.resume(); clearInterval(tm);
+      cur = k; nt = ax.currentTime + .12; tick(); tm = setInterval(tick, 400);
+    },
+    stop(){ clearInterval(tm); cur=null; if(ax){ ax.close(); ax=null; ms=null; } }
+  };
+})();
 
 /* ================= 写真 ================= */
 function paintPhotos(){
   let h="";
-  S.photos.forEach((p,i)=>{
-    h += '<div class="ph"><img src="'+p+'"><button class="del" data-i="'+i+'">✕</button></div>';
-  });
+  S.photos.forEach((p,i)=>{ h += '<div class="ph"><img src="'+p+'"><button class="del" data-i="'+i+'">✕</button></div>'; });
   if(S.photos.length<4) h += '<div class="ph"><button class="addph" id="addph">＋</button></div>';
   $("photos").innerHTML = h;
   if($("addph")) $("addph").onclick = ()=> $("file").click();
-  document.querySelectorAll(".del").forEach(b=>b.onclick=()=>{
-    S.photos.splice(+b.dataset.i,1); paintPhotos(); save();
-  });
+  document.querySelectorAll(".del").forEach(b=>b.onclick=()=>{ S.photos.splice(+b.dataset.i,1); paintPhotos(); save(); });
 }
 $("file").addEventListener("change", async e=>{
   const files = [...e.target.files].slice(0, 4-S.photos.length);
@@ -355,33 +482,32 @@ function shrink(file){
     r.onload = ()=>{
       const img = new Image();
       img.onload = ()=>{
-        const max = 900;
-        let w=img.width, h=img.height;
+        const max = 900; let w=img.width, h=img.height;
         if(w>h && w>max){ h=h*max/w; w=max; } else if(h>=w && h>max){ w=w*max/h; h=max; }
         const c = document.createElement("canvas"); c.width=w; c.height=h;
         c.getContext("2d").drawImage(img,0,0,w,h);
         res(c.toDataURL("image/jpeg", .82));
       };
-      img.onerror = rej;
-      img.src = r.result;
+      img.onerror = rej; img.src = r.result;
     };
-    r.onerror = rej;
-    r.readAsDataURL(file);
+    r.onerror = rej; r.readAsDataURL(file);
   });
 }
 
-/* ================= 下書きの保存 ================= */
+/* ================= 下書き保存 ================= */
 const KEYS = ["to","title","sub","cap","body","sign","fname"];
 function save(){
-  const d = {theme:S.theme, photos:S.photos};
+  const d = {set:S.set, bg:S.bg, deco:S.deco, song:S.song, photos:S.photos};
   KEYS.forEach(k=> d[k] = $(k).value);
-  try{ localStorage.setItem("cardStudio", JSON.stringify(d)); }catch(e){}
+  try{ localStorage.setItem("cardStudio2", JSON.stringify(d)); }catch(e){}
 }
 function load(){
   try{
-    const d = JSON.parse(localStorage.getItem("cardStudio")||"null");
-    if(!d) return;
-    S.theme = d.theme || "summer";
+    const d = JSON.parse(localStorage.getItem("cardStudio2")||"null"); if(!d) return;
+    S.set  = SETS[d.set] ? d.set : "summer";
+    S.bg   = BGS[d.bg] ? d.bg : SETS[S.set].bg;
+    S.deco = DECOS[d.deco] ? d.deco : SETS[S.set].deco;
+    S.song = SONGS[d.song] ? d.song : SETS[S.set].song;
     S.photos = d.photos || [];
     KEYS.forEach(k=>{ if(d[k]!=null) $(k).value = d[k]; });
   }catch(e){}
@@ -393,95 +519,98 @@ function esc(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").repla
 function val(id){ return ($(id).value.trim()) || $(id).placeholder; }
 
 function build(){
-  const T = THEMES[S.theme];
+  const B = BGS[S.bg], D = DECOS[S.deco], M = SONGS[S.song];
   const to = esc(val("to")), title = esc(val("title")), sub = esc(val("sub"));
   const cap = esc(val("cap")), sign = esc(val("sign"));
   const raw = $("body").value.trim() || "ここにメッセージが入ります😊";
   const paras = raw.split(/\n\s*\n/).map(p=>'<p class="rv">'+esc(p).replace(/\n/g,"<br>")+'</p>').join("");
 
-  const photos = S.photos.length ? S.photos : [];
   let photoHTML = "";
-  if(photos.length){
-    let imgs = photos.map((p,i)=> i===0
+  if(S.photos.length){
+    const imgs = S.photos.map((p,i)=> i===0
       ? '<img class="p0" src="'+p+'" alt="">'
       : '<img class="pn" src="'+p+'" alt="" style="opacity:0">').join("");
     photoHTML = '<figure class="pola"><span class="tape"></span><div class="stack">'+imgs+'</div>'
       + (cap? '<figcaption>'+cap+'</figcaption>' : '') + '</figure>';
   }
 
-  const fontLink = T.font==="calm"
-    ? "https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500&family=Zen+Kaku+Gothic+New:wght@400;500&family=Klee+One&display=swap"
+  const fontLink = B.font==="calm"
+    ? "https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500&family=Zen+Kaku+Gothic+New:wght@400;500&display=swap"
     : "https://fonts.googleapis.com/css2?family=Yomogi&family=Zen+Maru+Gothic:wght@400;500;700&display=swap";
-  const dispFont = T.font==="calm" ? '"Shippori Mincho B1",serif' : '"Yomogi",cursive';
-  const bodyFont = T.font==="calm" ? '"Zen Kaku Gothic New",sans-serif' : '"Zen Maru Gothic",sans-serif';
+  const dispFont = B.font==="calm" ? '"Shippori Mincho B1",serif' : '"Yomogi",cursive';
+  const bodyFont = B.font==="calm" ? '"Zen Kaku Gothic New",sans-serif' : '"Zen Maru Gothic",sans-serif';
 
-  const cfg = {item:T.item, field:T.field, glow:T.glow,
-    bpm:T.bpm, wave:T.wave, shaker:T.shaker, gain:T.gain, mel:T.mel, bass:T.bass,
-    accent:T.accent, nphoto:photos.length};
+  const cfg = {item:D.item, field:D.field, nphoto:S.photos.length,
+    bpm:M.bpm, wave:M.wave, shaker:M.shaker, gain:M.gain, loop:M.loop, mel:M.mel, bass:M.bass};
 
-  return TPL({title,to,sub,paras,photoHTML,sign,T,fontLink,dispFont,bodyFont,cfg});
+  return TPL({title,to,sub,paras,photoHTML,sign,B,fontLink,dispFont,bodyFont,cfg});
 }
 
 function TPL(d){
-  const T = d.T;
+  const B = d.B;
+  const letterBg = B.dark ? "rgba(22,28,50,.55)" : "rgba(255,255,255,.74)";
+  const letterBd = B.dark ? "rgba(255,255,255,.28)" : "rgba(0,0,0,.12)";
+  const sh1 = B.dark ? "0 2px 14px rgba(0,0,0,.5)" : "0 2px 0 #fff,0 6px 16px rgba(120,120,120,.18)";
+  const sh2 = B.dark ? "none" : "0 1px 0 #fff";
+  const fade = B.dark ? "rgba(0,0,0,0)" : "rgba(255,255,255,0)";
   return '<!DOCTYPE html>\n<html lang="ja"><head>\n'
 +'<meta charset="UTF-8">\n'
 +'<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
-+'<title>'+d.title.replace(/<[^>]*>/g,"")+'</title>\n'
-+'<meta property="og:title" content="'+d.title.replace(/<[^>]*>/g,"")+'">\n'
++'<title>'+d.title+'</title>\n'
++'<meta property="og:title" content="'+d.title+'">\n'
 +'<meta property="og:description" content="'+d.to+' メッセージが届きました">\n'
 +'<meta property="og:type" content="website">\n'
-+'<meta name="theme-color" content="'+T.bg[0]+'">\n'
++'<meta name="theme-color" content="'+B.bg[0]+'">\n'
 +'<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
 +'<link href="'+d.fontLink+'" rel="stylesheet">\n'
 +'<style>\n'
 +'*{box-sizing:border-box;margin:0;padding:0}\n'
-+'body{font-family:'+d.bodyFont+';color:'+T.ink+';overflow-x:hidden;-webkit-text-size-adjust:100%;'
-+'background:linear-gradient(180deg,'+T.bg[0]+' 0%,'+T.bg[1]+' 42%,'+T.bg[2]+' 78%,'+T.bg[3]+' 100%);background-attachment:fixed;min-height:100%}\n'
++'body{font-family:'+d.bodyFont+';color:'+B.ink+';overflow-x:hidden;-webkit-text-size-adjust:100%;'
++'background:linear-gradient(180deg,'+B.bg[0]+' 0%,'+B.bg[1]+' 42%,'+B.bg[2]+' 78%,'+B.bg[3]+' 100%);background-attachment:fixed;min-height:100%}\n'
 +'.glow{position:fixed;top:-160px;left:50%;transform:translateX(-50%);width:520px;height:520px;border-radius:50%;pointer-events:none;z-index:0;'
-+'background:radial-gradient(circle,rgba('+T.glow+',.95) 0%,rgba('+T.glow+',.5) 35%,rgba('+T.glow+',0) 70%);animation:br 7s ease-in-out infinite}\n'
++'background:radial-gradient(circle,rgba('+B.glow+',.9) 0%,rgba('+B.glow+',.45) 35%,rgba('+B.glow+',0) 70%);animation:br 7s ease-in-out infinite}\n'
 +'@keyframes br{0%,100%{transform:translateX(-50%) scale(1);opacity:.85}50%{transform:translateX(-50%) scale(1.12);opacity:1}}\n'
 +'#sp{position:fixed;inset:0;z-index:1;pointer-events:none}\n'
 +'.fly{position:fixed;z-index:2;pointer-events:none;will-change:transform;top:110vh}\n'
 +'.wrap{position:relative;z-index:3;max-width:520px;margin:0 auto;padding:46px 22px 210px}\n'
-+'.eyebrow{font-family:'+d.dispFont+';text-align:center;letter-spacing:.3em;font-size:13px;color:'+T.accent+';text-shadow:0 1px 0 #fff}\n'
-+'h1{font-family:'+d.dispFont+';text-align:center;font-size:clamp(27px,8.2vw,38px);line-height:1.5;margin:10px 0 4px;font-weight:500;color:'+T.head+';text-shadow:0 2px 0 #fff,0 6px 16px rgba(120,120,120,.18)}\n'
-+'h1 .to{display:block;font-size:.62em;color:'+T.accent+';margin-bottom:4px}\n'
-+'.date{font-family:'+d.dispFont+';text-align:center;font-size:13px;color:'+T.soft+';letter-spacing:.14em;margin-top:10px}\n'
++'.eyebrow{font-family:'+d.dispFont+';text-align:center;letter-spacing:.3em;font-size:13px;color:'+B.accent+';text-shadow:'+sh2+'}\n'
++'h1{font-family:'+d.dispFont+';text-align:center;font-size:clamp(27px,8.2vw,38px);line-height:1.5;margin:10px 0 4px;font-weight:500;color:'+B.head+';text-shadow:'+sh1+'}\n'
++'h1 .to{display:block;font-size:.62em;color:'+B.accent+';margin-bottom:4px}\n'
++'.date{font-family:'+d.dispFont+';text-align:center;font-size:13px;color:'+B.soft+';letter-spacing:.14em;margin-top:10px}\n'
 +'.pola{margin:32px auto 8px;width:min(100%,340px);background:#fff;padding:14px 14px 56px;border-radius:6px;position:relative;'
-+'box-shadow:0 18px 38px rgba(110,110,110,.26);transform:rotate(-2.2deg);animation:sw 9s ease-in-out infinite}\n'
++'box-shadow:0 18px 38px rgba(60,60,60,.3);transform:rotate(-2.2deg);animation:sw 9s ease-in-out infinite}\n'
 +'@keyframes sw{0%,100%{transform:rotate(-2.2deg)}50%{transform:rotate(1.4deg)}}\n'
 +'.stack{position:relative;line-height:0}\n'
 +'.stack img{width:100%;display:block;border-radius:2px;background:#eee;transition:opacity 1.6s ease}\n'
 +'.stack .pn{position:absolute;inset:0;height:100%;object-fit:cover}\n'
-+'.pola figcaption{position:absolute;left:0;right:0;bottom:16px;text-align:center;font-family:'+d.dispFont+';font-size:14.5px;color:'+T.soft+';line-height:1.4;padding:0 10px}\n'
++'.pola figcaption{position:absolute;left:0;right:0;bottom:16px;text-align:center;font-family:'+d.dispFont+';font-size:14.5px;color:#8A7A6A;line-height:1.4;padding:0 10px}\n'
 +'.tape{position:absolute;top:-16px;left:50%;transform:translateX(-50%) rotate(-3deg);width:110px;height:30px;border-radius:2px;'
-+'background:linear-gradient(180deg,rgba('+T.tape+',.8),rgba('+T.tape+',.6));box-shadow:0 2px 6px rgba(0,0,0,.08)}\n'
-+'.letter{margin:34px auto 0;width:min(100%,420px);background:rgba(255,255,255,.74);backdrop-filter:blur(3px);'
-+'border:1.5px dashed rgba(0,0,0,.12);border-radius:22px;padding:30px 24px 26px;box-shadow:0 14px 34px rgba(120,120,120,.14)}\n'
++'background:linear-gradient(180deg,rgba('+B.tape+',.85),rgba('+B.tape+',.65));box-shadow:0 2px 6px rgba(0,0,0,.1)}\n'
++'.letter{margin:34px auto 0;width:min(100%,420px);background:'+letterBg+';backdrop-filter:blur(4px);'
++'border:1.5px dashed '+letterBd+';border-radius:22px;padding:30px 24px 26px;box-shadow:0 14px 34px rgba(80,80,80,.16)}\n'
 +'.letter p{font-size:16.5px;line-height:2.05;margin-bottom:20px}\n'
 +'.letter p:last-child{margin-bottom:0}\n'
 +'.rv{opacity:0;transform:translateY(18px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.7,.3,1)}\n'
 +'.rv.on{opacity:1;transform:none}\n'
-+'.sign{font-family:'+d.dispFont+';text-align:right;font-size:16px;color:'+T.accent+';margin-top:26px}\n'
++'.sign{font-family:'+d.dispFont+';text-align:right;font-size:16px;color:'+B.accent+';margin-top:26px}\n'
 +'.field{position:fixed;left:0;right:0;bottom:0;height:170px;z-index:2;pointer-events:none;display:flex;align-items:flex-end;justify-content:center;gap:2px}\n'
 +'.field .st{transform-origin:bottom center;text-align:center}\n'
 +'.field .st:nth-child(odd){animation:wd 4.6s ease-in-out infinite}\n'
 +'.field .st:nth-child(even){animation:wd 5.9s ease-in-out infinite reverse}\n'
 +'@keyframes wd{0%,100%{transform:rotate(-2.6deg)}50%{transform:rotate(2.6deg)}}\n'
-+'.field:after{content:"";position:absolute;left:0;right:0;bottom:0;height:60px;background:linear-gradient(180deg,rgba(255,255,255,0),'+T.bg[3]+')}\n'
++'.field:after{content:"";position:absolute;left:0;right:0;bottom:0;height:60px;background:linear-gradient(180deg,'+fade+','+B.bg[3]+')}\n'
 +'.ab{position:fixed;top:calc(12px + env(safe-area-inset-top));right:14px;z-index:20;width:50px;height:50px;border-radius:50%;border:none;'
-+'background:rgba(255,255,255,.85);color:'+T.accent+';font-size:21px;cursor:pointer;box-shadow:0 6px 16px rgba(110,110,110,.25)}\n'
-+'#gate{position:fixed;inset:0;z-index:50;background:linear-gradient(180deg,'+T.bg[0]+','+T.bg[2]+');display:flex;flex-direction:column;'
++'background:rgba(255,255,255,.88);color:'+(B.dark?"#8A6B2E":B.accent)+';font-size:21px;cursor:pointer;box-shadow:0 6px 16px rgba(60,60,60,.28)}\n'
++'#gate{position:fixed;inset:0;z-index:50;background:linear-gradient(180deg,'+B.bg[0]+','+B.bg[2]+');display:flex;flex-direction:column;'
 +'align-items:center;justify-content:center;gap:24px;text-align:center;padding:24px;transition:opacity .9s ease}\n'
 +'#gate.hide{opacity:0;pointer-events:none}\n'
 +'#gate .gi{width:110px;height:110px;animation:sp 22s linear infinite}\n'
 +'@keyframes sp{to{transform:rotate(360deg)}}\n'
-+'#gate h2{font-family:'+d.dispFont+';font-size:22px;color:'+T.head+';font-weight:500;line-height:1.75}\n'
-+'#gate button{font-family:'+d.bodyFont+';font-weight:700;font-size:17px;color:#fff;letter-spacing:.06em;border:none;border-radius:999px;padding:16px 34px;cursor:pointer;'
-+'background:'+T.accent+';box-shadow:0 10px 24px rgba(0,0,0,.18);animation:pl 2.2s ease-in-out infinite}\n'
++'#gate h2{font-family:'+d.dispFont+';font-size:22px;color:'+B.head+';font-weight:500;line-height:1.75}\n'
++'#gate button{font-family:'+d.bodyFont+';font-weight:700;font-size:17px;color:'+(B.dark?"#3A2E12":"#fff")+';letter-spacing:.06em;border:none;border-radius:999px;padding:16px 34px;cursor:pointer;'
++'background:'+B.accent+';box-shadow:0 10px 24px rgba(0,0,0,.2);animation:pl 2.2s ease-in-out infinite}\n'
 +'@keyframes pl{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}\n'
-+'#gate small{color:'+T.soft+';font-size:12.5px}\n'
++'#gate small{color:'+B.soft+';font-size:12.5px}\n'
 +'@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}\n'
 +'</style></head><body>\n'
 +'<div class="glow"></div><canvas id="sp"></canvas>\n'
@@ -498,43 +627,24 @@ function TPL(d){
 +'<script>\n'+ RUNTIME(d.cfg) +'\n<\/script></body></html>';
 }
 
-/* 生成されるページの中で動くプログラム（文字は連結だけで書いています） */
 function RUNTIME(cfg){
   return 'var C='+JSON.stringify(cfg)+';\n'
-+'function ICON(kind,size){var s="",i,a;\n'
-+'if(kind==="sunflower"){for(i=0;i<14;i++){a=i*(360/14);s+=\'<ellipse cx="50" cy="22" rx="7" ry="18" fill="#FFD64F" stroke="#F2960C" stroke-width="1" transform="rotate(\'+a+\' 50 50)"/>\';}\n'
-+'s+=\'<circle cx="50" cy="50" r="17" fill="#7A4A26"/><circle cx="50" cy="50" r="11" fill="#9A6634"/>\';}\n'
-+'else if(kind==="petal"||kind==="petalw"){var c=(kind==="petal")?"#FFC0D4":"#FFF3F0",e=(kind==="petal")?"#F49CBB":"#E8D2D8";\n'
-+'s=\'<path d="M50 10 C70 28 74 56 50 88 C26 56 30 28 50 10 Z" fill="\'+c+\'" stroke="\'+e+\'" stroke-width="2"/>\';}\n'
-+'else if(kind==="flower"){for(i=0;i<6;i++){a=i*60;s+=\'<ellipse cx="50" cy="26" rx="12" ry="21" fill="#FFFFFF" stroke="#E4E9D8" stroke-width="1.5" transform="rotate(\'+a+\' 50 50)"/>\';}\n'
-+'s+=\'<circle cx="50" cy="50" r="11" fill="#FFD86B"/>\';}\n'
-+'else if(kind==="snow"){for(i=0;i<6;i++){a=i*60;s+=\'<g transform="rotate(\'+a+\' 50 50)"><line x1="50" y1="50" x2="50" y2="10" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round"/>\'\n'
-+'+\'<line x1="50" y1="24" x2="38" y2="14" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/><line x1="50" y1="24" x2="62" y2="14" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/></g>\';}}\n'
-+'else{s=\'<circle cx="50" cy="50" r="30" fill="#FFE9B0"/>\';}\n'
-+'return \'<svg width="\'+size+\'" height="\'+size+\'" viewBox="0 0 100 100">\'+s+\'</svg>\';}\n'
-
++'function ICON(kind,size){\n'+ICON_BODY+'\n}\n'
 +'document.getElementById("gi").innerHTML=ICON(C.item,110);\n'
-
-/* 下の飾り */
 +'(function(){var f=document.getElementById("field");if(C.field==="none"){f.style.display="none";return;}\n'
-+'var n=Math.max(5,Math.round(window.innerWidth/78)),h="",i,sz,st,dl;\n'
++'var n=Math.max(5,Math.round(window.innerWidth/78)),h="",i,sz,st,dl,kd;\n'
++'kd=(C.field==="sunflower")?"sunflower":(C.field==="snow"?"snow":(C.field==="light"?"light":"flower"));\n'
 +'for(i=0;i<n;i++){sz=(C.field==="sunflower")?(52+Math.random()*28):(24+Math.random()*16);\n'
 +'st=(C.field==="sunflower")?(60+Math.random()*70):0;dl=(Math.random()*4).toFixed(2);\n'
-+'h+=\'<div class="st" style="animation-delay:-\'+dl+\'s;width:\'+(C.field==="sunflower"?sz:78)+\'px">\'\n'
-+'+ICON(C.field==="sunflower"?"sunflower":(C.field==="snow"?"snow":(C.field==="light"?"light":"flower")),sz)\n'
-+'+(st?\'<div style="width:6px;height:\'+st+\'px;margin:-6px auto 0;background:linear-gradient(180deg,#7FB069,#5E8F4C);border-radius:3px"></div>\':"")\n'
-+'+\'</div>\';}\n'
++'h+=\'<div class="st" style="animation-delay:-\'+dl+\'s;width:\'+(C.field==="sunflower"?sz:78)+\'px">\'+ICON(kd,sz)\n'
++'+(st?\'<div style="width:6px;height:\'+st+\'px;margin:-6px auto 0;background:linear-gradient(180deg,#7FB069,#5E8F4C);border-radius:3px"></div>\':"")+\'</div>\';}\n'
 +'f.innerHTML=h;if(C.field!=="sunflower"){f.style.height="90px";f.style.opacity="0.85";}})();\n'
-
-/* 舞うもの */
 +'(function(){for(var i=0;i<7;i++){var el=document.createElement("div");el.className="fly";\n'
 +'var sz=24+Math.random()*22;el.innerHTML=ICON(C.item,sz);el.style.left=(Math.random()*100)+"vw";\n'
 +'document.body.appendChild(el);fl(el,i*1.6);}\n'
 +'function fl(el,dl){var du=15000+Math.random()*10000,dr=(Math.random()*160-80),sp=(Math.random()*720-360);\n'
 +'if(!el.animate)return;el.animate([{transform:"translate(0,0) rotate(0deg)",opacity:0},{opacity:.9,offset:.1},{opacity:.9,offset:.85},\n'
 +'{transform:"translate("+dr+"px,-125vh) rotate("+sp+"deg)",opacity:0}],{duration:du,delay:dl*1000,iterations:Infinity,easing:"linear"});}})();\n'
-
-/* キラキラ */
 +'(function(){var cv=document.getElementById("sp"),cx=cv.getContext("2d"),W,H,ds=[],i;\n'
 +'function rs(){W=cv.width=innerWidth*devicePixelRatio;H=cv.height=innerHeight*devicePixelRatio;cv.style.width=innerWidth+"px";cv.style.height=innerHeight+"px";}\n'
 +'rs();addEventListener("resize",rs);\n'
@@ -547,20 +657,13 @@ function RUNTIME(cfg){
 +'cx.strokeStyle="rgba("+d.c+","+(.5*tw)+")";cx.lineWidth=devicePixelRatio*.8;cx.beginPath();\n'
 +'cx.moveTo(x-r*3.2,y);cx.lineTo(x+r*3.2,y);cx.moveTo(x,y-r*3.2);cx.lineTo(x,y+r*3.2);cx.stroke();}\n'
 +'requestAnimationFrame(dw);}requestAnimationFrame(dw);})();\n'
-
-/* 写真の切り替え */
 +'(function(){if(C.nphoto<2)return;var im=document.querySelectorAll(".stack img"),n=0;\n'
-+'setInterval(function(){var p=n;n=(n+1)%im.length;for(var i=0;i<im.length;i++){im[i].style.opacity=(i===n)?1:0;}\n'
-+'if(n===0){im[0].style.opacity=1;}},4200);})();\n'
-
-/* 文章の表示 */
++'setInterval(function(){n=(n+1)%im.length;for(var i=0;i<im.length;i++){im[i].style.opacity=(i===n)?1:0;}},4200);})();\n'
 +'(function(){var it=document.querySelectorAll(".rv");\n'
 +'if(!("IntersectionObserver" in window)){for(var i=0;i<it.length;i++)it[i].classList.add("on");return;}\n'
 +'var io=new IntersectionObserver(function(es){es.forEach(function(e,i){if(e.isIntersecting){\n'
 +'setTimeout(function(){e.target.classList.add("on")},i*160);io.unobserve(e.target);}})},{threshold:.15});\n'
 +'for(var j=0;j<it.length;j++)io.observe(it[j]);})();\n'
-
-/* 音楽（このページの中で音を作っています／既存の曲は使っていません） */
 +'var MU=(function(){var ax=null,ms=null,tm=null,nt=0,on=false,SPB=60/C.bpm;\n'
 +'var F={C3:130.81,D3:146.83,E3:164.81,F3:174.61,G3:196,A3:220,Bb3:233.08,B3:246.94,\n'
 +'C4:261.63,D4:293.66,E4:329.63,F4:349.23,G4:392,A4:440,Bb4:466.16,B4:493.88,\n'
@@ -577,11 +680,12 @@ function RUNTIME(cfg){
 +'for(i=0;i<ln;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/ln,3);\n'
 +'var s=ax.createBufferSource();s.buffer=b;var hp=ax.createBiquadFilter();hp.type="highpass";hp.frequency.value=5200;\n'
 +'var gn=ax.createGain();gn.gain.value=g;s.connect(hp);hp.connect(gn);gn.connect(ms);s.start(t);}\n'
-+'function loop(t0){var i,m;for(i=0;i<C.mel.length;i++){m=C.mel[i];\n'
++'function loop(t0){var i,m,b;for(i=0;i<C.mel.length;i++){m=C.mel[i];\n'
 +'tone(F[m[1]],t0+m[0]*SPB,m[2]*SPB*.95,C.gain,C.wave);tone(F[m[1]]*2,t0+m[0]*SPB,m[2]*SPB*.5,C.gain*.28,"sine");}\n'
-+'for(i=0;i<C.bass.length;i++){bs(F[C.bass[i]],t0+i*2*SPB,SPB*1.4,.15);}\n'
-+'if(C.shaker){for(i=0;i<32;i+=.5){sh(t0+i*SPB,(i%1===0)?.03:.06);}}}\n'
-+'function tick(){var ah=ax.currentTime+.7;while(nt<ah){loop(nt);nt+=32*SPB;}}\n'
++'for(i=0;i<C.bass.length;i++){b=C.bass[i];\n'
++'if(typeof b==="string"){bs(F[b],t0+i*2*SPB,SPB*1.4,.15);}else{bs(F[b[1]],t0+b[0]*SPB,SPB*(b[2]||1.4),.15);}}\n'
++'if(C.shaker){for(i=0;i<C.loop;i+=.5){sh(t0+i*SPB,(i%1===0)?.03:.06);}}}\n'
++'function tick(){var ah=ax.currentTime+.7;while(nt<ah){loop(nt);nt+=C.loop*SPB;}}\n'
 +'return{start:function(){if(!ax){ax=new (window.AudioContext||window.webkitAudioContext)();ms=ax.createGain();ms.gain.value=.0001;\n'
 +'var cp=ax.createDynamicsCompressor();ms.connect(cp);cp.connect(ax.destination);}\n'
 +'ax.resume();if(!on){on=true;nt=ax.currentTime+.15;tick();tm=setInterval(tick,400);}\n'
@@ -589,7 +693,6 @@ function RUNTIME(cfg){
 +'ms.gain.exponentialRampToValueAtTime(.5,ax.currentTime+1.2);},\n'
 +'mute:function(){if(!ax)return;ms.gain.cancelScheduledValues(ax.currentTime);ms.gain.setValueAtTime(ms.gain.value,ax.currentTime);\n'
 +'ms.gain.exponentialRampToValueAtTime(.0001,ax.currentTime+.4);}};})();\n'
-
 +'var so=false,ab=document.getElementById("ab");\n'
 +'document.getElementById("ob").addEventListener("click",function(){\n'
 +'var g=document.getElementById("gate");g.classList.add("hide");setTimeout(function(){g.parentNode&&g.parentNode.removeChild(g)},1000);\n'
@@ -599,7 +702,7 @@ function RUNTIME(cfg){
 +'ab.addEventListener("click",function(){if(so){MU.mute();so=false;ab.innerHTML="&#128263;";}else{MU.start();so=true;ab.innerHTML="&#128266;";}});\n';
 }
 
-/* ================= ボタンの動き ================= */
+/* ================= ボタン ================= */
 function fname(){
   let f = ($("fname").value.trim() || $("fname").placeholder);
   f = f.replace(/[^a-zA-Z0-9_-]/g,"").toLowerCase() || "message";
@@ -609,24 +712,20 @@ function toast(msg){
   const t = $("toast"); t.textContent = msg; t.classList.add("on");
   clearTimeout(t._t); t._t = setTimeout(()=>t.classList.remove("on"), 2600);
 }
-
 $("btnPreview").onclick = ()=>{
+  Prev.stop(); paintSongs();
   $("pvFrame").srcdoc = build();
   $("pv").classList.add("on");
 };
 $("pvClose").onclick = ()=>{ $("pv").classList.remove("on"); $("pvFrame").srcdoc=""; };
-
 $("btnSave").onclick = ()=>{
-  const html = build();
-  const blob = new Blob([html], {type:"text/html"});
+  const blob = new Blob([build()], {type:"text/html"});
   const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = fname();
+  a.href = URL.createObjectURL(blob); a.download = fname();
   document.body.appendChild(a); a.click();
   setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
   toast(fname()+" を保存したよ💾");
 };
-
 $("btnSteps").onclick = ()=>{
   const f = fname();
   $("stepsInner").innerHTML = ''
@@ -648,7 +747,7 @@ $("btnSteps").onclick = ()=>{
 $("steps").addEventListener("click", e=>{ if(e.target.id==="steps") $("steps").classList.remove("on"); });
 
 /* ================= 起動 ================= */
-load(); paintThemes(); applyPlaceholders(); paintPhotos();
+load(); paintAll(); paintPhotos();
 </script>
 </body>
 </html>
