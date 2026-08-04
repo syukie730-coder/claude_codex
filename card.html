@@ -192,6 +192,8 @@ button.big:active{transform:scale(.98);}
   <button class="big primary" id="btnPreview">👀 できあがりを見てみる</button>
   <button class="big second" id="btnSave">💾 ファイルに保存する</button>
   <button class="big second" id="btnSteps">📖 送るまでの手順を見る</button>
+  <button class="big second" id="btnShare">🔗 公開したURLをLINEで送る</button>
+  <p class="hint" style="text-align:center">※ 公開（git push）が終わってから押してね😊</p>
 </div>
 
 <div id="pv"><button id="pvClose">✕ 閉じる</button><iframe id="pvFrame"></iframe></div>
@@ -781,6 +783,26 @@ $("btnSteps").onclick = ()=>{
   $("steps").classList.add("on");
 };
 $("steps").addEventListener("click", e=>{ if(e.target.id==="steps") $("steps").classList.remove("on"); });
+
+$("btnShare").onclick = async ()=>{
+  const url = "https://syukie730-coder.github.io/claude_codex/" + fname();
+  const data = {
+    title: "メッセージカード",
+    text: "動くメッセージカードを作ったよ🌻 タップして開いてね（音が出ます🎵）",
+    url: url
+  };
+  try{
+    if(navigator.share){ await navigator.share(data); return; }
+    await navigator.clipboard.writeText(url);
+    toast("URLをコピーしたよ🔗 LINEに貼ってね");
+  }catch(err){
+    if(err && err.name === "AbortError") return;
+    try{
+      await navigator.clipboard.writeText(url);
+      toast("URLをコピーしたよ🔗 LINEに貼ってね");
+    }catch(e2){ prompt("このURLをコピーしてね", url); }
+  }
+};
 
 /* ================= 起動 ================= */
 load(); paintAll(); paintPhotos();
