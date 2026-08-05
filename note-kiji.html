@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ノート記事メーカー</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ノート記事">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#F3A0B8">
+<link rel="apple-touch-icon" href="note-icon.png">
+<link rel="icon" href="note-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;padding:26px 16px 70px;
+    background:linear-gradient(170deg,#FBEDF2 0%,#F6EEF7 45%,#EFEAF7 100%);
+    background-attachment:fixed;min-height:100vh;
+    font-family:'Zen Kaku Gothic New',-apple-system,BlinkMacSystemFont,sans-serif;
+    color:#453E44;-webkit-text-size-adjust:100%}
+  .inner{max-width:640px;margin:0 auto}
+  .head{text-align:center;margin-bottom:26px}
+  .tulip{font-size:30px;display:block;margin-bottom:2px}
+  h1{font-family:'Shippori Mincho B1',serif;font-size:27px;letter-spacing:.06em;color:#B8547C;margin:0;font-weight:600}
+  .sub{font-size:13px;color:#9B8AA6;margin-top:8px;letter-spacing:.04em;line-height:1.8}
+  .card{background:#FFFDFC;border-radius:22px;padding:22px 18px;margin-bottom:16px;
+    box-shadow:0 4px 20px rgba(184,84,124,.09)}
+  .label{font-size:14px;font-weight:700;color:#B8547C;margin:0 0 9px;display:flex;align-items:center;gap:6px}
+  .note{font-size:12px;color:#A2939E;margin:0 0 10px;line-height:1.7}
+  textarea{width:100%;border:1.5px solid #F0DCE5;border-radius:14px;padding:13px;font-size:16px;
+    font-family:inherit;line-height:1.7;resize:vertical;background:#FFF;color:#453E44;outline:none}
+  textarea:focus{border-color:#DFA0BC;box-shadow:0 0 0 3px rgba(223,160,188,.18)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{border:1.5px solid #F0DCE5;background:#FFF;border-radius:999px;padding:10px 15px;font-size:14px;
+    font-family:inherit;color:#7C6E78;cursor:pointer;transition:.15s}
+  .chip.on{background:linear-gradient(135deg,#F3A0B8,#B79ACF);border-color:transparent;color:#FFF;font-weight:700}
+  .chip:focus-visible{outline:2px solid #B8547C;outline-offset:2px}
+  .go{width:100%;border:none;border-radius:999px;padding:17px;font-size:18px;font-weight:700;color:#FFF;
+    font-family:inherit;background:linear-gradient(135deg,#EE8FAC,#A98BC8);cursor:pointer;
+    box-shadow:0 6px 18px rgba(169,139,200,.35);letter-spacing:.05em}
+  .eyebrow{font-size:11px;letter-spacing:.16em;color:#C4A5B6;font-weight:700;margin:0 0 12px}
+  pre.out{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:14px;line-height:1.9;
+    background:#FFF8FB;border:1.5px solid #F3E1EA;border-radius:14px;padding:15px;margin:0;
+    max-height:340px;overflow:auto;color:#5B5158}
+  .copy{margin-top:14px;width:100%;border:1.5px solid #E9C9D8;background:#FFF6FA;color:#B8547C;
+    border-radius:999px;padding:14px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer}
+  .copy.done{background:#F1EBFA;border-color:#CDBBE6;color:#7B5EA8}
+  .step{display:flex;gap:11px;align-items:flex-start;margin-bottom:11px;font-size:14px;line-height:1.8}
+  .num{flex:none;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#F3A0B8,#B79ACF);
+    color:#FFF;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:2px}
+  .links{display:flex;flex-wrap:wrap;gap:8px}
+  .link{font-size:14px;text-decoration:none;background:#F7F1FA;color:#7B5EA8;border-radius:999px;
+    padding:11px 16px;font-weight:700;display:inline-block}
+  .big{display:block;text-align:center;text-decoration:none;background:linear-gradient(135deg,#EE8FAC,#A98BC8);
+    color:#FFF;border-radius:999px;padding:16px;font-size:16px;font-weight:700;box-shadow:0 6px 18px rgba(169,139,200,.3)}
+  .foot{text-align:center;font-size:12px;color:#B0A2B8;margin-top:26px;line-height:1.9}
+  .hide{display:none}
+</style>
+</head>
+<body>
+<div class="inner">
+
+  <div class="head">
+    <span class="tulip">🌷</span>
+    <h1>ノート記事メーカー</h1>
+    <p class="sub">案を入れると、クロちゃんへの指示文ができあがります<br>コピーして貼るだけ😊</p>
+  </div>
+
+  <div class="card">
+    <p class="label">✍️ 今日書きたいこと</p>
+    <p class="note">ひとことでも大丈夫。思いついたまま書いてね😊</p>
+    <textarea id="idea" rows="5" placeholder="例）友人からもらった6年根の高麗人参スティックを飲んだら、お通じが良くなって体の調子が良くなった気がする"></textarea>
+  </div>
+
+  <div class="card">
+    <p class="label">🎨 記事の雰囲気</p>
+    <div class="chips" id="moods"></div>
+    <p class="label" style="margin-top:20px">📏 長さ</p>
+    <div class="chips" id="lens"></div>
+  </div>
+
+  <div class="card">
+    <p class="label">➕ 入れたいこと（なくてOK）</p>
+    <p class="note">豆知識、伝えたい気持ち、締めの一文など。空っぽのままでも大丈夫だよ😊</p>
+    <textarea id="extra" rows="3" placeholder="例）4年根・5年根・6年根の違いも入れたい"></textarea>
+  </div>
+
+  <button class="go" onclick="build()">指示文を作る 🌸</button>
+
+  <div id="result" class="hide" style="margin-top:30px">
+    <div class="card">
+      <p class="eyebrow">クロちゃんに貼る指示文</p>
+      <pre class="out" id="out"></pre>
+      <button class="copy" id="cp" onclick="copyOut()">指示文をコピー 📋</button>
+    </div>
+
+    <div class="card">
+      <p class="eyebrow">つぎにすること</p>
+      <div class="step"><span class="num">1</span><span>下のボタンでClaudeを開く</span></div>
+      <div class="step"><span class="num">2</span><span>入力欄を長押しして「ペースト」</span></div>
+      <div class="step"><span class="num">3</span><span>送信すると、note記事・インスタ文・画像候補がまとめて出てきます🌸</span></div>
+      <a class="big" href="https://claude.ai/new" target="_blank" rel="noreferrer">Claudeを開く 💬</a>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <p class="eyebrow">フリー素材をさがす</p>
+    <p class="note">画像は著作権のないフリー素材から選んでね。急いでいるときは Unsplash が一番かんたんだよ😊</p>
+    <div class="links">
+      <a class="link" href="https://www.photo-ac.com/" target="_blank" rel="noreferrer">写真AC</a>
+      <a class="link" href="https://unsplash.com/" target="_blank" rel="noreferrer">Unsplash</a>
+      <a class="link" href="https://pixabay.com/ja/" target="_blank" rel="noreferrer">Pixabay</a>
+      <a class="link" href="https://www.pakutaso.com/" target="_blank" rel="noreferrer">ぱくたそ</a>
+    </div>
+  </div>
+
+  <p class="foot">名前・勤務先・駅名などは伏せるよう指示文に入っています💗<br>🌷 ノート責任者より</p>
+</div>
+
+<script>
+const MOODS=["しみじみ","元気に","学びメモ","日常の記録"];
+const LENS=[["短め","1000字くらい"],["ふつう","1600字くらい"],["しっかり","2200字くらい"]];
+let mood="しみじみ", len="ふつう";
+
+function chips(){
+  document.getElementById("moods").innerHTML = MOODS.map(m=>
+    `<button class="chip${m===mood?" on":""}" onclick="setMood('${m}')">${m}</button>`).join("");
+  document.getElementById("lens").innerHTML = LENS.map(l=>
+    `<button class="chip${l[0]===len?" on":""}" onclick="setLen('${l[0]}')">${l[0]}</button>`).join("");
+}
+function setMood(m){mood=m;chips();}
+function setLen(l){len=l;chips();}
+chips();
+
+function build(){
+  const idea=document.getElementById("idea").value.trim();
+  if(!idea){alert("書きたいことを入れてから押してね😊");return;}
+  const extra=document.getElementById("extra").value.trim();
+  const hint=(LENS.find(l=>l[0]===len)||[])[1];
+
+  const t =
+`ノート責任者さん、note記事をお願いします🌸
+
+【今日書きたいこと】
+${idea}
+
+【記事の雰囲気】${mood}
+【長さの目安】${hint}
+${extra?`【必ず入れてほしいこと】\n${extra}\n`:""}
+【書き方のお約束】
+・筆者は60代の女性、医療従事者。年齢は「60代」とだけ書き、具体的な数字は書かない
+・投資コミュニティ名（リベシティ／リベラルアーツ大学）は出さない
+・実名（本人・家族・友人・故人・その子ども）、勤務先の具体名、住所、最寄り駅など個人が特定できる固有名詞は一切書かない。「友人」「娘さん」のようにぼかす。確認は求めず最初から伏せた状態で書く
+・温かく押しつけがましくない語り口。絵文字をたくさん入れる
+・構成は タイトル → サブタイトル → 本文（##の小見出しを3〜5個）
+・本文の最後は読者への問いかけで締める
+・健康や体調の話題では「個人の感想です」と断り、必要に応じて受診や薬剤師への相談をすすめる一文を入れる
+
+【出してほしいもの】この順番で3つとも、一度に出してください
+① note記事（末尾にハッシュタグを5〜8個。#note初心者 #60代 などの定番と記事固有のタグを混ぜる）
+② Instagram用の投稿文（短め・絵文字多め・最後に「詳しくはnoteに書きました😊」・ハッシュタグはちょうど3個）
+③ 記事に合うフリー素材の画像候補を3つ（検索ワードと、どんな場面に合うかのひとこと）`;
+
+  document.getElementById("out").textContent=t;
+  document.getElementById("result").classList.remove("hide");
+  document.getElementById("cp").textContent="指示文をコピー 📋";
+  document.getElementById("cp").classList.remove("done");
+  document.getElementById("result").scrollIntoView({behavior:"smooth"});
+}
+
+function copyOut(){
+  const t=document.getElementById("out").textContent;
+  const b=document.getElementById("cp");
+  navigator.clipboard.writeText(t).then(()=>{
+    b.textContent="コピーしました ✓"; b.classList.add("done");
+  }).catch(()=>{
+    const r=document.createRange(); r.selectNodeContents(document.getElementById("out"));
+    const s=getSelection(); s.removeAllRanges(); s.addRange(r);
+    b.textContent="文字を選びました。長押しでコピーしてね";
+  });
+}
+</script>
+</body>
+</html>
