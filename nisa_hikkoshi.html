@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NISAお引越し手帳</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="NISAお引越し">
+<link rel="apple-touch-icon" href="nisa_hikkoshi_icon.png">
+<meta property="og:title" content="NISAお引越し手帳">
+<meta property="og:description" content="特定口座の株をNISAに移すか、数字で判定します">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{
+  background:linear-gradient(165deg,#FDE7F3 0%,#F3E3FA 45%,#E8E6FB 100%);
+  background-attachment:fixed;
+  font-family:"Zen Kaku Gothic New",sans-serif;
+  color:#5B4A63;padding:20px 14px 60px;-webkit-text-size-adjust:100%;
+}
+.wrap{max-width:440px;margin:0 auto;}
+.head{text-align:center;margin-bottom:20px;}
+.head .t{font-size:34px;line-height:1;}
+.head h1{
+  font-family:"Zen Maru Gothic",sans-serif;font-size:24px;font-weight:700;margin-top:8px;
+  background:linear-gradient(90deg,#E86FA8,#9B6FD6);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.head p{font-size:12.5px;color:#9C8AA6;margin-top:6px;line-height:1.7;}
+
+.card{background:#fff;border-radius:24px;padding:20px 17px;box-shadow:0 8px 26px rgba(180,120,190,.16);margin-bottom:18px;}
+.card h2{font-family:"Zen Maru Gothic",sans-serif;font-size:16px;color:#C2559A;margin-bottom:14px;}
+
+label{display:block;font-size:12.5px;color:#8E7E98;margin:13px 0 5px;font-weight:500;}
+label span{color:#C9A8D8;font-size:11px;}
+input,select{
+  width:100%;padding:12px 13px;font-size:16px;font-family:inherit;color:#5B4A63;
+  background:#FDF6FB;border:1.5px solid #F0DCEC;border-radius:13px;outline:none;
+}
+input:focus,select:focus{border-color:#E86FA8;background:#fff;}
+.two{display:flex;gap:10px;}
+.two>div{flex:1;}
+
+button{
+  font-family:"Zen Maru Gothic",sans-serif;font-weight:700;border:none;cursor:pointer;
+  border-radius:14px;font-size:15px;
+}
+.go{
+  width:100%;margin-top:20px;padding:15px;color:#fff;font-size:17px;
+  background:linear-gradient(90deg,#E86FA8,#9B6FD6);
+  box-shadow:0 5px 14px rgba(200,110,180,.32);
+}
+.go:active{transform:translateY(1px);}
+.mini{
+  padding:11px 8px;font-size:13px;background:#F6E9FB;color:#7A5AA8;flex:1;
+}
+.mini.pink{background:#FCE4F1;color:#C2559A;}
+.mini.line{background:#E4F6E9;color:#2E8B57;}
+.btns{display:flex;gap:8px;margin-top:14px;}
+
+#result{display:none;}
+
+.verdict{border-radius:20px;padding:20px 16px;text-align:center;margin-bottom:16px;}
+.verdict .mk{font-size:52px;line-height:1;font-family:"Zen Maru Gothic",sans-serif;font-weight:700;}
+.verdict .jd{font-family:"Zen Maru Gothic",sans-serif;font-size:20px;font-weight:700;margin-top:6px;}
+.verdict .ds{font-size:12.5px;margin-top:8px;line-height:1.7;opacity:.9;}
+.v-go{background:linear-gradient(120deg,#DFF5EC,#E9F7DE);color:#2E8B6E;}
+.v-ok{background:linear-gradient(120deg,#FCE4F1,#EDE2FB);color:#C2559A;}
+.v-hm{background:linear-gradient(120deg,#FDF0DC,#FCE8E0);color:#C97F2E;}
+.v-no{background:linear-gradient(120deg,#FBE2E6,#F5E0EC);color:#C24E68;}
+
+.big{text-align:center;margin:14px 0 8px;font-family:"Zen Maru Gothic",sans-serif;}
+.big .n{font-size:42px;font-weight:700;color:#D94E8C;line-height:1.1;}
+.big .u{font-size:16px;color:#D94E8C;}
+.big .lb{font-size:12px;color:#9C8AA6;margin-top:5px;}
+
+.kv{display:flex;justify-content:space-between;align-items:baseline;padding:10px 0;border-bottom:1px dashed #EFD9EA;font-size:13.5px;}
+.kv:last-child{border-bottom:none;}
+.kv .k{color:#8E7E98;}
+.kv .v{font-family:"Zen Maru Gothic",sans-serif;font-size:17px;font-weight:700;color:#8A5FD0;}
+.kv .v.pink{color:#D94E8C;}
+.kv .v.gray{color:#A395AD;font-size:15px;}
+
+.row{display:flex;gap:11px;align-items:flex-start;padding:10px 0;border-bottom:1px dashed #EFD9EA;}
+.row:last-child{border-bottom:none;}
+.row .day{flex:none;min-width:76px;font-family:"Zen Maru Gothic",sans-serif;font-size:15px;font-weight:700;color:#8A5FD0;line-height:1.35;}
+.row .day small{display:block;font-size:10.5px;color:#B29CC4;font-weight:500;}
+.row .act{font-size:13px;line-height:1.6;}
+.row .act b{color:#D94E8C;}
+.row .act span{display:block;font-size:11.5px;color:#9C8AA6;margin-top:2px;}
+.row.flag{background:#FFF4FA;border-radius:12px;padding:12px 10px;border-bottom:none;}
+
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{background:#F6E9FB;color:#7A5AA8;font-weight:700;padding:7px 3px;font-size:11.5px;}
+th:first-child{border-radius:6px 0 0 6px;}
+th:last-child{border-radius:0 6px 6px 0;}
+td{padding:8px 3px;text-align:center;border-bottom:1px dashed #EFD9EA;}
+td.p{font-family:"Zen Maru Gothic",sans-serif;font-size:15px;font-weight:700;color:#8A5FD0;}
+tr.now td{background:#FFF4FA;}
+tr.now td.p::after{content:" ←今";font-size:10px;color:#D94E8C;}
+.g{color:#3FA98A;font-weight:700;}
+.o{color:#E08A2E;font-weight:700;}
+.r{color:#D9536B;font-weight:700;}
+
+.warn{background:#FFF6E8;border:1.5px dashed #F0C98A;border-radius:14px;padding:13px 14px;font-size:12.5px;line-height:1.8;color:#9A7233;margin-top:14px;}
+.warn b{color:#D98A2E;}
+.note{background:#FBF5FE;border-radius:14px;padding:13px 14px;font-size:11.5px;line-height:1.85;color:#8E7E98;margin-top:14px;}
+.note b{color:#C2559A;}
+.foot{text-align:center;font-size:11.5px;color:#B29CC4;line-height:1.8;margin-top:16px;}
+
+.kuro{
+  background:linear-gradient(160deg,#F7F1FD 0%,#FDF0F8 100%);
+  border:2px solid #E4D2F2;border-radius:22px;
+  padding:20px 18px;margin-bottom:18px;
+  box-shadow:0 6px 20px rgba(150,110,190,.14);
+}
+.kh{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.kh .ki{font-size:22px;}
+.kh .kt{font-family:"Zen Maru Gothic",sans-serif;font-size:15px;font-weight:700;color:#7A5AA8;letter-spacing:.04em;}
+.kti{font-family:"Zen Maru Gothic",sans-serif;font-size:18px;font-weight:700;color:#C2559A;line-height:1.5;margin-bottom:12px;}
+.kb{font-size:13.5px;line-height:1.95;color:#5B4A63;}
+.kb b{color:#D94E8C;}
+.kx{margin-top:14px;background:#fff;border-radius:13px;padding:12px 13px;font-size:12.5px;line-height:1.8;color:#7A6A84;}
+.kx b{color:#8A5FD0;}
+.kf{margin-top:14px;font-size:11.5px;line-height:1.8;color:#A395AD;border-top:1px dashed #DFCCEE;padding-top:11px;}
+
+.saved{margin-top:6px;}.chip{
+  display:flex;justify-content:space-between;align-items:center;
+  background:#FDF6FB;border:1.5px solid #F0DCEC;border-radius:13px;
+  padding:11px 13px;margin-bottom:8px;font-size:13.5px;
+}
+.chip .nm{font-weight:700;color:#8A5FD0;}
+.chip .x{color:#C9A8D8;font-size:18px;padding:0 4px;cursor:pointer;background:none;}
+.empty{font-size:12.5px;color:#B29CC4;text-align:center;padding:14px 0;}
+.toast{
+  position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);
+  background:#5B4A63;color:#fff;padding:11px 20px;border-radius:22px;font-size:13px;
+  opacity:0;pointer-events:none;transition:.25s;z-index:99;
+}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="head">
+    <div class="t">🌷</div>
+    <h1>NISAお引越し手帳</h1>
+    <p>特定口座の株をNISAに移すべきか<br>数字で判定して、日程表まで作ります</p>
+  </div>
+
+  <!-- 入力 -->
+  <div class="card">
+    <h2>📝 数字を入れてね</h2>
+
+    <label>銘柄名 <span>（メモ用・自由に）</span></label>
+    <input id="name" type="text" placeholder="例）サンゲツ 8130">
+
+    <div class="two">
+      <div>
+        <label>特定口座の株数</label>
+        <input id="qty" type="number" inputmode="decimal" placeholder="124">
+      </div>
+      <div>
+        <label>平均取得単価（円）</label>
+        <input id="cost" type="number" inputmode="decimal" placeholder="2873.9">
+      </div>
+    </div>
+
+    <div class="two">
+      <div>
+        <label>今の株価（円）</label>
+        <input id="price" type="number" inputmode="decimal" placeholder="3145">
+      </div>
+      <div>
+        <label>1株配当（年・円）</label>
+        <input id="div" type="number" inputmode="decimal" placeholder="155">
+      </div>
+    </div>
+
+    <label>権利落ち日 <span>（次に配当をもらう回）</span></label>
+    <input id="exdate" type="date">
+
+    <label>今年のNISA成長投資枠の残り <span>（分かれば・円）</span></label>
+    <input id="room" type="number" inputmode="numeric" placeholder="例）1500000（空欄でもOK）">
+
+    <button class="go" onclick="calc()">🔮 判定してもらう</button>
+
+    <div class="note" style="margin-top:16px">
+      📸 <b>入力がめんどうな時は</b><br>
+      配当管理アプリの画面を2枚（銘柄ページ＋編集画面）撮って、クロに送ってね。数字が全部入ったリンクを返すよ。タップするだけで判定済みで開きます🌷
+    </div>
+  </div>
+
+  <!-- 結果 -->
+  <div id="result"></div>
+
+  <!-- 保存リスト -->
+  <div class="card">
+    <h2>💾 保存した銘柄</h2>
+    <div id="savedList" class="saved"><div class="empty">まだ保存がないよ</div></div>
+  </div>
+
+  <div class="foot">
+    💗 税率は20.315%で計算しています<br>
+    実行前に証券会社で枠の残りを確認してね 🌸
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const TAX = 0.20315;
+const yen = n => "¥" + Math.round(n).toLocaleString();
+const toast = m => { const t=document.getElementById('toast'); t.textContent=m; t.classList.add('on'); setTimeout(()=>t.classList.remove('on'),1800); };
+
+/* ---------- 営業日カレンダー ---------- */
+const HOLIDAYS = new Set([
+"2026-01-01","2026-01-02","2026-01-12","2026-02-11","2026-02-23","2026-03-20",
+"2026-04-29","2026-05-03","2026-05-04","2026-05-05","2026-05-06","2026-07-20",
+"2026-08-11","2026-09-21","2026-09-22","2026-09-23","2026-10-12","2026-11-03",
+"2026-11-23","2026-12-31",
+"2027-01-01","2027-01-02","2027-01-03","2027-01-11","2027-02-11","2027-02-23",
+"2027-03-22","2027-04-29","2027-05-03","2027-05-04","2027-05-05","2027-07-19",
+"2027-08-11","2027-09-20","2027-09-23","2027-10-11","2027-11-03","2027-11-23",
+"2027-12-31"
+]);
+const key = d => d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const isBiz = d => d.getDay()!==0 && d.getDay()!==6 && !HOLIDAYS.has(key(d));
+function shiftBiz(date, n){
+  const d = new Date(date); const step = n<0?-1:1; let left = Math.abs(n);
+  while(left>0){ d.setDate(d.getDate()+step); if(isBiz(d)) left--; }
+  return d;
+}
+function prevBiz(date){ const d=new Date(date); do{ d.setDate(d.getDate()-1); }while(!isBiz(d)); return d; }
+const WD = ["日","月","火","水","木","金","土"];
+const fmt = d => (d.getMonth()+1)+"/"+d.getDate();
+const fmtW = d => WD[d.getDay()];
+
+/* ---------- 計算 ---------- */
+function calc(){
+  const name  = document.getElementById('name').value.trim() || "この銘柄";
+  const qty   = parseFloat(document.getElementById('qty').value);
+  const cost  = parseFloat(document.getElementById('cost').value);
+  const price = parseFloat(document.getElementById('price').value);
+  const dps   = parseFloat(document.getElementById('div').value);
+  const exStr = document.getElementById('exdate').value;
+  const roomV = document.getElementById('room').value;
+  const room  = roomV==="" ? null : parseFloat(roomV);
+
+  if(!qty||!cost||!price||!dps){ toast("株数・単価・株価・配当を入れてね🌷"); return; }
+
+  const acq   = qty*cost;
+  const val   = qty*price;
+  const gain  = val-acq;
+  const tax   = gain>0 ? gain*TAX : 0;
+  const net   = val-tax;
+  const canBuy= Math.floor(net/price);
+  const short = Math.max(0, val-net);
+  const yearDiv = qty*dps;
+  const merit = yearDiv*TAX;
+  const lostDiv = (qty-canBuy)*dps;
+  const meritNoCash = Math.max(1, merit-lostDiv);
+  const yearsCash = tax<=0 ? 0 : tax/merit;
+  const yearsNoCash = tax<=0 ? 0 : tax/meritNoCash;
+
+  let html = "";
+
+  /* --- 判定 --- */
+  let cls,mk,jd,ds;
+  if(gain<0){
+    cls="v-no"; mk="✕"; jd="移さないでね";
+    ds="含み損の株を売ると、その損が消えてしまうよ。損は他の株の利益と相殺できる大事なカードだから、特定口座のまま持っていよう🌷";
+  }else if(yearsCash<=1){
+    cls="v-go"; mk="◎"; jd="すぐ実行していいよ";
+    ds="約"+ (yearsCash<0.1 ? "すぐ" : yearsCash.toFixed(1)+"年") +"で元が取れる計算。とてもお得な移し替えだね✨";
+  }else if(yearsCash<=3){
+    cls="v-ok"; mk="○"; jd="実行してOK";
+    ds="約"+yearsCash.toFixed(1)+"年で元が取れる計算。移す価値は十分あるよ🌸";
+  }else if(yearsCash<=5){
+    cls="v-hm"; mk="△"; jd="迷うところだね";
+    ds="約"+yearsCash.toFixed(1)+"年かかる計算。急がなくていいよ。株価が下がった時に改めて考えよう";
+  }else{
+    cls="v-no"; mk="✕"; jd="今回は見送りで";
+    ds="約"+yearsCash.toFixed(1)+"年かかる計算。税金が重すぎるから、NISA枠は新しく買う分に使うほうがお得だよ";
+  }
+  html += `<div class="verdict ${cls}"><div class="mk">${mk}</div><div class="jd">${jd}</div><div class="ds">${ds}</div></div>`;
+
+  /* --- 数字 --- */
+  html += `<div class="card"><h2>💰 ${name} の数字</h2>`;
+  html += kv("取得額", yen(acq), "gray");
+  html += kv("今の評価額", yen(val), "gray");
+  html += kv(gain>=0?"含み益":"含み損", (gain>=0?"+":"−")+yen(Math.abs(gain)), gain>=0?"pink":"");
+  html += kv("売ると払う税金", yen(tax), "pink");
+  html += kv("手元に残るお金", yen(net));
+  html += kv("そのまま買える株数", canBuy+"株");
+  if(short>0) html += kv("同じ株数を保つ追加現金", yen(short));
+  html += kv("年間の配当", yen(yearDiv), "gray");
+  html += kv("NISAで浮く税金（毎年）", yen(merit));
+  html += `</div>`;
+
+  if(gain>0){
+    html += `<div class="card"><h2>⏳ 元が取れるまで</h2>`;
+    html += `<div class="big"><span class="n">${yearsCash<0.1?"すぐ":yearsCash.toFixed(1)}</span><span class="u">${yearsCash<0.1?"":"年"}</span><div class="lb">追加現金 ${yen(short)} を足して同じ株数を保つ場合</div></div>`;
+    html += kv("現金を足さない場合", yearsNoCash.toFixed(1)+"年");
+    html += `<div class="note">💡 増配が続くとメリットは毎年ふえるから、実際はこの年数より早く元が取れることが多いよ🌸</div></div>`;
+  }
+
+  /* --- 株価別の目安 --- */
+  if(gain>0){
+    html += `<div class="card"><h2>📊 株価いくらなら実行？</h2><table><tr><th>株価</th><th>税金</th><th>元が取れる</th><th></th></tr>`;
+    const list = [cost*1.0, price*0.9, price*0.95, price, price*1.1, price*1.2]
+      .map(p=>Math.round(p)).filter((v,i,a)=>a.indexOf(v)===i && v>0).sort((a,b)=>a-b);
+    list.forEach(p=>{
+      const g = qty*p - acq;
+      const t = g>0 ? g*TAX : 0;
+      const y = t<=0 ? 0 : t/(yearDiv*TAX);
+      let m = y<=1?'<span class="g">◎</span>' : y<=3?'<span class="g">○</span>' : y<=5?'<span class="o">△</span>' : '<span class="r">✕</span>';
+      const ytxt = t<=0 ? "すぐ" : (y<1 ? Math.round(y*12)+"ヶ月" : y.toFixed(1)+"年");
+      html += `<tr class="${p===Math.round(price)?'now':''}"><td class="p">${p.toLocaleString()}</td><td>${yen(t)}</td><td>${ytxt}</td><td>${m}</td></tr>`;
+    });
+    html += `</table><div class="note">💡 株価が安い日に実行するほど税金が減ってお得だよ。<b>この表を見ながら実行日を決めてね</b>🌷</div></div>`;
+  }
+
+  /* --- 枠チェック --- */
+  if(room!==null){
+    if(room < val){
+      const partial = Math.floor(room/price);
+      html += `<div class="warn"><b>⚠️ NISA枠が足りないかも</b><br>残り枠 ${yen(room)} に対して、必要なのは ${yen(val)} だよ。<br>この枠だと <b>${partial}株</b> までなら移せるから、部分的に移すのもアリだね🌷</div>`;
+    }else{
+      html += `<div class="note">✅ NISA枠は足りているよ（残り ${yen(room)} ／ 必要 ${yen(val)}）🌸</div>`;
+    }
+  }
+
+  /* --- 日程表 --- */
+  if(exStr && gain>0){
+    const ex = new Date(exStr+"T00:00:00");
+    const last = prevBiz(ex);
+    const sell = shiftBiz(last, -10);
+    const buy  = shiftBiz(sell, 2);
+    const chk  = shiftBiz(buy, 1);
+    const spare= shiftBiz(last, -3);
+    const prep = new Date(sell); prep.setDate(prep.getDate()-21);
+    const today = new Date(); today.setHours(0,0,0,0);
+
+    html += `<div class="card"><h2>📅 やることカレンダー</h2>`;
+    html += `<div class="big"><span class="n">${ex.getMonth()+1}</span><span class="u">月</span><span class="n">${last.getDate()}</span><span class="u">日</span><div class="lb">🚩 権利付最終日（${fmtW(last)}）この日までに完了</div></div>`;
+    html += rowHtml(fmt(prep), "までに", "<b>準備3つ</b>", "①NISA成長投資枠の残りを確認<br>②単元未満株がNISAで買えるか確認"+(short>0?"<br>③買い戻し用の現金 "+yen(short)+" を入金":""));
+    html += rowHtml(fmt(prep)+"〜", "観察", "株価をゆるく見るだけ 👀", "上の表を見て、安い日をねらう");
+    html += rowHtml(fmt(sell), fmtW(sell), "<b>特定口座の"+qty+"株を売却</b> 💰", "税金 約"+yen(tax)+" が引かれる");
+    html += rowHtml(fmt(buy), fmtW(buy), "<b>成長NISAで買い戻し</b> 🌸", "売却の2営業日後が受渡日");
+    html += rowHtml(fmt(chk), fmtW(chk), "口座区分を確認 ✅", "「成長NISA」になっていればOK");
+    html += rowHtml(fmt(spare), fmtW(spare), "予備日 🕊", "ずれ込んだ時のために");
+    html += `<div class="row flag"><div class="day">${fmt(last)}<small>${fmtW(last)}</small></div><div class="act"><b>🚩 権利付最終日</b><span>この日までに買い戻しが済んでいれば配当がもらえるよ</span></div></div>`;
+    if(sell < today){
+      html += `<div class="warn"><b>⚠️ 日程が過ぎているよ</b><br>売却の目安日がもう過ぎているから、次の権利落ち日で計画し直そうね🌷</div>`;
+    }
+    html += `</div>`;
+  }
+
+  /* --- クロならこうする --- */
+  html += kuroComment(gain, yearsCash, tax, merit, short, canBuy, qty, room, val, price, dps);
+
+  /* --- 注意 --- */
+  html += `<div class="card"><h2>⚠️ 忘れないでね</h2><div class="note" style="margin-top:0">
+    ・売るのは<b>特定口座の分だけ</b>。すでにNISAにある株は売らないでね<br>
+    ・単元未満株は受渡に2営業日かかるから、売りと買いの間があくよ<br>
+    ・その間に株価が動くリスクは避けられないんだ<br>
+    ・枠が足りなければ<b>一部だけ移す</b>のもアリ<br>
+    ・NISA枠は「新しく買う分」に使うほうが強いことも多いよ
+  </div></div>`;
+
+  /* --- ボタン --- */
+  html += `<div class="card"><h2>📤 保存・共有</h2>
+    <div class="btns">
+      <button class="mini pink" onclick="save()">💾 保存する</button>
+      <button class="mini" onclick="copyText()">📋 コピー</button>
+    </div>
+    <div class="btns">
+      <button class="mini line" onclick="shareText()">💬 LINEで送る</button>
+      <button class="mini" onclick="window.print()">🖨 印刷・PDF</button>
+    </div>
+    <div class="note">📸 スクリーンショットを撮って、iPhoneのメモに貼っておくと便利だよ🌷</div>
+  </div>`;
+
+  const r = document.getElementById('result');
+  r.innerHTML = html; r.style.display="block";
+  r.scrollIntoView({behavior:"smooth"});
+
+  window.__last = {name,qty,cost,price,dps,exStr,room,tax,merit,years:yearsCash,jd,mk};
+}
+
+function kv(k,v,c){ return `<div class="kv"><span class="k">${k}</span><span class="v ${c||''}">${v}</span></div>`; }
+function rowHtml(d,w,a,s){ return `<div class="row"><div class="day">${d}<small>${w}</small></div><div class="act">${a}<span>${s}</span></div></div>`; }
+
+/* ---------- クロならこうする ---------- */
+function kuroComment(gain, years, tax, merit, short, canBuy, qty, room, val, price, dps){
+  let title, body, extra = "";
+
+  if(gain < 0){
+    title = "僕なら、触らずにそのまま持つよ";
+    body = `含み損の株を売っちゃうと、その損が消えてなくなるんだ。この損は「他の株で利益が出たときに税金を減らせるカード」だから、けっこう大事なものなんだよ。<br><br>
+    それにね、値下がりしている株をNISAに入れると、もし将来もっと下がったときに「損はなかったこと」にされちゃうの。NISAは損に対して不利な仕組みなんだ。<br><br>
+    だから僕なら、この株は特定口座のまま置いておいて、配当を静かに受け取りながら回復を待つよ。焦らなくて大丈夫だからね🌸`;
+  }
+  else if(years <= 1){
+    title = "僕なら、迷わず実行するよ";
+    body = `税金が ${yen(tax)} しかかからないのに、毎年 ${yen(merit)} ずつ得になるんだ。${years<0.1?"ほとんどタダで":"約"+Math.round(years*12)+"ヶ月で"}お引越しできる計算だね。<br><br>
+    こういう「含み益がほとんど乗っていない株」は、NISAに移す一番のお手本なんだよ。もう含み益が大きく育った株を無理に動かすより、こういう株を優先するほうがずっと効率がいいの。<br><br>
+    ${short>0 ? "買い戻しに "+yen(short)+" だけ足りないから、そのぶんの現金を先に用意しておいてね。" : "手元のお金だけで同じ株数を買い戻せるよ。"}`;
+  }
+  else if(years <= 3){
+    title = "僕なら、実行する方向で考えるよ";
+    body = `約${years.toFixed(1)}年で元が取れる計算だから、じゅうぶん合格ラインだね。<br><br>
+    ただ、急がなくていいよ。株価が上がっている日に慌てて動くと税金が増えちゃうから、上の「株価いくらなら実行？」の表を見ながら、<b>少し落ち着いた日</b>を選ぼう。権利付最終日までまだ余裕があるはずだよ。<br><br>
+    ${short>0 ? "買い戻し用に "+yen(short)+" 足りないから、先に入金しておくと当日あわてないよ。" : "手元のお金だけで同じ株数を買い戻せるよ。"}`;
+    extra = "増配が続く会社なら、実際はこの年数より早く元が取れることが多いよ🌸";
+  }
+  else if(years <= 5){
+    title = "僕なら、今日は動かないな";
+    body = `約${years.toFixed(1)}年かかる計算だと、ちょっと重いんだよね。払う税金 ${yen(tax)} は<b>今日確定してしまう損</b>だけど、将来の得は「たぶんそうなる」という予想でしかないんだ。確実な損を先に払う取引は、あまり分がよくないの。<br><br>
+    でも「絶対ダメ」ではないよ。株価が下がった日なら税金も減って、判定が○や◎に変わるんだ。上の表を見て、<b>安い日が来たら考え直す</b>という置き方でいいと思う。<br><br>
+    それまでは特定口座のまま、配当をもらい続けよう。`;
+  }
+  else{
+    title = "僕なら、今回は見送るよ";
+    body = `約${years.toFixed(1)}年かかる計算は、さすがに長すぎるね。この株はもうしっかり育ってくれた「働き者」だから、税金 ${yen(tax)} を払ってわざわざ動かす理由が見当たらないんだ。<br><br>
+    それにね、NISA枠は<b>これから新しく買う分</b>に使うほうがずっと強いんだよ。すでに利益が乗った株は「もう美味しくなった果物」。枠は「これから育てる苗」に使いたいの。<br><br>
+    幸恵ちゃんは今、資産を<b>守りながらゆるやかに増やす</b>段階だよね。この段階でいちばん強いのは「動かさないこと」なんだ。そのまま静かに持っていよう🌸`;
+  }
+
+  if(room!==null && room < val && gain > 0){
+    extra += (extra?"<br><br>":"") + `NISA枠が足りないみたいだから、全部は無理でも <b>${Math.floor(room/price)}株だけ移す</b>という手もあるよ。全部か0かで考えなくて大丈夫🌷`;
+  }
+
+  return `<div class="kuro">
+    <div class="kh"><span class="ki">🖤</span><span class="kt">クロならこうする</span></div>
+    <div class="kti">${title}</div>
+    <div class="kb">${body}</div>
+    ${extra?`<div class="kx">💡 ${extra}</div>`:``}
+    <div class="kf">※ 最後に決めるのは幸恵ちゃんだよ。迷ったら「動かない」を選んでも、それは立派な判断だからね😊</div>
+  </div>`;
+}
+
+/* ---------- テキスト化 ---------- */
+function makeText(){
+  const d = window.__last; if(!d) return "";
+  return `🌷 NISAお引越し判定 🌷
+【${d.name}】
+判定：${d.mk} ${d.jd}
+━━━━━━━━━
+株数：${d.qty}株
+取得単価：¥${d.cost}
+今の株価：¥${d.price}
+売ると払う税金：${yen(d.tax)}
+NISAで浮く税金：${yen(d.merit)}／年
+元が取れるまで：約${d.years.toFixed(1)}年
+━━━━━━━━━
+※税率20.315%で計算`;
+}
+function copyText(){
+  const t = makeText();
+  if(navigator.clipboard){ navigator.clipboard.writeText(t).then(()=>toast("コピーしたよ📋")).catch(()=>fallback(t)); }
+  else fallback(t);
+}
+function fallback(t){
+  const ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta);
+  ta.select(); try{document.execCommand('copy'); toast("コピーしたよ📋");}catch(e){toast("コピーできなかったよ");}
+  document.body.removeChild(ta);
+}
+function shareText(){
+  const t = makeText();
+  if(navigator.share){ navigator.share({text:t}).catch(()=>{}); }
+  else { copyText(); toast("コピーしたよ。LINEに貼ってね💬"); }
+}
+
+/* ---------- 保存 ---------- */
+let mem = [];
+function load(){
+  try{ const s = localStorage.getItem('nisa_hikkoshi'); mem = s?JSON.parse(s):[]; }
+  catch(e){ mem = mem||[]; }
+  render();
+}
+function persist(){ try{ localStorage.setItem('nisa_hikkoshi', JSON.stringify(mem)); }catch(e){} }
+function save(){
+  const d = window.__last; if(!d){ toast("先に判定してね🌷"); return; }
+  mem = mem.filter(m=>m.name!==d.name);
+  mem.unshift({name:d.name,qty:d.qty,cost:d.cost,price:d.price,dps:d.dps,exStr:d.exStr,room:d.room,mk:d.mk,jd:d.jd});
+  if(mem.length>20) mem.pop();
+  persist(); render(); toast("保存したよ💾");
+}
+function render(){
+  const el = document.getElementById('savedList');
+  if(!mem.length){ el.innerHTML = '<div class="empty">まだ保存がないよ</div>'; return; }
+  el.innerHTML = mem.map((m,i)=>
+    `<div class="chip"><span onclick="restore(${i})"><span class="nm">${m.mk} ${m.name}</span> <span style="color:#A395AD;font-size:12px">${m.qty}株</span></span><button class="x" onclick="del(${i})">×</button></div>`
+  ).join("");
+}
+function restore(i){
+  const m = mem[i];
+  document.getElementById('name').value = m.name;
+  document.getElementById('qty').value = m.qty;
+  document.getElementById('cost').value = m.cost;
+  document.getElementById('price').value = m.price;
+  document.getElementById('div').value = m.dps;
+  document.getElementById('exdate').value = m.exStr||"";
+  document.getElementById('room').value = m.room==null?"":m.room;
+  calc();
+}
+function del(i){ mem.splice(i,1); persist(); render(); toast("消したよ"); }
+
+/* ---------- URLから自動入力（クロが作ったリンク用） ---------- */
+function autoFill(){
+  const P = new URLSearchParams(location.search);
+  if(!P.get('q')) return false;
+  const put = (id,key)=>{ const v=P.get(key); if(v!==null&&v!=="") document.getElementById(id).value = decodeURIComponent(v); };
+  put('name','n'); put('qty','q'); put('cost','c');
+  put('price','p'); put('div','d'); put('exdate','e'); put('room','r');
+  calc();
+  return true;
+}
+
+load();
+autoFill();
+</script>
+</body>
+</html>
