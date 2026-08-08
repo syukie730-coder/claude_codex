@@ -51,6 +51,7 @@ input{
   font-size:17px;font-family:inherit;background:#fbf9fe;color:var(--ink);
 }
 input:focus{outline:none;border-color:var(--violet);background:#fff}
+input.err{border-color:#d4547e;background:#fdf0f4}
 .hint{font-size:12.5px;color:var(--gray);margin-top:4px;font-weight:500}
 .btn{
   display:block;width:100%;padding:15px;border:none;border-radius:16px;
@@ -68,13 +69,13 @@ input:focus{outline:none;border-color:var(--violet);background:#fff}
   border-radius:24px;padding:24px 20px;text-align:center;color:#fff;
   box-shadow:0 8px 26px rgba(0,0,0,.13);
 }
-.answer-box.go{background:linear-gradient(140deg,#4fbfa0,#2f9c86)}
-.answer-box.wait{background:linear-gradient(140deg,#f0a04b,#e08544)}
-.answer-box.stop{background:linear-gradient(140deg,#a08fc4,#7d6aa8)}
-.answer-eyebrow{font-size:12.5px;opacity:1;letter-spacing:.14em;margin-bottom:6px;font-weight:700}
+.answer-box.go{background:linear-gradient(140deg,#3aa78a,#227a67)}
+.answer-box.wait{background:linear-gradient(140deg,#e0902f,#c76f26)}
+.answer-box.stop{background:linear-gradient(140deg,#8b76b5,#6b5895)}
+.answer-eyebrow{font-size:12.5px;letter-spacing:.14em;margin-bottom:6px;font-weight:700}
 .answer-title{font-family:"Shippori Mincho B1",serif;font-size:30px;line-height:1.35;margin:0 0 10px}
-.answer-why{font-size:15.5px;opacity:1;margin:0;font-weight:500}
-.answer-name{font-size:14px;opacity:1;margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.35)}
+.answer-why{font-size:15.5px;margin:0;font-weight:500}
+.answer-name{font-size:14px;margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.45)}
 .rows{margin-top:4px}
 .row{display:flex;justify-content:space-between;align-items:baseline;padding:11px 0;border-bottom:1px dashed var(--line);gap:12px}
 .row:last-child{border-bottom:none}
@@ -87,14 +88,14 @@ input:focus{outline:none;border-color:var(--violet);background:#fff}
   background:#f9f5fd;border-radius:14px;padding:14px 16px;font-size:14.5px;
   color:#3a3150;margin-top:14px;line-height:1.85;font-weight:500;
 }
+.note.warn{background:#fdf2f6;color:#6d2340}
 table{width:100%;border-collapse:collapse;font-size:15px;margin-top:6px}
 th,td{padding:10px 6px;text-align:center;border-bottom:1px solid var(--line)}
 th{font-size:13px;color:var(--sub);font-weight:700}
 td:first-child{font-weight:700}
-.j{font-size:17px}
+.j{font-size:17px;font-weight:700}
 tr.now{background:#fdf1f7}
 tr.now td:first-child::after{content:" \2190 今";font-size:11px;color:var(--rose);font-weight:700}
-#planCard.muted .plan-body{opacity:1;filter:none}
 .plan-lock{
   background:#f4f1f8;border:1.5px solid #e3dcef;border-radius:16px;
   padding:16px 17px;font-size:15px;color:#332b47;line-height:1.85;font-weight:500;
@@ -118,6 +119,43 @@ tr.now td:first-child::after{content:" \2190 今";font-size:11px;color:var(--ros
 .kuro .msg{font-size:17.5px;font-weight:700;color:var(--rose);margin:0 0 8px}
 .kuro p{margin:0;font-size:15.5px;line-height:1.9;font-weight:500}
 
+/* ---- 銘柄リスト ---- */
+.li{
+  display:flex;align-items:center;gap:12px;padding:13px 12px;
+  border:1.5px solid var(--line);border-radius:16px;margin-bottom:10px;background:#fbf9fe;
+}
+.li .rk{
+  width:34px;flex-shrink:0;text-align:center;font-size:20px;font-weight:700;color:var(--violet);
+  font-family:"Shippori Mincho B1",serif;line-height:1.2;
+}
+.li .rk small{display:block;font-size:11px;color:var(--gray);font-weight:700}
+.li .mk{
+  width:40px;height:40px;flex-shrink:0;border-radius:12px;display:flex;
+  align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;
+}
+.li.top{background:#fdf4f9;border-color:#efc9de}
+.new{
+  display:inline-block;background:#c93472;color:#fff;font-size:11px;font-weight:700;
+  padding:2px 7px;border-radius:20px;margin-left:6px;vertical-align:middle;
+}
+.li .mk.go{background:#2f9c86}
+.li .mk.wait{background:#d98533}
+.li .mk.stop{background:#7d6aa8}
+.li .info{flex:1;min-width:0}
+.li .nm{font-size:16px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.li .sb{font-size:13px;color:var(--sub);font-weight:500}
+.li button{
+  border:none;background:#fff;border:1.5px solid var(--line);border-radius:12px;
+  padding:9px 11px;font-family:inherit;font-size:14px;font-weight:700;color:var(--violet);cursor:pointer;flex-shrink:0;
+}
+.li button.del{color:#b03a63}
+.empty{
+  background:#f9f5fd;border-radius:14px;padding:16px;font-size:14.5px;
+  color:#3a3150;font-weight:500;text-align:center;line-height:1.8;
+}
+.sum{background:#fdf1f7;border-radius:14px;padding:14px 16px;margin-top:12px;font-size:15px;color:#3a2340;font-weight:500;line-height:1.85}
+.sum b{color:var(--rose);font-size:17px}
+
 /* ---- うちの子診断 ---- */
 .uchi{
   background:linear-gradient(150deg,#fff7fb,#fdf6ff);
@@ -131,7 +169,10 @@ tr.now td:first-child::after{content:" \2190 今";font-size:11px;color:var(--ros
   font-family:"Shippori Mincho B1",serif;font-size:25px;text-align:center;
   color:#b02a63;margin:0 0 8px;font-weight:700;
 }
-.uchi-star{text-align:center;font-size:23px;color:#e8a020;letter-spacing:3px;margin-bottom:2px}
+.uchi-star{text-align:center;font-size:23px;letter-spacing:3px;margin-bottom:2px}
+.st.on{color:#e0940c}
+.st.half{color:#eab657}
+.st.off{color:#c9bedd}
 .uchi-num{text-align:center;font-size:14px;color:#4a4160;font-weight:700;margin-bottom:14px}
 .uchi-comment{
   background:#fdf4f9;border-radius:14px;padding:14px 16px;
@@ -149,15 +190,16 @@ tr.now td:first-child::after{content:" \2190 今";font-size:11px;color:var(--ros
 }
 .uchi-nums .lab{font-size:12.5px;color:#4a4160;font-weight:700;display:block;margin-bottom:2px}
 .uchi-nums .val{font-size:19px;font-weight:700;color:#7d2d94}
-.foot{text-align:center;font-size:13px;color:var(--gray);line-height:1.9;margin-top:26px;font-weight:500}.saved{
+.foot{text-align:center;font-size:13px;color:var(--gray);line-height:1.9;margin-top:26px;font-weight:500}
+.saved{
   position:fixed;left:50%;bottom:26px;transform:translateX(-50%);
-  background:rgba(61,51,80,.92);color:#fff;padding:11px 22px;border-radius:30px;
-  font-size:14px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:99;
+  background:rgba(45,36,62,.95);color:#fff;padding:11px 22px;border-radius:30px;
+  font-size:14px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:99;max-width:88%;text-align:center;
 }
 .saved.show{opacity:1}
 @media print{
   body{background:#fff}
-  .btn,.toggle,#inputCard{display:none}
+  .btn,.toggle,#inputCard,#listCard{display:none}
   .card{box-shadow:none;border:1px solid #ddd}
 }
 </style>
@@ -181,11 +223,12 @@ tr.now td:first-child::after{content:" \2190 今";font-size:11px;color:var(--ros
   <input type="number" id="d" inputmode="decimal" placeholder="例）125">
   <label>権利落ち日</label>
   <input type="date" id="e">
+  <div class="hint">入れるとカレンダーが出るよ。わからなければ空でOK</div>
   <label>NISA成長投資枠の残り（円）</label>
   <input type="number" id="r" inputmode="decimal" placeholder="例）1110000">
   <div class="hint">証券会社のNISA画面で確認できるよ</div>
   <button class="btn" onclick="judge()">判定する</button>
-  <button class="btn sub" onclick="save()">この内容を保存する</button>
+  <button class="btn sub" onclick="clearForm()">入力をぜんぶ消す</button>
 </div>
 
 <div id="answer"></div>
@@ -195,9 +238,18 @@ tr.now td:first-child::after{content:" \2190 今";font-size:11px;color:var(--ros
 <div id="uchinoko"></div>
 
 <div id="tools" class="hidden">
-  <button class="btn sub" onclick="copyText()">📋 結果をコピー</button>
-  <button class="btn sub" onclick="sendLine()">💬 LINEで送る</button>
-  <button class="btn sub" onclick="window.print()">🖨 印刷する</button>
+  <div class="card">
+    <h2>📎 使う・残す</h2>
+    <button class="btn sub" onclick="copyUrl()">🔗 この内容のURLをコピー</button>
+    <button class="btn sub" onclick="copyText()">📋 結果をコピー</button>
+    <button class="btn sub" onclick="sendLine()">💬 LINEで送る</button>
+    <button class="btn sub" onclick="window.print()">🖨 印刷する</button>
+  </div>
+</div>
+
+<div class="card" id="listCard">
+  <h2>🏆 おトク度ランキング</h2>
+  <div id="listBody"></div>
 </div>
 
 <p class="foot">
@@ -209,38 +261,51 @@ tr.now td:first-child::after{content:" \2190 今";font-size:11px;color:var(--ros
 
 <script>
 var TAX = 0.20315;
+var KEYS = ["n","q","c","p","d","e","r"];
+var LIST_KEY = "nisa_hikkoshi_list";
 var last = null;
+
 function F(n){ return "\u00A5" + Math.round(n).toLocaleString(); }
+function el(id){ return document.getElementById(id); }
+function num(id){ var v = parseFloat(el(id).value); return isFinite(v) ? v : NaN; }
 
 window.addEventListener("DOMContentLoaded", function(){
   var u = new URLSearchParams(location.search);
-  var keys = ["n","q","c","p","d","e","r"];
   var fromUrl = false;
-  keys.forEach(function(k){
-    if (u.has(k)) { document.getElementById(k).value = u.get(k); fromUrl = true; }
+  KEYS.forEach(function(k){
+    if (u.has(k)) { el(k).value = u.get(k); fromUrl = true; }
   });
   if (!fromUrl) {
     try {
       var s = JSON.parse(localStorage.getItem("nisa_hikkoshi") || "null");
-      if (s) keys.forEach(function(k){ if (s[k]) document.getElementById(k).value = s[k]; });
+      if (s) KEYS.forEach(function(k){ if (s[k]) el(k).value = s[k]; });
     } catch (err) {}
   }
-  if (document.getElementById("q").value && document.getElementById("c").value) judge();
+  drawList();
+  if (el("q").value && el("c").value && el("p").value) judge();
 });
 
-function save(){
+function saveDraft(){
   var o = {};
-  ["n","q","c","p","d","e","r"].forEach(function(k){ o[k] = document.getElementById(k).value; });
-  try {
-    localStorage.setItem("nisa_hikkoshi", JSON.stringify(o));
-    toast("保存しました\uD83C\uDF38");
-  } catch (err) { toast("保存できませんでした"); }
+  KEYS.forEach(function(k){ o[k] = el(k).value; });
+  try { localStorage.setItem("nisa_hikkoshi", JSON.stringify(o)); } catch (err) {}
+}
+
+function clearForm(){
+  KEYS.forEach(function(k){ el(k).value = ""; el(k).classList.remove("err"); });
+  el("answer").style.display = "none";
+  ["detail","kuro","planCard","uchinoko"].forEach(function(id){ el(id).innerHTML = ""; });
+  el("tools").classList.add("hidden");
+  last = null;
+  try { localStorage.removeItem("nisa_hikkoshi"); } catch (err) {}
+  toast("入力を消しました");
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function toast(t){
-  var el = document.getElementById("toast");
-  el.textContent = t; el.classList.add("show");
-  setTimeout(function(){ el.classList.remove("show"); }, 1800);
+  var e = el("toast");
+  e.textContent = t; e.classList.add("show");
+  setTimeout(function(){ e.classList.remove("show"); }, 2000);
 }
 
 function shift(date, days){
@@ -257,32 +322,42 @@ function MD(d){ return (d.getMonth()+1) + "/" + d.getDate(); }
 function WD(d){ return ["日","月","火","水","木","金","土"][d.getDay()]; }
 
 function judge(){
-  function v(id){ return parseFloat(document.getElementById(id).value); }
-  var name = document.getElementById("n").value.trim() || "この銘柄";
-  var q = v("q"), c = v("c"), p = v("p"), d = v("d"), r = v("r");
-  var eStr = document.getElementById("e").value;
+  KEYS.forEach(function(k){ el(k).classList.remove("err"); });
 
-  if (!(q > 0) || !(c > 0) || !(p > 0)) {
-    toast("株数・取得単価・株価を入れてね");
+  var name = el("n").value.trim() || "この銘柄";
+  var q = num("q"), c = num("c"), p = num("p"), d = num("d"), r = num("r");
+  var eStr = el("e").value;
+
+  var miss = [];
+  if (!(q > 0)) { miss.push("移したい株数"); el("q").classList.add("err"); }
+  if (!(c > 0)) { miss.push("取得単価"); el("c").classList.add("err"); }
+  if (!(p > 0)) { miss.push("今の株価"); el("p").classList.add("err"); }
+  if (miss.length) {
+    toast(miss.join("・") + "を入れてね");
+    el(miss.length ? "q" : "q").scrollIntoView({ behavior:"smooth", block:"center" });
     return;
   }
 
+  saveDraft();
+
   var gain = (p - c) * q;
   var tax = gain > 0 ? gain * TAX : 0;
-  var div = (d > 0 ? d : 0) * q;
+  var dv = (d > 0 ? d : 0);
+  var div = dv * q;
   var saved = div * TAX;
   var years = saved > 0 ? tax / saved : Infinity;
   var need = p * q;
+  var yieldNow = dv / p * 100;
 
   var mark, cls, title, why;
   if (gain < 0) {
     mark = "\u2715"; cls = "stop";
     title = "移さないでおこう";
     why = "含み損が出ているからだよ。この損は、他の株の利益と相殺して税金を減らせる大切な材料なんだ。NISAに移すと、その権利が消えてしまうよ。";
-  } else if (!(div > 0)) {
+  } else if (!(dv > 0)) {
     mark = "\u2715"; cls = "stop";
     title = "移さないでおこう";
-    why = "配当が入っていないから判定できないよ。無配の株はNISAに移しても、非課税のメリットがほとんどないんだ。";
+    why = "配当が0円の株だから、NISAに移しても非課税のメリットがほとんどないんだ。特定口座のまま持っていて大丈夫だよ。";
   } else if (years <= 1) {
     mark = "\u25CE"; cls = "go";
     title = "移していいよ";
@@ -302,33 +377,38 @@ function judge(){
   }
   var doIt = (mark === "\u25CE" || mark === "\u25CB");
 
-  document.getElementById("answer").style.display = "block";
-  document.getElementById("answer").innerHTML =
+  el("answer").style.display = "block";
+  el("answer").innerHTML =
     '<div class="answer-box ' + cls + '">' +
       '<div class="answer-eyebrow">答え</div>' +
       '<div class="answer-title">' + mark + " " + title + '</div>' +
       '<p class="answer-why">' + why + '</p>' +
-      '<div class="answer-name">' + name + '\uFF0F' + q + '株</div>' +
+      '<div class="answer-name">' + esc(name) + '\uFF0F' + q + '株</div>' +
     '</div>';
 
   var waku = "";
   if (r > 0) {
     if (need <= r) {
-      waku = '<div class="note">\u2705 NISA枠は足りているよ（残り ' + F(r) + ' \uFF0F 必要 ' + F(need) + '）\uD83C\uDF38</div>';
+      waku = '<div class="note">\u2705 NISA枠は足りているよ。必要 ' + F(need) + ' \uFF0F 残り ' + F(r) +
+             '<br>移したあとの残りは <b>' + F(r - need) + '</b> になるよ\uD83C\uDF38</div>';
     } else {
       var kabu = Math.floor(r / p);
-      waku = '<div class="note">\u26A0\uFE0F NISA枠が足りないよ。必要 ' + F(need) + ' に対して残りは ' + F(r) +
+      waku = '<div class="note warn">\u26A0\uFE0F NISA枠が足りないよ。必要 ' + F(need) + ' に対して残りは ' + F(r) +
              ' 。今の株価なら <b>' + kabu + '株まで</b> なら入るから、分けて移す方法もあるよ。</div>';
     }
+  } else {
+    waku = '<div class="note">NISA成長投資枠の残りを入れると、枠が足りるかも確認できるよ\uD83C\uDF38</div>';
   }
 
-  document.getElementById("detail").innerHTML =
+  el("detail").innerHTML =
     '<div class="card"><h2>\uD83E\uDDEE 計算の中身</h2><div class="rows">' +
     row("含み益", (gain>=0?"+":"\u2212") + F(Math.abs(gain)), gain>=0?"rose":"", "（" + F(p) + " \u2212 " + F(c) + "）\u00D7 " + q + "株") +
     row("売ると引かれる税金", F(tax), "rose", "含み益 \u00D7 20.315%") +
-    row("1年分の配当", F(div), "", F(d>0?d:0) + " \u00D7 " + q + "株") +
+    row("1年分の配当", F(div), "", F(dv) + " \u00D7 " + q + "株") +
+    row("今の配当利回り", (dv > 0 ? yieldNow.toFixed(2) + "%" : "\u2014"), "mint", "年間配当 \u00F7 今の株価") +
     row("NISAで浮く税金", F(saved) + "\uFF0F年", "mint", "配当 \u00D7 20.315%") +
     row("元をとるまで", (isFinite(years) ? years.toFixed(1) + "年" : "\u2014"), "rose", "税金 \u00F7 浮く税金") +
+    row("買い戻しに必要なお金", F(need), "", F(p) + " \u00D7 " + q + "株") +
     '</div>' + waku + '</div>' + priceTable(p, c, q, saved);
 
   var msg, body;
@@ -341,19 +421,30 @@ function judge(){
   } else if (gain < 0) {
     msg = "僕なら、このままにしておくよ";
     body = "含み損は、他の株の利益と相殺できる大事な持ち札なんだ。それを捨ててまでNISAに移すメリットはないよ。そのまま持っていよう\uD83C\uDF38";
+  } else if (!(dv > 0)) {
+    msg = "僕なら、このままにしておくよ";
+    body = "配当が出ない株は、NISAに移しても浮く税金がゼロなんだ。それなのに売却時の税金 " + F(tax) + " だけは確実に取られてしまうよ。NISA枠は配当をくれる子のために取っておこう\uD83C\uDF38";
   } else {
     msg = "僕なら、今回は見送るよ";
     body = "約" + years.toFixed(1) + "年かかる計算は、さすがに長すぎるね。この株はもうしっかり育ってくれた働き者だから、税金 " + F(tax) + " を払ってわざわざ動かさなくていいよ。NISA枠は、これから新しく買う分に使うほうがずっと効率がいいんだ\uD83C\uDF38";
   }
-  document.getElementById("kuro").innerHTML =
+  el("kuro").innerHTML =
     '<div class="kuro"><h2>\uD83D\uDDA4 クロならこうする</h2><p class="msg">' + msg + '</p><p>' + body + '</p></div>';
 
   buildPlan(eStr, doIt, tax, q, name);
-  uchinoko(name, p, c, d, q);
+  uchinoko(name, p, c, dv, q);
 
-  document.getElementById("tools").classList.remove("hidden");
-  last = { name:name, q:q, mark:mark, title:title, why:why, tax:tax, div:div, saved:saved, years:years };
-  document.getElementById("answer").scrollIntoView({ behavior: "smooth", block: "start" });
+  el("tools").classList.remove("hidden");
+  last = { name:name, q:q, c:c, p:p, d:dv, mark:mark, cls:cls, title:title, why:why,
+           tax:tax, div:div, saved:saved, years:years, need:need, e:eStr, r:r };
+  addToList();
+  el("answer").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function esc(s){
+  return String(s).replace(/[&<>"]/g, function(m){
+    return ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[m];
+  });
 }
 
 function row(k, v, cls, sub){
@@ -370,11 +461,11 @@ function priceTable(p, c, q, saved){
     var g = (price - c) * q;
     var t = g > 0 ? g * TAX : 0;
     var y = t / saved;
-    var m = "\u25CE", col = "#3fae8f";
-    if (g < 0) { m = "\u2715"; col = "#9c97a6"; }
-    else if (y > 5) { m = "\u2715"; col = "#9c97a6"; }
-    else if (y > 3) { m = "\u25B3"; col = "#e08544"; }
-    else if (y > 1) { m = "\u25CB"; col = "#3fae8f"; }
+    var m = "\u25CE", col = "#1f8a6d";
+    if (g < 0) { m = "\u2715"; col = "#6b6377"; }
+    else if (y > 5) { m = "\u2715"; col = "#6b6377"; }
+    else if (y > 3) { m = "\u25B3"; col = "#c26a1f"; }
+    else if (y > 1) { m = "\u25CB"; col = "#1f8a6d"; }
     rows += '<tr' + (i===0 ? ' class="now"' : '') + '><td>' + F(price) + '</td><td>' + F(t) +
             '</td><td>' + (g < 0 ? "\u2014" : y.toFixed(1) + "年") +
             '</td><td class="j" style="color:' + col + '">' + m + '</td></tr>';
@@ -385,10 +476,17 @@ function priceTable(p, c, q, saved){
 }
 
 function buildPlan(eStr, doIt, tax, q, name){
-  var box = document.getElementById("planCard");
-  if (!eStr) { box.innerHTML = ""; box.className = ""; return; }
+  var box = el("planCard");
+  if (!eStr) {
+    box.className = "card";
+    box.innerHTML = '<h2>\uD83D\uDCC5 やることカレンダー</h2>' +
+      '<div class="plan-lock">権利落ち日を入れると、<b>いつ売っていつ買い戻すか</b>の日程が出るよ\uD83C\uDF38<br>' +
+      '配当をもらい損ねないための大事な表だから、実行するときは入れてみてね。</div>';
+    return;
+  }
 
   var ex = new Date(eStr + "T00:00:00");
+  if (isNaN(ex.getTime())) { box.innerHTML = ""; box.className = ""; return; }
   var last1 = shift(ex, -1);
   var buy   = shift(last1, -12);
   var sell  = shift(buy, -2);
@@ -411,24 +509,23 @@ function buildPlan(eStr, doIt, tax, q, name){
     box.className = "card";
     box.innerHTML = '<h2>\uD83D\uDCC5 やることカレンダー</h2>' + body;
   } else {
-    box.className = "card muted";
+    box.className = "card";
     box.innerHTML =
       '<h2>\uD83D\uDCC5 やることカレンダー</h2>' +
       '<div class="plan-lock">今回は<b>見送り</b>の判定だから、この日程は使わなくていいよ\uD83C\uDF38<br>' +
-      name + 'は、このまま特定口座で持っていてね。</div>' +
+      esc(name) + 'は、このまま特定口座で持っていてね。</div>' +
       '<button class="toggle" onclick="var b=this.nextElementSibling;b.classList.toggle(\'hidden\');this.textContent=b.classList.contains(\'hidden\')?\'参考までに日程を見る \u25BE\':\'日程を閉じる \u25B4\';">参考までに日程を見る \u25BE</button>' +
       '<div class="hidden"><div class="plan-lock" style="margin-top:12px">\u203B これは「もし実行するなら」の参考日程だよ。今回は使わなくていいからね\uD83C\uDF38</div>' + body + '</div>';
   }
 }
 
-
 /* ---- おまけ：うちの子診断 ---- */
 function uchinoko(name, p, c, d, q){
-  var box = document.getElementById("uchinoko");
+  var box = el("uchinoko");
   if (!(p > 0) || !(c > 0)) { box.innerHTML = ""; return; }
 
-  var rate = (p - c) / c * 100;            // 含み益率
-  var yieldC = (d > 0 ? d : 0) / c * 100;  // 取得ベース利回り
+  var rate = (p - c) / c * 100;
+  var yieldC = (d > 0 ? d : 0) / c * 100;
 
   var t;
   if (rate >= 100)      t = {n:"大出世", e:"\uD83D\uDC51", s:5,   c:"よくここまで育ってくれたね。もう親の手を離れて、立派にひとり立ちした子だよ\uD83D\uDE0A"};
@@ -440,7 +537,11 @@ function uchinoko(name, p, c, d, q){
 
   var full = Math.floor(t.s), half = (t.s - full) >= 0.5;
   var stars = "";
-  for (var i = 0; i < 5; i++) stars += (i < full ? "\u2605" : (i === full && half ? "\u2606" : "\u2606"));
+  for (var i = 0; i < 5; i++) {
+    if (i < full) stars += '<span class="st on">\u2605</span>';
+    else if (i === full && half) stars += '<span class="st half">\u2605</span>';
+    else stars += '<span class="st off">\u2606</span>';
+  }
 
   var badges = "";
   if (yieldC >= 6) badges += '<span class="badge">\uD83D\uDC9D 親孝行</span>';
@@ -456,7 +557,7 @@ function uchinoko(name, p, c, d, q){
       '<div class="uchi-star">' + stars + '</div>' +
       '<div class="uchi-num">\u2605 ' + t.s.toFixed(1) + ' \uFF0F 5.0</div>' +
       badges +
-      '<div class="uchi-comment">' + name + 'は「' + t.n + '」。' + t.c + '</div>' +
+      '<div class="uchi-comment">' + esc(name) + 'は「' + t.n + '」。' + t.c + '</div>' +
       '<div class="uchi-nums">' +
         '<div><span class="lab">育ち具合</span><span class="val">' + (rate>=0?"+":"\u2212") + Math.abs(rate).toFixed(1) + '%</span></div>' +
         '<div><span class="lab">お給料（取得ベース利回り）</span><span class="val">' + yieldC.toFixed(2) + '%</span></div>' +
@@ -469,6 +570,126 @@ function day(dt, t, s){
          '<div class="t">' + t + '<span>' + s + '</span></div></div>';
 }
 
+/* ---- 銘柄リスト ---- */
+function getList(){
+  try { return JSON.parse(localStorage.getItem(LIST_KEY) || "[]"); } catch (err) { return []; }
+}
+function setList(a){
+  try { localStorage.setItem(LIST_KEY, JSON.stringify(a)); } catch (err) { toast("保存できませんでした"); }
+}
+
+var justAdded = "";
+
+function addToList(){
+  if (!last) return;
+  var a = getList();
+  var item = {
+    n:last.name, q:last.q, c:last.c, p:last.p, d:last.d, e:last.e, r:last.r,
+    mark:last.mark, cls:last.cls, years:(isFinite(last.years) ? Number(last.years.toFixed(1)) : null),
+    need:Math.round(last.need), at:new Date().toISOString().slice(0,10)
+  };
+  var i = -1;
+  for (var k = 0; k < a.length; k++) { if (a[k].n === item.n) { i = k; break; } }
+  var isNew = (i < 0);
+  if (isNew) a.push(item); else a[i] = item;
+  setList(a);
+  justAdded = item.n;
+  drawList();
+  if (item.n !== "この銘柄") {
+    var pos = ranked().findIndex(function(x){ return x.n === item.n; }) + 1;
+    toast(item.n + "は " + pos + "位 だよ" + (isNew ? "\uD83C\uDD95" : "\uD83C\uDFC6"));
+  }
+}
+
+/* 回収年数が短い順＝おトクな順に並べる */
+function ranked(){
+  return getList().slice().sort(function(x, y){
+    var xv = (x.years === null || x.years === undefined) ? 99999 : x.years;
+    var yv = (y.years === null || y.years === undefined) ? 99999 : y.years;
+    if (xv !== yv) return xv - yv;
+    return String(x.n).localeCompare(String(y.n), "ja");
+  });
+}
+
+function medal(i){
+  if (i === 0) return '\uD83E\uDD47';
+  if (i === 1) return '\uD83E\uDD48';
+  if (i === 2) return '\uD83E\uDD49';
+  return (i + 1) + '<small>位</small>';
+}
+
+function drawList(){
+  var a = ranked();
+  var box = el("listBody");
+  if (!a.length) {
+    box.innerHTML = '<div class="empty">まだ記録がないよ。判定するたび、ここに自動でたまっていくよ\uD83C\uDF38<br>お引越しがおトクな順に並ぶからね\uD83C\uDFC6</div>';
+    return;
+  }
+  var full = getList();
+  var html = "", total = 0;
+  a.forEach(function(x, i){
+    var go = (x.mark === "\u25CE" || x.mark === "\u25CB");
+    if (go) total += x.need || 0;
+    var idx = -1;
+    for (var k = 0; k < full.length; k++) { if (full[k].n === x.n) { idx = k; break; } }
+    var years = (x.years !== null && x.years !== undefined) ? x.years + "年で回収" : "回収できず";
+    html +=
+      '<div class="li' + (i === 0 ? ' top' : '') + '">' +
+        '<div class="rk">' + medal(i) + '</div>' +
+        '<div class="mk ' + (x.cls||"stop") + '">' + x.mark + '</div>' +
+        '<div class="info">' +
+          '<div class="nm">' + esc(x.n) + (x.n === justAdded ? '<span class="new">NEW</span>' : '') + '</div>' +
+          '<div class="sb">' + x.q + '株\uFF0F' + years + '\uFF0F' + x.at + '</div>' +
+        '</div>' +
+        '<button onclick="loadItem(' + idx + ')">開く</button>' +
+        '<button class="del" onclick="delItem(' + idx + ')">削除</button>' +
+      '</div>';
+  });
+  html += '<div class="sum">1位ほど「税金をすぐ取り返せる＝移しやすい」銘柄だよ\uD83C\uDF38';
+  if (total > 0) {
+    html += '<br>移す判定（◎○）の合計必要額は <b>' + F(total) + '</b>。NISA枠の残りと見くらべてね';
+  }
+  html += '</div>';
+  box.innerHTML = html;
+}
+
+function loadItem(i){
+  var x = getList()[i];
+  if (!x) return;
+  el("n").value = x.n; el("q").value = x.q; el("c").value = x.c;
+  el("p").value = x.p; el("d").value = x.d || ""; el("e").value = x.e || "";
+  el("r").value = x.r || "";
+  judge();
+}
+
+function delItem(i){
+  var a = getList();
+  if (!a[i]) return;
+  if (!confirm(a[i].n + " をランキングから削除する？")) return;
+  var nm = a[i].n;
+  a.splice(i, 1);
+  setList(a);
+  drawList();
+  toast(nm + "を削除しました");
+}
+
+/* ---- 共有 ---- */
+function makeUrl(){
+  var u = new URLSearchParams();
+  KEYS.forEach(function(k){
+    var v = el(k).value;
+    if (v !== "") u.set(k, v);
+  });
+  return location.origin + location.pathname + "?" + u.toString();
+}
+function copyUrl(){
+  var url = makeUrl();
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(function(){ toast("URLをコピーしました\uD83D\uDD17"); })
+      .catch(function(){ prompt("長押しでコピーしてね", url); });
+  } else { prompt("長押しでコピーしてね", url); }
+}
+
 function textOut(){
   if (!last) return "";
   return "【NISAお引越し判定】\n" + last.name + "\uFF0F" + last.q + "株\n\n" +
@@ -476,14 +697,15 @@ function textOut(){
          "\u30FB売却時の税金：" + F(last.tax) + "\n" +
          "\u30FB年間配当：" + F(last.div) + "\n" +
          "\u30FBNISAで浮く税金：" + F(last.saved) + "\uFF0F年\n" +
-         "\u30FB元をとるまで：" + (isFinite(last.years) ? last.years.toFixed(1) + "年" : "\u2014") + "\n\n" +
+         "\u30FB元をとるまで：" + (isFinite(last.years) ? last.years.toFixed(1) + "年" : "\u2014") + "\n" +
+         "\u30FB買い戻しに必要：" + F(last.need) + "\n\n" +
          "\u203B実行前に証券会社で枠の残りを確認してね";
 }
 function copyText(){
   if (navigator.clipboard) {
     navigator.clipboard.writeText(textOut()).then(function(){ toast("コピーしました\uD83D\uDCCB"); })
-      .catch(function(){ toast("コピーできませんでした"); });
-  } else { toast("コピーできませんでした"); }
+      .catch(function(){ prompt("長押しでコピーしてね", textOut()); });
+  } else { prompt("長押しでコピーしてね", textOut()); }
 }
 function sendLine(){
   location.href = "https://line.me/R/msg/text/?" + encodeURIComponent(textOut());
