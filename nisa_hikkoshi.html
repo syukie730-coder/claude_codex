@@ -94,7 +94,7 @@ td:first-child{font-weight:700}
 .j{font-size:17px}
 tr.now{background:#fdf1f7}
 tr.now td:first-child::after{content:" \2190 今";font-size:11px;color:var(--rose);font-weight:700}
-#planCard.muted .plan-body{opacity:.62;filter:grayscale(1);pointer-events:none}
+#planCard.muted .plan-body{opacity:1;filter:none}
 .plan-lock{
   background:#f4f1f8;border:1.5px solid #e3dcef;border-radius:16px;
   padding:16px 17px;font-size:15px;color:#332b47;line-height:1.85;font-weight:500;
@@ -117,8 +117,39 @@ tr.now td:first-child::after{content:" \2190 今";font-size:11px;color:var(--ros
 .kuro h2{font-size:18px;margin:0 0 14px;color:var(--violet);font-weight:700}
 .kuro .msg{font-size:17.5px;font-weight:700;color:var(--rose);margin:0 0 8px}
 .kuro p{margin:0;font-size:15.5px;line-height:1.9;font-weight:500}
-.foot{text-align:center;font-size:13px;color:var(--gray);line-height:1.9;margin-top:26px;font-weight:500}
-.saved{
+
+/* ---- うちの子診断 ---- */
+.uchi{
+  background:linear-gradient(150deg,#fff7fb,#fdf6ff);
+  border:2px solid #f0dcea;border-radius:22px;padding:20px 18px;margin-bottom:18px;
+}
+.uchi h2{font-size:18px;margin:0 0 4px;color:var(--violet);font-weight:700}
+.uchi .omake{font-size:13.5px;color:#4a4160;font-weight:500;margin:0 0 16px}
+.uchi-card{background:#fff;border-radius:18px;padding:18px 16px;box-shadow:0 3px 12px rgba(138,111,209,.10)}
+.uchi-emoji{font-size:44px;text-align:center;line-height:1.2;margin-bottom:4px}
+.uchi-name{
+  font-family:"Shippori Mincho B1",serif;font-size:25px;text-align:center;
+  color:#b02a63;margin:0 0 8px;font-weight:700;
+}
+.uchi-star{text-align:center;font-size:23px;color:#e8a020;letter-spacing:3px;margin-bottom:2px}
+.uchi-num{text-align:center;font-size:14px;color:#4a4160;font-weight:700;margin-bottom:14px}
+.uchi-comment{
+  background:#fdf4f9;border-radius:14px;padding:14px 16px;
+  font-size:16px;color:#2b2340;font-weight:500;line-height:1.85;margin-bottom:14px;
+}
+.badges{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px}
+.badge{
+  font-size:14px;font-weight:700;padding:8px 14px;border-radius:30px;
+  background:#fce9f2;color:#a32560;border:1.5px solid #f2cfe1;
+}
+.badge.money{background:#eef0fa;color:#3d4680;border-color:#d3d8ef}
+.uchi-nums{display:flex;gap:10px}
+.uchi-nums div{
+  flex:1;background:#f7f3fc;border-radius:14px;padding:11px 8px;text-align:center;
+}
+.uchi-nums .lab{font-size:12.5px;color:#4a4160;font-weight:700;display:block;margin-bottom:2px}
+.uchi-nums .val{font-size:19px;font-weight:700;color:#7d2d94}
+.foot{text-align:center;font-size:13px;color:var(--gray);line-height:1.9;margin-top:26px;font-weight:500}.saved{
   position:fixed;left:50%;bottom:26px;transform:translateX(-50%);
   background:rgba(61,51,80,.92);color:#fff;padding:11px 22px;border-radius:30px;
   font-size:14px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:99;
@@ -161,6 +192,7 @@ tr.now td:first-child::after{content:" \2190 今";font-size:11px;color:var(--ros
 <div id="detail"></div>
 <div id="kuro"></div>
 <div id="planCard"></div>
+<div id="uchinoko"></div>
 
 <div id="tools" class="hidden">
   <button class="btn sub" onclick="copyText()">📋 結果をコピー</button>
@@ -317,6 +349,7 @@ function judge(){
     '<div class="kuro"><h2>\uD83D\uDDA4 クロならこうする</h2><p class="msg">' + msg + '</p><p>' + body + '</p></div>';
 
   buildPlan(eStr, doIt, tax, q, name);
+  uchinoko(name, p, c, d, q);
 
   document.getElementById("tools").classList.remove("hidden");
   last = { name:name, q:q, mark:mark, title:title, why:why, tax:tax, div:div, saved:saved, years:years };
@@ -384,8 +417,51 @@ function buildPlan(eStr, doIt, tax, q, name){
       '<div class="plan-lock">今回は<b>見送り</b>の判定だから、この日程は使わなくていいよ\uD83C\uDF38<br>' +
       name + 'は、このまま特定口座で持っていてね。</div>' +
       '<button class="toggle" onclick="var b=this.nextElementSibling;b.classList.toggle(\'hidden\');this.textContent=b.classList.contains(\'hidden\')?\'参考までに日程を見る \u25BE\':\'日程を閉じる \u25B4\';">参考までに日程を見る \u25BE</button>' +
-      '<div class="hidden">' + body + '</div>';
+      '<div class="hidden"><div class="plan-lock" style="margin-top:12px">\u203B これは「もし実行するなら」の参考日程だよ。今回は使わなくていいからね\uD83C\uDF38</div>' + body + '</div>';
   }
+}
+
+
+/* ---- おまけ：うちの子診断 ---- */
+function uchinoko(name, p, c, d, q){
+  var box = document.getElementById("uchinoko");
+  if (!(p > 0) || !(c > 0)) { box.innerHTML = ""; return; }
+
+  var rate = (p - c) / c * 100;            // 含み益率
+  var yieldC = (d > 0 ? d : 0) / c * 100;  // 取得ベース利回り
+
+  var t;
+  if (rate >= 100)      t = {n:"大出世", e:"\uD83D\uDC51", s:5,   c:"よくここまで育ってくれたね。もう親の手を離れて、立派にひとり立ちした子だよ\uD83D\uDE0A"};
+  else if (rate >= 50)  t = {n:"出世頭", e:"\uD83C\uDF1F", s:4.5, c:"家の中でいちばんの働き者だね。安心して任せられる、頼もしい子に育ったよ\uD83D\uDE0A"};
+  else if (rate >= 20)  t = {n:"よくできました", e:"\uD83D\uDCAE", s:4, c:"きちんと結果を出してくれる、まじめな子だね。派手さはないけど信頼できるよ\uD83D\uDE0A"};
+  else if (rate >= 0)   t = {n:"これから伸びる子", e:"\uD83C\uDF31", s:3.5, c:"まだまだ育ち盛りだね。焦らず見守ってあげれば、ちゃんと伸びてくれる子だよ\uD83D\uDE0A"};
+  else if (yieldC >= 4) t = {n:"見た目より働き者", e:"\uD83D\uDC1C", s:3, c:"値段は今ひとつだけど、配当はきちんと入れてくれる子。地味だけど親孝行だね\uD83D\uDE0A"};
+  else                  t = {n:"そろそろ話し合おう", e:"\uD83D\uDE05", s:2, c:"今はちょっと調子が出ないみたいだね。一度じっくり向き合ってみる時期かも\uD83D\uDE0A"};
+
+  var full = Math.floor(t.s), half = (t.s - full) >= 0.5;
+  var stars = "";
+  for (var i = 0; i < 5; i++) stars += (i < full ? "\u2605" : (i === full && half ? "\u2606" : "\u2606"));
+
+  var badges = "";
+  if (yieldC >= 6) badges += '<span class="badge">\uD83D\uDC9D 親孝行</span>';
+  if (yieldC > 0 && yieldC < 3) badges += '<span class="badge money">\uD83D\uDCB8 顔はいいけど仕送りが少ない</span>';
+  if (badges) badges = '<div class="badges">' + badges + '</div>';
+
+  box.innerHTML =
+    '<div class="uchi"><h2>\uD83C\uDFE1 うちの子診断</h2>' +
+    '<p class="omake">おまけコーナーだよ。判定とは関係なく、この子の育ち具合を見てみよう\uD83C\uDF38</p>' +
+    '<div class="uchi-card">' +
+      '<div class="uchi-emoji">' + t.e + '</div>' +
+      '<p class="uchi-name">' + t.n + '</p>' +
+      '<div class="uchi-star">' + stars + '</div>' +
+      '<div class="uchi-num">\u2605 ' + t.s.toFixed(1) + ' \uFF0F 5.0</div>' +
+      badges +
+      '<div class="uchi-comment">' + name + 'は「' + t.n + '」。' + t.c + '</div>' +
+      '<div class="uchi-nums">' +
+        '<div><span class="lab">育ち具合</span><span class="val">' + (rate>=0?"+":"\u2212") + Math.abs(rate).toFixed(1) + '%</span></div>' +
+        '<div><span class="lab">お給料（取得ベース利回り）</span><span class="val">' + yieldC.toFixed(2) + '%</span></div>' +
+      '</div>' +
+    '</div></div>';
 }
 
 function day(dt, t, s){
