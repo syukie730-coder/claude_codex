@@ -271,6 +271,14 @@
     <p class="saved" id="savedAt">下書きは自動で残ります</p>
   </section>
 
+  <!-- まとめて受け取る -->
+  <section class="card">
+    <div class="card-head"><h2 class="card-title">まとめて受け取る</h2></div>
+    <p class="hint">届いた文を、まるごと1回だけ貼ってボタンを押してください。タイトル・サブ・本文・タグ・Instagramに振り分けます。</p>
+    <textarea id="fIntake" class="t-md" placeholder="===タイトル=== から始まる文を、まるごとここへ"></textarea>
+    <button class="copy" id="btnIntake">振り分ける</button>
+  </section>
+
   <!-- タイトル -->
   <section class="card" data-step="title">
     <div class="seal">写</div>
@@ -460,7 +468,7 @@
     });
   }
 
-  document.querySelectorAll(".copy").forEach(function(btn){
+  document.querySelectorAll(".copy[data-for]").forEach(function(btn){
     btn.addEventListener("click", function(){
       var el = document.getElementById(btn.dataset.for);
       var txt = el.value;
