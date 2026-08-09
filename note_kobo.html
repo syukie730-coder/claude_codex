@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>note投稿工房</title>
+<meta name="theme-color" content="#2C5B63">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="note投稿工房">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='38' fill='%232C5B63'/%3E%3Ctext x='90' y='118' font-size='96' text-anchor='middle' fill='%23EDF1EA' font-family='serif'%3E写%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --paper:#EDF1EA;
+    --card:#FFFFFF;
+    --ink:#22332C;
+    --sub:#6E8078;
+    --line:#D6DED3;
+    --ai:#2C5B63;
+    --ai-dark:#1F454B;
+    --shu:#B7452F;
+    --kohaku:#B07E1F;
+    --mincho:"Hiragino Mincho ProN","Yu Mincho",YuMincho,"Noto Serif JP",serif;
+    --gothic:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",YuGothic,"Noto Sans JP",sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--gothic);
+    font-size:17px;
+    line-height:1.75;
+    -webkit-text-size-adjust:100%;
+    padding:0 0 64px;
+  }
+  .wrap{max-width:680px;margin:0 auto;padding:0 16px}
+
+  /* ---- header ---- */
+  header{
+    background:var(--ai);
+    color:#EDF1EA;
+    padding:26px 0 20px;
+    border-bottom:3px solid var(--ai-dark);
+  }
+  .brand{
+    font-family:var(--mincho);
+    font-size:29px;
+    letter-spacing:.16em;
+    margin:0;
+    font-weight:600;
+  }
+  .brand-note{
+    font-size:16px;
+    letter-spacing:.06em;
+    opacity:.85;
+    margin:6px 0 0;
+  }
+
+  /* ---- 進み具合 ---- */
+  .steps{
+    display:flex;
+    gap:6px;
+    margin:14px 0 0;
+    padding:0;
+    list-style:none;
+  }
+  .steps li{
+    flex:1;
+    text-align:center;
+    font-size:12.5px;
+    letter-spacing:.04em;
+    padding:6px 2px;
+    border-radius:6px;
+    background:rgba(255,255,255,.14);
+    color:#DCE6E1;
+  }
+  .steps li.done{background:#EDF1EA;color:var(--ai-dark);font-weight:700}
+
+  /* ---- card ---- */
+  .card{
+    position:relative;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:16px 16px 18px;
+    margin:16px 0;
+  }
+  .card-head{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:9px;
+  }
+  .card-title{
+    font-family:var(--mincho);
+    font-size:19px;
+    font-weight:600;
+    letter-spacing:.09em;
+    margin:0;
+  }
+  .count{
+    font-family:var(--mono);
+    font-size:12.5px;
+    color:var(--sub);
+    white-space:nowrap;
+  }
+  .count.warn{color:var(--kohaku);font-weight:700}
+  .hint{
+    font-size:13.5px;
+    color:var(--sub);
+    margin:0 0 9px;
+    line-height:1.6;
+  }
+  textarea,input[type=text]{
+    width:100%;
+    font-family:var(--gothic);
+    font-size:16.5px;
+    line-height:1.8;
+    color:var(--ink);
+    background:#FCFDFB;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:11px 12px;
+    resize:vertical;
+  }
+  textarea:focus,input[type=text]:focus{
+    outline:3px solid rgba(44,91,99,.35);
+    outline-offset:1px;
+    border-color:var(--ai);
+  }
+  .t-sm{min-height:60px}
+  .t-md{min-height:110px}
+  .t-lg{min-height:230px}
+
+  /* ---- buttons ---- */
+  button{
+    font-family:var(--gothic);
+    font-size:16px;
+    cursor:pointer;
+    border-radius:8px;
+    border:1px solid transparent;
+  }
+  button:focus-visible{outline:3px solid rgba(44,91,99,.5);outline-offset:2px}
+  .copy{
+    margin-top:10px;
+    width:100%;
+    padding:14px 12px;
+    background:var(--ai);
+    color:#fff;
+    font-weight:700;
+    letter-spacing:.08em;
+    border:none;
+  }
+  .copy:active{background:var(--ai-dark)}
+  .ghost{
+    padding:11px 14px;
+    background:#fff;
+    border:1px solid var(--ai);
+    color:var(--ai);
+    font-weight:700;
+  }
+  .row{display:flex;gap:9px;flex-wrap:wrap}
+  .row > *{flex:1 1 auto}
+
+  /* ---- 判子（signature） ---- */
+  .seal{
+    position:absolute;
+    top:10px;
+    right:12px;
+    width:44px;height:44px;
+    border:2.5px solid var(--shu);
+    border-radius:7px;
+    color:var(--shu);
+    font-family:var(--mincho);
+    font-size:25px;
+    line-height:39px;
+    text-align:center;
+    opacity:0;
+    transform:rotate(-9deg) scale(1.5);
+    pointer-events:none;
+  }
+  .card.copied .seal{
+    opacity:.9;
+    transform:rotate(-9deg) scale(1);
+    transition:opacity .18s ease-out, transform .18s cubic-bezier(.2,.8,.3,1);
+  }
+  @media (prefers-reduced-motion: reduce){
+    .card.copied .seal{transition:none}
+  }
+
+  /* ---- お約束 ---- */
+  .promise{list-style:none;margin:0;padding:0}
+  .promise li{
+    display:flex;align-items:flex-start;gap:11px;
+    padding:9px 0;
+    border-bottom:1px dashed var(--line);
+    font-size:15.5px;
+  }
+  .promise li:last-child{border-bottom:none}
+  .promise input{width:23px;height:23px;margin:3px 0 0;accent-color:var(--ai);flex:0 0 auto}
+  .alert{
+    margin-top:11px;
+    background:#FBF3E3;
+    border-left:4px solid var(--kohaku);
+    border-radius:0 8px 8px 0;
+    padding:10px 12px;
+    font-size:14.5px;
+    color:#6B4E12;
+  }
+  .alert.hide{display:none}
+
+  /* ---- 原稿箱 ---- */
+  .box{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  select{
+    flex:1 1 160px;
+    font-family:var(--gothic);
+    font-size:16px;
+    padding:10px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:#FCFDFB;
+    color:var(--ink);
+  }
+  .saved{font-size:13px;color:var(--sub);margin:9px 0 0;font-family:var(--mono)}
+
+  /* ---- toast ---- */
+  #toast{
+    position:fixed;left:50%;bottom:24px;
+    transform:translateX(-50%) translateY(20px);
+    background:var(--ai-dark);color:#fff;
+    padding:12px 22px;border-radius:999px;
+    font-size:15px;font-weight:700;letter-spacing:.06em;
+    opacity:0;pointer-events:none;
+    transition:opacity .2s, transform .2s;
+    z-index:50;
+    box-shadow:0 6px 20px rgba(31,69,75,.3);
+  }
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  footer{text-align:center;font-size:13px;color:var(--sub);padding:26px 0 0}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1 class="brand">note投稿工房</h1>
+    <p class="brand-note">書けた原稿を、貼りやすい形に整えるところ</p>
+    <ul class="steps" id="steps">
+      <li data-step="title">タイトル</li>
+      <li data-step="sub">サブ</li>
+      <li data-step="body">本文</li>
+      <li data-step="tags">タグ</li>
+      <li data-step="insta">Instagram</li>
+    </ul>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- 原稿箱 -->
+  <section class="card">
+    <div class="card-head"><h2 class="card-title">原稿箱</h2></div>
+    <div class="box">
+      <select id="drafts"><option value="">— 保存した原稿 —</option></select>
+      <button class="ghost" id="btnSave">保存する</button>
+      <button class="ghost" id="btnNew">新しく書く</button>
+    </div>
+    <p class="saved" id="savedAt">下書きは自動で残ります</p>
+  </section>
+
+  <!-- タイトル -->
+  <section class="card" data-step="title">
+    <div class="seal">写</div>
+    <div class="card-head">
+      <h2 class="card-title">タイトル</h2>
+      <span class="count" id="cTitle">0字</span>
+    </div>
+    <p class="hint">スマホの一覧では30字あたりで切れます。</p>
+    <input type="text" id="fTitle" placeholder="例）カレーが29円、安くなったってよ">
+    <button class="copy" data-for="fTitle">タイトルをコピー</button>
+  </section>
+
+  <!-- サブタイトル -->
+  <section class="card" data-step="sub">
+    <div class="seal">写</div>
+    <div class="card-head">
+      <h2 class="card-title">サブタイトル</h2>
+      <span class="count" id="cSub">0字</span>
+    </div>
+    <p class="hint">note本文のいちばん上に、引用か見出しで置くところ。</p>
+    <textarea id="fSub" class="t-sm" placeholder="例）ニュースの数字より、うちの鍋のほうが正直かもしれない"></textarea>
+    <button class="copy" data-for="fSub">サブタイトルをコピー</button>
+  </section>
+
+  <!-- 本文 -->
+  <section class="card" data-step="body">
+    <div class="seal">写</div>
+    <div class="card-head">
+      <h2 class="card-title">本文</h2>
+      <span class="count" id="cBody">0字</span>
+    </div>
+    <p class="hint">「## 」で始まる行はnoteに貼ったあと見出しに変えてください。</p>
+    <textarea id="fBody" class="t-lg" placeholder="本文をここへ"></textarea>
+    <button class="copy" data-for="fBody">本文をコピー</button>
+  </section>
+
+  <!-- ハッシュタグ -->
+  <section class="card" data-step="tags">
+    <div class="seal">写</div>
+    <div class="card-head">
+      <h2 class="card-title">ハッシュタグ（note）</h2>
+      <span class="count" id="cTags">0個</span>
+    </div>
+    <p class="hint">5〜8個が目安。定番と、その記事だけのものを混ぜます。</p>
+    <textarea id="fTags" class="t-sm" placeholder="#note初心者 #60代 ..."></textarea>
+    <button class="copy" data-for="fTags">ハッシュタグをコピー</button>
+  </section>
+
+  <!-- Instagram -->
+  <section class="card" data-step="insta">
+    <div class="seal">写</div>
+    <div class="card-head">
+      <h2 class="card-title">Instagram用</h2>
+      <span class="count" id="cInsta">0字 ／ タグ0個</span>
+    </div>
+    <p class="hint">2,200字まで。ハッシュタグはちょうど3個に。</p>
+    <textarea id="fInsta" class="t-md" placeholder="短めの投稿文＋「詳しくはnoteに書きました😊」"></textarea>
+    <button class="copy" data-for="fInsta">Instagram用をコピー</button>
+  </section>
+
+  <!-- お約束 -->
+  <section class="card">
+    <div class="card-head"><h2 class="card-title">出す前のお約束</h2></div>
+    <ul class="promise">
+      <li><input type="checkbox" data-p="1"><label>実名（自分・家族・友人・お子さん）は入っていない</label></li>
+      <li><input type="checkbox" data-p="2"><label>勤務先の名前・住所・最寄り駅は入っていない</label></li>
+      <li><input type="checkbox" data-p="3"><label>学んでいるコミュニティの名前は入っていない</label></li>
+      <li><input type="checkbox" data-p="4"><label>年齢は「60代」だけ。数字は書いていない</label></li>
+      <li><input type="checkbox" data-p="5"><label>体調の話には「個人の感想です」と受診・相談の一文を添えた</label></li>
+    </ul>
+    <details style="margin-top:12px">
+      <summary style="font-size:14.5px;color:var(--ai);font-weight:700;cursor:pointer">見つけたら知らせる言葉を登録する</summary>
+      <p class="hint" style="margin-top:9px">この端末にだけ残ります。読点や改行で区切って入れてください。</p>
+      <textarea id="fNg" class="t-sm" placeholder="出したくない固有名詞をここへ"></textarea>
+    </details>
+    <div class="alert hide" id="ngAlert"></div>
+  </section>
+
+  <!-- 開く -->
+  <section class="card">
+    <div class="card-head"><h2 class="card-title">貼りに行く</h2></div>
+    <div class="row">
+      <button class="ghost" id="btnNote">noteを開く</button>
+      <button class="ghost" id="btnInsta">Instagramを開く</button>
+    </div>
+    <div class="row" style="margin-top:9px">
+      <button class="ghost" id="btnReset">判子を消す</button>
+    </div>
+  </section>
+
+  <footer>写しが済んだ札には、朱の判子がつきます</footer>
+</main>
+
+<div id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- どこでも動く保存箱 ---------- */
+  var store = {
+    get: async function(k){
+      if(window.storage){ try{ var r = await window.storage.get(k); return r ? r.value : null; }catch(e){ return null; } }
+      try{ return localStorage.getItem(k); }catch(e){ return null; }
+    },
+    set: async function(k,v){
+      if(window.storage){ try{ await window.storage.set(k,v); return; }catch(e){} }
+      try{ localStorage.setItem(k,v); }catch(e){}
+    }
+  };
+  var KEY_CUR = "kobo:current", KEY_BOX = "kobo:box", KEY_NG = "kobo:ng";
+
+  var F = {
+    title: document.getElementById("fTitle"),
+    sub:   document.getElementById("fSub"),
+    body:  document.getElementById("fBody"),
+    tags:  document.getElementById("fTags"),
+    insta: document.getElementById("fInsta")
+  };
+  var ngField = document.getElementById("fNg");
+  var toastEl = document.getElementById("toast");
+
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function(){ toastEl.classList.remove("show"); }, 1700);
+  }
+
+  /* ---------- 数え上げ ---------- */
+  function countTags(s){ var m = s.match(/#[^\s#]+/g); return m ? m.length : 0; }
+
+  function refresh(){
+    var t = F.title.value, s = F.sub.value, b = F.body.value,
+        g = F.tags.value, i = F.insta.value;
+
+    var cT = document.getElementById("cTitle");
+    cT.textContent = t.length + "字";
+    cT.classList.toggle("warn", t.length > 30);
+
+    document.getElementById("cSub").textContent = s.length + "字";
+    document.getElementById("cBody").textContent = b.length + "字";
+
+    var nTags = countTags(g), cG = document.getElementById("cTags");
+    cG.textContent = nTags + "個";
+    cG.classList.toggle("warn", g.trim() !== "" && (nTags < 5 || nTags > 8));
+
+    var nIns = countTags(i), cI = document.getElementById("cInsta");
+    cI.textContent = i.length + "字 ／ タグ" + nIns + "個";
+    cI.classList.toggle("warn", i.length > 2200 || (i.trim() !== "" && nIns !== 3));
+
+    checkNg();
+    save();
+  }
+
+  /* ---------- 出したくない言葉 ---------- */
+  function checkNg(){
+    var raw = (ngField.value || "").split(/[\n,、,]+/).map(function(x){ return x.trim(); }).filter(Boolean);
+    var hay = [F.title.value, F.sub.value, F.body.value, F.tags.value, F.insta.value].join("\n");
+    var hit = raw.filter(function(w){ return hay.indexOf(w) !== -1; });
+    var box = document.getElementById("ngAlert");
+    if(hit.length){
+      box.textContent = "「" + hit.join("」「") + "」が原稿の中にあります。直してから出しましょう。";
+      box.classList.remove("hide");
+    } else {
+      box.classList.add("hide");
+    }
+  }
+
+  /* ---------- 写す ---------- */
+  function copyText(txt){
+    if(navigator.clipboard && window.isSecureContext){
+      return navigator.clipboard.writeText(txt);
+    }
+    return new Promise(function(res, rej){
+      var ta = document.createElement("textarea");
+      ta.value = txt;
+      ta.setAttribute("readonly","");
+      ta.style.position = "fixed";
+      ta.style.top = "-1000px";
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = false;
+      try{ ok = document.execCommand("copy"); }catch(e){}
+      document.body.removeChild(ta);
+      ok ? res() : rej();
+    });
+  }
+
+  document.querySelectorAll(".copy").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var el = document.getElementById(btn.dataset.for);
+      var txt = el.value;
+      if(!txt.trim()){ toast("まだ空っぽです"); return; }
+      copyText(txt).then(function(){
+        var card = btn.closest(".card");
+        card.classList.add("copied");
+        markStep(card.dataset.step, true);
+        toast("写しました");
+      }).catch(function(){
+        el.focus(); el.select();
+        toast("うまく写せません。長押しでコピーしてください");
+      });
+    });
+  });
+
+  function markStep(step, on){
+    if(!step) return;
+    var li = document.querySelector('#steps li[data-step="' + step + '"]');
+    if(li) li.classList.toggle("done", on);
+  }
+
+  document.getElementById("btnReset").addEventListener("click", function(){
+    document.querySelectorAll(".card.copied").forEach(function(c){ c.classList.remove("copied"); });
+    document.querySelectorAll("#steps li").forEach(function(l){ l.classList.remove("done"); });
+    toast("判子を消しました");
+  });
+
+  document.getElementById("btnNote").addEventListener("click", function(){
+    window.open("https://note.com/notes/new", "_blank", "noopener");
+  });
+  document.getElementById("btnInsta").addEventListener("click", function(){
+    window.open("https://www.instagram.com/", "_blank", "noopener");
+  });
+
+  /* ---------- 保存 ---------- */
+  function pack(){
+    return { title:F.title.value, sub:F.sub.value, body:F.body.value, tags:F.tags.value, insta:F.insta.value };
+  }
+  function unpack(d){
+    if(!d) return;
+    F.title.value = d.title || "";
+    F.sub.value   = d.sub   || "";
+    F.body.value  = d.body  || "";
+    F.tags.value  = d.tags  || "";
+    F.insta.value = d.insta || "";
+  }
+
+  var saveTimer = null;
+  function save(){
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(async function(){
+      await store.set(KEY_CUR, JSON.stringify(pack()));
+      await store.set(KEY_NG, ngField.value || "");
+      var n = new Date();
+      document.getElementById("savedAt").textContent =
+        "下書きを残しました　" + String(n.getHours()).padStart(2,"0") + ":" + String(n.getMinutes()).padStart(2,"0");
+    }, 500);
+  }
+
+  var box = [];
+  function drawBox(){
+    var sel = document.getElementById("drafts");
+    sel.innerHTML = '<option value="">— 保存した原稿 —</option>';
+    box.forEach(function(d, i){
+      var o = document.createElement("option");
+      o.value = String(i);
+      o.textContent = (d.title || "無題").slice(0, 24);
+      sel.appendChild(o);
+    });
+  }
+
+  document.getElementById("btnSave").addEventListener("click", async function(){
+    var d = pack();
+    if(!d.title.trim() && !d.body.trim()){ toast("まだ書かれていません"); return; }
+    box.unshift(d);
+    box = box.slice(0, 30);
+    await store.set(KEY_BOX, JSON.stringify(box));
+    drawBox();
+    toast("原稿箱に入れました");
+  });
+
+  document.getElementById("drafts").addEventListener("change", function(e){
+    var i = e.target.value;
+    if(i === "") return;
+    unpack(box[Number(i)]);
+    refresh();
+    document.getElementById("btnReset").click();
+    toast("原稿を開きました");
+  });
+
+  document.getElementById("btnNew").addEventListener("click", function(){
+    if(!confirm("いま書いてある内容を消して、新しく始めますか？")) return;
+    unpack({});
+    refresh();
+    document.getElementById("btnReset").click();
+    document.getElementById("drafts").value = "";
+  });
+
+  /* ---------- リンクから受け取る（?d=...） ---------- */
+  function b64ToText(b64){
+    var bin = atob(b64.replace(/-/g,"+").replace(/_/g,"/"));
+    var bytes = new Uint8Array(bin.length);
+    for(var i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder().decode(bytes);
+  }
+
+  (async function init(){
+    var loaded = false;
+    var p = new URLSearchParams(location.search).get("d");
+    if(p){
+      try{ unpack(JSON.parse(b64ToText(p))); loaded = true; }catch(e){}
+    }
+    if(!loaded){
+      var cur = await store.get(KEY_CUR);
+      if(cur){ try{ unpack(JSON.parse(cur)); }catch(e){} }
+    }
+    var ng = await store.get(KEY_NG);
+    if(ng) ngField.value = ng;
+    var bx = await store.get(KEY_BOX);
+    if(bx){ try{ box = JSON.parse(bx) || []; }catch(e){ box = []; } }
+    drawBox();
+    refresh();
+    if(loaded) toast("記事を読み込みました");
+  })();
+
+  Object.keys(F).forEach(function(k){ F[k].addEventListener("input", refresh); });
+  ngField.addEventListener("input", refresh);
+})();
+</script>
+</body>
+</html>
