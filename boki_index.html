@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>簿記3級 インデックスメモ</title>
+<meta name="description" content="インデックスをめくるように、勘定科目の「わかった！」を見返せるメモ帳。">
+<meta name="theme-color" content="#FBF4F8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="インデックスメモ">
+<meta property="og:title" content="簿記3級 インデックスメモ">
+<meta property="og:description" content="インデックスをめくるように見返せる、簿記3級のメモ帳。">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23FBF4F8'/><rect x='14' y='20' width='58' height='62' rx='9' fill='%23fff' stroke='%23A98BD4' stroke-width='5'/><rect x='66' y='26' width='20' height='13' rx='4' fill='%23F0839E'/><rect x='66' y='44' width='20' height='13' rx='4' fill='%236FC2A7'/><rect x='66' y='62' width='20' height='13' rx='4' fill='%23F2C75C'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#3B3244; --sub:#8A7E93; --line:#E7DDEC;
+  --lav:#A98BD4; --pink:#F0839E; --mint:#6FC2A7; --lemon:#EFBB4E; --sky:#7FB4DE; --grape:#9A8BC7;
+  --rail:64px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;height:100%;overflow:hidden}
+body{
+  font-family:"Zen Maru Gothic",-apple-system,sans-serif;font-weight:500;
+  font-size:17px;line-height:1.85;color:var(--ink);
+  background:
+    radial-gradient(circle at 18% 12%, #FDEEF5 0%, transparent 46%),
+    radial-gradient(circle at 84% 78%, #E9F5F0 0%, transparent 48%),
+    linear-gradient(160deg,#FBF4F8 0%,#F4F1FA 55%,#EFF7F3 100%);
+  display:flex;flex-direction:column;height:100dvh;
+}
+/* ふわふわ ambient */
+.dust{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.dust span{position:absolute;font-size:15px;opacity:.5;animation:float 13s linear infinite}
+@keyframes float{0%{transform:translateY(105vh) rotate(0)}100%{transform:translateY(-12vh) rotate(300deg)}}
+@media(prefers-reduced-motion:reduce){.dust{display:none}*{animation:none!important}}
+
+/* ヘッダー */
+header{position:relative;z-index:5;padding:12px 16px 8px;padding-top:calc(12px + env(safe-area-inset-top));
+  display:flex;align-items:center;gap:10px}
+h1{font-weight:900;font-size:19px;margin:0;letter-spacing:.01em}
+h1 em{font-style:normal;color:var(--pink)}
+.stars{margin-left:auto;font-weight:900;font-size:15px;color:var(--lemon);display:flex;align-items:center;gap:4px}
+.stars b{font-size:20px;display:inline-block;transition:transform .3s cubic-bezier(.3,1.7,.5,1)}
+.stars.bump b{transform:scale(1.55)}
+.hbtn{border:2.5px solid var(--line);background:#fff;color:var(--sub);border-radius:999px;
+  width:40px;height:40px;font-size:17px;cursor:pointer;flex:0 0 auto}
+
+/* ===== デッキ（パラパラ） ===== */
+.wrap{flex:1;position:relative;z-index:2;min-height:0}
+#deck{
+  position:absolute;inset:0;right:var(--rail);
+  display:flex;overflow-x:auto;overflow-y:hidden;
+  scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+}
+#deck::-webkit-scrollbar{display:none}
+.page{flex:0 0 100%;scroll-snap-align:center;padding:4px 10px 16px 16px;height:100%;overflow-y:auto}
+.card{
+  background:#fff;border:3px solid var(--tc);border-radius:26px;
+  box-shadow:0 8px 0 rgba(59,50,68,.06);min-height:calc(100% - 20px);
+  position:relative;overflow:hidden;
+  animation:pop .34s cubic-bezier(.2,1.1,.35,1) both;
+}
+@keyframes pop{from{opacity:0;transform:scale(.96) translateY(10px)}to{opacity:1;transform:none}}
+/* レースの上飾り */
+.lace{height:14px;background:
+  radial-gradient(circle at 7px 0, var(--tc) 6px, transparent 6.5px) repeat-x;
+  background-size:14px 14px;opacity:.35}
+.ttl{display:flex;align-items:flex-start;gap:9px;padding:10px 18px 0}
+.ttl h2{font-weight:900;font-size:23px;margin:0;flex:1;line-height:1.45;word-break:break-word}
+.ttl .g{font-weight:900;font-size:12.5px;color:#fff;background:var(--tc);
+  padding:3px 11px;border-radius:999px;white-space:nowrap;margin-top:6px}
+.cbody{padding:12px 18px 20px}
+ul{list-style:none;margin:0;padding:0}
+li{position:relative;padding-left:25px;margin-bottom:9px;font-size:16.5px;
+  white-space:pre-wrap;word-break:break-word;line-height:1.8}
+li::before{content:"\273F";position:absolute;left:0;top:0;font-size:14px;color:var(--tc)}
+li.big{color:var(--pink);font-weight:900}
+li.big::before{content:"\2605";color:var(--pink)}
+details{margin-top:14px}
+summary{font-weight:900;font-size:15px;color:var(--grape);cursor:pointer;list-style:none;
+  display:inline-flex;align-items:center;gap:7px;background:#F4F0FB;padding:7px 16px;border-radius:999px}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"\273A";transition:transform .25s}
+details[open] summary::before{transform:rotate(180deg)}
+.story{margin-top:10px;padding:15px 17px;background:#FFFAF0;
+  border:3px dashed #F2DFB4;border-radius:20px;font-size:16px;line-height:1.9;
+  white-space:pre-wrap;word-break:break-word;animation:pop .3s ease both}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px;align-items:center}
+.mini{font-weight:900;font-size:14px;border:2.5px solid var(--line);background:#fff;color:var(--sub);
+  padding:7px 15px;border-radius:999px;cursor:pointer;transition:transform .12s}
+.mini:active{transform:scale(.93)}
+.mini.on{border-color:var(--lemon);background:var(--lemon);color:#fff}
+
+/* ===== 右のインデックス ===== */
+#rail{
+  position:absolute;top:0;right:0;bottom:0;width:var(--rail);z-index:6;
+  display:flex;flex-direction:column;gap:7px;padding:4px 0 90px;
+  overflow-y:auto;scrollbar-width:none;
+}
+#rail::-webkit-scrollbar{display:none}
+.tab{
+  flex:0 0 auto;writing-mode:vertical-rl;
+  font-weight:900;font-size:14px;letter-spacing:.06em;
+  padding:12px 6px;min-height:64px;max-height:150px;overflow:hidden;
+  border:3px solid var(--tc);border-right:none;border-radius:14px 0 0 14px;
+  background:#fff;color:var(--tc);cursor:pointer;margin-left:10px;
+  transition:transform .22s cubic-bezier(.2,1.2,.4,1),background .2s,color .2s,margin .22s;
+  box-shadow:-2px 2px 0 rgba(59,50,68,.05);
+}
+.tab.act{background:var(--tc);color:#fff;margin-left:0;transform:translateX(-3px) scale(1.03)}
+.tab.done::after{content:"\25CE";writing-mode:horizontal-tb;display:block;margin-top:5px;font-size:12px}
+
+/* ページ表示 */
+.pager{position:absolute;left:16px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:7;
+  font-weight:900;font-size:13px;color:var(--sub);background:rgba(255,255,255,.82);
+  padding:5px 13px;border-radius:999px;border:2.5px solid var(--line)}
+.fab{position:absolute;right:calc(var(--rail) + 8px);bottom:calc(14px + env(safe-area-inset-bottom));z-index:7;
+  border:none;border-radius:999px;background:var(--pink);color:#fff;font-family:inherit;
+  font-weight:900;font-size:16px;padding:13px 20px;cursor:pointer;box-shadow:0 5px 0 #D26A85;
+  transition:transform .12s,box-shadow .12s}
+.fab:active{transform:translateY(3px);box-shadow:0 2px 0 #D26A85}
+
+/* 空 */
+.empty{display:grid;place-content:center;text-align:center;height:100%;gap:6px;padding:20px}
+.empty .f{font-size:44px}
+.empty h2{font-weight:900;font-size:20px;margin:6px 0 0}
+.empty p{font-size:15px;color:var(--sub);margin:0 0 14px}
+
+/* ===== シート ===== */
+.ov{position:fixed;inset:0;z-index:60;background:rgba(59,50,68,.4);display:flex;align-items:flex-end;justify-content:center}
+.sheet{width:100%;max-width:640px;max-height:93vh;overflow-y:auto;background:#fff;
+  border-radius:30px 30px 0 0;animation:up .28s cubic-bezier(.2,.9,.3,1);
+  padding-bottom:calc(22px + env(safe-area-inset-bottom))}
+@keyframes up{from{transform:translateY(32px)}to{transform:none}}
+.shead{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:10px;
+  padding:14px 16px;background:#fff;border-bottom:3px solid var(--line)}
+.shead h3{font-weight:900;font-size:18px;margin:0;flex:1;text-align:center}
+.ghost{border:none;background:transparent;font:inherit;font-size:16px;color:var(--sub);cursor:pointer;padding:6px}
+.save{font-family:inherit;font-weight:900;font-size:16px;border:none;background:var(--pink);
+  color:#fff;padding:10px 20px;border-radius:999px;cursor:pointer}
+.sbody{padding:18px 16px}
+.field{margin-bottom:22px}
+.f2{display:block;font-weight:900;font-size:15px;margin:0 0 8px}
+input.t,textarea.t{width:100%;font:inherit;font-size:17px;color:var(--ink);
+  padding:12px 15px;border:3px solid var(--line);border-radius:16px;background:#fff}
+textarea.t{resize:vertical;line-height:1.9}
+input.t:focus,textarea.t:focus{outline:none;border-color:var(--lav)}
+.gs{display:flex;flex-wrap:wrap;gap:8px}
+.gb{font-family:inherit;font-weight:900;font-size:15px;padding:7px 15px;border-radius:999px;
+  cursor:pointer;border:3px solid var(--tc);color:var(--tc);background:#fff;transition:transform .12s}
+.gb:active{transform:scale(.93)}
+.gb[aria-pressed="true"]{background:var(--tc);color:#fff}
+.row{display:flex;gap:8px;align-items:flex-start;margin-bottom:9px}
+.star{border:3px solid var(--line);background:#fff;border-radius:14px;width:46px;height:46px;
+  font-size:19px;cursor:pointer;color:#D3C9DA;flex:0 0 auto;transition:transform .15s}
+.star:active{transform:scale(.9)}
+.star[aria-pressed="true"]{border-color:var(--pink);color:var(--pink);background:#FDEFF3}
+.row textarea{flex:1;font:inherit;font-size:16.5px;padding:10px 13px;border:3px solid var(--line);
+  border-radius:14px;resize:none;overflow:hidden;min-height:46px;line-height:1.8}
+.row textarea:focus{outline:none;border-color:var(--lav)}
+.row .x{border:none;background:transparent;color:#C9BFD1;font-size:22px;cursor:pointer;padding:9px 2px}
+.add{font-family:inherit;font-weight:900;font-size:15px;border:3px dashed var(--line);
+  background:#fff;color:var(--sub);padding:10px 16px;border-radius:999px;cursor:pointer;width:100%}
+.hint{font-size:13.5px;color:var(--sub);margin:8px 0 0}
+
+.pop{position:fixed;z-index:70;background:#fff;border:3px solid var(--line);border-radius:18px;
+  padding:6px;min-width:190px;box-shadow:0 12px 28px rgba(70,55,85,.18)}
+.pop button{display:block;width:100%;text-align:left;font:inherit;font-size:16px;padding:10px 14px;
+  border:none;background:none;cursor:pointer;border-radius:12px;color:var(--ink)}
+.pop button.dg{color:var(--pink)}
+
+/* はなまる */
+.stamp{position:fixed;inset:0;z-index:95;display:grid;place-items:center;pointer-events:none}
+.stamp svg{width:180px;height:180px;animation:st .55s cubic-bezier(.2,1.5,.4,1) both}
+@keyframes st{0%{transform:scale(.35) rotate(-18deg);opacity:0}55%{opacity:1}100%{transform:scale(1) rotate(-7deg);opacity:1}}
+.stamp .draw{stroke-dasharray:430;stroke-dashoffset:430;animation:dr .6s .1s ease forwards}
+@keyframes dr{to{stroke-dashoffset:0}}
+.spark{position:absolute;font-size:24px;animation:fly 1s ease-out forwards}
+@keyframes fly{0%{opacity:1;transform:translate(0,0) scale(.4)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.25)}}
+
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));z-index:90;
+  transform:translateX(-50%);background:var(--ink);color:#fff;font-weight:900;font-size:15px;
+  padding:11px 21px;border-radius:999px}
+.warn{margin:0;padding:9px 16px;background:#FFF6E4;font-size:13.5px;color:#8A6118;text-align:center;position:relative;z-index:5}
+</style>
+</head>
+<body>
+
+<div class="dust" id="dust"></div>
+
+<header>
+  <h1>簿記3級 <em>インデックスメモ</em></h1>
+  <div class="stars" id="stars">&#9678;<b id="starN">0</b></div>
+  <button class="hbtn" id="searchBtn" aria-label="さがす">&#9906;</button>
+  <button class="hbtn" id="menuBtn" aria-label="メニュー">&#8943;</button>
+</header>
+
+<p class="warn" id="warn" hidden>この画面では保存できないよ。ダウンロードして開けば端末に残ります。</p>
+
+<div class="wrap">
+  <div id="deck"></div>
+  <div id="rail"></div>
+  <div class="pager" id="pager"></div>
+  <button class="fab" id="addBtn">＋ かく</button>
+</div>
+
+<script>
+/* ---------- 保存（前のメモ帳とデータ共通） ---------- */
+var KEY='boki3_memo_v2',mem=null;
+var OK=(function(){try{localStorage.setItem('_t','1');localStorage.removeItem('_t');return true}catch(e){return false}})();
+if(!OK)document.getElementById('warn').hidden=false;
+function load(){if(!OK)return mem||seed();try{var d=JSON.parse(localStorage.getItem(KEY));return Array.isArray(d)&&d.length?d:seed()}catch(e){return seed()}}
+function save(){if(!OK){mem=items;return}try{localStorage.setItem(KEY,JSON.stringify(items))}catch(e){}}
+
+var GROUPS=[
+ {id:'asset',name:'資産',color:'#7FB4DE'},
+ {id:'debt',name:'負債',color:'#F0839E'},
+ {id:'equity',name:'純資産',color:'#6FC2A7'},
+ {id:'rev',name:'収益',color:'#EFBB4E'},
+ {id:'exp',name:'費用',color:'#A98BD4'},
+ {id:'other',name:'その他',color:'#9AA7B4'}];
+function G(id){for(var i=0;i<GROUPS.length;i++)if(GROUPS[i].id===id)return GROUPS[i];return GROUPS[5]}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function seed(){return[{id:uid(),title:'損益 / 繰越利益剰余金',group:'equity',done:false,
+ notes:[{big:true,text:'損益は1年かぎりのバケツ。決算で必ず空にする。'},
+        {big:false,text:'黒字＝損益の右に残高 → 反対の左に「損益」と書いて消す。'},
+        {big:false,text:'受け皿は繰越利益剰余金。純資産だから増えたら右。'}],
+ story:'3月31日、決算日の夜。\n損益さんがポケットの中身を数えます。「売上のほうが費用より750円多い！今年は黒字だ」\n損益さんは1年かぎりの預かり係。この750円を持ったまま来年へは行けません。\n「金庫番さん（繰越利益剰余金）、受け取ってください」\n\n損益 750 ／ 繰越利益剰余金 750\n\n損益さんは残高ゼロになって、静かに1年を終えるのでした。',
+ updated:Date.now()}]}
+
+var items=load(),query='',cur=0;
+var deck=document.getElementById('deck'),rail=document.getElementById('rail'),
+    pager=document.getElementById('pager'),starN=document.getElementById('starN'),
+    stars=document.getElementById('stars');
+
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function view(){
+  var k=query.trim().toLowerCase();
+  return items.filter(function(i){
+    return !k||(i.title+i.notes.map(function(n){return n.text}).join('')+(i.story||'')).toLowerCase().indexOf(k)>=0});
+}
+
+/* ---------- 描画 ---------- */
+function render(keep){
+  var v=view();
+  starN.textContent=items.filter(function(i){return i.done}).length;
+
+  if(!v.length){
+    deck.innerHTML='<div class="page"><div class="empty"><div class="f">'
+      +(items.length?'&#128269;':'&#127800;')+'</div><h2>'
+      +(items.length?'見つからなかったよ':'まだ1枚もないよ')+'</h2><p>'
+      +(items.length?'別のことばで探してみてね。':'「わかった！」と思った科目から。')
+      +'</p>'+(items.length?'':'<button class="save" onclick="open_()">最初の1枚をかく</button>')+'</div></div>';
+    rail.innerHTML='';pager.textContent='';return;
+  }
+  deck.innerHTML=v.map(function(it){
+    var g=G(it.group),ns=it.notes.filter(function(n){return n.text.trim()});
+    return '<section class="page"><article class="card" style="--tc:'+g.color+'">'
+      +'<div class="lace"></div>'
+      +'<div class="ttl"><h2>'+esc(it.title)+'</h2><span class="g">'+g.name+'</span></div>'
+      +'<div class="cbody">'
+      +(ns.length?'<ul>'+ns.map(function(n){return '<li class="'+(n.big?'big':'')+'">'+esc(n.text)+'</li>'}).join('')+'</ul>':'')
+      +(it.story&&it.story.trim()?'<details><summary>ストーリー</summary><div class="story">'+esc(it.story)+'</div></details>':'')
+      +'<div class="acts">'
+      +'<button class="mini'+(it.done?' on':'')+'" data-done="'+it.id+'">'+(it.done?'&#9678; おぼえた':'おぼえた？')+'</button>'
+      +'<button class="mini" data-edit="'+it.id+'">書き足す</button>'
+      +'<button class="mini" data-menu="'+it.id+'">&#8943;</button>'
+      +'</div></div></article></section>'}).join('');
+
+  rail.innerHTML=v.map(function(it,i){
+    var g=G(it.group);
+    return '<button class="tab'+(it.done?' done':'')+'" style="--tc:'+g.color+'" data-i="'+i+'">'+esc(it.title)+'</button>'
+  }).join('');
+
+  if(cur>=v.length)cur=v.length-1;
+  if(!keep)cur=0;
+  deck.scrollLeft=cur*deck.clientWidth;
+  mark();
+}
+function mark(){
+  var v=view();if(!v.length)return;
+  pager.textContent=(cur+1)+' / '+v.length;
+  var ts=rail.querySelectorAll('.tab');
+  for(var i=0;i<ts.length;i++)ts[i].classList.toggle('act',i===cur);
+  if(ts[cur])ts[cur].scrollIntoView({block:'nearest',behavior:'smooth'});
+}
+
+/* ---------- めくり ---------- */
+var st;
+deck.addEventListener('scroll',function(){
+  clearTimeout(st);
+  st=setTimeout(function(){
+    var i=Math.round(deck.scrollLeft/deck.clientWidth);
+    if(i!==cur){cur=i;mark()}
+  },70);
+});
+rail.onclick=function(e){
+  var b=e.target.closest('.tab');if(!b)return;
+  cur=+b.dataset.i;
+  deck.scrollTo({left:cur*deck.clientWidth,behavior:'smooth'});
+  mark();
+};
+addEventListener('resize',function(){deck.scrollLeft=cur*deck.clientWidth});
+
+/* ---------- 操作 ---------- */
+document.getElementById('addBtn').onclick=function(){open_()};
+deck.onclick=function(e){
+  var d=e.target.closest('[data-done]');
+  if(d){var it=byId(d.dataset.done);it.done=!it.done;save();render(true);
+    if(it.done){hanamaru();stars.classList.add('bump');setTimeout(function(){stars.classList.remove('bump')},330)}return}
+  var ed=e.target.closest('[data-edit]');if(ed)return open_(ed.dataset.edit);
+  var mn=e.target.closest('[data-menu]');if(mn)return cardMenu(mn,mn.dataset.menu);
+};
+function byId(id){for(var i=0;i<items.length;i++)if(items[i].id===id)return items[i]}
+
+document.getElementById('searchBtn').onclick=function(){
+  var s=prompt('なにを探す？（空にすると全部もどるよ）',query);
+  if(s===null)return;query=s;cur=0;render();
+};
+
+function hanamaru(){
+  var w=document.createElement('div');w.className='stamp';
+  w.innerHTML='<svg viewBox="0 0 120 120"><circle class="draw" cx="60" cy="60" r="45" fill="none" stroke="#F0839E" stroke-width="9" stroke-linecap="round" transform="rotate(-90 60 60)"/><path class="draw" d="M38 62l14 15 30-34" fill="none" stroke="#EFBB4E" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  document.body.appendChild(w);
+  ['\u2728','\ud83c\udf38','\u2b50\ufe0f','\ud83e\udd0d','\u2728','\ud83c\udf3c'].forEach(function(s,i){
+    var p=document.createElement('span');p.className='spark';p.textContent=s;
+    p.style.left='50%';p.style.top='50%';
+    p.style.setProperty('--dx',(Math.cos(i*1.1)*145)+'px');
+    p.style.setProperty('--dy',(Math.sin(i*1.1)*145-30)+'px');
+    p.style.animationDelay=(i*45)+'ms';w.appendChild(p)});
+  setTimeout(function(){w.remove()},1150);
+}
+
+function cardMenu(a,id){
+  closePop();var it=byId(id),r=a.getBoundingClientRect();
+  var p=document.createElement('div');p.className='pop';p.id='pop';
+  p.innerHTML='<button data-a="copy">まるごとコピー</button><button data-a="edit">書き足す</button><button data-a="del" class="dg">この科目を消す</button>';
+  document.body.appendChild(p);
+  p.style.top=Math.min(r.bottom+6,innerHeight-p.offsetHeight-12)+'px';
+  p.style.left=Math.max(12,Math.min(r.left,innerWidth-p.offsetWidth-12))+'px';
+  p.onclick=function(e){var x=e.target.dataset.a;if(!x)return;closePop();
+    if(x==='copy')copy(it);
+    if(x==='edit')open_(id);
+    if(x==='del'&&confirm('「'+it.title+'」を消す？')){
+      items=items.filter(function(i){return i.id!==id});save();render(true);toast('消したよ')}};
+  setTimeout(function(){document.addEventListener('click',outside)},0);
+}
+function outside(e){if(!e.target.closest('#pop'))closePop()}
+function closePop(){var p=document.getElementById('pop');if(p)p.remove();document.removeEventListener('click',outside)}
+function copy(it){
+  var t='【'+it.title+'】（'+G(it.group).name+'）\n';
+  it.notes.filter(function(n){return n.text.trim()}).forEach(function(n){t+=(n.big?'★ ':'・')+n.text+'\n'});
+  if(it.story&&it.story.trim())t+='\n― ストーリー ―\n'+it.story+'\n';
+  navigator.clipboard.writeText(t).then(function(){toast('コピーしたよ')}).catch(function(){toast('コピーできなかった')});
+}
+
+/* ---------- 編集 ---------- */
+var d=null;
+function open_(id){
+  var it=id?byId(id):null;
+  d=it?JSON.parse(JSON.stringify(it)):{id:uid(),title:'',group:'asset',done:false,notes:[{big:false,text:''}],story:'',updated:Date.now()};
+  if(!d.notes.length)d.notes=[{big:false,text:''}];
+  var ov=document.createElement('div');ov.className='ov';ov.id='ov';
+  ov.innerHTML='<div class="sheet" role="dialog" aria-modal="true">'
+    +'<div class="shead"><button class="ghost" id="cx">やめる</button>'
+    +'<h3>'+(it?'書き足す':'新しい科目')+'</h3><button class="save" id="ok">保存</button></div>'
+    +'<div class="sbody">'
+    +'<div class="field"><label class="f2" for="ti">科目・テーマ</label>'
+    +'<input class="t" id="ti" placeholder="例：前払保険料" value="'+esc(d.title)+'"></div>'
+    +'<div class="field"><span class="f2">5グループ</span><div class="gs" id="gs">'
+    +GROUPS.map(function(g){return '<button class="gb" style="--tc:'+g.color+'" aria-pressed="'+(d.group===g.id)+'" data-g="'+g.id+'">'+g.name+'</button>'}).join('')
+    +'</div></div>'
+    +'<div class="field"><span class="f2">わすれちゃいけないこと</span><div id="rows"></div>'
+    +'<button class="add" id="ar">＋ 1行ふやす</button>'
+    +'<p class="hint">★を押すと、ピンクの「とくにだいじ」印になるよ。</p></div>'
+    +'<div class="field"><label class="f2" for="st">ストーリー</label>'
+    +'<textarea class="t" id="st" rows="6" placeholder="納得できた説明を、そのまま貼りつけてね。">'+esc(d.story||'')+'</textarea></div>'
+    +'</div></div>';
+  document.body.appendChild(ov);rows_();
+  ov.onclick=function(e){if(e.target===ov)close_()};
+  ov.querySelector('#cx').onclick=close_;
+  ov.querySelector('#ok').onclick=commit;
+  ov.querySelector('#gs').onclick=function(e){var b=e.target.closest('.gb');if(!b)return;
+    d.group=b.dataset.g;
+    Array.prototype.forEach.call(ov.querySelectorAll('.gb'),function(x){x.setAttribute('aria-pressed',x.dataset.g===d.group)})};
+  ov.querySelector('#ar').onclick=function(){d.notes.push({big:false,text:''});rows_();
+    var t=ov.querySelectorAll('#rows textarea');t[t.length-1].focus()};
+  if(!it)ov.querySelector('#ti').focus();
+}
+function rows_(){
+  var w=document.getElementById('rows');
+  w.innerHTML=d.notes.map(function(n,i){
+    return '<div class="row" data-i="'+i+'">'
+      +'<button class="star" aria-pressed="'+n.big+'" aria-label="だいじ">&#9733;</button>'
+      +'<textarea rows="1" placeholder="気づいたこと">'+esc(n.text)+'</textarea>'
+      +'<button class="x" aria-label="消す">&times;</button></div>'}).join('');
+  Array.prototype.forEach.call(w.querySelectorAll('.row'),function(r){
+    var i=+r.dataset.i,ta=r.querySelector('textarea');
+    fit(ta);ta.oninput=function(){d.notes[i].text=ta.value;fit(ta)};
+    r.querySelector('.star').onclick=function(e){d.notes[i].big=!d.notes[i].big;
+      e.currentTarget.setAttribute('aria-pressed',d.notes[i].big)};
+    r.querySelector('.x').onclick=function(){d.notes.splice(i,1);
+      if(!d.notes.length)d.notes=[{big:false,text:''}];rows_()};
+  });
+}
+function fit(t){t.style.height='auto';t.style.height=t.scrollHeight+'px'}
+function commit(){
+  var ov=document.getElementById('ov');
+  d.title=ov.querySelector('#ti').value.trim();d.story=ov.querySelector('#st').value;
+  if(!d.title){toast('科目の名前を入れてね');ov.querySelector('#ti').focus();return}
+  d.notes=d.notes.filter(function(n){return n.text.trim()});d.updated=Date.now();
+  var i=-1;items.forEach(function(x,j){if(x.id===d.id)i=j});
+  var isNew=i<0;
+  if(isNew)items.unshift(d);else items[i]=d;
+  save();close_();
+  if(isNew){query='';cur=0;render()}else render(true);
+  toast('保存したよ \ud83c\udf38');
+}
+function close_(){var ov=document.getElementById('ov');if(ov)ov.remove();d=null}
+
+/* ---------- バックアップ ---------- */
+document.getElementById('menuBtn').onclick=function(e){
+  e.stopPropagation();closePop();
+  var r=e.currentTarget.getBoundingClientRect();
+  var p=document.createElement('div');p.className='pop';p.id='pop';
+  p.innerHTML='<button data-a="out">バックアップを書き出す</button><button data-a="in">バックアップを読み込む</button>';
+  document.body.appendChild(p);p.style.top=(r.bottom+6)+'px';
+  p.style.left=Math.max(12,r.right-p.offsetWidth)+'px';
+  p.onclick=function(ev){var x=ev.target.dataset.a;if(!x)return;closePop();if(x==='out')out();else in_()};
+  setTimeout(function(){document.addEventListener('click',outside)},0);
+};
+function out(){var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(items,null,2)],{type:'application/json'}));
+  a.download='boki_memo.json';a.click();URL.revokeObjectURL(a.href);toast('書き出したよ')}
+function in_(){
+  var f=document.createElement('input');f.type='file';f.accept='.json';
+  f.onchange=function(){var r=new FileReader();
+    r.onload=function(){try{var j=JSON.parse(r.result);if(!Array.isArray(j))throw 0;
+      var ids={};items.forEach(function(i){ids[i.id]=1});
+      items=items.concat(j.filter(function(x){return !ids[x.id]}));
+      save();render();toast('読み込んだよ')}catch(e){toast('読めなかった')}};
+    r.readAsText(f.files[0])};
+  f.click();
+}
+
+var tt;
+function toast(m){
+  Array.prototype.forEach.call(document.querySelectorAll('.toast'),function(x){x.remove()});
+  var t=document.createElement('div');t.className='toast';t.textContent=m;
+  document.body.appendChild(t);clearTimeout(tt);tt=setTimeout(function(){t.remove()},1800)}
+
+/* ---------- ふわふわ ---------- */
+(function(){
+  var d=document.getElementById('dust'),e=['\u2728','\ud83c\udf38','\u2b50\ufe0f','\ud83c\udf3c','\u2728','\ud83d\udc9c','\ud83c\udf38'];
+  for(var i=0;i<7;i++){
+    var s=document.createElement('span');s.textContent=e[i];
+    s.style.left=(6+i*13.5)+'%';s.style.animationDelay=(i*2.1)+'s';
+    s.style.animationDuration=(11+i*1.4)+'s';d.appendChild(s)}
+})();
+
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){closePop();close_()}
+  if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
+    var v=view();if(!v.length)return;
+    cur=Math.max(0,Math.min(v.length-1,cur+(e.key==='ArrowRight'?1:-1)));
+    deck.scrollTo({left:cur*deck.clientWidth,behavior:'smooth'});mark()}
+});
+render();
+</script>
+</body>
+</html>
