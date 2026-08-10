@@ -286,6 +286,20 @@
     <div class="alert hide" id="intakeMsg"></div>
   </section>
 
+  <!-- note用まるごと -->
+  <section class="card" id="allCard">
+    <div class="seal">✓</div>
+    <div class="card-head">
+      <h2 class="card-title">💐 note用まるごと</h2>
+      <span class="count" id="cAll">0字</span>
+    </div>
+    <p class="hint">サブタイトル＋本文＋ハッシュタグを、ひとまとめでコピーします。noteは「タイトル」と「これ」の2回だけ貼ればおしまい🌸</p>
+    <div class="row">
+      <button class="copy" id="btnAllTitle" style="margin-top:0">① タイトルをコピー</button>
+    </div>
+    <button class="copy" id="btnAll">② note用まるごとコピー</button>
+  </section>
+
   <!-- タイトル -->
   <section class="card" data-step="title">
     <div class="seal">✓</div>
@@ -438,6 +452,8 @@
     cI.classList.toggle("warn", i.length > 2200 || (i.trim() !== "" && nIns !== 3));
 
     checkNg();
+    document.getElementById("cAll").textContent =
+      [s, b, g].map(function(x){ return (x||"").trim(); }).filter(Boolean).join("\n\n").length + "字";
     save();
   }
 
@@ -569,6 +585,33 @@
     }catch(err){
       say("ふりわけの途中で止まりました：" + (err && err.message ? err.message : err));
     }
+  });
+
+  /* ---------- note用まるごと ---------- */
+  function noteWhole(){
+    return [F.sub.value, F.body.value, F.tags.value]
+      .map(function(s){ return (s || "").trim(); })
+      .filter(Boolean)
+      .join("\n\n");
+  }
+
+  document.getElementById("btnAllTitle").addEventListener("click", function(){
+    var t = F.title.value;
+    if(!t.trim()){ toast("タイトルがまだ空っぽです"); return; }
+    copyText(t).then(function(){
+      markStep("title", true);
+      toast("タイトルをコピーしました🌸");
+    }).catch(function(){ toast("長押しでコピーしてください"); });
+  });
+
+  document.getElementById("btnAll").addEventListener("click", function(){
+    var txt = noteWhole();
+    if(!txt){ toast("まだ中身がありません"); return; }
+    copyText(txt).then(function(){
+      document.getElementById("allCard").classList.add("copied");
+      ["sub","body","tags"].forEach(function(k){ markStep(k, true); });
+      toast("まるごとコピーしました💐");
+    }).catch(function(){ toast("長押しでコピーしてください"); });
   });
 
   /* ---------- 保存 ---------- */
