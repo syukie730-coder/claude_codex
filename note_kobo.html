@@ -4,242 +4,248 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>note投稿工房</title>
-<meta name="theme-color" content="#2C5B63">
+<meta name="theme-color" content="#FBD3DE">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="note投稿工房">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='38' fill='%232C5B63'/%3E%3Ctext x='90' y='118' font-size='96' text-anchor='middle' fill='%23EDF1EA' font-family='serif'%3E写%3C/text%3E%3C/svg%3E">
+<meta name="apple-mobile-web-app-title" content="note工房">
+<link rel="apple-touch-icon" sizes="180x180" href="note-kobo-icon.png">
+<link rel="icon" type="image/png" sizes="512x512" href="note-kobo-icon-512.png">
 <style>
   :root{
-    --paper:#EDF1EA;
+    --paper:#FFF5F2;
     --card:#FFFFFF;
-    --ink:#22332C;
-    --sub:#6E8078;
-    --line:#D6DED3;
-    --ai:#2C5B63;
-    --ai-dark:#1F454B;
-    --shu:#B7452F;
-    --kohaku:#B07E1F;
-    --mincho:"Hiragino Mincho ProN","Yu Mincho",YuMincho,"Noto Serif JP",serif;
-    --gothic:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",YuGothic,"Noto Sans JP",sans-serif;
-    --mono:ui-monospace,"SF Mono",Menlo,monospace;
+    --ink:#3B2F34;
+    --sub:#8A7378;
+    --line:#F6DCD6;
+    --pink:#C4637E;
+    --pink-dark:#A34B64;
+    --pink-soft:#FBD3DE;
+    --mint:#7CC1AE;
+    --butter:#FBF0D4;
+    --butter-ink:#7A5A16;
+    --maru:"Hiragino Maru Gothic ProN","ヒラギノ丸ゴ ProN W4","Yu Gothic",YuGothic,"Noto Sans JP",sans-serif;
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{
     background:var(--paper);
     color:var(--ink);
-    font-family:var(--gothic);
-    font-size:17px;
-    line-height:1.75;
+    font-family:var(--maru);
+    font-size:18px;
+    font-weight:600;
+    line-height:1.85;
     -webkit-text-size-adjust:100%;
-    padding:0 0 64px;
+    padding:0 0 70px;
   }
   .wrap{max-width:680px;margin:0 auto;padding:0 16px}
 
-  /* ---- header ---- */
+  /* ---- あたま ---- */
   header{
-    background:var(--ai);
-    color:#EDF1EA;
-    padding:26px 0 20px;
-    border-bottom:3px solid var(--ai-dark);
+    position:relative;
+    background:linear-gradient(135deg,#FBD3DE 0%,#F6DCEF 55%,#E3DCF5 100%);
+    padding:30px 0 40px;
+  }
+  header::after{
+    content:"";
+    position:absolute;left:0;right:0;bottom:-1px;height:16px;
+    background-image:radial-gradient(circle at 13px 16px, var(--paper) 13px, transparent 14px);
+    background-size:26px 16px;
+    background-repeat:repeat-x;
   }
   .brand{
-    font-family:var(--mincho);
-    font-size:29px;
-    letter-spacing:.16em;
+    font-size:31px;
+    font-weight:800;
+    letter-spacing:.1em;
     margin:0;
-    font-weight:600;
+    color:#8C3E58;
+    text-shadow:0 2px 0 #fff;
   }
   .brand-note{
     font-size:16px;
-    letter-spacing:.06em;
-    opacity:.85;
-    margin:6px 0 0;
+    margin:8px 0 0;
+    color:#8A5A6B;
   }
 
-  /* ---- 進み具合 ---- */
-  .steps{
-    display:flex;
-    gap:6px;
-    margin:14px 0 0;
-    padding:0;
-    list-style:none;
-  }
+  /* ---- すすみ ---- */
+  .steps{display:flex;gap:6px;margin:16px 0 0;padding:0;list-style:none}
   .steps li{
-    flex:1;
-    text-align:center;
-    font-size:12.5px;
-    letter-spacing:.04em;
-    padding:6px 2px;
-    border-radius:6px;
-    background:rgba(255,255,255,.14);
-    color:#DCE6E1;
+    flex:1;text-align:center;
+    font-size:13px;font-weight:700;
+    padding:7px 2px;
+    border-radius:999px;
+    background:rgba(255,255,255,.75);
+    color:#A87A88;
+    border:2px solid #fff;
   }
-  .steps li.done{background:#EDF1EA;color:var(--ai-dark);font-weight:700}
+  .steps li.done{
+    background:var(--pink);color:#fff;border-color:#fff;
+  }
 
-  /* ---- card ---- */
+  /* ---- ふだ ---- */
   .card{
     position:relative;
     background:var(--card);
-    border:1px solid var(--line);
-    border-radius:12px;
-    padding:16px 16px 18px;
-    margin:16px 0;
+    border:2px solid var(--line);
+    border-radius:22px;
+    padding:20px 18px 22px;
+    margin:18px 0;
+    box-shadow:0 4px 0 rgba(246,220,214,.85);
   }
   .card-head{
-    display:flex;
-    align-items:baseline;
-    justify-content:space-between;
-    gap:10px;
-    margin-bottom:9px;
+    display:flex;align-items:baseline;justify-content:space-between;
+    gap:10px;margin-bottom:10px;
   }
   .card-title{
-    font-family:var(--mincho);
-    font-size:19px;
-    font-weight:600;
-    letter-spacing:.09em;
+    font-size:22px;
+    font-weight:800;
+    letter-spacing:.05em;
     margin:0;
+    color:#8C3E58;
   }
   .count{
-    font-family:var(--mono);
-    font-size:12.5px;
-    color:var(--sub);
-    white-space:nowrap;
+    font-size:13.5px;font-weight:700;color:var(--sub);white-space:nowrap;
   }
-  .count.warn{color:var(--kohaku);font-weight:700}
+  .count.warn{color:#C4761B}
   .hint{
-    font-size:13.5px;
-    color:var(--sub);
-    margin:0 0 9px;
-    line-height:1.6;
+    font-size:14.5px;font-weight:600;color:var(--sub);
+    margin:0 0 12px;line-height:1.75;
   }
   textarea,input[type=text]{
     width:100%;
-    font-family:var(--gothic);
-    font-size:16.5px;
-    line-height:1.8;
+    font-family:var(--maru);
+    font-size:17.5px;
+    font-weight:600;
+    line-height:1.9;
     color:var(--ink);
-    background:#FCFDFB;
-    border:1px solid var(--line);
-    border-radius:8px;
-    padding:11px 12px;
+    background:#FFFBFA;
+    border:2px solid var(--line);
+    border-radius:16px;
+    padding:13px 14px;
     resize:vertical;
   }
+  textarea::placeholder,input::placeholder{color:#C9AFB4}
   textarea:focus,input[type=text]:focus{
-    outline:3px solid rgba(44,91,99,.35);
-    outline-offset:1px;
-    border-color:var(--ai);
+    outline:none;
+    border-color:var(--pink);
+    background:#fff;
+    box-shadow:0 0 0 4px rgba(251,211,222,.6);
   }
-  .t-sm{min-height:60px}
-  .t-md{min-height:110px}
-  .t-lg{min-height:230px}
+  .t-sm{min-height:66px}
+  .t-md{min-height:120px}
+  .t-lg{min-height:240px}
 
-  /* ---- buttons ---- */
+  /* ---- ぼたん ---- */
   button{
-    font-family:var(--gothic);
-    font-size:16px;
+    font-family:var(--maru);
+    font-size:17px;
+    font-weight:800;
     cursor:pointer;
-    border-radius:8px;
-    border:1px solid transparent;
+    border-radius:999px;
+    border:2px solid transparent;
   }
-  button:focus-visible{outline:3px solid rgba(44,91,99,.5);outline-offset:2px}
+  button:focus-visible{outline:3px solid rgba(196,99,126,.55);outline-offset:2px}
   .copy{
-    margin-top:10px;
-    width:100%;
-    padding:14px 12px;
-    background:var(--ai);
+    margin-top:12px;width:100%;
+    padding:15px 12px;
+    background:var(--pink);
     color:#fff;
-    font-weight:700;
     letter-spacing:.08em;
     border:none;
+    box-shadow:0 4px 0 var(--pink-dark);
   }
-  .copy:active{background:var(--ai-dark)}
+  .copy:active{background:var(--pink-dark);box-shadow:0 1px 0 var(--pink-dark);transform:translateY(3px)}
   .ghost{
-    padding:11px 14px;
+    padding:12px 16px;
     background:#fff;
-    border:1px solid var(--ai);
-    color:var(--ai);
-    font-weight:700;
+    border:2px solid var(--pink-soft);
+    color:var(--pink);
   }
-  .row{display:flex;gap:9px;flex-wrap:wrap}
+  .ghost:active{background:#FFF0F4}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
   .row > *{flex:1 1 auto}
 
-  /* ---- 判子（signature） ---- */
+  /* ---- できた丸 ---- */
   .seal{
     position:absolute;
-    top:10px;
-    right:12px;
-    width:44px;height:44px;
-    border:2.5px solid var(--shu);
-    border-radius:7px;
-    color:var(--shu);
-    font-family:var(--mincho);
-    font-size:25px;
-    line-height:39px;
+    top:-10px;right:-6px;
+    width:48px;height:48px;
+    border-radius:50%;
+    background:var(--pink);
+    border:3px solid #fff;
+    color:#fff;
+    font-size:24px;
+    font-weight:800;
+    line-height:42px;
     text-align:center;
+    box-shadow:0 3px 8px rgba(196,99,126,.35);
     opacity:0;
-    transform:rotate(-9deg) scale(1.5);
+    transform:scale(.4) rotate(-20deg);
     pointer-events:none;
   }
   .card.copied .seal{
-    opacity:.9;
-    transform:rotate(-9deg) scale(1);
-    transition:opacity .18s ease-out, transform .18s cubic-bezier(.2,.8,.3,1);
+    opacity:1;
+    transform:scale(1) rotate(-8deg);
+    transition:opacity .2s ease-out, transform .28s cubic-bezier(.34,1.56,.64,1);
   }
-  @media (prefers-reduced-motion: reduce){
-    .card.copied .seal{transition:none}
-  }
+  @media (prefers-reduced-motion: reduce){ .card.copied .seal{transition:none} }
 
-  /* ---- お約束 ---- */
+  /* ---- おやくそく ---- */
   .promise{list-style:none;margin:0;padding:0}
   .promise li{
-    display:flex;align-items:flex-start;gap:11px;
-    padding:9px 0;
-    border-bottom:1px dashed var(--line);
-    font-size:15.5px;
+    display:flex;align-items:flex-start;gap:12px;
+    padding:11px 0;
+    border-bottom:2px dotted var(--line);
+    font-size:16px;
   }
   .promise li:last-child{border-bottom:none}
-  .promise input{width:23px;height:23px;margin:3px 0 0;accent-color:var(--ai);flex:0 0 auto}
+  .promise input{width:26px;height:26px;margin:4px 0 0;accent-color:var(--pink);flex:0 0 auto}
   .alert{
-    margin-top:11px;
-    background:#FBF3E3;
-    border-left:4px solid var(--kohaku);
-    border-radius:0 8px 8px 0;
-    padding:10px 12px;
-    font-size:14.5px;
-    color:#6B4E12;
+    margin-top:13px;
+    background:var(--butter);
+    border:2px solid #F0DFB2;
+    border-radius:16px;
+    padding:12px 14px;
+    font-size:15px;
+    color:var(--butter-ink);
+    line-height:1.75;
   }
   .alert.hide{display:none}
+  details summary{
+    font-size:15.5px;color:var(--pink);font-weight:800;cursor:pointer;
+    list-style:none;
+  }
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"🌸 "}
 
-  /* ---- 原稿箱 ---- */
-  .box{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  /* ---- はこ ---- */
+  .box{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
   select{
     flex:1 1 160px;
-    font-family:var(--gothic);
-    font-size:16px;
-    padding:10px;
-    border:1px solid var(--line);
-    border-radius:8px;
-    background:#FCFDFB;
+    font-family:var(--maru);
+    font-size:16.5px;font-weight:700;
+    padding:11px 12px;
+    border:2px solid var(--line);
+    border-radius:14px;
+    background:#FFFBFA;
     color:var(--ink);
   }
-  .saved{font-size:13px;color:var(--sub);margin:9px 0 0;font-family:var(--mono)}
+  .saved{font-size:14px;color:var(--sub);margin:12px 0 0}
 
-  /* ---- toast ---- */
+  /* ---- おしらせ ---- */
   #toast{
-    position:fixed;left:50%;bottom:24px;
+    position:fixed;left:50%;bottom:26px;
     transform:translateX(-50%) translateY(20px);
-    background:var(--ai-dark);color:#fff;
-    padding:12px 22px;border-radius:999px;
-    font-size:15px;font-weight:700;letter-spacing:.06em;
+    background:var(--pink);color:#fff;
+    padding:13px 26px;border-radius:999px;
+    font-size:16px;font-weight:800;
+    border:3px solid #fff;
     opacity:0;pointer-events:none;
     transition:opacity .2s, transform .2s;
     z-index:50;
-    box-shadow:0 6px 20px rgba(31,69,75,.3);
+    box-shadow:0 6px 18px rgba(196,99,126,.35);
   }
   #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-  footer{text-align:center;font-size:13px;color:var(--sub);padding:26px 0 0}
+  footer{text-align:center;font-size:14px;color:var(--sub);padding:28px 0 0}
 </style>
 </head>
 <body>
@@ -247,7 +253,7 @@
 <header>
   <div class="wrap">
     <h1 class="brand">note投稿工房</h1>
-    <p class="brand-note">書けた原稿を、貼りやすい形に整えるところ</p>
+    <p class="brand-note">書けた原稿を、貼りやすい形にととのえるところ🌸</p>
     <ul class="steps" id="steps">
       <li data-step="title">タイトル</li>
       <li data-step="sub">サブ</li>
@@ -262,7 +268,7 @@
 
   <!-- 原稿箱 -->
   <section class="card">
-    <div class="card-head"><h2 class="card-title">原稿箱</h2></div>
+    <div class="card-head"><h2 class="card-title">🧺 原稿箱</h2></div>
     <div class="box">
       <select id="drafts"><option value="">— 保存した原稿 —</option></select>
       <button class="ghost" id="btnSave">保存する</button>
@@ -273,17 +279,18 @@
 
   <!-- まとめて受け取る -->
   <section class="card">
-    <div class="card-head"><h2 class="card-title">まとめて受け取る</h2></div>
+    <div class="card-head"><h2 class="card-title">🎁 まとめて受け取る</h2></div>
     <p class="hint">届いた文を、まるごと1回だけ貼ってボタンを押してください。タイトル・サブ・本文・タグ・Instagramに振り分けます。</p>
     <textarea id="fIntake" class="t-md" placeholder="===タイトル=== から始まる文を、まるごとここへ"></textarea>
-    <button class="copy" id="btnIntake">振り分ける</button>
+    <button class="copy" id="btnIntake">ふりわける</button>
+    <div class="alert hide" id="intakeMsg"></div>
   </section>
 
   <!-- タイトル -->
   <section class="card" data-step="title">
-    <div class="seal">写</div>
+    <div class="seal">✓</div>
     <div class="card-head">
-      <h2 class="card-title">タイトル</h2>
+      <h2 class="card-title">✏️ タイトル</h2>
       <span class="count" id="cTitle">0字</span>
     </div>
     <p class="hint">スマホの一覧では30字あたりで切れます。</p>
@@ -293,9 +300,9 @@
 
   <!-- サブタイトル -->
   <section class="card" data-step="sub">
-    <div class="seal">写</div>
+    <div class="seal">✓</div>
     <div class="card-head">
-      <h2 class="card-title">サブタイトル</h2>
+      <h2 class="card-title">🎀 サブタイトル</h2>
       <span class="count" id="cSub">0字</span>
     </div>
     <p class="hint">note本文のいちばん上に、引用か見出しで置くところ。</p>
@@ -305,21 +312,21 @@
 
   <!-- 本文 -->
   <section class="card" data-step="body">
-    <div class="seal">写</div>
+    <div class="seal">✓</div>
     <div class="card-head">
-      <h2 class="card-title">本文</h2>
+      <h2 class="card-title">📖 本文</h2>
       <span class="count" id="cBody">0字</span>
     </div>
-    <p class="hint">「## 」で始まる行はnoteに貼ったあと見出しに変えてください。</p>
+    <p class="hint">「## 」で始まる行は、noteに貼ったあと見出しに変えてください。</p>
     <textarea id="fBody" class="t-lg" placeholder="本文をここへ"></textarea>
     <button class="copy" data-for="fBody">本文をコピー</button>
   </section>
 
   <!-- ハッシュタグ -->
   <section class="card" data-step="tags">
-    <div class="seal">写</div>
+    <div class="seal">✓</div>
     <div class="card-head">
-      <h2 class="card-title">ハッシュタグ（note）</h2>
+      <h2 class="card-title">🏷️ ハッシュタグ</h2>
       <span class="count" id="cTags">0個</span>
     </div>
     <p class="hint">5〜8個が目安。定番と、その記事だけのものを混ぜます。</p>
@@ -329,9 +336,9 @@
 
   <!-- Instagram -->
   <section class="card" data-step="insta">
-    <div class="seal">写</div>
+    <div class="seal">✓</div>
     <div class="card-head">
-      <h2 class="card-title">Instagram用</h2>
+      <h2 class="card-title">📷 Instagram用</h2>
       <span class="count" id="cInsta">0字 ／ タグ0個</span>
     </div>
     <p class="hint">2,200字まで。ハッシュタグはちょうど3個に。</p>
@@ -341,7 +348,7 @@
 
   <!-- お約束 -->
   <section class="card">
-    <div class="card-head"><h2 class="card-title">出す前のお約束</h2></div>
+    <div class="card-head"><h2 class="card-title">🌷 出す前のお約束</h2></div>
     <ul class="promise">
       <li><input type="checkbox" data-p="1"><label>実名（自分・家族・友人・お子さん）は入っていない</label></li>
       <li><input type="checkbox" data-p="2"><label>勤務先の名前・住所・最寄り駅は入っていない</label></li>
@@ -349,9 +356,9 @@
       <li><input type="checkbox" data-p="4"><label>年齢は「60代」だけ。数字は書いていない</label></li>
       <li><input type="checkbox" data-p="5"><label>体調の話には「個人の感想です」と受診・相談の一文を添えた</label></li>
     </ul>
-    <details style="margin-top:12px">
-      <summary style="font-size:14.5px;color:var(--ai);font-weight:700;cursor:pointer">見つけたら知らせる言葉を登録する</summary>
-      <p class="hint" style="margin-top:9px">この端末にだけ残ります。読点や改行で区切って入れてください。</p>
+    <details style="margin-top:14px">
+      <summary>見つけたら知らせる言葉を登録する</summary>
+      <p class="hint" style="margin-top:10px">この端末にだけ残ります。読点や改行で区切って入れてください。</p>
       <textarea id="fNg" class="t-sm" placeholder="出したくない固有名詞をここへ"></textarea>
     </details>
     <div class="alert hide" id="ngAlert"></div>
@@ -359,17 +366,17 @@
 
   <!-- 開く -->
   <section class="card">
-    <div class="card-head"><h2 class="card-title">貼りに行く</h2></div>
+    <div class="card-head"><h2 class="card-title">🚪 貼りに行く</h2></div>
     <div class="row">
       <button class="ghost" id="btnNote">noteを開く</button>
       <button class="ghost" id="btnInsta">Instagramを開く</button>
     </div>
-    <div class="row" style="margin-top:9px">
-      <button class="ghost" id="btnReset">判子を消す</button>
+    <div class="row" style="margin-top:10px">
+      <button class="ghost" id="btnReset">まるを消す</button>
     </div>
   </section>
 
-  <footer>写しが済んだ札には、朱の判子がつきます</footer>
+  <footer>コピーが済んだ札には、ピンクのまるがつきます🌸</footer>
 </main>
 
 <div id="toast"></div>
@@ -405,7 +412,7 @@
     toastEl.textContent = msg;
     toastEl.classList.add("show");
     clearTimeout(toast._t);
-    toast._t = setTimeout(function(){ toastEl.classList.remove("show"); }, 1700);
+    toast._t = setTimeout(function(){ toastEl.classList.remove("show"); }, 1800);
   }
 
   /* ---------- 数え上げ ---------- */
@@ -477,10 +484,10 @@
         var card = btn.closest(".card");
         card.classList.add("copied");
         markStep(card.dataset.step, true);
-        toast("写しました");
+        toast("コピーしました🌸");
       }).catch(function(){
         el.focus(); el.select();
-        toast("うまく写せません。長押しでコピーしてください");
+        toast("長押しでコピーしてください");
       });
     });
   });
@@ -494,7 +501,7 @@
   document.getElementById("btnReset").addEventListener("click", function(){
     document.querySelectorAll(".card.copied").forEach(function(c){ c.classList.remove("copied"); });
     document.querySelectorAll("#steps li").forEach(function(l){ l.classList.remove("done"); });
-    toast("判子を消しました");
+    toast("まるを消しました");
   });
 
   document.getElementById("btnNote").addEventListener("click", function(){
@@ -502,6 +509,66 @@
   });
   document.getElementById("btnInsta").addEventListener("click", function(){
     window.open("https://www.instagram.com/", "_blank", "noopener");
+  });
+
+  /* ---------- まとめて受け取る ---------- */
+  var LABELS = [
+    { key:"sub",   re:/サブ/ },
+    { key:"title", re:/タイトル|表題/ },
+    { key:"body",  re:/本文|記事/ },
+    { key:"tags",  re:/ハッシュ|タグ/ },
+    { key:"insta", re:/insta|インスタ/i }
+  ];
+
+  function trimBlank(arr){
+    while(arr.length && arr[0].trim() === "") arr.shift();
+    while(arr.length && arr[arr.length-1].trim() === "") arr.pop();
+    return arr.join("\n");
+  }
+
+  document.getElementById("btnIntake").addEventListener("click", function(){
+    var msg = document.getElementById("intakeMsg");
+    function say(t){ msg.textContent = t; msg.classList.remove("hide"); }
+
+    try{
+      var src = document.getElementById("fIntake").value;
+      if(!src.trim()){ say("枠がまだ空っぽです。届いた文を貼ってから押してください。"); return; }
+
+      var cur = null, buf = {}, hit = 0;
+
+      src.replace(/\r/g, "").split("\n").forEach(function(ln){
+        var t = ln.trim();
+        var bare = t.replace(/^[=＝\-—■◆▼▽●○☆★#＃【\[「『\s]+/, "")
+                    .replace(/[=＝\-—】\]」』：:\s]+$/, "");
+        var looksLabel = (t !== bare) && bare.length > 0 && bare.length <= 24;
+
+        if(looksLabel){
+          var found = null;
+          for(var i = 0; i < LABELS.length; i++){
+            if(LABELS[i].re.test(bare)){ found = LABELS[i].key; break; }
+          }
+          if(found){ cur = found; buf[cur] = []; hit++; return; }
+        }
+        if(cur) buf[cur].push(ln);
+      });
+
+      if(!hit){
+        say("区切りの見出しが見つかりませんでした。1行目が「===タイトル===」になっているか確かめてください。全部を本文に入れるなら、本文の枠に直接貼ってください。");
+        return;
+      }
+
+      Object.keys(buf).forEach(function(k){ F[k].value = trimBlank(buf[k]); });
+
+      document.getElementById("fIntake").value = "";
+      document.getElementById("btnReset").click();
+      refresh();
+      msg.classList.add("hide");
+      toast(hit + "か所にふりわけました🌸");
+      document.querySelector('.card[data-step="title"]').scrollIntoView({ behavior:"smooth", block:"start" });
+
+    }catch(err){
+      say("ふりわけの途中で止まりました：" + (err && err.message ? err.message : err));
+    }
   });
 
   /* ---------- 保存 ---------- */
@@ -548,7 +615,7 @@
     box = box.slice(0, 30);
     await store.set(KEY_BOX, JSON.stringify(box));
     drawBox();
-    toast("原稿箱に入れました");
+    toast("原稿箱に入れました🧺");
   });
 
   document.getElementById("drafts").addEventListener("change", function(e){
@@ -592,7 +659,7 @@
     if(bx){ try{ box = JSON.parse(bx) || []; }catch(e){ box = []; } }
     drawBox();
     refresh();
-    if(loaded) toast("記事を読み込みました");
+    if(loaded) toast("記事を読み込みました🌸");
   })();
 
   Object.keys(F).forEach(function(k){ F[k].addEventListener("input", refresh); });
