@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>9月 NISAお引っ越し作戦シート</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ai:#14395e;        /* 深藍 */
+  --ai-usu:#e6edf4;    /* 薄藍 */
+  --kinari:#f8f5ee;    /* 生成り */
+  --sumi:#242424;      /* 墨 */
+  --yamabuki:#c8891f;  /* 山吹 */
+  --midori:#2f6b4f;    /* 常磐 */
+  --usuzumi:#5a5a5a;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0; padding:0;
+  background:var(--kinari);
+  color:var(--sumi);
+  font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  font-size:17px; font-weight:500; line-height:1.85;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:900px;margin:0 auto;padding:0 18px 64px;}
+
+/* ヘッダー */
+header{
+  background:var(--ai); color:#fff;
+  padding:30px 18px 26px; margin-bottom:26px;
+}
+header .inner{max-width:900px;margin:0 auto;}
+.eyebrow{
+  font-size:14px; letter-spacing:.22em; font-weight:700;
+  color:#a9c4dd; margin:0 0 8px;
+}
+h1{
+  font-family:"Zen Old Mincho",serif; font-weight:700;
+  font-size:30px; line-height:1.35; margin:0 0 18px;
+}
+.count{
+  display:flex; align-items:baseline; gap:12px;
+  border-top:1px solid rgba(255,255,255,.28); padding-top:16px;
+}
+.count .num{
+  font-family:"Zen Old Mincho",serif; font-size:60px; font-weight:700;
+  line-height:1; color:#f0c46a;
+}
+.count .lbl{font-size:16px; color:#d7e4ef;}
+
+h2{
+  font-family:"Zen Old Mincho",serif; font-size:22px; font-weight:700;
+  color:var(--ai); margin:38px 0 14px;
+  padding-left:13px; border-left:5px solid var(--yamabuki);
+}
+p{margin:0 0 14px;}
+.note{font-size:15px; color:var(--usuzumi); line-height:1.8;}
+
+/* 表 */
+table{width:100%; border-collapse:collapse; background:#fff; font-size:16px;}
+caption{text-align:left; font-size:15px; color:var(--usuzumi); padding-bottom:8px;}
+th,td{padding:11px 10px; border-bottom:1px solid #dfd9cd; text-align:right;}
+thead th{
+  background:var(--ai); color:#fff; font-weight:700; font-size:15px;
+  text-align:right; border-bottom:none; white-space:nowrap;
+}
+th.name,td.name{text-align:left;}
+tbody tr:nth-child(even){background:#fbf9f4;}
+tfoot td{background:var(--ai-usu); font-weight:700; border-bottom:none;}
+.code{display:block; font-size:13px; color:var(--usuzumi); font-weight:500;}
+.mark{font-weight:700;}
+.mark-a{color:var(--midori);}
+.mark-b{color:var(--yamabuki);}
+
+/* 予定表 */
+.sched{width:100%; border-collapse:collapse; background:#fff; font-size:16px;}
+.sched th,.sched td{text-align:left; padding:12px 10px; border-bottom:1px solid #dfd9cd;}
+.sched th{width:112px; white-space:nowrap; color:var(--ai); font-weight:700; background:#fbf9f4;}
+.sched tr.hot th{background:var(--yamabuki); color:#fff;}
+.sched tr.hot td{background:#fdf4e2; font-weight:700;}
+.sched tr.limit th{background:#8c2f2f; color:#fff;}
+.sched tr.limit td{background:#f9ecec; font-weight:700;}
+
+/* チェックリスト */
+ol.steps{margin:0; padding:0; list-style:none; counter-reset:s;}
+ol.steps li{
+  counter-increment:s; background:#fff; border:1px solid #dfd9cd;
+  border-radius:3px; margin-bottom:8px; padding:13px 14px 13px 50px;
+  position:relative;
+}
+ol.steps li::before{
+  content:counter(s); position:absolute; left:13px; top:13px;
+  width:24px; height:24px; border-radius:50%; background:var(--ai);
+  color:#fff; font-size:14px; font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+}
+ul.cautions{margin:0; padding-left:1.2em;}
+ul.cautions li{margin-bottom:10px;}
+
+footer{
+  margin-top:44px; padding-top:18px; border-top:2px solid var(--ai);
+  font-size:15px; color:var(--usuzumi);
+}
+
+/* スマホ：表をカードに */
+@media (max-width:640px){
+  body{font-size:16px;}
+  h1{font-size:25px;}
+  .count .num{font-size:48px;}
+  table thead{display:none;}
+  table,table tbody,table tfoot,table tr,table td{display:block; width:100%;}
+  table tr{
+    background:#fff!important; border:1px solid #dfd9cd; border-radius:3px;
+    margin-bottom:10px; padding:6px 0;
+  }
+  table td{
+    text-align:right; border-bottom:1px dotted #e5dfd3;
+    padding:8px 14px; display:flex; justify-content:space-between; gap:14px;
+  }
+  table td::before{
+    content:attr(data-l); font-size:14px; color:var(--usuzumi);
+    font-weight:500; text-align:left;
+  }
+  table td.name{
+    display:block; text-align:left; font-weight:700; font-size:18px;
+    background:var(--ai-usu); border-bottom:1px solid #dfd9cd;
+  }
+  table td.name::before{content:none;}
+  table td:last-child{border-bottom:none;}
+  tfoot tr{border:2px solid var(--ai);}
+  .sched th{width:auto;}
+}
+
+@media print{
+  body{background:#fff; font-size:12px;}
+  header{background:#14395e!important; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
+  .count{display:none;}
+  h2{margin:16px 0 8px;}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="inner">
+    <p class="eyebrow">幸恵ちゃんの 2026年9月</p>
+    <h1>NISAお引っ越し<br>作戦シート</h1>
+    <div class="count">
+      <span class="num" id="days">–</span>
+      <span class="lbl">日で権利付最終日<br>（9月28日 月曜）</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<h2>お引っ越しする5銘柄</h2>
+<table>
+  <caption>回収年数 ＝ 含み益 ÷ 年間配当。数字は8月15日時点の株価で計算しています。</caption>
+  <thead>
+    <tr>
+      <th class="name">銘柄</th><th>株数</th><th>評価額</th><th>含み益</th>
+      <th>かかる税金</th><th>年間配当</th><th>回収年数</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="name">ジャックス<span class="code">8584</span></td>
+      <td data-l="株数">30株</td><td data-l="評価額">113,550円</td>
+      <td data-l="含み益">+2,705円</td><td data-l="かかる税金">549円</td>
+      <td data-l="年間配当">約7,200円</td>
+      <td data-l="回収年数" class="mark mark-a">0.4年 ◎</td>
+    </tr>
+    <tr>
+      <td class="name">サンゲツ<span class="code">8130</span></td>
+      <td data-l="株数">124株</td><td data-l="評価額">389,360円</td>
+      <td data-l="含み益">+32,996円</td><td data-l="かかる税金">6,703円</td>
+      <td data-l="年間配当">約16,500円</td>
+      <td data-l="回収年数" class="mark mark-a">2.0年 ◎</td>
+    </tr>
+    <tr>
+      <td class="name">横河ブリッジHD<span class="code">5911・単元未満</span></td>
+      <td data-l="株数">20株</td><td data-l="評価額">58,560円</td>
+      <td data-l="含み益">+6,860円</td><td data-l="かかる税金">1,394円</td>
+      <td data-l="年間配当">約2,400円</td>
+      <td data-l="回収年数" class="mark mark-a">2.9年 ◎</td>
+    </tr>
+    <tr>
+      <td class="name">オカムラ<span class="code">7994</span></td>
+      <td data-l="株数">100株</td><td data-l="評価額">234,200円</td>
+      <td data-l="含み益">+33,150円</td><td data-l="かかる税金">6,734円</td>
+      <td data-l="年間配当">約11,400円</td>
+      <td data-l="回収年数" class="mark mark-a">2.9年 ◎</td>
+    </tr>
+    <tr>
+      <td class="name">野村不動産HD<span class="code">3231</span></td>
+      <td data-l="株数">200株</td><td data-l="評価額">184,660円</td>
+      <td data-l="含み益">+29,460円</td><td data-l="かかる税金">5,985円</td>
+      <td data-l="年間配当">約8,800円</td>
+      <td data-l="回収年数" class="mark mark-b">3.3年 ○</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td class="name">合計 5銘柄</td>
+      <td data-l="株数">474株</td><td data-l="評価額">980,330円</td>
+      <td data-l="含み益">+105,171円</td><td data-l="かかる税金">21,365円</td>
+      <td data-l="年間配当">約46,292円</td>
+      <td data-l="回収年数" class="mark mark-a">2.3年</td>
+    </tr>
+  </tfoot>
+</table>
+
+<p class="note">
+NISA成長投資枠の残りは1,110,000円。980,330円を使って、残りは約129,670円になります。<br>
+非課税になる配当は毎年およそ9,400円。2年3か月でモトが取れて、そこから先はずっとプラスです。
+</p>
+
+<h2>9月のスケジュール</h2>
+<table class="sched">
+  <tr>
+    <th>9月8日(火)</th>
+    <td>S&amp;P500を約140万円 売却（つみたてボーナス用・お引っ越しとは別件）</td>
+  </tr>
+  <tr class="hot">
+    <th>9月14日(月)</th>
+    <td>★お引っ越し実行日★　5銘柄を特定口座で売却 → 同じ日にNISA成長投資枠で買い直し</td>
+  </tr>
+  <tr>
+    <th>9月15日(火)<br>〜18日(金)</th>
+    <td>予備日。14日に動けなかったときはこの週のうちに</td>
+  </tr>
+  <tr>
+    <th>9月21日(月)<br>〜23日(水)</th>
+    <td>敬老の日・国民の休日・秋分の日でお休み。取引できません</td>
+  </tr>
+  <tr>
+    <th>9月25日(金)</th>
+    <td>つみたてボーナス 1,198,800円 の設定日</td>
+  </tr>
+  <tr class="limit">
+    <th>9月28日(月)</th>
+    <td>権利付最終日。この日までに買い直しが終わっていないと、9月の配当は特定口座扱いになります</td>
+  </tr>
+  <tr>
+    <th>9月29日(火)</th>
+    <td>権利落ち日</td>
+  </tr>
+  <tr>
+    <th>9月30日(水)</th>
+    <td>権利確定日</td>
+  </tr>
+</table>
+
+<h2>当日の手順</h2>
+<ol class="steps">
+  <li>楽天証券にログインして、特定口座の保有商品一覧を開く</li>
+  <li>5銘柄を成行で売却する（ジャックス30株と横河ブリッジ20株は「かぶミニ」から）</li>
+  <li>約定を確認して、売却代金が買付余力に入ったのを見る</li>
+  <li>同じ銘柄・同じ株数を買い直す</li>
+  <li>買付のとき、口座区分が「NISA（成長投資枠）」になっているか指差し確認</li>
+  <li>約定通知をスクリーンショットで保存しておく</li>
+</ol>
+
+<h2>気をつけること</h2>
+<ul class="cautions">
+  <li>買付区分の確認がいちばん大事。ここが特定口座のままだと、お引っ越しの意味がなくなってしまいます。</li>
+  <li>ジャックス30株と横河ブリッジ20株は単元未満株なので、かぶミニ扱い。手数料は無料ですが少しスプレッドが乗ります。</li>
+  <li>株価は毎日動きます。当日の評価額が枠の1,110,000円を超えていないか、買う前に確認を。</li>
+  <li>売却と買い直しは必ず同じ日に。日をまたぐと、その間の値動きで買える株数が変わります。</li>
+  <li>売却益にかかる税金は、特定口座（源泉あり）なので自動で引かれます。確定申告は不要です。</li>
+</ul>
+
+<h2>今回は見送る銘柄</h2>
+<p class="note">
+芙蓉総合リース 4.6年／コンドーテック 4.8年 …… 悪くはないけれど、今回は枠の都合で保留。<br>
+みずほリース 6.5年／システナ 約7年／村上開明堂 約11年 …… 回収に時間がかかりすぎ。<br>
+三菱商事・三井住友トラスト・ダイダン・日本特殊陶業 …… 含み益が大きく、税金が重すぎ。<br>
+ニホンフラッシュ・アジア航測 …… 含み損なので、そもそもお引っ越しの対象外です。
+</p>
+
+<footer>
+  2026年8月15日 作成／株価は同日時点。配当は各社の今期予想にもとづく概算です。<br>
+  実行前に、その日の株価とNISA枠の残りをもう一度確認してくださいね。
+</footer>
+
+</div>
+
+<script>
+(function(){
+  var limit = new Date(2026,8,28);           // 9月28日 権利付最終日
+  var today = new Date();
+  today.setHours(0,0,0,0);
+  var diff = Math.round((limit - today)/86400000);
+  var el = document.getElementById('days');
+  el.textContent = diff > 0 ? diff : 0;
+})();
+</script>
+</body>
+</html>
