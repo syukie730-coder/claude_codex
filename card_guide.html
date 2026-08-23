@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="送り方">
+<title>メッセージカードの送り方</title>
+<style>
+  :root{
+    --bg:#FFF8E7;
+    --bg2:#FFE9B8;
+    --paper:#FFFDF9;
+    --edge:#EFC978;
+    --ink:#54402C;
+    --ink2:#9C866C;
+    --rose:#E0757C;
+    --rose-bg:#FCEDED;
+    --mint:#5E9E78;
+    --mint-bg:#EDF6F0;
+    --term:#1E2740;
+    --term-key:#8FE3B8;
+    --term-dim:#8A97B8;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{
+    margin:0;
+    padding:calc(env(safe-area-inset-top) + 28px) 16px calc(env(safe-area-inset-bottom) + 48px);
+    background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);
+    background-attachment:fixed;
+    font-family:"Hiragino Maru Gothic ProN","Hiragino Kaku Gothic ProN",sans-serif;
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    line-height:1.6;
+  }
+  .wrap{max-width:430px;margin:0 auto;}
+
+  header{text-align:center;margin-bottom:26px;}
+  header .em{font-size:38px;display:block;line-height:1;margin-bottom:10px;}
+  header h1{font-size:22px;font-weight:700;margin:0 0 4px;letter-spacing:.02em;}
+  header p{margin:0;font-size:12.5px;color:var(--ink2);}
+
+  /* 準備バナー */
+  .prep{
+    background:var(--rose-bg);
+    border:1.5px solid var(--rose);
+    border-radius:18px;
+    padding:14px 16px;
+    margin-bottom:28px;
+  }
+  .prep .tag{
+    display:inline-block;
+    background:var(--rose);color:#fff;
+    font-size:10.5px;font-weight:700;
+    padding:2px 9px;border-radius:999px;
+    margin-bottom:7px;
+  }
+  .prep h2{font-size:14.5px;margin:0 0 6px;color:var(--rose);}
+  .prep p{margin:0;font-size:12.5px;color:var(--ink);}
+  .prep b{background:linear-gradient(transparent 62%,#FBD5D7 62%);}
+
+  /* ステップ */
+  .steps{position:relative;padding-left:36px;}
+  .steps::before{
+    content:"";position:absolute;left:15px;top:6px;bottom:20px;width:2px;
+    background-image:linear-gradient(var(--edge) 55%,transparent 0);
+    background-size:2px 9px;
+  }
+  .step{position:relative;margin-bottom:22px;}
+  .num{
+    position:absolute;left:-36px;top:-2px;
+    width:32px;height:32px;border-radius:50%;
+    background:var(--paper);border:2px solid var(--edge);
+    display:flex;align-items:center;justify-content:center;
+    font-size:14px;font-weight:700;color:var(--rose);
+  }
+  .step h3{
+    font-size:15.5px;margin:0 0 9px 2px;font-weight:700;
+  }
+  .box{
+    background:var(--paper);
+    border:1.5px solid var(--edge);
+    border-radius:18px;
+    padding:13px 16px;
+    box-shadow:0 3px 10px rgba(200,150,50,.09);
+  }
+  .box ul{margin:0;padding:0;list-style:none;}
+  .box li{position:relative;padding:4px 0 4px 20px;font-size:13.5px;}
+  .box li::before{content:"◦";position:absolute;left:2px;top:4px;color:var(--rose);}
+  .box .hint{
+    margin:9px 0 0;font-size:11.5px;color:var(--ink2);
+    border-top:1px dashed #EBD9AE;padding-top:8px;
+  }
+  .chip{
+    display:inline-block;background:#FDF0D4;border:1px solid var(--edge);
+    border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700;
+    margin:2px 2px 0 0;
+  }
+
+  /* ターミナル */
+  .term{
+    background:var(--term);border-radius:16px;padding:13px 14px 15px;
+    box-shadow:0 5px 16px rgba(25,35,65,.3);
+  }
+  .term .bar{display:flex;gap:6px;margin-bottom:9px;}
+  .term .bar i{width:9px;height:9px;border-radius:50%;display:block;}
+  .term .bar i:nth-child(1){background:#FF6159}
+  .term .bar i:nth-child(2){background:#FFBD2E}
+  .term .bar i:nth-child(3){background:#28C840}
+  .term .lead{color:#FFF;font-size:12px;margin:0 0 10px;opacity:.9;}
+  .term .lead b{color:var(--term-key);}
+  .cmd{
+    font-family:"SF Mono",Menlo,monospace;font-size:12px;
+    color:var(--term-key);background:rgba(255,255,255,.07);
+    border-radius:7px;padding:7px 9px;margin-bottom:6px;
+    word-break:break-all;line-height:1.45;
+  }
+  .cmd:last-of-type{margin-bottom:0;}
+  .cmd s{color:var(--term-dim);text-decoration:none;}
+  .term .tail{
+    color:var(--term-dim);font-size:11px;margin:10px 0 0;
+    font-family:"Hiragino Maru Gothic ProN",sans-serif;
+  }
+
+  /* 成功 */
+  .ok{
+    background:var(--mint-bg);border:1.5px solid var(--mint);
+    border-radius:18px;padding:13px 16px;
+  }
+  .ok .t{font-size:11.5px;font-weight:700;color:var(--mint);margin-bottom:5px;}
+  .ok .line{
+    background:#fff;border-radius:8px;padding:7px 10px;
+    font-family:"SF Mono",Menlo,monospace;font-size:12px;color:#3E7355;
+  }
+  .ok p{margin:8px 0 0;font-size:12.5px;}
+
+  /* 困ったとき */
+  .help{
+    margin-top:12px;background:var(--paper);
+    border:1.5px dashed var(--edge);border-radius:18px;padding:15px 17px;
+  }
+  .help h2{font-size:14.5px;color:var(--rose);margin:0 0 10px;}
+  .help dt{font-size:13px;font-weight:700;margin-top:11px;}
+  .help dt:first-of-type{margin-top:0;}
+  .help dd{margin:2px 0 0;font-size:12.5px;color:var(--ink2);}
+  .help dl{margin:0;}
+
+  footer{text-align:center;font-size:11.5px;color:var(--ink2);margin-top:24px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="em">💌</span>
+    <h1>メッセージカードの送り方</h1>
+    <p>作る → 渡す → 公開する → 届ける</p>
+  </header>
+
+  <div class="prep">
+    <span class="tag">はじめに一度だけ</span>
+    <h2>MacBookのメモに置いておく</h2>
+    <p>メモアプリに「<b>よく使うコマンド</b>」を作って、下の5行を書いておく。以降はそこから <b>⌘C</b> するだけ。<br>
+    iPhoneでコピーしても<b>MacBookには届かない</b>ので、コピーは必ずMacBookの中で。</p>
+  </div>
+
+  <div class="steps">
+
+    <div class="step">
+      <div class="num">1</div>
+      <h3>📱 スマホでカードを作る</h3>
+      <div class="box">
+        <ul>
+          <li>宛名・見出し・一言・本文を入れる</li>
+          <li>ファイル名は英語の小文字と数字で</li>
+          <li>👀 できあがりを見てみる で確認</li>
+        </ul>
+        <span class="chip">📤 MacBookにAirDropで送る</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">2</div>
+      <h3>💻 MacBookで受け取る</h3>
+      <div class="box">
+        <ul>
+          <li>「AirDrop完了」の通知が出たら受信OK</li>
+          <li>「開く」は押さなくていい</li>
+        </ul>
+        <p class="hint">ファイルはDownloadsに入ります</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">3</div>
+      <h3>📝 メモからコピーする</h3>
+      <div class="box">
+        <ul>
+          <li>MacBookのメモアプリを開く</li>
+          <li>コマンドの1行を選んで <b>⌘C</b></li>
+        </ul>
+        <p class="hint">MacBookの中だけのコピペなので必ず貼れます</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">4</div>
+      <h3>⌨️ ターミナルに貼って進める</h3>
+      <div class="term">
+        <div class="bar"><i></i><i></i><i></i></div>
+        <p class="lead">一番下が <b>&gt;</b> なら、先に <b>/exit</b> して return</p>
+        <div class="cmd"><s>%</s> cd ~/claude_codex</div>
+        <div class="cmd"><s>%</s> mv -f ~/Downloads/message.html ~/claude_codex/</div>
+        <div class="cmd"><s>%</s> git add .</div>
+        <div class="cmd"><s>%</s> git commit -m "message"</div>
+        <div class="cmd"><s>%</s> git push</div>
+        <p class="tail">1行ごとに ⌘V → return。5回くり返す</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">5</div>
+      <h3>✅ 公開できたか確かめる</h3>
+      <div class="ok">
+        <div class="t">まずターミナルがこう出ていたら成功</div>
+        <div class="line">main -&gt; main</div>
+        <p>そのあと1〜2分待ってから、次の6番へ</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">6</div>
+      <h3>👀 自分に送って中身を見る</h3>
+      <div class="box">
+        <ul>
+          <li>スマホのカードアプリに戻る</li>
+          <li>🔗 公開したURLをLINEで送る をタップ</li>
+          <li>送る相手に<b>自分</b>を選んで送信</li>
+          <li>届いたリンクを開いて中身を確認</li>
+        </ul>
+        <p class="hint">古い内容が出たら、画面を上から下へ引っぱって更新。それでも古ければもう少し待つ</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">7</div>
+      <h3>💐 相手に届ける</h3>
+      <div class="box">
+        <ul>
+          <li>中身がOKなら、同じボタンをもう一度タップ</li>
+          <li>今度は<b>渡したい相手</b>を選んで送信</li>
+        </ul>
+        <p class="hint">開くのは相手のスマホのブラウザ。アプリを入れてもらう必要はありません</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="help">
+    <h2>🆘 こんなときは</h2>
+    <dl>
+      <dt>打っても反応しない</dt>
+      <dd>クロちゃんが起動中。/exit と打って return</dd>
+
+      <dt>⌘V しても音が鳴るだけ</dt>
+      <dd>iPhoneからコピーしている合図。MacBookのメモから ⌘C し直す</dd>
+
+      <dt>ファイル名が違う</dt>
+      <dd>4番の mv の行の message.html を実際の名前に直す</dd>
+
+      <dt>赤い文字が出た</dt>
+      <dd>先に進まず、画面をスクショしてクロちゃんに見せる</dd>
+    </dl>
+  </div>
+
+  <footer>🍀 あわてず、1行ずつ</footer>
+
+</div>
+</body>
+</html>
