@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>公共料金の記録</title>
+<link rel="apple-touch-icon" href="kokyo_ryokin.png">
+<style>
+:root{
+  --mint:#B7F0D6;
+  --mint-deep:#8FE3C7;
+  --cream:#FFF6E5;
+  --pink:#FFD6E8;
+  --blue:#CDEFFB;
+  --ink:#4a4458;
+  --sub:#8a8398;
+  --c-electric:#FFC94D;
+  --c-gas:#FF9466;
+  --c-water:#5EC8E8;
+  --c-phone:#B79CF0;
+  --c-other:#FF8FC7;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{
+  margin:0;padding:0;width:100%;overflow-x:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic",sans-serif;
+  background:linear-gradient(160deg,#FFF7E9 0%,#EAFBF3 35%,#FFE9F2 70%,#E3F6FD 100%);
+  color:var(--ink);
+  min-height:100vh;
+}
+input,button,select,textarea{font-family:inherit;font-size:16px;}
+button{cursor:pointer;}
+
+#bgDecor{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0;}
+.bubble{
+  position:absolute;bottom:-40px;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), rgba(255,255,255,0.15));
+  opacity:0.55;
+  animation-name:floatUp;animation-timing-function:linear;animation-iteration-count:infinite;
+}
+@keyframes floatUp{
+  from{transform:translateY(0) translateX(0);}
+  to{transform:translateY(-115vh) translateX(var(--dx));}
+}
+
+#confettiLayer{position:fixed;inset:0;pointer-events:none;z-index:999;overflow:hidden;}
+.confetti-piece{
+  position:absolute;top:-12px;width:8px;height:14px;border-radius:2px;
+  animation-name:confettiFall;animation-timing-function:ease-in;animation-fill-mode:forwards;
+}
+@keyframes confettiFall{
+  from{transform:translateY(0) rotate(0deg);opacity:1;}
+  to{transform:translateY(105vh) rotate(var(--r));opacity:0;}
+}
+
+.app{position:relative;z-index:1;max-width:520px;margin:0 auto;padding:16px 14px 40px;}
+
+.app-header{text-align:center;padding:18px 0 6px;}
+.app-title{
+  margin:0;font-size:26px;font-weight:900;color:var(--ink);
+  display:inline-block;
+  animation:bounceIn 0.9s cubic-bezier(.34,1.56,.64,1) both;
+}
+.app-sub{margin:6px 0 0;font-size:13px;color:var(--sub);}
+@keyframes bounceIn{
+  0%{transform:scale(0.3) translateY(-30px);opacity:0;}
+  55%{transform:scale(1.15) translateY(4px);opacity:1;}
+  75%{transform:scale(0.92) translateY(-2px);}
+  100%{transform:scale(1) translateY(0);}
+}
+
+.card{
+  background:rgba(255,255,255,0.82);
+  border-radius:24px;
+  box-shadow:0 10px 28px rgba(120,100,140,0.12), 0 2px 6px rgba(120,100,140,0.06);
+  padding:18px 16px;
+  margin:0 0 16px;
+}
+.card h2{font-size:15px;margin:0 0 12px;font-weight:800;}
+
+/* --- form --- */
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:12px;font-weight:700;color:var(--sub);margin-bottom:4px;}
+.field input[type="month"],
+.field input[type="number"],
+.field input[type="text"]{
+  width:100%;padding:12px 14px;border-radius:14px;border:2px solid #f0eef5;
+  background:#fcfcfe;color:var(--ink);
+}
+.field input:focus{outline:none;border-color:var(--mint-deep);}
+.field-row{display:flex;gap:10px;}
+.field-row .field{flex:1;min-width:0;}
+
+.type-selector{display:flex;flex-wrap:wrap;gap:8px;padding-bottom:16px;}
+.type-btn{
+  position:relative;flex:1 1 30%;min-width:66px;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:10px 4px;border-radius:16px;border:2px solid #f0eef5;background:#fff;
+  transition:transform .12s ease, border-color .15s ease, background .15s ease;
+}
+.type-btn:active{transform:scale(0.93);}
+.type-btn span:last-child{font-size:11px;font-weight:700;color:var(--sub);}
+.type-icon{display:inline-block;font-size:22px;animation:wobble 2.4s ease-in-out infinite;}
+@keyframes wobble{
+  0%,100%{transform:rotate(0deg) scale(1);}
+  25%{transform:rotate(-8deg) scale(1.03);}
+  50%{transform:rotate(0deg) scale(0.98);}
+  75%{transform:rotate(8deg) scale(1.03);}
+}
+.type-btn[data-type="electric"].active{border-color:var(--c-electric);background:#FFF3D6;}
+.type-btn[data-type="gas"].active{border-color:var(--c-gas);background:#FFE3D6;}
+.type-btn[data-type="water"].active{border-color:var(--c-water);background:#DDF4FB;}
+.type-btn[data-type="phone"].active{border-color:var(--c-phone);background:#EAE1FB;}
+.type-btn[data-type="other"].active{border-color:var(--c-other);background:#FFE1F0;}
+
+.type-btn[data-type="electric"].active .type-icon{animation:wobble 2.4s ease-in-out infinite, electricFlash .9s ease-in-out infinite;}
+@keyframes electricFlash{
+  0%,100%{filter:brightness(1) drop-shadow(0 0 0 rgba(255,201,77,0));}
+  50%{filter:brightness(1.7) drop-shadow(0 0 6px rgba(255,201,77,0.9));}
+}
+.type-btn[data-type="gas"].active .type-icon{animation:wobble 2.4s ease-in-out infinite, flameFlicker .6s ease-in-out infinite;}
+@keyframes flameFlicker{
+  0%,100%{transform:scale(1) rotate(-3deg);}
+  25%{transform:scale(1.1) rotate(3deg);}
+  50%{transform:scale(0.94) rotate(-2deg);}
+  75%{transform:scale(1.06) rotate(2deg);}
+}
+.type-btn[data-type="phone"].active .type-icon{animation:wobble 2.4s ease-in-out infinite, phoneBuzz .22s ease-in-out infinite;}
+@keyframes phoneBuzz{
+  0%,100%{transform:translateX(0) rotate(0deg);}
+  25%{transform:translateX(-2px) rotate(-5deg);}
+  75%{transform:translateX(2px) rotate(5deg);}
+}
+.type-btn[data-type="other"].active .type-icon{animation:wobble 2.4s ease-in-out infinite, sparklePulse 1s ease-in-out infinite;}
+@keyframes sparklePulse{
+  0%,100%{transform:scale(1) rotate(0deg);filter:brightness(1);}
+  50%{transform:scale(1.18) rotate(15deg);filter:brightness(1.3);}
+}
+.type-btn[data-type="water"].active::after{
+  content:'💧';position:absolute;left:50%;top:100%;transform:translate(-50%,-6px);
+  font-size:13px;opacity:0;animation:dripFall 1.1s ease-in infinite;
+}
+@keyframes dripFall{
+  0%{transform:translate(-50%,-6px);opacity:0;}
+  15%{opacity:1;}
+  80%{opacity:1;}
+  100%{transform:translate(-50%,20px);opacity:0;}
+}
+
+.form-buttons{display:flex;gap:10px;margin-top:4px;}
+.btn{
+  min-height:50px;border:none;border-radius:16px;font-weight:800;
+  transition:transform .12s ease, box-shadow .12s ease;flex:1;
+}
+.btn:active{transform:scale(0.95);}
+.btn-primary{
+  background:linear-gradient(135deg, var(--mint-deep), var(--blue));
+  color:#20443a;box-shadow:0 6px 14px rgba(143,227,199,0.5);font-size:16px;
+}
+.btn-ghost{background:#fff;border:2px solid #f0eef5;color:var(--sub);}
+.btn-secondary{background:var(--cream);color:#8a5a1f;border:2px solid #ffe9c6;font-size:14px;}
+
+/* --- total --- */
+.total-card{text-align:center;}
+.total-amount{font-size:44px;font-weight:900;color:#3a3550;margin:6px 0 4px;}
+.total-amount .yen{font-size:20px;margin-left:2px;font-weight:700;}
+.compare-line{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;margin-top:8px;font-size:13px;text-align:left;}
+.compare-line.happy{background:#DFFBEA;color:#1f6b46;}
+.compare-line.sad{background:#FFE3D6;color:#8a4a1f;}
+.compare-line.neutral{background:#F3EFFA;color:#6a6178;}
+.char{font-size:19px;flex-shrink:0;}
+.happy-char{display:inline-block;animation:jump .7s ease-in-out infinite;}
+@keyframes jump{
+  0%,100%{transform:translateY(0) rotate(0deg);}
+  30%{transform:translateY(-9px) rotate(-8deg);}
+  50%{transform:translateY(0) rotate(0deg);}
+  70%{transform:translateY(-5px) rotate(8deg);}
+}
+.worry-char{display:inline-block;animation:worry .6s ease-in-out infinite;}
+@keyframes worry{
+  0%,100%{transform:rotate(0deg) translateX(0);}
+  25%{transform:rotate(-6deg) translateX(-2px);}
+  75%{transform:rotate(6deg) translateX(2px);}
+}
+
+/* --- horizontal bar chart --- */
+.bar-h-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:12px;}
+.bar-h-label{width:66px;flex-shrink:0;font-weight:700;color:var(--sub);}
+.bar-h-track{flex:1;min-width:0;height:16px;background:#f2f0f7;border-radius:999px;overflow:hidden;}
+.bar-h-fill{
+  height:100%;border-radius:999px;width:0;
+  animation:growBarH .8s cubic-bezier(.22,1,.36,1) forwards;
+}
+@keyframes growBarH{to{width:var(--w);}}
+.bar-h-value{width:76px;flex-shrink:0;text-align:right;font-weight:700;font-variant-numeric:tabular-nums;}
+
+/* --- vertical trend chart --- */
+.bar-v-wrap{display:flex;align-items:flex-end;gap:4px;height:150px;padding-top:8px;}
+.bar-v-col{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;height:100%;}
+.bar-v-track{width:65%;max-width:20px;height:130px;display:flex;align-items:flex-end;justify-content:center;}
+.bar-v-fill{
+  width:100%;height:0;border-radius:8px 8px 3px 3px;
+  background:linear-gradient(180deg, #8FE3C7, #6FC9E8);
+  animation:growBarV .8s cubic-bezier(.22,1,.36,1) forwards;
+}
+@keyframes growBarV{to{height:var(--h);}}
+.bar-v-label{font-size:9px;color:var(--sub);margin-top:4px;white-space:nowrap;}
+
+/* --- record list --- */
+.record-list{list-style:none;margin:0;padding:0;}
+.record-item{
+  display:flex;gap:10px;align-items:flex-start;padding:12px 2px;border-bottom:1px dashed #eee;
+  animation:slideIn .4s ease both;
+}
+.record-item:last-child{border-bottom:none;}
+@keyframes slideIn{
+  from{opacity:0;transform:translateY(14px) scale(0.97);}
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+.removing{animation:shrinkOut .35s ease forwards !important;}
+@keyframes shrinkOut{
+  to{transform:scale(0.5) rotate(8deg);opacity:0;}
+}
+.record-icon{
+  width:40px;height:40px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:19px;
+  animation:wobble 2.6s ease-in-out infinite;
+}
+.record-main{flex:1;min-width:0;}
+.record-top{display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:11px;color:var(--sub);}
+.record-ym{font-weight:700;}
+.record-type-badge{padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;}
+.record-amount{font-size:19px;font-weight:800;color:#3a3550;margin-top:3px;}
+.record-usage,.record-memo{font-size:12px;color:var(--sub);margin-top:2px;word-break:break-word;}
+.record-actions{display:flex;flex-direction:column;gap:6px;}
+.icon-btn{
+  background:#fff;border:1px solid #eee;border-radius:12px;width:34px;height:34px;font-size:15px;
+  display:flex;align-items:center;justify-content:center;transition:transform .12s ease;
+}
+.icon-btn:active{transform:scale(0.9);}
+
+.empty-state{
+  list-style:none;text-align:center;padding:30px 10px;color:var(--sub);font-size:14px;line-height:1.8;
+}
+.sprout{display:block;font-size:32px;animation:jump 1.4s ease-in-out infinite;}
+
+/* --- year summary --- */
+#yearSelect{width:100%;padding:10px;border-radius:12px;border:2px solid #f0eef5;margin-bottom:10px;background:#fcfcfe;}
+.year-total{font-size:22px;font-weight:800;text-align:center;margin:6px 0 12px;}
+.year-breakdown{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
+.year-chip{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 12px;border-radius:14px;font-size:12px;font-weight:700;}
+
+/* --- data card --- */
+.data-buttons{display:flex;flex-wrap:wrap;gap:10px;}
+.data-buttons .btn{flex:1 1 40%;min-width:120px;text-align:center;}
+.file-label{display:flex;align-items:center;justify-content:center;}
+</style>
+</head>
+<body>
+
+<div id="bgDecor"></div>
+<div id="confettiLayer"></div>
+
+<div class="app">
+  <header class="app-header">
+    <h1 class="app-title">💰 公共料金の記録</h1>
+    <p class="app-sub">電気・ガス・水道・通信をまとめてキロク</p>
+  </header>
+
+  <section class="card form-card">
+    <h2>📝 新しく記録する</h2>
+    <form id="recordForm">
+      <div class="field">
+        <label for="ymInput">年月</label>
+        <input type="month" id="ymInput" required>
+      </div>
+      <div class="field">
+        <label>種類</label>
+        <div class="type-selector" id="typeSelector">
+          <button type="button" class="type-btn" data-type="electric"><span class="type-icon">⚡</span><span>電気</span></button>
+          <button type="button" class="type-btn" data-type="gas"><span class="type-icon">🔥</span><span>ガス</span></button>
+          <button type="button" class="type-btn" data-type="water"><span class="type-icon">💧</span><span>水道</span></button>
+          <button type="button" class="type-btn" data-type="phone"><span class="type-icon">📱</span><span>通信</span></button>
+          <button type="button" class="type-btn" data-type="other"><span class="type-icon">✨</span><span>その他</span></button>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="amountInput">金額（円）</label>
+          <input type="number" id="amountInput" inputmode="numeric" min="0" required placeholder="0">
+        </div>
+        <div class="field" id="usageField">
+          <label id="usageLabel" for="usageInput">使用量（kWh）</label>
+          <input type="number" id="usageInput" inputmode="decimal" min="0" step="0.1" placeholder="任意">
+        </div>
+      </div>
+      <div class="field">
+        <label for="memoInput">ひとことメモ</label>
+        <input type="text" id="memoInput" maxlength="60" placeholder="任意（例：夏で使いすぎた…）">
+      </div>
+      <div class="form-buttons">
+        <button type="submit" class="btn btn-primary" id="submitBtn">保存する</button>
+        <button type="button" class="btn btn-ghost" id="cancelEditBtn" hidden>編集をやめる</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="card total-card">
+    <h2 id="currentMonthLabel">今月の合計</h2>
+    <div class="total-amount"><span id="totalAmountNum">0</span><span class="yen">円</span></div>
+    <div id="compareBox"></div>
+  </section>
+
+  <section class="card">
+    <h2>🍰 種類別の内訳（今月）</h2>
+    <div id="breakdownChart"></div>
+  </section>
+
+  <section class="card">
+    <h2>📈 月ごとの推移（直近12か月）</h2>
+    <div id="trendChart"></div>
+  </section>
+
+  <section class="card">
+    <h2>🧾 記録一覧</h2>
+    <ul class="record-list" id="recordList"></ul>
+  </section>
+
+  <section class="card">
+    <h2 id="yearLabel">年間集計</h2>
+    <select id="yearSelect"></select>
+    <div class="year-total">今年の合計: <span id="yearTotalNum">0</span>円</div>
+    <div class="year-breakdown" id="yearBreakdown"></div>
+  </section>
+
+  <section class="card data-card">
+    <h2>💾 データのバックアップ</h2>
+    <div class="data-buttons">
+      <button type="button" class="btn btn-secondary" id="exportJsonBtn">JSONで書き出す</button>
+      <label class="btn btn-secondary file-label">JSONを読み込む<input type="file" id="importJsonInput" accept="application/json" hidden></label>
+      <button type="button" class="btn btn-secondary" id="exportCsvBtn">CSVで書き出す</button>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var STORAGE_KEY = 'kokyo_ryokin_data';
+
+var TYPE_META = {
+  electric:{label:'電気', icon:'⚡', unit:'kWh', color:'#FFC94D'},
+  gas:{label:'ガス', icon:'🔥', unit:'m³', color:'#FF9466'},
+  water:{label:'水道', icon:'💧', unit:'m³', color:'#5EC8E8'},
+  phone:{label:'通信', icon:'📱', unit:'', color:'#B79CF0'},
+  other:{label:'その他', icon:'✨', unit:'m³', color:'#FF8FC7'}
+};
+var TYPE_ORDER = ['electric','gas','water','phone','other'];
+
+var records = loadData();
+var editingId = null;
+var selectedType = 'electric';
+var selectedYear = null;
+var lastTotal = 0;
+var lastYearTotal = 0;
+
+function $(id){ return document.getElementById(id); }
+
+function uid(){
+  return Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+}
+
+function loadData(){
+  try{
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return [];
+    var parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  }catch(e){
+    return [];
+  }
+}
+function saveData(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+}
+
+function pad2(n){ return String(n).padStart(2,'0'); }
+function todayYM(){
+  var d = new Date();
+  return d.getFullYear() + '-' + pad2(d.getMonth()+1);
+}
+function ymAdd(ym, delta){
+  var parts = ym.split('-');
+  var y = Number(parts[0]), m = Number(parts[1]);
+  var total = y*12 + (m-1) + delta;
+  var ny = Math.floor(total/12);
+  var nm = total%12 + 1;
+  return ny + '-' + pad2(nm);
+}
+function formatYM(ym){
+  var parts = ym.split('-');
+  return parts[0] + '年' + Number(parts[1]) + '月';
+}
+function shortYM(ym){
+  var parts = ym.split('-');
+  return parts[0].slice(2) + '/' + Number(parts[1]);
+}
+function fmtYen(n){
+  return Math.round(n).toLocaleString('ja-JP') + '円';
+}
+function last12(endYM){
+  var arr = [];
+  for(var i=11;i>=0;i--){ arr.push(ymAdd(endYM, -i)); }
+  return arr;
+}
+function sumForYM(ym){
+  return records.filter(function(r){ return r.ym===ym; })
+    .reduce(function(s,r){ return s + r.amount; }, 0);
+}
+function hasDataForYM(ym){
+  return records.some(function(r){ return r.ym===ym; });
+}
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+function animateNumber(el, from, to, duration){
+  duration = duration || 700;
+  var start = null;
+  var startVal = from || 0;
+  var diff = to - startVal;
+  function frame(ts){
+    if(start===null) start = ts;
+    var t = Math.min(1, (ts-start)/duration);
+    var eased = 1 - Math.pow(1-t, 3);
+    var val = Math.round(startVal + diff*eased);
+    el.textContent = val.toLocaleString('ja-JP');
+    if(t<1) requestAnimationFrame(frame);
+    else el.textContent = Math.round(to).toLocaleString('ja-JP');
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ---------- form ---------- */
+function selectType(type){
+  selectedType = type;
+  var btns = document.querySelectorAll('.type-btn');
+  for(var i=0;i<btns.length;i++){
+    btns[i].classList.toggle('active', btns[i].dataset.type===type);
+  }
+  var usageField = $('usageField');
+  var meta = TYPE_META[type];
+  if(type==='phone'){
+    usageField.hidden = true;
+  }else{
+    usageField.hidden = false;
+    $('usageLabel').textContent = '使用量（' + meta.unit + '）';
+  }
+}
+
+function resetForm(){
+  editingId = null;
+  $('recordForm').reset();
+  $('ymInput').value = todayYM();
+  selectType('electric');
+  $('submitBtn').textContent = '保存する';
+  $('cancelEditBtn').hidden = true;
+}
+
+function editRecord(id){
+  var r = records.find(function(x){ return x.id===id; });
+  if(!r) return;
+  editingId = id;
+  $('ymInput').value = r.ym;
+  selectType(r.type);
+  $('amountInput').value = r.amount;
+  $('usageInput').value = (r.usage===null || r.usage===undefined) ? '' : r.usage;
+  $('memoInput').value = r.memo || '';
+  $('submitBtn').textContent = '更新する';
+  $('cancelEditBtn').hidden = false;
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function deleteRecord(id){
+  if(!confirm('この記録を削除するよ。よろしい？')) return;
+  var li = $('recordList').querySelector('[data-id="'+id+'"]');
+  if(li){
+    li.classList.add('removing');
+    li.addEventListener('animationend', function(){
+      records = records.filter(function(r){ return r.id!==id; });
+      saveData();
+      render();
+    }, {once:true});
+  }else{
+    records = records.filter(function(r){ return r.id!==id; });
+    saveData();
+    render();
+  }
+}
+
+function onSubmit(e){
+  e.preventDefault();
+  var ym = $('ymInput').value;
+  if(!ym){ alert('年月を選んでね'); return; }
+  if(!selectedType){ alert('種類を選んでね'); return; }
+  var amountRaw = $('amountInput').value;
+  var amount = Number(amountRaw);
+  if(amountRaw==='' || isNaN(amount) || amount<0){ alert('金額を正しく入力してね'); return; }
+  var usageRaw = $('usageInput').value;
+  var usage = (selectedType!=='phone' && usageRaw!=='') ? Number(usageRaw) : null;
+  var memo = $('memoInput').value.trim();
+
+  if(editingId){
+    var idx = records.findIndex(function(r){ return r.id===editingId; });
+    if(idx>-1){
+      records[idx] = Object.assign({}, records[idx], {ym:ym, type:selectedType, amount:amount, usage:usage, memo:memo});
+    }
+  }else{
+    records.push({id:uid(), ym:ym, type:selectedType, amount:amount, usage:usage, memo:memo, createdAt:Date.now()});
+  }
+  saveData();
+  spawnConfetti();
+  resetForm();
+  render();
+}
+
+/* ---------- render ---------- */
+function render(){
+  renderList();
+  renderTotals();
+  renderBreakdown();
+  renderTrend();
+  renderYearSummary();
+}
+
+function renderTotals(){
+  var cur = todayYM();
+  $('currentMonthLabel').textContent = '📅 ' + formatYM(cur) + 'の合計';
+  var total = sumForYM(cur);
+  animateNumber($('totalAmountNum'), lastTotal, total);
+  lastTotal = total;
+  renderCompare(cur, total);
+}
+
+function compareLine(label, compareYM, curTotal){
+  if(!hasDataForYM(compareYM)){
+    return '<div class="compare-line neutral"><span class="char">🌱</span>' +
+      label + '（' + formatYM(compareYM) + '）の記録がまだないから比べられないよ</div>';
+  }
+  var compareTotal = sumForYM(compareYM);
+  var diff = curTotal - compareTotal;
+  if(diff<0){
+    return '<div class="compare-line happy"><span class="char happy-char">🐰</span>' +
+      label + 'より <strong>▲' + fmtYen(Math.abs(diff)) + '</strong> 節約できたね！</div>';
+  }else if(diff===0){
+    return '<div class="compare-line neutral"><span class="char">🙂</span>' +
+      label + 'と同じ金額だよ</div>';
+  }else{
+    return '<div class="compare-line sad"><span class="char worry-char">🐻</span>' +
+      'むむむ…' + label + 'より <strong>+' + fmtYen(diff) + '</strong> 増えちゃった</div>';
+  }
+}
+
+function renderCompare(cur, curTotal){
+  var prevYM = ymAdd(cur, -1);
+  var prevYearYM = ymAdd(cur, -12);
+  $('compareBox').innerHTML =
+    compareLine('先月', prevYM, curTotal) +
+    compareLine('去年の同じ月', prevYearYM, curTotal);
+}
+
+function renderBreakdown(){
+  var cur = todayYM();
+  var totals = TYPE_ORDER.map(function(t){
+    var val = records.filter(function(r){ return r.ym===cur && r.type===t; })
+      .reduce(function(s,r){ return s+r.amount; }, 0);
+    return {type:t, val:val};
+  });
+  var max = Math.max.apply(null, [1].concat(totals.map(function(t){ return t.val; })));
+  $('breakdownChart').innerHTML = totals.map(function(t, i){
+    var meta = TYPE_META[t.type];
+    var pct = t.val>0 ? Math.max(4, Math.round(t.val/max*100)) : 0;
+    return '<div class="bar-h-row">' +
+      '<div class="bar-h-label">' + meta.icon + ' ' + meta.label + '</div>' +
+      '<div class="bar-h-track"><div class="bar-h-fill" style="--w:' + pct + '%;background:' + meta.color + ';animation-delay:' + (i*0.08).toFixed(2) + 's"></div></div>' +
+      '<div class="bar-h-value">' + fmtYen(t.val) + '</div>' +
+      '</div>';
+  }).join('');
+}
+
+function renderTrend(){
+  var cur = todayYM();
+  var months = last12(cur);
+  var data = months.map(function(ym){ return {ym:ym, val:sumForYM(ym)}; });
+  var max = Math.max.apply(null, [1].concat(data.map(function(d){ return d.val; })));
+  var html = '<div class="bar-v-wrap">' + data.map(function(d, i){
+    var pct = d.val>0 ? Math.max(3, Math.round(d.val/max*100)) : 2;
+    return '<div class="bar-v-col">' +
+      '<div class="bar-v-track"><div class="bar-v-fill" style="--h:' + pct + '%;animation-delay:' + (i*0.05).toFixed(2) + 's" title="' + formatYM(d.ym) + ': ' + fmtYen(d.val) + '"></div></div>' +
+      '<div class="bar-v-label">' + shortYM(d.ym) + '</div>' +
+      '</div>';
+  }).join('') + '</div>';
+  $('trendChart').innerHTML = html;
+}
+
+function renderList(){
+  var el = $('recordList');
+  if(records.length===0){
+    el.innerHTML = '<li class="empty-state"><span class="sprout">🌱</span>まだ記録がないよ。最初の1件を入れてみよう🌱</li>';
+    return;
+  }
+  var sorted = records.slice().sort(function(a,b){
+    if(a.ym!==b.ym) return b.ym.localeCompare(a.ym);
+    return b.createdAt - a.createdAt;
+  });
+  el.innerHTML = sorted.map(function(r, i){
+    var meta = TYPE_META[r.type] || TYPE_META.other;
+    var usageStr = (r.usage!==null && r.usage!==undefined && r.usage!=='') ?
+      '<div class="record-usage">使用量: ' + r.usage + meta.unit + '</div>' : '';
+    var memoStr = r.memo ? '<div class="record-memo">💬 ' + escapeHtml(r.memo) + '</div>' : '';
+    return '<li class="record-item" data-id="' + r.id + '" style="animation-delay:' + (Math.min(i,10)*0.03).toFixed(2) + 's">' +
+      '<div class="record-icon" style="background:' + meta.color + '33;">' + meta.icon + '</div>' +
+      '<div class="record-main">' +
+        '<div class="record-top"><span class="record-ym">' + formatYM(r.ym) + '</span>' +
+        '<span class="record-type-badge" style="background:' + meta.color + '33;">' + meta.label + '</span></div>' +
+        '<div class="record-amount">' + fmtYen(r.amount) + '</div>' +
+        usageStr + memoStr +
+      '</div>' +
+      '<div class="record-actions">' +
+        '<button type="button" class="icon-btn edit-btn" data-id="' + r.id + '" aria-label="編集">✏️</button>' +
+        '<button type="button" class="icon-btn delete-btn" data-id="' + r.id + '" aria-label="削除">🗑️</button>' +
+      '</div>' +
+    '</li>';
+  }).join('');
+}
+
+function renderYearSummary(){
+  var years = Array.from(new Set(records.map(function(r){ return r.ym.split('-')[0]; })));
+  var curYear = String(todayYM().split('-')[0]);
+  if(years.indexOf(curYear)===-1) years.push(curYear);
+  years.sort();
+  if(selectedYear===null) selectedYear = Number(curYear);
+  if(years.indexOf(String(selectedYear))===-1) selectedYear = Number(curYear);
+
+  var sel = $('yearSelect');
+  sel.innerHTML = years.map(function(y){
+    return '<option value="' + y + '"' + (Number(y)===selectedYear ? ' selected' : '') + '>' + y + '年</option>';
+  }).join('');
+  $('yearLabel').textContent = '🗓️ ' + selectedYear + '年の年間集計';
+
+  var yearRecords = records.filter(function(r){ return r.ym.indexOf(String(selectedYear)+'-')===0; });
+  var total = yearRecords.reduce(function(s,r){ return s+r.amount; }, 0);
+  animateNumber($('yearTotalNum'), lastYearTotal, total);
+  lastYearTotal = total;
+
+  $('yearBreakdown').innerHTML = TYPE_ORDER.map(function(t){
+    var meta = TYPE_META[t];
+    var val = yearRecords.filter(function(r){ return r.type===t; }).reduce(function(s,r){ return s+r.amount; }, 0);
+    return '<div class="year-chip" style="background:' + meta.color + '33;"><span>' + meta.icon + ' ' + meta.label + '</span><strong>' + fmtYen(val) + '</strong></div>';
+  }).join('');
+}
+
+/* ---------- effects ---------- */
+function setupBubbles(){
+  var layer = $('bgDecor');
+  var count = 14;
+  for(var i=0;i<count;i++){
+    var b = document.createElement('div');
+    b.className = 'bubble';
+    var size = 10 + Math.random()*26;
+    b.style.width = size+'px';
+    b.style.height = size+'px';
+    b.style.left = (Math.random()*100)+'%';
+    var duration = 12 + Math.random()*14;
+    b.style.animationDuration = duration+'s';
+    b.style.animationDelay = (-Math.random()*duration)+'s';
+    b.style.setProperty('--dx', (Math.random()*60-30)+'px');
+    layer.appendChild(b);
+  }
+}
+
+function spawnConfetti(){
+  var colors = ['#FFD97D','#9AD9EA','#FFAAD4','#B7F0D6','#C7B8F0'];
+  var layer = $('confettiLayer');
+  for(var i=0;i<28;i++){
+    var el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.left = (Math.random()*100)+'vw';
+    el.style.background = colors[Math.floor(Math.random()*colors.length)];
+    el.style.animationDuration = (0.9+Math.random()*0.9)+'s';
+    el.style.animationDelay = (Math.random()*0.15)+'s';
+    el.style.setProperty('--r', (Math.random()*360)+'deg');
+    layer.appendChild(el);
+    el.addEventListener('animationend', function(){ this.remove(); });
+  }
+}
+
+/* ---------- import / export ---------- */
+function downloadBlob(content, filename, mime){
+  var blob = new Blob([content], {type:mime});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function exportJson(){
+  downloadBlob(JSON.stringify(records, null, 2), 'kokyo_ryokin.json', 'application/json');
+}
+
+function exportCsv(){
+  var header = ['年月','種類','金額','使用量','メモ'];
+  var sorted = records.slice().sort(function(a,b){
+    if(a.ym!==b.ym) return a.ym.localeCompare(b.ym);
+    return a.createdAt-b.createdAt;
+  });
+  var rows = sorted.map(function(r){
+    var meta = TYPE_META[r.type] || TYPE_META.other;
+    return [r.ym, meta.label, r.amount, (r.usage===null||r.usage===undefined)?'':r.usage, r.memo||''];
+  });
+  var csv = '﻿' + header.join(',') + '\n' + rows.map(function(row){
+    return row.map(function(cell){
+      return '"' + String(cell).replace(/"/g,'""') + '"';
+    }).join(',');
+  }).join('\n');
+  downloadBlob(csv, 'kokyo_ryokin.csv', 'text/csv;charset=utf-8;');
+}
+
+function onImportJson(e){
+  var file = e.target.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    try{
+      var data = JSON.parse(ev.target.result);
+      if(!Array.isArray(data)) throw new Error('invalid');
+      var normalized = data.map(function(d){
+        return {
+          id: d.id || uid(),
+          ym: d.ym,
+          type: TYPE_META[d.type] ? d.type : 'other',
+          amount: Number(d.amount) || 0,
+          usage: (d.usage===undefined || d.usage===null || d.usage==='') ? null : Number(d.usage),
+          memo: d.memo || '',
+          createdAt: d.createdAt || Date.now()
+        };
+      }).filter(function(d){ return /^\d{4}-\d{2}$/.test(d.ym); });
+
+      if(!confirm(normalized.length + '件のデータを読み込むよ。今のデータは上書きされるけど、よろしい？')){
+        e.target.value = '';
+        return;
+      }
+      records = normalized;
+      saveData();
+      render();
+      spawnConfetti();
+    }catch(err){
+      alert('ファイルの読み込みに失敗したよ。正しいJSONファイルか確認してね。');
+    }
+    e.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+/* ---------- init ---------- */
+function attachListeners(){
+  $('recordForm').addEventListener('submit', onSubmit);
+  $('cancelEditBtn').addEventListener('click', function(){ resetForm(); });
+  $('typeSelector').addEventListener('click', function(e){
+    var btn = e.target.closest('.type-btn');
+    if(btn) selectType(btn.dataset.type);
+  });
+  $('recordList').addEventListener('click', function(e){
+    var editBtn = e.target.closest('.edit-btn');
+    if(editBtn){ editRecord(editBtn.dataset.id); return; }
+    var delBtn = e.target.closest('.delete-btn');
+    if(delBtn){ deleteRecord(delBtn.dataset.id); return; }
+  });
+  $('yearSelect').addEventListener('change', function(e){
+    selectedYear = Number(e.target.value);
+    renderYearSummary();
+  });
+  $('exportJsonBtn').addEventListener('click', exportJson);
+  $('exportCsvBtn').addEventListener('click', exportCsv);
+  $('importJsonInput').addEventListener('change', onImportJson);
+}
+
+function init(){
+  $('ymInput').value = todayYM();
+  selectType('electric');
+  setupBubbles();
+  attachListeners();
+  render();
+}
+
+init();
+})();
+</script>
+</body>
+</html>
