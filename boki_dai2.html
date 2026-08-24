@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>簿記3級 第2問 やさしい練習帳</title>
+<meta name="theme-color" content="#F3EFE1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="第2問練習帳">
+<link rel="apple-touch-icon" href="boki_dai2-icon.png">
+<link rel="icon" href="boki_dai2-icon.png">
+<style>
+:root{
+  --bg1:#F5F1E3; --bg2:#EAF1E2;
+  --card:#FFFFFF;
+  --ink:#26301F; --ink2:#33402C;
+  --line:#DCD3B6;
+  --accent:#4F7A52; --accent-deep:#3A5C3D;
+  --good:#2E7D4F; --good-bg:#E4F3E7;
+  --bad:#B23A2E; --bad-bg:#FBE7E3;
+  --shadow:0 6px 16px rgba(80,90,60,.14);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{
+  min-height:100%;
+  color:var(--ink);
+  font-family:"Hiragino Maru Gothic ProN","Hiragino Sans",-apple-system,BlinkMacSystemFont,"Yu Gothic",Meiryo,sans-serif;
+  font-size:17px;font-weight:500;line-height:1.8;
+  background:linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 100%);
+  background-attachment:fixed;
+  -webkit-text-size-adjust:100%;
+}
+button{font:inherit;}
+.wrap{max-width:620px;margin:0 auto;padding:0 16px calc(env(safe-area-inset-bottom) + 30px);}
+
+header{
+  position:sticky;top:0;z-index:5;
+  background:rgba(245,241,227,.92);backdrop-filter:saturate(160%) blur(8px);
+  border-bottom:2px solid var(--line);
+  padding:calc(env(safe-area-inset-top) + 12px) 16px 12px;
+}
+header .htop{display:flex;align-items:center;justify-content:space-between;gap:10px;max-width:620px;margin:0 auto;}
+h1{margin:0;font-size:21px;font-weight:800;color:var(--accent-deep);}
+.counter{
+  flex:none;background:var(--card);border:2px solid var(--line);border-radius:999px;
+  padding:8px 14px;font-size:16px;font-weight:700;color:var(--ink);white-space:nowrap;
+}
+.counter b{color:var(--accent-deep);}
+
+main{position:relative;padding-top:18px;}
+
+/* ---- トップ画面：モード選択 ---- */
+.intro{
+  background:var(--card);border-radius:22px;box-shadow:var(--shadow);
+  padding:18px 20px;margin-bottom:18px;font-size:16px;font-weight:600;color:var(--ink2);
+}
+.modecard{margin-bottom:16px;}
+.modebtn{
+  display:flex;align-items:center;gap:14px;width:100%;text-align:left;
+  background:var(--card);border:2px solid var(--line);border-radius:22px;
+  padding:16px 18px;box-shadow:var(--shadow);cursor:pointer;
+  transition:transform .15s ease;
+}
+.modebtn:active{transform:scale(.98);}
+.modenum{
+  flex:none;width:46px;height:46px;border-radius:50%;background:var(--accent);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;
+}
+.modetext{display:flex;flex-direction:column;gap:4px;}
+.modetitle{font-size:19px;font-weight:800;color:var(--ink);}
+.modedesc{font-size:16px;font-weight:600;color:var(--ink2);}
+.redoBtn{
+  display:block;width:100%;margin-top:8px;min-height:50px;
+  background:#fff;border:2px solid var(--line);border-radius:999px;
+  font-size:16px;font-weight:700;color:var(--accent-deep);cursor:pointer;
+}
+.redoBtn:disabled{opacity:.55;}
+
+/* ---- 問題画面 ---- */
+.quizbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px;}
+.back{background:none;border:none;color:var(--accent-deep);font-size:17px;font-weight:800;padding:10px 4px;cursor:pointer;}
+.qprogress{font-size:16px;font-weight:700;color:var(--ink2);}
+
+.qcard{
+  background:var(--card);border-radius:22px;box-shadow:var(--shadow);
+  padding:22px 20px 24px;margin-bottom:16px;
+}
+.modelabel{
+  display:inline-block;font-size:16px;font-weight:800;color:var(--accent-deep);
+  background:#EAF1E2;border-radius:999px;padding:5px 14px;margin-bottom:12px;
+}
+.qtext{font-size:19px;font-weight:700;color:var(--ink);line-height:1.85;margin:0 0 18px;}
+
+/* 選択肢（縦一列） */
+.choicecol{display:flex;flex-direction:column;gap:10px;}
+.choicebtn{
+  min-height:56px;width:100%;text-align:left;
+  background:#fff;border:2px solid var(--line);border-radius:16px;
+  padding:13px 18px;font-size:17px;font-weight:700;color:var(--ink);cursor:pointer;
+}
+.choicebtn.wide{text-align:center;}
+.choicebtn:active{transform:scale(.98);}
+.choicebtn.good{background:var(--good-bg);border-color:var(--good);color:var(--good);}
+.choicebtn.bad{background:var(--bad-bg);border-color:var(--bad);color:var(--bad);}
+.choicebtn:disabled{opacity:.9;}
+
+/* 帳簿グリッド（複数選択） */
+.ledgergrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.ledgerbtn{
+  min-height:56px;background:#fff;border:2px solid var(--line);border-radius:16px;
+  padding:10px 8px;font-size:16px;font-weight:700;color:var(--ink);cursor:pointer;text-align:center;
+}
+.ledgerbtn:active{transform:scale(.97);}
+.ledgerbtn.sel{background:#EAF1E2;border-color:var(--accent);color:var(--accent-deep);}
+.ledgerbtn.good{background:var(--good-bg);border-color:var(--good);color:var(--good);}
+.ledgerbtn.bad{background:var(--bad-bg);border-color:var(--bad);color:var(--bad);}
+.ledgerbtn:disabled{opacity:.95;}
+
+/* T字図 */
+.taccount{border:2px solid var(--line);border-radius:18px;overflow:hidden;background:#fff;}
+.ta-title{
+  text-align:center;font-size:18px;font-weight:800;color:var(--ink);
+  padding:12px 10px;border-bottom:2px solid var(--ink);background:#F5F1E3;
+}
+.ta-body{display:flex;min-height:96px;}
+.ta-side{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:14px 8px;
+}
+.ta-mid{width:2px;background:var(--ink);}
+.ta-label{font-size:16px;font-weight:800;color:var(--ink2);}
+.ta-mark{font-size:24px;min-height:28px;}
+.ta-side.ta-correct{background:var(--good-bg);}
+.ta-side.ta-correct .ta-mark::after{content:"⭐️";}
+
+/* 答え合わせボタン（モード1） */
+.checkbtn{
+  display:block;width:100%;min-height:58px;margin-top:18px;
+  background:linear-gradient(180deg,#6BA26E,var(--accent));color:#fff;
+  border:none;border-radius:999px;font-size:18px;font-weight:800;cursor:pointer;
+  box-shadow:0 5px 0 var(--accent-deep);
+}
+.checkbtn:active{transform:translateY(2px);box-shadow:0 3px 0 var(--accent-deep);}
+
+/* 結果バナー・解説 */
+.result{border-radius:18px;padding:16px 18px;margin-top:18px;}
+.result.good{background:var(--good-bg);border:2px solid var(--good);}
+.result.bad{background:var(--bad-bg);border:2px solid var(--bad);}
+.rtitle{font-size:19px;font-weight:800;margin-bottom:8px;}
+.result.good .rtitle{color:var(--good);}
+.result.bad .rtitle{color:var(--bad);}
+.rexplain{font-size:16.5px;font-weight:600;color:var(--ink);line-height:1.85;}
+
+.nextbtn{
+  display:block;width:100%;min-height:58px;margin-top:16px;
+  background:linear-gradient(180deg,#6BA26E,var(--accent));color:#fff;
+  border:none;border-radius:999px;font-size:18px;font-weight:800;cursor:pointer;
+  box-shadow:0 5px 0 var(--accent-deep);
+}
+.nextbtn:active{transform:translateY(2px);box-shadow:0 3px 0 var(--accent-deep);}
+
+/* 結果まとめ画面 */
+.donecard{
+  background:var(--card);border-radius:22px;box-shadow:var(--shadow);
+  padding:28px 22px;text-align:center;
+}
+.donecard .big{font-size:44px;margin-bottom:10px;}
+.donecard h2{margin:0 0 10px;font-size:21px;font-weight:800;color:var(--accent-deep);}
+.donecard p{font-size:17px;font-weight:600;color:var(--ink2);margin:0 0 20px;}
+.donebtn{
+  display:block;width:100%;min-height:56px;margin-top:10px;
+  background:#fff;border:2px solid var(--line);border-radius:999px;
+  font-size:17px;font-weight:800;color:var(--accent-deep);cursor:pointer;
+}
+.donebtn.primary{background:linear-gradient(180deg,#6BA26E,var(--accent));color:#fff;border:none;box-shadow:0 5px 0 var(--accent-deep);}
+
+.toast{
+  position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 26px);
+  transform:translateX(-50%) translateY(12px);z-index:50;
+  background:var(--ink);color:#fff;font-size:16px;font-weight:700;
+  padding:13px 24px;border-radius:999px;box-shadow:var(--shadow);
+  opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+.screen{display:none;}
+.screen.show{display:block;}
+
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="htop">
+    <h1>📘 第2問 やさしい練習帳</h1>
+    <div class="counter">今日 <b id="cToday">0</b>問中 <b id="cCorrect">0</b>問正解</div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <section class="screen show" id="screenTop">
+      <p class="intro">タップで答えるだけの練習アプリです。まちがえても大丈夫。答えのあとに「なぜそうなるか」が出るので、少しずつ慣れていきましょう🌱</p>
+
+      <div class="modecard">
+        <button type="button" class="modebtn" data-m="1">
+          <span class="modenum">①</span>
+          <span class="modetext"><span class="modetitle">これ、どの帳簿？</span><span class="modedesc">取引を読んで、記入する帳簿を選ぶよ</span></span>
+        </button>
+        <button type="button" class="redoBtn" data-redo="1">🔁 まちがい直し（<span class="redoCount" data-count="1">0</span>問）</button>
+      </div>
+
+      <div class="modecard">
+        <button type="button" class="modebtn" data-m="2">
+          <span class="modenum">②</span>
+          <span class="modetext"><span class="modetitle">前払？前受？</span><span class="modedesc">決算整理の場面を読んで、4つから選ぶよ</span></span>
+        </button>
+        <button type="button" class="redoBtn" data-redo="2">🔁 まちがい直し（<span class="redoCount" data-count="2">0</span>問）</button>
+      </div>
+
+      <div class="modecard">
+        <button type="button" class="modebtn" data-m="3">
+          <span class="modenum">③</span>
+          <span class="modetext"><span class="modetitle">左と右、どっち？</span><span class="modedesc">T字の図を見て、借方・貸方の2択で選ぶよ</span></span>
+        </button>
+        <button type="button" class="redoBtn" data-redo="3">🔁 まちがい直し（<span class="redoCount" data-count="3">0</span>問）</button>
+      </div>
+
+      <div class="modecard">
+        <button type="button" class="modebtn" data-m="4">
+          <span class="modenum">④</span>
+          <span class="modetext"><span class="modetitle">言葉の穴うめ</span><span class="modedesc">文章の空欄に入る言葉を選ぶよ</span></span>
+        </button>
+        <button type="button" class="redoBtn" data-redo="4">🔁 まちがい直し（<span class="redoCount" data-count="4">0</span>問）</button>
+      </div>
+    </section>
+
+    <section class="screen" id="screenQuiz">
+      <div class="quizbar">
+        <button type="button" class="back" id="backBtn">‹ もどる</button>
+        <span class="qprogress" id="qProgress"></span>
+      </div>
+      <div class="qcard">
+        <span class="modelabel" id="modeLabel"></span>
+        <div id="qArea"></div>
+      </div>
+    </section>
+
+    <section class="screen" id="screenDone">
+      <div class="donecard">
+        <div class="big">🌻</div>
+        <h2 id="doneTitle">おつかれさまでした</h2>
+        <p id="doneText"></p>
+        <button type="button" class="donebtn primary" id="doneTop">モード選択へもどる</button>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ================= 保存先 ================= */
+  var store = (function () {
+    try {
+      localStorage.setItem("__t", "1");
+      localStorage.removeItem("__t");
+      return localStorage;
+    } catch (e) {
+      var mem = {};
+      return {
+        getItem: function (k) { return k in mem ? mem[k] : null; },
+        setItem: function (k, v) { mem[k] = String(v); },
+        removeItem: function (k) { delete mem[k]; }
+      };
+    }
+  })();
+  var PKEY = "boki_dai2_progress_v1";
+
+  function todayStr() {
+    var d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+  function defaultProgress() {
+    return { date: todayStr(), todayTotal: 0, todayCorrect: 0, mistakes: { m1: [], m2: [], m3: [], m4: [] } };
+  }
+  var progress = defaultProgress();
+  function loadProgress() {
+    try {
+      var raw = store.getItem(PKEY);
+      var p = raw ? JSON.parse(raw) : null;
+      if (!p || typeof p !== "object") p = defaultProgress();
+      if (!p.mistakes) p.mistakes = { m1: [], m2: [], m3: [], m4: [] };
+      ["m1", "m2", "m3", "m4"].forEach(function (k) { if (!Array.isArray(p.mistakes[k])) p.mistakes[k] = []; });
+      if (typeof p.todayTotal !== "number") p.todayTotal = 0;
+      if (typeof p.todayCorrect !== "number") p.todayCorrect = 0;
+      progress = p;
+    } catch (e) { progress = defaultProgress(); }
+    ensureToday();
+  }
+  function saveProgress() {
+    try { store.setItem(PKEY, JSON.stringify(progress)); } catch (e) {}
+  }
+  function ensureToday() {
+    var t = todayStr();
+    if (progress.date !== t) {
+      progress.date = t;
+      progress.todayTotal = 0;
+      progress.todayCorrect = 0;
+      saveProgress();
+    }
+  }
+
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    });
+  }
+  function shuffle(arr) {
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+
+  var $toast = document.getElementById("toast");
+  function toast(msg) {
+    $toast.textContent = msg;
+    $toast.classList.add("show");
+    setTimeout(function () { $toast.classList.remove("show"); }, 2000);
+  }
+
+  /* ================= 問題データ ================= */
+  var LEDGERS = ["現金出納帳","当座預金出納帳","小口現金出納帳","仕入帳","売上帳","商品有高帳","売掛金元帳","買掛金元帳","受取手形記入帳","支払手形記入帳","固定資産台帳"];
+
+  var Q1 = [
+    { id:"m1-1", text:"商品を仕入れ、代金は掛けとした。", correct:["仕入帳","買掛金元帳","商品有高帳"],
+      explain:"仕入れがあったので仕入帳、代金をあとで払う約束をしたので買掛金元帳、商品の在庫が増えたので商品有高帳に書くよ。" },
+    { id:"m1-2", text:"商品を売り上げ、代金は現金で受け取った。", correct:["売上帳","現金出納帳","商品有高帳"],
+      explain:"売り上げたので売上帳、現金が増えたので現金出納帳、商品の在庫が減ったので商品有高帳に書くよ。" },
+    { id:"m1-3", text:"得意先から売掛金を現金で回収した。", correct:["現金出納帳","売掛金元帳"],
+      explain:"現金が増えたので現金出納帳、あとでもらう約束のお金（売掛金）が減ったので売掛金元帳に書くよ。" },
+    { id:"m1-4", text:"仕入先へ買掛金を、小切手を振り出して支払った。", correct:["当座預金出納帳","買掛金元帳"],
+      explain:"小切手を振り出すと当座預金が減るので当座預金出納帳、あとで払う約束のお金（買掛金）が減ったので買掛金元帳に書くよ。" },
+    { id:"m1-5", text:"商品を売り上げ、代金として得意先振出の約束手形を受け取った。", correct:["売上帳","受取手形記入帳","商品有高帳"],
+      explain:"売り上げたので売上帳、手形を受け取ったので受取手形記入帳、商品の在庫が減ったので商品有高帳に書くよ。" },
+    { id:"m1-6", text:"仕入先に対する買掛金の支払いとして、当店振出の約束手形を渡した。", correct:["支払手形記入帳","買掛金元帳"],
+      explain:"手形を振り出したので支払手形記入帳、あとで払う約束のお金（買掛金）が減ったので買掛金元帳に書くよ。仕入れそのものではなく、支払いの場面だよ。" },
+    { id:"m1-7", text:"備品を購入し、代金は現金で支払った。", correct:["現金出納帳","固定資産台帳"],
+      explain:"現金が減ったので現金出納帳、備品という長く使う道具（固定資産）が増えたので固定資産台帳に書くよ。備品は売り買いする「商品」ではないので、仕入帳や商品有高帳には書かないよ。" },
+    { id:"m1-8", text:"決算にあたり、備品について減価償却を行った。", correct:["固定資産台帳"],
+      explain:"固定資産が古くなって価値が減った分を記録するので、固定資産台帳に書くよ。現金のやり取りはないので、ほかの帳簿には関係ないよ。" },
+    { id:"m1-9", text:"小口現金係から、今週使った交通費・消耗品費などの報告を受けた。", correct:["小口現金出納帳"],
+      explain:"小口現金係が使った少額のお金の記録なので、小口現金出納帳に書くよ。" },
+    { id:"m1-10", text:"所有している約束手形が支払期日となり、当座預金口座に取り立てられた。", correct:["受取手形記入帳","当座預金出納帳"],
+      explain:"手形の期日が来て決済されたので受取手形記入帳、当座預金が増えたので当座預金出納帳に書くよ。" },
+    { id:"m1-11", text:"当店振出の約束手形が支払期日となり、当座預金口座から引き落とされた。", correct:["支払手形記入帳","当座預金出納帳"],
+      explain:"手形の期日が来て支払ったので支払手形記入帳、当座預金が減ったので当座預金出納帳に書くよ。" },
+    { id:"m1-12", text:"商品を仕入れ、代金は小切手を振り出して支払った。", correct:["仕入帳","当座預金出納帳","商品有高帳"],
+      explain:"仕入れたので仕入帳、小切手を振り出すと当座預金が減るので当座預金出納帳、商品の在庫が増えたので商品有高帳に書くよ。" },
+    { id:"m1-13", text:"得意先から売掛金の回収として送金小切手を受け取り、ただちに当座預金に預け入れた。", correct:["当座預金出納帳","売掛金元帳"],
+      explain:"当座預金が増えたので当座預金出納帳、あとでもらう約束のお金（売掛金）が減ったので売掛金元帳に書くよ。" },
+    { id:"m1-14", text:"仕入れた商品の一部に品違いがあったため、仕入先に返品した。", correct:["仕入帳","買掛金元帳","商品有高帳"],
+      explain:"返品は仕入れのマイナスなので仕入帳、買掛金が減るので買掛金元帳、商品の在庫も減るので商品有高帳に書くよ。" },
+    { id:"m1-15", text:"掛けで売り上げていた商品の一部が返品されてきた。", correct:["売上帳","売掛金元帳","商品有高帳"],
+      explain:"返品は売上げのマイナスなので売上帳、掛けで売った分が減るので売掛金元帳、商品の在庫が増えるので商品有高帳に書くよ。" },
+    { id:"m1-16", text:"現金の実際有高を数えたところ帳簿残高より少なかったので、現金過不足として処理した。", correct:["現金出納帳"],
+      explain:"現金の金額に増減があったので、現金出納帳に書くよ。ほかの帳簿には関係ないよ。" },
+    { id:"m1-17", text:"小切手を振り出して、当座預金から現金を引き出した。", correct:["現金出納帳","当座預金出納帳"],
+      explain:"現金が増えたので現金出納帳、当座預金が減ったので当座預金出納帳に書くよ。" },
+    { id:"m1-18", text:"得意先の倒産により、売掛金が回収できなくなり貸倒れとして処理した。", correct:["売掛金元帳"],
+      explain:"あとでもらう約束だった売掛金がなくなったので、売掛金元帳に書くよ。現金のやり取りはないよ。" },
+    { id:"m1-19", text:"月末に商品有高帳を締め切り、月末の在庫の数量と金額を確認した。", correct:["商品有高帳"],
+      explain:"商品の在庫を確認する作業なので、商品有高帳に書くよ。" },
+    { id:"m1-20", text:"土地を購入し、代金は月末に支払うこととした。", correct:["固定資産台帳"],
+      explain:"土地という固定資産が増えたので固定資産台帳に書くよ。代金をあとで払う点は買掛金と似ているけど、買掛金は『商品』を仕入れたときだけ使う言葉なので、買掛金元帳には書かないよ。" },
+    { id:"m1-21", text:"仕入先から商品を仕入れ、手付金（前払金）を差し引いた残りを掛けとした。", correct:["仕入帳","買掛金元帳","商品有高帳"],
+      explain:"商品を仕入れたので仕入帳、残りの代金は掛けなので買掛金元帳、商品の在庫が増えたので商品有高帳に書くよ。" },
+    { id:"m1-22", text:"当座預金の残高が足りなかったため、銀行との当座借越の契約により支払いが行われた。", correct:["当座預金出納帳"],
+      explain:"当座預金（借越をふくむ）の動きなので、当座預金出納帳に書くよ。" },
+    { id:"m1-23", text:"得意先が倒産し、以前受け取っていた約束手形が不渡りとなった。", correct:["受取手形記入帳","売掛金元帳"],
+      explain:"手形が期日に決済されなかったことを記録するので受取手形記入帳、不渡りとなった金額はふたたび売掛金として扱うので売掛金元帳にも書くよ。" },
+    { id:"m1-24", text:"商品を売り上げ、代金の一部を現金で受け取り、残りは掛けとした。", correct:["売上帳","現金出納帳","売掛金元帳","商品有高帳"],
+      explain:"売り上げたので売上帳、現金の分は現金出納帳、掛けの分は売掛金元帳、商品の在庫が減ったので商品有高帳に書くよ。" }
+  ];
+
+  var TAX = ["前払費用","前受収益","未払費用","未収収益"];
+  var Q2 = [
+    { id:"m2-1", text:"保険料を8か月分前払いしていたが、決算日の時点でまだ3か月分の保険期間が残っている。", correct:"前払費用",
+      explain:"お金はもう払ったけど、まもってもらう期間がまだ残っている＝先に払いすぎている状態。だから前払費用だよ。" },
+    { id:"m2-2", text:"家賃を6か月分前もって受け取っていたが、決算日の時点でまだ2か月分は部屋を貸していない期間だった。", correct:"前受収益",
+      explain:"お金はもう受け取ったけど、まだ貸していない期間がある＝先にもらいすぎている状態。だから前受収益だよ。" },
+    { id:"m2-3", text:"従業員の給料について、決算日までの分はまだ支払日が来ていないため未払いだった。", correct:"未払費用",
+      explain:"働いてもらった分はもう受け取っているけど、お金はまだ払っていない＝あとで払う費用。だから未払費用だよ。" },
+    { id:"m2-4", text:"貸付金の利息について、決算日までの期間分は発生しているが、まだ入金されていない。", correct:"未収収益",
+      explain:"お金を貸した期間の分の利息はもう発生しているけど、まだもらっていない＝あとでもらう収益。だから未収収益だよ。" },
+    { id:"m2-5", text:"地代を1年分前払いしていたが、決算日の時点で半年分の期間が残っている。", correct:"前払費用",
+      explain:"お金はもう払ったけど、土地を借りられる期間がまだ残っている＝先に払いすぎている状態。だから前払費用だよ。" },
+    { id:"m2-6", text:"手数料を受け取ったが、決算日の時点でまだサービス（仲介など）を提供していない部分が残っている。", correct:"前受収益",
+      explain:"お金はもう受け取ったけど、まだサービスをしていない部分がある＝先にもらいすぎている状態。だから前受収益だよ。" },
+    { id:"m2-7", text:"借入金の利息について、決算日までの期間分は発生しているが、支払日はまだ先である。", correct:"未払費用",
+      explain:"お金を借りている期間の利息はもう発生しているけど、まだ払っていない＝あとで払う費用。だから未払費用だよ。" },
+    { id:"m2-8", text:"貸している建物の家賃について、決算日までの期間分はもう発生しているが、入金は来月である。", correct:"未収収益",
+      explain:"貸している期間の家賃はもう発生しているけど、まだもらっていない＝あとでもらう収益。だから未収収益だよ。" },
+    { id:"m2-9", text:"通信費を前払いしていたが、決算日の時点で来期分もふくまれていた。", correct:"前払費用",
+      explain:"お金はもう払ったけど、来期の分もふくまれている＝先に払いすぎている状態。だから前払費用だよ。" },
+    { id:"m2-10", text:"商品の保証サービス料金を先に受け取ったが、サービスを提供する期間がまだ残っている。", correct:"前受収益",
+      explain:"お金はもう受け取ったけど、サービスをする期間がまだ残っている＝先にもらいすぎている状態。だから前受収益だよ。" },
+    { id:"m2-11", text:"水道光熱費について、使った分の請求書がまだ届いておらず、未払いのままである。", correct:"未払費用",
+      explain:"もう使った分の費用だけど、まだ払っていない＝あとで払う費用。だから未払費用だよ。" },
+    { id:"m2-12", text:"定期預金の利息について、満期はまだ先だが、決算日までの期間分の利息は発生している。", correct:"未収収益",
+      explain:"お金を預けている期間の利息はもう発生しているけど、まだもらっていない＝あとでもらう収益。だから未収収益だよ。" },
+    { id:"m2-13", text:"広告料を1年分前払いしたが、決算日の時点で3か月分しか広告の期間が経っていない。", correct:"前払費用",
+      explain:"お金はもう払ったけど、広告してもらう期間がまだ残っている＝先に払いすぎている状態。だから前払費用だよ。" },
+    { id:"m2-14", text:"会員から年会費を先に受け取ったが、決算日の時点でまだサービスを提供する期間が残っている。", correct:"前受収益",
+      explain:"お金はもう受け取ったけど、サービスをする期間がまだ残っている＝先にもらいすぎている状態。だから前受収益だよ。" },
+    { id:"m2-15", text:"アルバイト代について、勤務した分はあるが、支払日がまだ来ていないため未払いである。", correct:"未払費用",
+      explain:"働いてもらった分はもう受け取っているけど、お金はまだ払っていない＝あとで払う費用。だから未払費用だよ。" },
+    { id:"m2-16", text:"他社に貸している土地の地代について、決算日までの期間分は発生しているが、入金は次回である。", correct:"未収収益",
+      explain:"貸している期間の地代はもう発生しているけど、まだもらっていない＝あとでもらう収益。だから未収収益だよ。" },
+    { id:"m2-17", text:"消耗品のリース料を前払いしていたが、決算日の時点でリース期間がまだ残っている。", correct:"前払費用",
+      explain:"お金はもう払ったけど、使わせてもらう期間がまだ残っている＝先に払いすぎている状態。だから前払費用だよ。" },
+    { id:"m2-18", text:"駐車場の利用料を先に受け取ったが、決算日の時点で利用させる期間がまだ残っている。", correct:"前受収益",
+      explain:"お金はもう受け取ったけど、貸している期間がまだ残っている＝先にもらいすぎている状態。だから前受収益だよ。" },
+    { id:"m2-19", text:"従業員への残業手当について、決算日までの分はまだ支払われていない。", correct:"未払費用",
+      explain:"働いてもらった分はもう受け取っているけど、お金はまだ払っていない＝あとで払う費用。だから未払費用だよ。" },
+    { id:"m2-20", text:"取引先への貸付金の利息について、決算日までの分は発生しているが、まだ受け取っていない。", correct:"未収収益",
+      explain:"お金を貸している期間の利息はもう発生しているけど、まだもらっていない＝あとでもらう収益。だから未収収益だよ。" },
+    { id:"m2-21", text:"新聞購読料を1年分前払いしていたが、決算日の時点で4か月分の購読期間が残っている。", correct:"前払費用",
+      explain:"お金はもう払ったけど、新聞を届けてもらう期間がまだ残っている＝先に払いすぎている状態。だから前払費用だよ。" },
+    { id:"m2-22", text:"貸倉庫の賃借料を受け取ったが、決算日の時点でまだ利用させていない期間が残っている。", correct:"前受収益",
+      explain:"お金はもう受け取ったけど、まだ貸していない期間がある＝先にもらいすぎている状態。だから前受収益だよ。" }
+  ];
+
+  var Q3 = [
+    { id:"m3-1", account:"前払保険料", ask:"再振替仕訳をするよ。前期末に借方にあった前払保険料を、期首にゼロへ戻すには、どちら側に金額を書く？", correct:"貸方",
+      explain:"前払費用は資産（いつも借方に残高がある）。それを減らして0に戻すには、反対側の貸方に書くよ。" },
+    { id:"m3-2", account:"未払家賃", ask:"再振替仕訳をするよ。前期末に貸方にあった未払家賃を、期首にゼロへ戻すには、どちら側に金額を書く？", correct:"借方",
+      explain:"未払費用は負債（いつも貸方に残高がある）。それを減らして0に戻すには、反対側の借方に書くよ。" },
+    { id:"m3-3", account:"未収手数料", ask:"再振替仕訳をするよ。前期末に借方にあった未収手数料を、期首にゼロへ戻すには、どちら側に金額を書く？", correct:"貸方",
+      explain:"未収収益は資産（いつも借方に残高がある）。それを減らして0に戻すには、反対側の貸方に書くよ。" },
+    { id:"m3-4", account:"前受地代", ask:"再振替仕訳をするよ。前期末に貸方にあった前受地代を、期首にゼロへ戻すには、どちら側に金額を書く？", correct:"借方",
+      explain:"前受収益は負債（いつも貸方に残高がある）。それを減らして0に戻すには、反対側の借方に書くよ。" },
+    { id:"m3-5", account:"支払利息", ask:"決算で、費用の勘定である支払利息を損益勘定に振り替えるよ。どちら側に金額を書く？", correct:"貸方",
+      explain:"費用はいつも借方に残高がある。損益勘定に振り替えて0にするには、反対側の貸方に書くよ。" },
+    { id:"m3-6", account:"受取手数料", ask:"決算で、収益の勘定である受取手数料を損益勘定に振り替えるよ。どちら側に金額を書く？", correct:"借方",
+      explain:"収益はいつも貸方に残高がある。損益勘定に振り替えて0にするには、反対側の借方に書くよ。" },
+    { id:"m3-7", account:"現金", ask:"決算で、資産の勘定である現金を締め切るよ。「次期繰越」はどちら側に書く？", correct:"貸方",
+      explain:"資産はいつも借方に残高がある。締め切るために、反対側の貸方に『次期繰越』と書いて金額をそろえるよ。" },
+    { id:"m3-8", account:"買掛金", ask:"決算で、負債の勘定である買掛金を締め切るよ。「次期繰越」はどちら側に書く？", correct:"借方",
+      explain:"負債はいつも貸方に残高がある。締め切るために、反対側の借方に『次期繰越』と書いて金額をそろえるよ。" },
+    { id:"m3-9", account:"備品減価償却累計額", ask:"決算整理で備品の減価償却を行うよ。備品減価償却累計額勘定のどちら側に金額を書く？", correct:"貸方",
+      explain:"減価償却累計額は資産のマイナス分をあらわす勘定で、いつも貸方に残高が増えていくよ。" },
+    { id:"m3-10", account:"資本金", ask:"決算で、純資産の勘定である資本金を締め切るよ。「次期繰越」はどちら側に書く？", correct:"借方",
+      explain:"資本金（純資産）はいつも貸方に残高がある。締め切るために、反対側の借方に『次期繰越』と書くよ。" },
+    { id:"m3-11", account:"売掛金", ask:"新しい期がはじまったよ。前期から繰り越された売掛金の残高（前期繰越）は、どちら側に書かれている？", correct:"借方",
+      explain:"売掛金は資産だから、いつも借方に残高があるよ。前期繰越も借方に書かれるよ。" },
+    { id:"m3-12", account:"借入金", ask:"新しい期がはじまったよ。前期から繰り越された借入金の残高（前期繰越）は、どちら側に書かれている？", correct:"貸方",
+      explain:"借入金は負債だから、いつも貸方に残高があるよ。前期繰越も貸方に書かれるよ。" },
+    { id:"m3-13", account:"支払家賃", ask:"再振替仕訳をするよ。前払家賃を0に戻すのとあわせて、費用の支払家賃勘定にはどちら側に金額を書く？", correct:"借方",
+      explain:"再振替仕訳では、前払家賃を貸方に減らすのとあわせて、費用の支払家賃を借方に増やすよ。" },
+    { id:"m3-14", account:"給料", ask:"再振替仕訳をするよ。未払給料を0に戻すのとあわせて、費用の給料勘定にはどちら側に金額を書く？", correct:"貸方",
+      explain:"再振替仕訳では、未払給料を借方に減らすのとあわせて、費用の給料を貸方に減らす（マイナスする）よ。" },
+    { id:"m3-15", account:"備品", ask:"備品を購入したよ。備品（資産）勘定のどちら側に金額を書く？", correct:"借方",
+      explain:"資産が増えるときは借方に書くよ。" },
+    { id:"m3-16", account:"売上", ask:"商品を売り上げたよ。売上（収益）勘定のどちら側に金額を書く？", correct:"貸方",
+      explain:"収益が発生したときは貸方に書くよ。" },
+    { id:"m3-17", account:"仕入", ask:"商品を仕入れたよ。仕入（費用）勘定のどちら側に金額を書く？", correct:"借方",
+      explain:"費用が発生したときは借方に書くよ。" },
+    { id:"m3-18", account:"貸付金", ask:"お金を貸したよ。貸付金（資産）勘定のどちら側に金額を書く？", correct:"借方",
+      explain:"資産が増えるときは借方に書くよ。" },
+    { id:"m3-19", account:"減価償却費", ask:"決算整理で減価償却費（費用）を計上するよ。どちら側に金額を書く？", correct:"借方",
+      explain:"費用が発生したときは借方に書くよ。" },
+    { id:"m3-20", account:"損益", ask:"決算で、費用の合計を損益勘定に振り替えるよ。損益勘定のどちら側に費用の金額を書く？", correct:"借方",
+      explain:"損益勘定には、費用を借方、収益を貸方に集めるよ。あとで両方の差が『もうけ』になるよ。" },
+    { id:"m3-21", account:"損益", ask:"決算で、収益の合計を損益勘定に振り替えるよ。損益勘定のどちら側に収益の金額を書く？", correct:"貸方",
+      explain:"損益勘定には、費用を借方、収益を貸方に集めるよ。あとで両方の差が『もうけ』になるよ。" },
+    { id:"m3-22", account:"車両運搬具減価償却累計額", ask:"新しい期がはじまったよ。前期から繰り越された残高（前期繰越）は、どちら側に書かれている？", correct:"貸方",
+      explain:"減価償却累計額はいつも貸方に残高があるよ。前期繰越も貸方に書かれるよ。" },
+    { id:"m3-23", account:"未収利息", ask:"利息を受け取る権利があるのに、まだ入金されていないので決算整理で計上するよ。未収利息（資産）勘定のどちら側に金額を書く？", correct:"借方",
+      explain:"資産が増えるときは借方に書くよ。" },
+    { id:"m3-24", account:"前受手数料", ask:"手数料を先に受け取ったので、決算整理で計上するよ。前受手数料（負債）勘定のどちら側に金額を書く？", correct:"貸方",
+      explain:"負債が増えるときは貸方に書くよ。" }
+  ];
+
+  var Q4 = [
+    { id:"m4-1", text:"決算のときに、帳簿を整理して正しい金額に直す手続きを（　）という。", choices:["決算整理","再振替仕訳","試算表","精算表"], correct:"決算整理",
+      explain:"決算整理は、帳簿の金額を正しく直すための決算の作業だよ。" },
+    { id:"m4-2", text:"費用や収益を、実際にサービスが行われた期間にきちんと分けて計上する考え方を（　）主義という。", choices:["発生","現金","継続","保守"], correct:"発生",
+      explain:"発生主義は、お金の受け払いではなく『サービスが行われたかどうか』で計上する考え方だよ。" },
+    { id:"m4-3", text:"総勘定元帳のすべての勘定の借方合計と貸方合計が一致しているかを確認する表を（　）という。", choices:["試算表","精算表","損益計算書","貸借対照表"], correct:"試算表",
+      explain:"試算表は、記入もれや計算まちがいがないかを確かめるための表だよ。" },
+    { id:"m4-4", text:"決算整理のあと、収益・費用・資産・負債・純資産の動きを1つの表にまとめたものを（　）という。", choices:["精算表","試算表","仕訳帳","元帳"], correct:"精算表",
+      explain:"精算表は、決算整理から損益計算書・貸借対照表まで、まとめて確認できる表だよ。" },
+    { id:"m4-5", text:"一会計期間の収益と費用をまとめて、もうけ（利益）を計算する報告書を（　）という。", choices:["損益計算書","貸借対照表","試算表","精算表"], correct:"損益計算書",
+      explain:"損益計算書は、収益から費用を引いて『もうけ』を計算する表だよ。" },
+    { id:"m4-6", text:"決算日における会社の資産・負債・純資産の状態を表す報告書を（　）という。", choices:["貸借対照表","損益計算書","試算表","仕訳帳"], correct:"貸借対照表",
+      explain:"貸借対照表は、会社が『今どれだけ財産があるか』を表す表だよ。" },
+    { id:"m4-7", text:"費用・収益の勘定を締め切るために、いったん集めるための勘定を（　）勘定という。", choices:["損益","繰越試算","残高","元入"], correct:"損益",
+      explain:"損益勘定は、費用と収益を1か所に集めて、もうけを計算するための勘定だよ。" },
+    { id:"m4-8", text:"資産・負債・純資産の勘定を締め切るときに書く「（　）」という言葉は、残高を次の期に引き継ぐしるしである。", choices:["次期繰越","損益","再振替","決算整理"], correct:"次期繰越",
+      explain:"次期繰越は、『この残高は来期に引き継ぎますよ』という意味の言葉だよ。" },
+    { id:"m4-9", text:"期首に、前払費用や未払費用などを元の費用・収益の勘定に戻す仕訳を（　）という。", choices:["再振替仕訳","決算整理仕訳","開始仕訳","振替仕訳"], correct:"再振替仕訳",
+      explain:"再振替仕訳は、決算整理で分けた金額を、期首にもとの費用・収益にもどす仕訳だよ。" },
+    { id:"m4-10", text:"保険料を前払いしたときに使う「前払保険料」のような勘定は、貸借対照表の（　）の部に書かれる。", choices:["資産","負債","純資産","費用"], correct:"資産",
+      explain:"前払費用は『まだサービスを受ける権利が残っている』ということなので、資産として扱うよ。" },
+    { id:"m4-11", text:"家賃を前もって受け取ったときに使う「前受家賃」のような勘定は、貸借対照表の（　）の部に書かれる。", choices:["負債","資産","純資産","収益"], correct:"負債",
+      explain:"前受収益は『まだサービスを提供していないのに、お金だけ先にもらっている』ということなので、負債として扱うよ。" },
+    { id:"m4-12", text:"建物や備品などを長く使うために、決算のたびにその価値の減った分を費用にする手続きを（　）という。", choices:["減価償却","再振替","繰越","決算整理"], correct:"減価償却",
+      explain:"減価償却は、固定資産が古くなって価値が減った分を、少しずつ費用として計上する手続きだよ。" },
+    { id:"m4-13", text:"減価償却の金額を、固定資産の勘定から直接減らさずに、別の勘定に積み立てていく方法を（　）法という。", choices:["間接","直接","定額","定率"], correct:"間接",
+      explain:"間接法は、固定資産そのものの金額はそのままにして、『減価償却累計額』という別の勘定にマイナス分を積み立てる方法だよ。" },
+    { id:"m4-14", text:"同じ金額の減価償却費を、毎年ずっと計上していく計算方法を（　）法という。", choices:["定額","定率","間接","直接"], correct:"定額",
+      explain:"定額法は、毎年『同じ金額』を減価償却費として計上する計算方法だよ。" },
+    { id:"m4-15", text:"商品を掛けで売ったときに増える「売掛金」は、貸借対照表の（　）の部に書かれる。", choices:["資産","負債","純資産","費用"], correct:"資産",
+      explain:"売掛金は『あとでお金をもらえる権利』なので、資産として扱うよ。" },
+    { id:"m4-16", text:"商品を掛けで仕入れたときに増える「買掛金」は、貸借対照表の（　）の部に書かれる。", choices:["負債","資産","純資産","費用"], correct:"負債",
+      explain:"買掛金は『あとでお金を払う義務』なので、負債として扱うよ。" },
+    { id:"m4-17", text:"現金の実際の残高と帳簿の残高が合わないとき、原因がわかるまで一時的に使う勘定を（　）という。", choices:["現金過不足","雑損","雑益","前払金"], correct:"現金過不足",
+      explain:"現金過不足は、実際の現金と帳簿の金額が合わないときに、一時的に使うための勘定だよ。" },
+    { id:"m4-18", text:"決算になっても現金過不足の原因がわからなかった金額のうち、帳簿のほうが多かった分は（　）という費用にする。", choices:["雑損","雑益","現金過不足","貸倒損失"], correct:"雑損",
+      explain:"帳簿の現金のほうが実際より多い＝現金が足りない、ということなので、その分を雑損（費用）にするよ。" },
+    { id:"m4-19", text:"得意先が倒産するなどして、売掛金が回収できなくなることを（　）という。", choices:["貸倒れ","不渡り","償却","繰越"], correct:"貸倒れ",
+      explain:"貸倒れは、売掛金などの代金が回収できなくなることだよ。" },
+    { id:"m4-20", text:"手形の代金が支払期日になっても支払われないことを（　）という。", choices:["不渡り","貸倒れ","償却","繰越"], correct:"不渡り",
+      explain:"不渡りは、手形のお金が期日に支払われないことだよ。" },
+    { id:"m4-21", text:"会社が事業のために毎日おこなう取引を、日付順に記録する帳簿を（　）という。", choices:["仕訳帳","総勘定元帳","補助簿","精算表"], correct:"仕訳帳",
+      explain:"仕訳帳は、取引を日付の順番に記録していく、いちばん基本になる帳簿だよ。" },
+    { id:"m4-22", text:"仕訳帳に書いた内容を、勘定科目ごとに書き写して集計する帳簿を（　）という。", choices:["総勘定元帳","仕訳帳","補助簿","試算表"], correct:"総勘定元帳",
+      explain:"総勘定元帳は、勘定科目ごとに金額を集めて、残高がわかるようにした帳簿だよ。" }
+  ];
+
+  var MODE_DATA = { 1:Q1, 2:Q2, 3:Q3, 4:Q4 };
+  var MODE_NAME = { 1:"これ、どの帳簿？", 2:"前払？前受？", 3:"左と右、どっち？", 4:"言葉の穴うめ" };
+
+  /* ================= 画面まわり ================= */
+  var $screenTop = document.getElementById("screenTop");
+  var $screenQuiz = document.getElementById("screenQuiz");
+  var $screenDone = document.getElementById("screenDone");
+  var $qArea = document.getElementById("qArea");
+  var $qProgress = document.getElementById("qProgress");
+  var $modeLabel = document.getElementById("modeLabel");
+  var $cToday = document.getElementById("cToday");
+  var $cCorrect = document.getElementById("cCorrect");
+
+  function showScreen(name) {
+    [$screenTop, $screenQuiz, $screenDone].forEach(function (s) { s.classList.remove("show"); });
+    if (name === "top") $screenTop.classList.add("show");
+    if (name === "quiz") $screenQuiz.classList.add("show");
+    if (name === "done") $screenDone.classList.add("show");
+    window.scrollTo({ top: 0 });
+  }
+
+  function updateCounterUI() {
+    ensureToday();
+    $cToday.textContent = progress.todayTotal;
+    $cCorrect.textContent = progress.todayCorrect;
+  }
+
+  function refreshTopScreen() {
+    updateCounterUI();
+    document.querySelectorAll(".redoCount").forEach(function (el) {
+      var m = el.getAttribute("data-count");
+      var n = (progress.mistakes["m" + m] || []).length;
+      el.textContent = n;
+    });
+    document.querySelectorAll(".redoBtn").forEach(function (b) {
+      var m = b.getAttribute("data-redo");
+      b.disabled = (progress.mistakes["m" + m] || []).length === 0;
+    });
+  }
+
+  /* ================= 出題エンジン ================= */
+  var currentMode = null, queue = [], qIndex = 0, currentQ = null, sessionTotal = 0, sessionCorrect = 0;
+
+  function startMode(mode, mistakeOnly) {
+    var all = MODE_DATA[mode];
+    var pool;
+    if (mistakeOnly) {
+      var ids = progress.mistakes["m" + mode] || [];
+      if (ids.length === 0) { toast("まちがえた問題はまだないよ🎉"); return; }
+      pool = all.filter(function (q) { return ids.indexOf(q.id) > -1; });
+    } else {
+      pool = all.slice();
+    }
+    currentMode = mode;
+    queue = shuffle(pool);
+    qIndex = 0;
+    sessionTotal = 0;
+    sessionCorrect = 0;
+    showScreen("quiz");
+    loadQuestion();
+  }
+
+  function hasNext() { return qIndex < queue.length - 1; }
+  function goNext() {
+    if (hasNext()) { qIndex++; loadQuestion(); }
+    else { showResultScreen(); }
+  }
+
+  function loadQuestion() {
+    currentQ = queue[qIndex];
+    $qProgress.textContent = (qIndex + 1) + " / " + queue.length + "問目";
+    $modeLabel.textContent = MODE_NAME[currentMode];
+    if (currentMode === 1) renderM1(currentQ);
+    else if (currentMode === 2) renderM2(currentQ);
+    else if (currentMode === 3) renderM3(currentQ);
+    else renderM4(currentQ);
+  }
+
+  function recordResult(mode, id, isCorrect) {
+    ensureToday();
+    progress.todayTotal++;
+    sessionTotal++;
+    if (isCorrect) { progress.todayCorrect++; sessionCorrect++; }
+    var key = "m" + mode;
+    var idx = progress.mistakes[key].indexOf(id);
+    if (isCorrect) {
+      if (idx > -1) progress.mistakes[key].splice(idx, 1);
+    } else {
+      if (idx === -1) progress.mistakes[key].push(id);
+    }
+    saveProgress();
+    updateCounterUI();
+  }
+
+  function finishQuestion(isCorrect, explainText) {
+    recordResult(currentMode, currentQ.id, isCorrect);
+    var banner = document.createElement("div");
+    banner.className = "result " + (isCorrect ? "good" : "bad");
+    banner.innerHTML = '<div class="rtitle">' + (isCorrect ? "⭕ せいかい！" : "❌ おしい！") + '</div>'
+      + '<div class="rexplain">' + esc(explainText) + '</div>';
+    $qArea.appendChild(banner);
+    var nextBtn = document.createElement("button");
+    nextBtn.type = "button";
+    nextBtn.className = "nextbtn";
+    nextBtn.textContent = hasNext() ? "次の問題へ" : "けっかを見る";
+    nextBtn.addEventListener("click", goNext);
+    $qArea.appendChild(nextBtn);
+    nextBtn.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+
+  function showResultScreen() {
+    var name = MODE_NAME[currentMode];
+    document.getElementById("doneTitle").textContent = name + "、おつかれさまでした";
+    document.getElementById("doneText").textContent = sessionTotal + "問中" + sessionCorrect + "問、正解できました。";
+    showScreen("done");
+    refreshTopScreen();
+  }
+
+  /* ---- 選択肢ボタン（1タップで即判定：モード2・3・4共通） ---- */
+  function bindChoiceButtons(correct, explain, onPick) {
+    var btns = $qArea.querySelectorAll(".choicebtn");
+    btns.forEach(function (b) {
+      b.addEventListener("click", function () {
+        var v = b.getAttribute("data-v");
+        var isCorrect = (v === correct);
+        btns.forEach(function (bb) {
+          bb.disabled = true;
+          if (bb.getAttribute("data-v") === correct) bb.classList.add("good");
+          else if (bb === b) bb.classList.add("bad");
+        });
+        if (onPick) onPick();
+        finishQuestion(isCorrect, explain);
+      });
+    });
+  }
+
+  function renderChoiceQuestion(text, options, correct, explain) {
+    var opts = shuffle(options.slice());
+    $qArea.innerHTML = '<p class="qtext">' + esc(text) + '</p>'
+      + '<div class="choicecol">' + opts.map(function (o) {
+        return '<button type="button" class="choicebtn" data-v="' + esc(o) + '">' + esc(o) + '</button>';
+      }).join("") + '</div>';
+    bindChoiceButtons(correct, explain);
+  }
+
+  /* ---- モード1：これ、どの帳簿？（複数選択） ---- */
+  function renderM1(q) {
+    $qArea.innerHTML = '<p class="qtext">' + esc(q.text) + '</p>'
+      + '<div class="ledgergrid">' + LEDGERS.map(function (l, i) {
+        return '<button type="button" class="ledgerbtn" data-i="' + i + '">' + esc(l) + '</button>';
+      }).join("") + '</div>'
+      + '<button type="button" class="checkbtn" id="checkBtn">答え合わせ</button>';
+
+    var selected = [];
+    var btns = $qArea.querySelectorAll(".ledgerbtn");
+    btns.forEach(function (b) {
+      b.addEventListener("click", function () {
+        var i = +b.getAttribute("data-i");
+        var idx = selected.indexOf(i);
+        if (idx > -1) { selected.splice(idx, 1); b.classList.remove("sel"); }
+        else { selected.push(i); b.classList.add("sel"); }
+      });
+    });
+
+    document.getElementById("checkBtn").addEventListener("click", function () {
+      var chosenNames = selected.map(function (i) { return LEDGERS[i]; }).slice().sort();
+      var correctNames = q.correct.slice().sort();
+      var isCorrect = JSON.stringify(chosenNames) === JSON.stringify(correctNames);
+      btns.forEach(function (b) {
+        var name = LEDGERS[+b.getAttribute("data-i")];
+        b.disabled = true;
+        if (q.correct.indexOf(name) > -1) b.classList.add("good");
+        else if (selected.indexOf(+b.getAttribute("data-i")) > -1) b.classList.add("bad");
+      });
+      this.remove();
+      finishQuestion(isCorrect, q.explain);
+    });
+  }
+
+  /* ---- モード2：前払？前受？（4択） ---- */
+  function renderM2(q) {
+    renderChoiceQuestion(q.text, TAX, q.correct, q.explain);
+  }
+
+  /* ---- モード3：左と右、どっち？（T字図＋2択） ---- */
+  function renderM3(q) {
+    $qArea.innerHTML = '<div class="taccount"><div class="ta-title">' + esc(q.account) + '</div>'
+      + '<div class="ta-body">'
+      + '<div class="ta-side" data-s="借方"><span class="ta-label">借方（左）</span><span class="ta-mark"></span></div>'
+      + '<div class="ta-mid"></div>'
+      + '<div class="ta-side" data-s="貸方"><span class="ta-label">貸方（右）</span><span class="ta-mark"></span></div>'
+      + '</div></div>'
+      + '<p class="qtext" style="margin-top:16px">' + esc(q.ask) + '</p>'
+      + '<div class="choicecol">'
+      + '<button type="button" class="choicebtn wide" data-v="借方">借方（左）</button>'
+      + '<button type="button" class="choicebtn wide" data-v="貸方">貸方（右）</button>'
+      + '</div>';
+    bindChoiceButtons(q.correct, q.explain, function () {
+      var side = $qArea.querySelector('.ta-side[data-s="' + q.correct + '"]');
+      if (side) side.classList.add("ta-correct");
+    });
+  }
+
+  /* ---- モード4：言葉の穴うめ（3〜4択） ---- */
+  function renderM4(q) {
+    renderChoiceQuestion(q.text, q.choices, q.correct, q.explain);
+  }
+
+  /* ================= イベント登録 ================= */
+  document.querySelectorAll(".modebtn").forEach(function (b) {
+    b.addEventListener("click", function () { startMode(+b.getAttribute("data-m"), false); });
+  });
+  document.querySelectorAll(".redoBtn").forEach(function (b) {
+    b.addEventListener("click", function () {
+      if (b.disabled) return;
+      startMode(+b.getAttribute("data-redo"), true);
+    });
+  });
+  document.getElementById("backBtn").addEventListener("click", function () {
+    showScreen("top");
+    refreshTopScreen();
+  });
+  document.getElementById("doneTop").addEventListener("click", function () {
+    showScreen("top");
+    refreshTopScreen();
+  });
+
+  /* ================= 起動 ================= */
+  loadProgress();
+  refreshTopScreen();
+})();
+</script>
+</body>
+</html>
