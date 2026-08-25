@@ -12,14 +12,17 @@
 <link rel="icon" href="boki_dai2_icon.png">
 <style>
 :root{
-  --bg1:#F5F1E3; --bg2:#EAF1E2;
+  --mint:#C7F0DE; --mint2:#E8F9F0;
+  --cream:#FFF6E6;
+  --pink:#FFDCEC; --pink2:#FFEFF6;
+  --blue:#CDEFFB; --blue2:#E8F8FE;
   --card:#FFFFFF;
-  --ink:#26301F; --ink2:#33402C;
-  --line:#DCD3B6;
-  --accent:#4F7A52; --accent-deep:#3A5C3D;
-  --good:#2E7D4F; --good-bg:#E4F3E7;
-  --bad:#B23A2E; --bad-bg:#FBE7E3;
-  --shadow:0 6px 16px rgba(80,90,60,.14);
+  --ink:#332B24; --ink2:#4A4038;
+  --line:#F3DCE6;
+  --accent:#3F8A6C; --accent2:#6BC9A0; --accent-deep:#2A6350;
+  --good:#1F7A4C; --good-bg:#E3F7EC;
+  --bad:#A8395F; --bad-bg:#FFEAF1;
+  --shadow:0 10px 26px rgba(150,110,140,.16);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;padding:0;}
@@ -28,17 +31,22 @@ body{
   color:var(--ink);
   font-family:"Hiragino Maru Gothic ProN","Hiragino Sans",-apple-system,BlinkMacSystemFont,"Yu Gothic",Meiryo,sans-serif;
   font-size:17px;font-weight:500;line-height:1.8;
-  background:linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 100%);
+  background-image:
+    radial-gradient(rgba(255,255,255,.55) 2.4px, transparent 2.6px),
+    linear-gradient(160deg,var(--blue2) 0%,var(--mint2) 45%,var(--pink2) 78%,var(--cream) 100%);
+  background-size:26px 26px, 100% 100%;
+  background-position:0 0, 0 0;
   background-attachment:fixed;
   -webkit-text-size-adjust:100%;
+  overflow-x:hidden;
 }
 button{font:inherit;}
 .wrap{max-width:620px;margin:0 auto;padding:0 16px calc(env(safe-area-inset-bottom) + 30px);}
 
 header{
   position:sticky;top:0;z-index:5;
-  background:rgba(245,241,227,.92);backdrop-filter:saturate(160%) blur(8px);
-  border-bottom:2px solid var(--line);
+  background:rgba(255,251,244,.88);backdrop-filter:saturate(160%) blur(8px);
+  border-bottom:3px dashed var(--line);
   padding:calc(env(safe-area-inset-top) + 12px) 16px 12px;
 }
 header .htop{display:flex;align-items:center;justify-content:space-between;gap:10px;max-width:620px;margin:0 auto;}
@@ -46,6 +54,7 @@ h1{margin:0;font-size:21px;font-weight:800;color:var(--accent-deep);}
 .counter{
   flex:none;background:var(--card);border:2px solid var(--line);border-radius:999px;
   padding:8px 14px;font-size:16px;font-weight:700;color:var(--ink);white-space:nowrap;
+  box-shadow:var(--shadow);
 }
 .counter b{color:var(--accent-deep);}
 
@@ -53,43 +62,96 @@ main{position:relative;padding-top:18px;}
 
 /* ---- トップ画面：モード選択 ---- */
 .intro{
-  background:var(--card);border-radius:22px;box-shadow:var(--shadow);
+  background:var(--card);border-radius:28px;box-shadow:var(--shadow);
   padding:18px 20px;margin-bottom:18px;font-size:16px;font-weight:600;color:var(--ink2);
+  border:3px solid var(--pink);
 }
-.modecard{margin-bottom:16px;}
+.modecard{margin-bottom:18px;}
 .modebtn{
   display:flex;align-items:center;gap:14px;width:100%;text-align:left;
-  background:var(--card);border:2px solid var(--line);border-radius:22px;
+  background:var(--card);border:3px solid var(--line);border-radius:26px;
   padding:16px 18px;box-shadow:var(--shadow);cursor:pointer;
-  transition:transform .15s ease;
+  transition:transform .12s ease;
 }
-.modebtn:active{transform:scale(.98);}
+.modebtn:active{transform:scale(.97);}
 .modenum{
-  flex:none;width:46px;height:46px;border-radius:50%;background:var(--accent);color:#fff;
+  flex:none;width:48px;height:48px;border-radius:50%;
+  background:linear-gradient(160deg,var(--accent2),var(--accent));color:#fff;
   display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;
+  box-shadow:0 3px 0 var(--accent-deep);
 }
 .modetext{display:flex;flex-direction:column;gap:4px;}
 .modetitle{font-size:19px;font-weight:800;color:var(--ink);}
 .modedesc{font-size:16px;font-weight:600;color:var(--ink2);}
 .redoBtn{
-  display:block;width:100%;margin-top:8px;min-height:50px;
-  background:#fff;border:2px solid var(--line);border-radius:999px;
+  display:block;width:100%;margin-top:9px;min-height:50px;
+  background:#fff;border:3px solid var(--line);border-radius:999px;
   font-size:16px;font-weight:700;color:var(--accent-deep);cursor:pointer;
+  transition:transform .12s ease;
 }
-.redoBtn:disabled{opacity:.55;}
+.redoBtn:active{transform:scale(.97);}
+.redoBtn:disabled{opacity:.5;}
+
+/* ---- ごほうびシール ---- */
+.stampshelf{
+  background:var(--card);border-radius:28px;box-shadow:var(--shadow);
+  padding:18px 20px 20px;margin-bottom:18px;border:3px solid var(--mint);
+}
+.stampshelf h2{margin:0 0 10px;font-size:18px;font-weight:800;color:var(--accent-deep);}
+.stampgrid{display:flex;flex-wrap:wrap;gap:8px;min-height:20px;}
+.stamp{
+  font-size:26px;width:44px;height:44px;border-radius:50%;
+  background:var(--mint2);border:2px solid var(--mint);
+  display:flex;align-items:center;justify-content:center;
+  animation:stampin .35s cubic-bezier(.3,1.4,.5,1) both;
+}
+.stampmore{
+  font-size:16px;font-weight:800;color:var(--accent-deep);align-self:center;padding:0 6px;
+}
+.stampempty{font-size:16px;font-weight:600;color:var(--ink2);margin:0;}
+.stamphint{font-size:16px;font-weight:600;color:var(--ink2);margin:10px 0 0;}
+@keyframes stampin{from{transform:scale(.3) rotate(-12deg);opacity:0;}to{transform:none;opacity:1;}}
 
 /* ---- 問題画面 ---- */
-.quizbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px;}
+.quizbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:10px;}
 .back{background:none;border:none;color:var(--accent-deep);font-size:17px;font-weight:800;padding:10px 4px;cursor:pointer;}
 .qprogress{font-size:16px;font-weight:700;color:var(--ink2);}
 
+/* ---- 進捗バー ---- */
+.progresswrap{margin-bottom:16px;}
+.progressbar{
+  position:relative;height:16px;border-radius:999px;background:#fff;
+  border:2px solid var(--line);overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,.06);
+}
+.progressfill{
+  height:100%;width:0%;border-radius:999px;
+  background:linear-gradient(90deg,var(--mint) 0%,var(--pink) 100%);
+  transition:width .4s cubic-bezier(.3,.8,.4,1);
+}
+.progressflowers{display:flex;justify-content:space-between;margin-top:6px;padding:0 2px;}
+.pf{
+  font-size:19px;filter:grayscale(1) opacity(.35);transform:scale(.85);
+  transition:filter .35s ease,transform .35s cubic-bezier(.3,1.4,.5,1);display:inline-block;
+}
+.pf.bloom{filter:none;transform:scale(1.15);}
+
 .qcard{
-  background:var(--card);border-radius:22px;box-shadow:var(--shadow);
-  padding:22px 20px 24px;margin-bottom:16px;
+  position:relative;overflow:hidden;
+  background:var(--card);border-radius:28px;box-shadow:var(--shadow);
+  padding:22px 20px 24px;margin-bottom:16px;border:3px solid var(--blue);
+}
+.qcard.enter{animation:cardIn .45s cubic-bezier(.25,.85,.35,1);}
+@keyframes cardIn{from{opacity:0;transform:translateY(16px) scale(.97);}to{opacity:1;transform:none;}}
+.qcard.wobble{animation:poyon .5s ease;}
+@keyframes poyon{
+  0%,100%{transform:rotate(0) scale(1);}
+  20%{transform:rotate(-1.6deg) scale(.985);}
+  45%{transform:rotate(1.4deg) scale(1.01);}
+  70%{transform:rotate(-.8deg) scale(.995);}
 }
 .modelabel{
   display:inline-block;font-size:16px;font-weight:800;color:var(--accent-deep);
-  background:#EAF1E2;border-radius:999px;padding:5px 14px;margin-bottom:12px;
+  background:var(--mint2);border-radius:999px;padding:5px 14px;margin-bottom:12px;
 }
 .qtext{font-size:19px;font-weight:700;color:var(--ink);line-height:1.85;margin:0 0 18px;}
 
@@ -97,56 +159,60 @@ main{position:relative;padding-top:18px;}
 .choicecol{display:flex;flex-direction:column;gap:10px;}
 .choicebtn{
   min-height:56px;width:100%;text-align:left;
-  background:#fff;border:2px solid var(--line);border-radius:16px;
+  background:#fff;border:3px solid var(--line);border-radius:20px;
   padding:13px 18px;font-size:17px;font-weight:700;color:var(--ink);cursor:pointer;
+  transition:transform .12s ease;
 }
 .choicebtn.wide{text-align:center;}
-.choicebtn:active{transform:scale(.98);}
+.choicebtn:active{transform:scale(.97);}
 .choicebtn.good{background:var(--good-bg);border-color:var(--good);color:var(--good);}
 .choicebtn.bad{background:var(--bad-bg);border-color:var(--bad);color:var(--bad);}
-.choicebtn:disabled{opacity:.9;}
+.choicebtn:disabled{opacity:.92;}
 
 /* 帳簿グリッド（複数選択） */
 .ledgergrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .ledgerbtn{
-  min-height:56px;background:#fff;border:2px solid var(--line);border-radius:16px;
+  min-height:56px;background:#fff;border:3px solid var(--line);border-radius:20px;
   padding:10px 8px;font-size:16px;font-weight:700;color:var(--ink);cursor:pointer;text-align:center;
+  transition:transform .12s ease;
 }
-.ledgerbtn:active{transform:scale(.97);}
-.ledgerbtn.sel{background:#EAF1E2;border-color:var(--accent);color:var(--accent-deep);}
+.ledgerbtn:active{transform:scale(.96);}
+.ledgerbtn.sel{background:var(--mint2);border-color:var(--accent);color:var(--accent-deep);}
 .ledgerbtn.good{background:var(--good-bg);border-color:var(--good);color:var(--good);}
 .ledgerbtn.bad{background:var(--bad-bg);border-color:var(--bad);color:var(--bad);}
 .ledgerbtn:disabled{opacity:.95;}
 
 /* T字図 */
-.taccount{border:2px solid var(--line);border-radius:18px;overflow:hidden;background:#fff;}
+.taccount{border:3px solid var(--line);border-radius:22px;overflow:hidden;background:#fff;}
 .ta-title{
   text-align:center;font-size:18px;font-weight:800;color:var(--ink);
-  padding:12px 10px;border-bottom:2px solid var(--ink);background:#F5F1E3;
+  padding:12px 10px;border-bottom:3px dashed var(--line);background:var(--cream);
 }
 .ta-body{display:flex;min-height:96px;}
 .ta-side{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:14px 8px;
+  transition:background .3s ease;
 }
-.ta-mid{width:2px;background:var(--ink);}
+.ta-mid{width:3px;background:var(--line);}
 .ta-label{font-size:16px;font-weight:800;color:var(--ink2);}
 .ta-mark{font-size:24px;min-height:28px;}
 .ta-side.ta-correct{background:var(--good-bg);}
-.ta-side.ta-correct .ta-mark::after{content:"⭐️";}
+.ta-side.ta-correct .ta-mark::after{content:"⭐️";display:inline-block;animation:popstar .4s cubic-bezier(.3,1.4,.5,1);}
+@keyframes popstar{from{transform:scale(.2) rotate(-20deg);opacity:0;}to{transform:none;opacity:1;}}
 
 /* 答え合わせボタン（モード1） */
 .checkbtn{
   display:block;width:100%;min-height:58px;margin-top:18px;
-  background:linear-gradient(180deg,#6BA26E,var(--accent));color:#fff;
+  background:linear-gradient(180deg,var(--accent2),var(--accent));color:#fff;
   border:none;border-radius:999px;font-size:18px;font-weight:800;cursor:pointer;
-  box-shadow:0 5px 0 var(--accent-deep);
+  box-shadow:0 5px 0 var(--accent-deep);transition:transform .12s ease,box-shadow .12s ease;
 }
 .checkbtn:active{transform:translateY(2px);box-shadow:0 3px 0 var(--accent-deep);}
 
 /* 結果バナー・解説 */
-.result{border-radius:18px;padding:16px 18px;margin-top:18px;}
-.result.good{background:var(--good-bg);border:2px solid var(--good);}
-.result.bad{background:var(--bad-bg);border:2px solid var(--bad);}
+.result{border-radius:22px;padding:16px 18px;margin-top:18px;animation:cardIn .4s cubic-bezier(.25,.85,.35,1);}
+.result.good{background:var(--good-bg);border:3px solid var(--good);}
+.result.bad{background:var(--bad-bg);border:3px solid var(--bad);}
 .rtitle{font-size:19px;font-weight:800;margin-bottom:8px;}
 .result.good .rtitle{color:var(--good);}
 .result.bad .rtitle{color:var(--bad);}
@@ -154,26 +220,28 @@ main{position:relative;padding-top:18px;}
 
 .nextbtn{
   display:block;width:100%;min-height:58px;margin-top:16px;
-  background:linear-gradient(180deg,#6BA26E,var(--accent));color:#fff;
+  background:linear-gradient(180deg,var(--accent2),var(--accent));color:#fff;
   border:none;border-radius:999px;font-size:18px;font-weight:800;cursor:pointer;
-  box-shadow:0 5px 0 var(--accent-deep);
+  box-shadow:0 5px 0 var(--accent-deep);transition:transform .12s ease,box-shadow .12s ease;
 }
 .nextbtn:active{transform:translateY(2px);box-shadow:0 3px 0 var(--accent-deep);}
 
 /* 結果まとめ画面 */
 .donecard{
-  background:var(--card);border-radius:22px;box-shadow:var(--shadow);
-  padding:28px 22px;text-align:center;
+  background:var(--card);border-radius:28px;box-shadow:var(--shadow);
+  padding:28px 22px;text-align:center;border:3px solid var(--pink);
 }
 .donecard .big{font-size:44px;margin-bottom:10px;}
 .donecard h2{margin:0 0 10px;font-size:21px;font-weight:800;color:var(--accent-deep);}
 .donecard p{font-size:17px;font-weight:600;color:var(--ink2);margin:0 0 20px;}
 .donebtn{
   display:block;width:100%;min-height:56px;margin-top:10px;
-  background:#fff;border:2px solid var(--line);border-radius:999px;
+  background:#fff;border:3px solid var(--line);border-radius:999px;
   font-size:17px;font-weight:800;color:var(--accent-deep);cursor:pointer;
+  transition:transform .12s ease;
 }
-.donebtn.primary{background:linear-gradient(180deg,#6BA26E,var(--accent));color:#fff;border:none;box-shadow:0 5px 0 var(--accent-deep);}
+.donebtn:active{transform:scale(.97);}
+.donebtn.primary{background:linear-gradient(180deg,var(--accent2),var(--accent));color:#fff;border:none;box-shadow:0 5px 0 var(--accent-deep);}
 
 .toast{
   position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 26px);
@@ -188,7 +256,7 @@ main{position:relative;padding-top:18px;}
 .screen.show{display:block;}
 
 @media (prefers-reduced-motion:reduce){
-  *{transition:none!important;}
+  *{animation:none!important;transition:none!important;}
 }
 </style>
 </head>
@@ -206,6 +274,12 @@ main{position:relative;padding-top:18px;}
 
     <section class="screen show" id="screenTop">
       <p class="intro">タップで答えるだけの練習アプリです。まちがえても大丈夫。答えのあとに「なぜそうなるか」が出るので、少しずつ慣れていきましょう🌱</p>
+
+      <section class="stampshelf">
+        <h2>🎀 ごほうびシール</h2>
+        <div class="stampgrid" id="stampGrid"></div>
+        <p class="stamphint">正解を5問集めるとシールが1まいもらえるよ</p>
+      </section>
 
       <div class="modecard">
         <button type="button" class="modebtn" data-m="1">
@@ -244,6 +318,12 @@ main{position:relative;padding-top:18px;}
       <div class="quizbar">
         <button type="button" class="back" id="backBtn">‹ もどる</button>
         <span class="qprogress" id="qProgress"></span>
+      </div>
+      <div class="progresswrap">
+        <div class="progressbar"><div class="progressfill" id="progressFill"></div></div>
+        <div class="progressflowers" id="progressFlowers">
+          <span class="pf">🌸</span><span class="pf">🌼</span><span class="pf">🌷</span><span class="pf">⭐️</span><span class="pf">🌟</span>
+        </div>
       </div>
       <div class="qcard">
         <span class="modelabel" id="modeLabel"></span>
@@ -569,6 +649,7 @@ main{position:relative;padding-top:18px;}
 
   function refreshTopScreen() {
     updateCounterUI();
+    renderStampShelf();
     document.querySelectorAll(".redoCount").forEach(function (el) {
       var m = el.getAttribute("data-count");
       var n = (progress.mistakes["m" + m] || []).length;
@@ -616,6 +697,8 @@ main{position:relative;padding-top:18px;}
     else if (currentMode === 2) renderM2(currentQ);
     else if (currentMode === 3) renderM3(currentQ);
     else renderM4(currentQ);
+    updateProgressBar();
+    playCardEnter();
   }
 
   function recordResult(mode, id, isCorrect) {
@@ -636,6 +719,7 @@ main{position:relative;padding-top:18px;}
 
   function finishQuestion(isCorrect, explainText) {
     recordResult(currentMode, currentQ.id, isCorrect);
+    celebrateAnswer(isCorrect);
     var banner = document.createElement("div");
     banner.className = "result " + (isCorrect ? "good" : "bad");
     banner.innerHTML = '<div class="rtitle">' + (isCorrect ? "⭕ せいかい！" : "❌ おしい！") + '</div>'
@@ -748,6 +832,73 @@ main{position:relative;padding-top:18px;}
     renderChoiceQuestion(q.text, q.choices, q.correct, q.explain);
   }
 
+  /* ================= かわいい演出（見た目のみ／データや正誤判定には一切かかわらない） ================= */
+  var STAMP_KEY = "boki_dai2_stamps_v1";
+  var stampState = { correctCount: 0 };
+  function loadStamps() {
+    try {
+      var raw = store.getItem(STAMP_KEY);
+      var s = raw ? JSON.parse(raw) : null;
+      if (!s || typeof s !== "object" || typeof s.correctCount !== "number") s = { correctCount: 0 };
+      stampState = s;
+    } catch (e) { stampState = { correctCount: 0 }; }
+  }
+  function saveStamps() {
+    try { store.setItem(STAMP_KEY, JSON.stringify(stampState)); } catch (e) {}
+  }
+  function stampCountEarned() { return Math.floor(stampState.correctCount / 5); }
+  function addStamp() {
+    stampState.correctCount++;
+    saveStamps();
+    renderStampShelf();
+  }
+  function renderStampShelf() {
+    var grid = document.getElementById("stampGrid");
+    if (!grid) return;
+    var n = stampCountEarned();
+    if (n === 0) {
+      grid.innerHTML = '<p class="stampempty">まだシールはないよ。問題に答えて集めよう🌱</p>';
+      return;
+    }
+    var icons = ["🌸", "⭐️", "🍀", "💐", "🌈", "🎀", "🧸", "🍓"];
+    var cap = 40;
+    var show = Math.min(n, cap);
+    var html = "";
+    for (var i = 0; i < show; i++) { html += '<span class="stamp">' + icons[i % icons.length] + "</span>"; }
+    if (n > cap) html += '<span class="stampmore">+' + (n - cap) + "</span>";
+    grid.innerHTML = html;
+  }
+
+  function wobbleCard() {
+    var card = $qArea ? $qArea.closest(".qcard") : null;
+    if (!card) return;
+    card.classList.remove("wobble");
+    void card.offsetWidth;
+    card.classList.add("wobble");
+  }
+  function playCardEnter() {
+    var card = $qArea ? $qArea.closest(".qcard") : null;
+    if (!card) return;
+    card.classList.remove("enter");
+    void card.offsetWidth;
+    card.classList.add("enter");
+  }
+
+  function updateProgressBar() {
+    var fill = document.getElementById("progressFill");
+    if (!fill) return;
+    var pct = queue.length ? Math.round(((qIndex + 1) / queue.length) * 100) : 0;
+    fill.style.width = pct + "%";
+    var flowers = document.querySelectorAll(".pf");
+    var bloomCount = Math.round((pct / 100) * flowers.length);
+    flowers.forEach(function (f, i) { f.classList.toggle("bloom", i < bloomCount); });
+  }
+
+  function celebrateAnswer(isCorrect) {
+    if (isCorrect) addStamp();
+    else wobbleCard();
+  }
+
   /* ================= イベント登録 ================= */
   document.querySelectorAll(".modebtn").forEach(function (b) {
     b.addEventListener("click", function () { startMode(+b.getAttribute("data-m"), false); });
@@ -769,6 +920,7 @@ main{position:relative;padding-top:18px;}
 
   /* ================= 起動 ================= */
   loadProgress();
+  loadStamps();
   refreshTopScreen();
 })();
 </script>
