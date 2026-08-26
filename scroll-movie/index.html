@@ -334,6 +334,16 @@
     </div>
   </section>
 
+  <section>
+    <h2 style="font-size:16px">BGMのクレジット</h2>
+    <p class="lead" style="margin-bottom:0">
+      アプリ内蔵のBGM（しっとり系・明るい系・やさしい系・あたたかい系）は
+      <a href="https://www.bensound.com" target="_blank" rel="noopener">Bensound.com</a>
+      の楽曲を、無料ライセンス（商用利用可・要クレジット表記）のもとで使用しています。<br>
+      Music: <b>Tenderness</b>, <b>Buddy</b>, <b>Acoustic Breeze</b>, <b>Sunny</b> by Bensound.com
+    </p>
+  </section>
+
 </div>
 
 <script>
@@ -395,109 +405,52 @@
   seg('segBg', 'bg');
   stampText.addEventListener('input', drawStill);
 
-  /* ---------- BGM（著作権フリー・自前生成の軽量メロディ／音源ファイルは使わない） ---------- */
+  /* ---------- BGM（実演奏の音楽ファイル。短め・軽量のmp3をbgm/フォルダから読み込む） ---------- */
   var BGM = {
-    shittori: { name: 'しっとり系', bpm: 68, wave: 'sine', gain: .1, loop: 16,
-      mel: [[0, 'A3', 2], [2, 'C4', 1], [3, 'B3', 1], [4, 'A3', 2], [6, 'G3', 2],
-            [8, 'E3', 1], [9, 'G3', 1], [10, 'A3', 2], [12, 'C4', 1], [13, 'B3', 1], [14, 'A3', 2]],
-      bass: ['A2', 'A2', 'E2', 'E2', 'F2', 'F2', 'G2', 'G2'] },
-    akarui: { name: '明るい系', bpm: 128, wave: 'triangle', gain: .08, loop: 16,
-      mel: [[0, 'C5', .5], [.5, 'E5', .5], [1, 'G5', .5], [1.5, 'E5', .5], [2, 'F5', 1], [3, 'E5', 1],
-            [4, 'D5', .5], [4.5, 'F5', .5], [5, 'A5', .5], [5.5, 'F5', .5], [6, 'G5', 2],
-            [8, 'E5', .5], [8.5, 'G5', .5], [9, 'C6', .5], [9.5, 'G5', .5], [10, 'A5', 1], [11, 'G5', 1],
-            [12, 'F5', .5], [12.5, 'A5', .5], [13, 'C6', .5], [13.5, 'A5', .5], [14, 'G5', 2]],
-      bass: ['C3', 'C3', 'F3', 'F3', 'G3', 'G3', 'C3', 'C3'] },
-    yasashii: { name: 'やさしい系', bpm: 60, wave: 'sine', gain: .11, loop: 16,
-      mel: [[0, 'G4', 2], [2, 'E4', 2], [4, 'C4', 2], [6, 'D4', 2],
-            [8, 'E4', 2], [10, 'G4', 2], [12, 'F4', 2], [14, 'D4', 2]],
-      bass: ['C3', 'C3', 'G3', 'G3', 'C3', 'C3', 'G3', 'G3'] },
-    atatakai: { name: 'あたたかい系', bpm: 92, wave: 'sine', gain: .1, loop: 16,
-      mel: [[0, 'D5', 1], [1, 'C5', .5], [1.5, 'A4', .5], [2, 'G4', 2],
-            [4, 'A4', 1], [5, 'C5', .5], [5.5, 'D5', .5], [6, 'E5', 2],
-            [8, 'D5', 1], [9, 'C5', .5], [9.5, 'A4', .5], [10, 'G4', 2],
-            [12, 'A4', 1], [13, 'G4', .5], [13.5, 'F#4', .5], [14, 'G4', 2]],
-      bass: ['G2', 'G2', 'C3', 'C3', 'G2', 'G2', 'D3', 'D3'] }
+    shittori: { name: 'しっとり系', file: 'bgm/shittori.mp3' },
+    akarui: { name: '明るい系', file: 'bgm/akarui.mp3' },
+    yasashii: { name: 'やさしい系', file: 'bgm/yasashii.mp3' },
+    atatakai: { name: 'あたたかい系', file: 'bgm/atatakai.mp3' }
   };
-  var BGM_FREQ = (function () {
-    var names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-    var t = {};
-    for (var oct = 2; oct <= 6; oct++) {
-      for (var i = 0; i < 12; i++) {
-        var midi = (oct + 1) * 12 + i;
-        t[names[i] + oct] = 440 * Math.pow(2, (midi - 69) / 12);
-      }
-    }
-    return t;
-  })();
+  var BGM_GAIN = 0.45; // 動画クリップ自体の音より控えめな、背景音楽らしい音量にする
 
-  function bgmTone(ctxA, dest, f, t, du, g, ty) {
-    var o = ctxA.createOscillator(), o2 = ctxA.createOscillator(), gn = ctxA.createGain(), g2 = ctxA.createGain();
-    o.type = ty; o.frequency.value = f;
-    o2.type = 'sine'; o2.frequency.value = f * 2.005; g2.gain.value = .25;
-    o.connect(gn); o2.connect(g2); g2.connect(gn); gn.connect(dest);
-    gn.gain.setValueAtTime(.0001, t);
-    gn.gain.exponentialRampToValueAtTime(g, t + .02);
-    gn.gain.exponentialRampToValueAtTime(.0001, t + du);
-    o.start(t); o2.start(t); o.stop(t + du + .05); o2.stop(t + du + .05);
-  }
-  function bgmBass(ctxA, dest, f, t, du, g) {
-    var o = ctxA.createOscillator(), gn = ctxA.createGain();
-    o.type = 'sine'; o.frequency.value = f;
-    o.connect(gn); gn.connect(dest);
-    gn.gain.setValueAtTime(.0001, t);
-    gn.gain.exponentialRampToValueAtTime(g, t + .03);
-    gn.gain.exponentialRampToValueAtTime(.0001, t + du);
-    o.start(t); o.stop(t + du + .05);
-  }
-  function scheduleBgmLoop(ctxA, dest, track, startAt) {
-    var SPB = 60 / track.bpm;
-    track.mel.forEach(function (m) {
-      bgmTone(ctxA, dest, BGM_FREQ[m[1]], startAt + m[0] * SPB, m[2] * SPB * .92, track.gain, track.wave);
-    });
-    track.bass.forEach(function (b, i) {
-      bgmBass(ctxA, dest, BGM_FREQ[b], startAt + i * 2 * SPB, SPB * 1.5, track.gain * .5);
-    });
-  }
-
-  var bgmTimer = null;
-  function startBgm(ctxA, dest, totalSeconds, moodKey) {
-    var track = BGM[moodKey];
-    if (!track) return;
-    var SPB = 60 / track.bpm;
-    var loopDur = track.loop * SPB;
-    var nextTime = ctxA.currentTime + 0.05;
-    var endAt = ctxA.currentTime + totalSeconds + 0.6;
-    scheduleBgmLoop(ctxA, dest, track, nextTime);
-    nextTime += loopDur;
-    bgmTimer = setInterval(function () {
-      var ahead = ctxA.currentTime + 0.7;
-      while (nextTime < ahead && nextTime < endAt) {
-        scheduleBgmLoop(ctxA, dest, track, nextTime);
-        nextTime += loopDur;
-      }
-      if (nextTime >= endAt) { clearInterval(bgmTimer); bgmTimer = null; }
-    }, 400);
-  }
-  function stopBgm() {
-    if (bgmTimer) { clearInterval(bgmTimer); bgmTimer = null; }
-  }
-
-  var previewBgmCtx = null, previewBgmTimer = null;
+  var previewEl = null, previewTimer = null;
   function previewBgm(moodKey) {
     stopPreviewBgm();
     var track = BGM[moodKey];
     if (!track) return;
     try {
-      previewBgmCtx = previewBgmCtx || new (window.AudioContext || window.webkitAudioContext)();
-      if (previewBgmCtx.state === 'suspended') previewBgmCtx.resume();
-    } catch (e) { return; }
-    var SPB = 60 / track.bpm;
-    scheduleBgmLoop(previewBgmCtx, previewBgmCtx.destination, track, previewBgmCtx.currentTime + 0.05);
-    previewBgmTimer = setTimeout(function () { previewBgmTimer = null; }, (track.loop * SPB + 0.3) * 1000);
+      var el = new Audio(track.file);
+      el.volume = 0.8;
+      var p = el.play();
+      if (p && p.catch) p.catch(function () {});
+      previewEl = el;
+      previewTimer = setTimeout(function () { stopPreviewBgm(); }, 8000);
+    } catch (e) {}
   }
   function stopPreviewBgm() {
-    if (previewBgmTimer) { clearTimeout(previewBgmTimer); previewBgmTimer = null; }
-    if (previewBgmCtx) { try { previewBgmCtx.close(); } catch (e) {} previewBgmCtx = null; }
+    if (previewTimer) { clearTimeout(previewTimer); previewTimer = null; }
+    if (previewEl) { try { previewEl.pause(); previewEl.currentTime = 0; } catch (e) {} previewEl = null; }
+  }
+
+  var bgmRecEl = null;
+  function startBgmRecording(ctxA, dest, moodKey) {
+    var track = BGM[moodKey];
+    if (!track) return;
+    var el = new Audio(track.file);
+    el.loop = true;
+    el.crossOrigin = null;
+    bgmRecEl = el;
+    var srcNode = ctxA.createMediaElementSource(el);
+    var gainNode = ctxA.createGain();
+    gainNode.gain.value = BGM_GAIN;
+    srcNode.connect(gainNode);
+    gainNode.connect(dest);
+    var p = el.play();
+    if (p && p.catch) p.catch(function () {});
+  }
+  function stopBgmRecording() {
+    if (bgmRecEl) { try { bgmRecEl.pause(); } catch (e) {} bgmRecEl = null; }
   }
 
   document.getElementById('segBgm').addEventListener('click', function (e) {
@@ -844,7 +797,7 @@
               });
             }
             if (wantBgm) {
-              startBgm(actx, audioDest, plan.total, settings.bgm);
+              startBgmRecording(actx, audioDest, settings.bgm);
             }
             audioDest.stream.getAudioTracks().forEach(function (tr) { stream.addTrack(tr); });
           } catch (e) {
@@ -933,7 +886,7 @@
   }
 
   function releaseStream() {
-    stopBgm();
+    stopBgmRecording();
     lamp.classList.remove('on');
     if (audioDest) {
       audioSources.forEach(function (s) { try { s.disconnect(audioDest); } catch (e) {} });
