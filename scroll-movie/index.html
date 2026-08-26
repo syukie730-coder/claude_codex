@@ -563,24 +563,33 @@
     return new Promise(function (resolve, reject) {
       var url = URL.createObjectURL(file);
       var v = document.createElement('video');
-      v.src = url; v.muted = true; v.playsInline = true;
+      v.muted = true; v.playsInline = true;
       v.setAttribute('playsinline', ''); v.setAttribute('webkit-playsinline', '');
-      v.preload = 'auto'; v.crossOrigin = 'anonymous';
+      v.preload = 'auto';
+      // iOS Safari の video タグでは crossOrigin 指定が blob URL の読み込みを妨げることがあるため付けない。
+      // <source> 経由での読み込みのほうが安定するのでこちらを使う。
+      var source = document.createElement('source');
+      source.src = url;
+      if (file.type) source.type = file.type;
+      v.appendChild(source);
       var done = false;
-      v.addEventListener('loadeddata', function () {
+      function onReady() {
         if (done) return; done = true;
         var c = document.createElement('canvas');
-        var sc = Math.min(1, 240 / Math.max(v.videoWidth, v.videoHeight));
-        c.width = Math.round(v.videoWidth * sc);
-        c.height = Math.round(v.videoHeight * sc);
+        var sc = Math.min(1, 240 / Math.max(v.videoWidth || 1, v.videoHeight || 1));
+        c.width = Math.round((v.videoWidth || 240) * sc) || 1;
+        c.height = Math.round((v.videoHeight || 240) * sc) || 1;
         try { c.getContext('2d').drawImage(v, 0, 0, c.width, c.height); } catch (e) {}
         resolve({
           kind: 'movie', el: v, w: v.videoWidth, h: v.videoHeight,
           dur: isFinite(v.duration) ? v.duration : 5,
           name: file.name, thumb: c.toDataURL('image/jpeg', 0.6), url: url
         });
-      });
-      v.addEventListener('error', function () { reject(new Error('video')); });
+      }
+      v.addEventListener('loadeddata', onReady);
+      v.addEventListener('loadedmetadata', onReady);
+      v.addEventListener('error', function () { if (!done) { done = true; reject(new Error('video')); } });
+      v.load();
       setTimeout(function () { if (!done) { done = true; reject(new Error('timeout')); } }, 20000);
     });
   }
