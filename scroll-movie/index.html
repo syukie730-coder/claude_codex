@@ -196,6 +196,21 @@
   .note b{color:var(--text)}
   #msg{margin-top:12px;font-size:15px;color:var(--rose);font-weight:600}
   #msg:empty{display:none}
+
+  /* ---- 詳しい設定（折りたたみ） ---- */
+  .advanced{margin:28px 0 10px;padding-top:16px;border-top:1px solid var(--paper-edge)}
+  .advanced summary{
+    font-size:13px;color:var(--text-soft);cursor:pointer;list-style:none;
+    display:inline-block;user-select:none;
+  }
+  .advanced summary::-webkit-details-marker{display:none}
+  .advanced summary::before{content:"▸ "}
+  .advanced[open] summary::before{content:"▾ "}
+  .advanced-body{margin-top:14px}
+  .btn-reset-advanced{
+    width:100%;background:#fff;border:1px solid var(--paper-edge);color:var(--text-soft);
+    font-size:14px;padding:11px;border-radius:8px;margin-top:4px;
+  }
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -280,32 +295,15 @@
     <div class="field">
       <label>BGM（音楽）</label>
       <div class="seg wrap" id="segBgm">
-        <button type="button" data-v="none" aria-pressed="true">なし</button>
+        <button type="button" data-v="none" aria-pressed="false">なし</button>
         <button type="button" data-v="shittori" aria-pressed="false">しっとり系</button>
         <button type="button" data-v="akarui" aria-pressed="false">明るい系</button>
         <button type="button" data-v="yasashii" aria-pressed="false">やさしい系</button>
-        <button type="button" data-v="atatakai" aria-pressed="false">あたたかい系</button>
+        <button type="button" data-v="atatakai" aria-pressed="true">あたたかい系</button>
       </div>
-      <p class="hint">ボタンを押すと、少しだけ試聴できます。動画クリップ自体の音（下の「動画の音を入れる」）とは別に、できあがった動画に重なって流れます。</p>
+      <p class="hint">ボタンを押すと、少しだけ試聴できます。動画クリップ自体の音とは別の設定で、できあがった動画に重なって流れます。</p>
     </div>
 
-    <div class="field">
-      <label class="check">
-        <input type="checkbox" id="optPause">
-        <span>動画のところで止まって、最後まで再生する<br>
-          <span class="hint" style="display:block">オンにすると、動画のところだけ止まって最後まで見せてから続きに進みます。オフ（初期設定）だと、写真と同じように一定の速さで流れながら動画も自然に再生されます。</span>
-        </span>
-      </label>
-    </div>
-
-    <div class="field">
-      <label class="check">
-        <input type="checkbox" id="optAudio" checked>
-        <span>動画の音を入れる<br>
-          <span class="hint" style="display:block">うまくいかないときは、ここをオフにしてもう一度。</span>
-        </span>
-      </label>
-    </div>
   </section>
 
   <section>
@@ -350,6 +348,29 @@
     </p>
   </section>
 
+  <details class="advanced">
+    <summary>詳しい設定</summary>
+    <div class="advanced-body">
+      <div class="field">
+        <label class="check">
+          <input type="checkbox" id="optPause">
+          <span>動画のところで止まって、最後まで再生する<br>
+            <span class="hint" style="display:block">オンにすると、動画のところだけ止まって最後まで見せてから続きに進みます。オフ（おすすめ）だと、写真と同じように一定の速さで流れながら動画も自然に再生されます。</span>
+          </span>
+        </label>
+      </div>
+      <div class="field">
+        <label class="check">
+          <input type="checkbox" id="optAudio">
+          <span>動画の音を入れる<br>
+            <span class="hint" style="display:block">うまくいかないときは、ここをオフにしてもう一度。</span>
+          </span>
+        </label>
+      </div>
+      <button type="button" class="btn-reset-advanced" id="btnResetAdvanced">おすすめの設定に戻す</button>
+    </div>
+  </details>
+
 </div>
 
 <script>
@@ -377,7 +398,7 @@
   var optAudio = document.getElementById('optAudio');
 
   var items = [];                 // {kind, el, w, h, dur, name, thumb, y, dw, dh, dx}
-  var settings = { color: '#FFFFFF', pos: 'top', speed: 340, bg: '#F4F1EC', bgm: 'none' };
+  var settings = { color: '#FFFFFF', pos: 'top', speed: 340, bg: '#F4F1EC', bgm: 'atatakai' };
   var running = false, stopFlag = false;
   var recorder = null, outBlob = null, outName = 'omoide.mp4';
   var actx = null, audioDest = null, audioSources = [], curStream = null;
@@ -992,6 +1013,23 @@
     a.download = outName;
     document.body.appendChild(a); a.click(); a.remove();
   });
+
+  /* ---------- 詳しい設定：おすすめの設定に戻す ---------- */
+  var RECOMMENDED_BGM = 'atatakai';
+  document.getElementById('btnResetAdvanced').addEventListener('click', function () {
+    optPause.checked = false;
+    optAudio.checked = false;
+    settings.bgm = RECOMMENDED_BGM;
+    var segBgmEl = document.getElementById('segBgm');
+    Array.prototype.forEach.call(segBgmEl.querySelectorAll('button'), function (x) {
+      x.setAttribute('aria-pressed', String(x.dataset.v === RECOMMENDED_BGM));
+    });
+    preloadBgm(RECOMMENDED_BGM);
+    say('おすすめの設定に戻しました。', false);
+  });
+
+  // 初期選択のBGMを、使うころには読み込みが済んでいるようこっそり先読みしておく
+  preloadBgm(settings.bgm);
 })();
 
 </script>
