@@ -31,7 +31,7 @@
     font-size:17px;
     line-height:1.7;
     -webkit-text-size-adjust:100%;
-    padding-bottom:120px;
+    padding-bottom:170px;
   }
   .wrap{max-width:660px;margin:0 auto;padding:0 16px;}
 
@@ -152,9 +152,10 @@
   /* ===== 追加ボタン ===== */
   .fab{
     position:fixed;left:50%;bottom:22px;transform:translateX(-50%);
-    display:inline-flex;align-items:center;gap:8px;
-    padding:16px 30px;min-height:60px;
-    font-family:inherit;font-size:19px;font-weight:800;color:#fff;
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:15px 26px;min-height:60px;
+    white-space:nowrap;
+    font-family:inherit;font-size:18px;font-weight:800;color:#fff;letter-spacing:0;
     background:var(--coral);border:none;border-radius:999px;cursor:pointer;
     box-shadow:0 6px 0 #E05F6C, 0 14px 26px rgba(224,95,108,.35);
     z-index:40;
@@ -245,6 +246,69 @@
   }
   .backup-btns button:active{transform:scale(.96);}
 
+  /* ===== しゃしん ===== */
+  .card-photo{
+    flex:0 0 auto;position:relative;width:84px;height:84px;padding:0;
+    border-radius:18px;overflow:visible;border:none;background:none;cursor:zoom-in;
+    animation:tap 3.4s ease-in-out infinite;
+  }
+  .card-photo img{
+    width:84px;height:84px;object-fit:cover;display:block;
+    border-radius:18px;border:2.5px solid var(--line);background:var(--cream);
+  }
+  .card-photo .mini{
+    position:absolute;right:-6px;bottom:-6px;font-size:16px;line-height:1;
+    background:#fff;border-radius:999px;padding:5px;
+    box-shadow:0 2px 8px rgba(46,42,51,.22);
+  }
+  .photo-add{
+    width:100%;padding:14px;min-height:72px;margin:0 0 18px;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    font-family:inherit;font-size:16px;font-weight:800;color:var(--ink);
+    background:#FFFDF8;border:2.5px dashed var(--line);border-radius:16px;cursor:pointer;
+  }
+  .photo-add:active{transform:scale(.97);}
+  .photo-preview{display:none;align-items:center;gap:14px;margin:0 0 18px;}
+  .photo-preview.on{display:flex;}
+  .photo-preview img{width:92px;height:92px;object-fit:cover;border-radius:16px;border:2.5px solid var(--line);}
+  .photo-preview button{
+    padding:10px 16px;min-height:44px;
+    font-family:inherit;font-size:15px;font-weight:800;color:var(--ink);
+    background:#F1E9DD;border:none;border-radius:999px;cursor:pointer;
+  }
+  .photo-size{font-size:14px;color:var(--ink-soft);margin:0 0 6px;}
+  .lightbox{position:fixed;inset:0;background:rgba(46,42,51,.82);display:none;place-items:center;padding:20px;z-index:90;}
+  .lightbox.on{display:grid;}
+  .lightbox img{
+    --tilt:0deg;max-width:100%;max-height:82vh;
+    border-radius:22px;border:5px solid #fff;box-shadow:0 20px 50px rgba(0,0,0,.45);
+    animation:popIn .45s cubic-bezier(.22,1.3,.4,1) both;
+  }
+  .gauge{height:14px;background:var(--cream);border:2px solid var(--line);border-radius:99px;overflow:hidden;margin:0 0 8px;}
+  .gauge span{display:block;height:100%;width:0;background:var(--mint);transition:width .35s ease;}
+  .gauge-text{margin:0 0 14px !important;}
+
+  /* ===== かくにんの窓 ===== */
+  .ask-bg{position:fixed;inset:0;background:rgba(46,42,51,.55);display:none;place-items:center;padding:24px;z-index:95;}
+  .ask-bg.on{display:grid;}
+  .ask{
+    --tilt:0deg;width:100%;max-width:380px;
+    background:var(--paper);border:3px solid var(--line);border-radius:24px;
+    padding:24px 20px 20px;text-align:center;
+    box-shadow:0 18px 40px rgba(46,42,51,.3);
+    animation:popIn .4s cubic-bezier(.22,1.3,.4,1) both;
+  }
+  .ask .ask-face{font-size:40px;display:block;margin:0 0 8px;}
+  .ask p{margin:0 0 20px;font-size:17px;font-weight:700;line-height:1.6;word-break:break-word;white-space:pre-line;}
+  .ask-btns{display:flex;gap:10px;}
+  .ask-btns button{
+    flex:1;padding:15px;min-height:56px;
+    font-family:inherit;font-size:17px;font-weight:800;border:none;border-radius:999px;cursor:pointer;
+  }
+  .ask-no{color:var(--ink);background:#F1E9DD;}
+  .ask-yes{color:#fff;background:var(--coral);box-shadow:0 4px 0 #E05F6C;}
+  .ask-yes:active{transform:translateY(3px);box-shadow:0 1px 0 #E05F6C;}
+
   :focus-visible{outline:3px solid var(--sky);outline-offset:2px;}
   @media (prefers-reduced-motion: reduce){
     *{animation:none !important;transition:none !important;}
@@ -280,6 +344,8 @@
   <section class="backup">
     <h3>だいじな控え（バックアップ）</h3>
     <p>ときどき保存しておくと、機種変のときも安心だよ。</p>
+    <div class="gauge" aria-hidden="true"><span id="gaugeBar"></span></div>
+    <p class="gauge-text" id="gaugeText"></p>
     <div class="backup-btns">
       <button type="button" id="btnExport">📤 控えを保存する</button>
       <button type="button" id="btnImport">📥 控えから戻す</button>
@@ -304,6 +370,17 @@
   <label>ジャンル</label>
   <div class="genre-pick" id="genrePick"></div>
 
+  <label>しゃしん <span class="hint">なくても だいじょうぶ</span></label>
+  <button type="button" class="photo-add" id="btnPhoto">📷 しゃしんを えらぶ</button>
+  <div class="photo-preview" id="photoPreview">
+    <img id="photoImg" alt="えらんだ しゃしん">
+    <div>
+      <p class="photo-size" id="photoSize"></p>
+      <button type="button" id="btnPhotoDel">はずす</button>
+    </div>
+  </div>
+  <input type="file" id="photoIn" accept="image/*" hidden>
+
   <label for="fMemo">ひとこと <span class="hint">なくても だいじょうぶ</span></label>
   <textarea id="fMemo" placeholder="例）予約はネットから。夕方がすいてるって"></textarea>
 
@@ -312,6 +389,19 @@
     <button type="button" class="btn-save" id="btnSave">保存する</button>
   </div>
 </div>
+
+<div class="ask-bg" id="askBg">
+  <div class="ask" role="dialog" aria-modal="true" aria-labelledby="askText">
+    <span class="ask-face" id="askFace" aria-hidden="true">🗑️</span>
+    <p id="askText"></p>
+    <div class="ask-btns">
+      <button type="button" class="ask-no" id="askNo">やめる</button>
+      <button type="button" class="ask-yes" id="askYes">けす</button>
+    </div>
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox"><img id="lightboxImg" alt="しゃしん"></div>
 
 <div class="toast" id="toast"></div>
 
@@ -328,8 +418,9 @@
   ];
   var KEY = "osusume_note_v1";
 
-  var items = [], editingId = null, pickedGenre = "hospital";
+  var items = [], editingId = null, pickedGenre = "hospital", pickedPhoto = "";
   var filterGenre = "all", filterPerson = "", keyword = "";
+  var MAX_EDGE = 1000, QUALITY = 0.65, LIMIT = 4600000;
 
   /* ---------- ほぞん ---------- */
   function load(){
@@ -340,7 +431,26 @@
     if(!Array.isArray(items)) items = [];
   }
   function save(){
-    try{ localStorage.setItem(KEY, JSON.stringify(items)); }catch(e){}
+    try{
+      localStorage.setItem(KEY, JSON.stringify(items));
+      updateGauge();
+      return true;
+    }catch(e){
+      updateGauge();
+      return false;
+    }
+  }
+
+  function updateGauge(){
+    var used = 0;
+    try{ used = (localStorage.getItem(KEY) || "").length; }catch(e){}
+    var pct = Math.min(100, Math.round(used / LIMIT * 100));
+    var bar = el("gaugeBar"), txt = el("gaugeText");
+    if(!bar) return;
+    bar.style.width = pct + "%";
+    bar.style.background = pct > 85 ? "#FF7E8A" : (pct > 60 ? "#F0B429" : "#3FB9A5");
+    txt.textContent = "しゃしんも入れて、いま " + (used/1024/1024).toFixed(1) + "MB（" + pct + "%）つかってるよ"
+      + (pct > 85 ? " — そろそろ控えを保存してね" : "");
   }
 
   /* ---------- 小道具 ---------- */
@@ -354,6 +464,70 @@
     return GENRES[4];
   }
   function el(id){ return document.getElementById(id); }
+
+  /* しゃしんを小さく軽くする（長いほうを1000px・JPEGで保存） */
+  function shrinkPhoto(file, done, fail){
+    var reader = new FileReader();
+    reader.onerror = fail;
+    reader.onload = function(){
+      var img = new Image();
+      img.onerror = fail;
+      img.onload = function(){
+        var w = img.naturalWidth, h = img.naturalHeight;
+        var scale = Math.min(1, MAX_EDGE / Math.max(w, h));
+        var cw = Math.round(w * scale), ch = Math.round(h * scale);
+        var cv = document.createElement("canvas");
+        cv.width = cw; cv.height = ch;
+        var ctx = cv.getContext("2d");
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(0, 0, cw, ch);
+        ctx.drawImage(img, 0, 0, cw, ch);
+        try{ done(cv.toDataURL("image/jpeg", QUALITY)); }
+        catch(e){ fail(); }
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function photoKB(dataUrl){
+    return Math.round(dataUrl.length * 0.75 / 1024);
+  }
+
+  /* かくにんの窓（お試し画面でも動くように自前で用意） */
+  var askAction = null;
+  function askConfirm(msg, face, yesLabel, onYes){
+    askAction = onYes;
+    el("askText").textContent = msg;
+    el("askFace").textContent = face || "🗑️";
+    el("askYes").textContent = yesLabel || "けす";
+    el("askBg").classList.add("on");
+  }
+  function closeAsk(){
+    el("askBg").classList.remove("on");
+    askAction = null;
+  }
+  function notice(msg){
+    askAction = null;
+    el("askText").textContent = msg;
+    el("askFace").textContent = "😢";
+    el("askYes").textContent = "わかった";
+    el("askBg").classList.add("on");
+  }
+
+  function showPhotoUI(){
+    var box = el("photoPreview");
+    if(pickedPhoto){
+      el("photoImg").src = pickedPhoto;
+      el("photoSize").textContent = "およそ " + photoKB(pickedPhoto) + "KB に圧縮したよ";
+      box.classList.add("on");
+      el("btnPhoto").textContent = "📷 べつの しゃしんに かえる";
+    }else{
+      box.classList.remove("on");
+      el("photoImg").removeAttribute("src");
+      el("btnPhoto").textContent = "📷 しゃしんを えらぶ";
+    }
+  }
 
   /* ---------- しぼりこみボタン ---------- */
   function buildChips(){
@@ -412,7 +586,11 @@
       var tilt = ((i % 3) - 1) * 0.7;
       return ''
       + '<article class="card" style="--tilt:'+tilt+'deg;--accent:'+g.color+';animation-delay:'+(i*0.05)+'s">'
-      +   '<div class="card-icon" style="animation-delay:'+(i*0.4)+'s" aria-hidden="true">'+g.emoji+'</div>'
+      +   (it.photo
+            ? '<button type="button" class="card-photo" data-photo="'+esc(it.id)+'" style="animation-delay:'+(i*0.4)+'s" aria-label="しゃしんを大きく見る">'
+              + '<img src="'+esc(it.photo)+'" alt="'+esc(it.name)+'のしゃしん">'
+              + '<span class="mini" aria-hidden="true">'+g.emoji+'</span></button>'
+            : '<div class="card-icon" style="animation-delay:'+(i*0.4)+'s" aria-hidden="true">'+g.emoji+'</div>')
       +   '<div class="card-body">'
       +     '<span class="card-genre">'+esc(g.name)+'</span>'
       +     '<h3 class="card-title">'+esc(it.name)+'</h3>'
@@ -435,7 +613,9 @@
     el("fPerson").value = item ? item.person : "";
     el("fMemo").value   = item ? (item.memo||"") : "";
     pickedGenre = item ? item.genre : (filterGenre !== "all" ? filterGenre : "hospital");
+    pickedPhoto = item ? (item.photo || "") : "";
     buildGenrePick();
+    showPhotoUI();
     el("sheetBg").classList.add("on");
     el("sheet").classList.add("on");
     setTimeout(function(){ el("fName").focus(); }, 340);
@@ -483,23 +663,36 @@
       name: name,
       person: el("fPerson").value.trim(),
       genre: pickedGenre,
-      memo: el("fMemo").value.trim()
+      memo: el("fMemo").value.trim(),
+      photo: pickedPhoto
     };
+    var before = JSON.stringify(items);
+
     if(editingId){
       for(var i=0;i<items.length;i++){
         if(items[i].id === editingId){
           items[i].name = data.name; items[i].person = data.person;
           items[i].genre = data.genre; items[i].memo = data.memo;
+          items[i].photo = data.photo;
           break;
         }
       }
-      save(); closeSheet(); render(); toast("なおしたよ ✏️");
     }else{
       data.id = "i" + Date.now() + Math.floor(Math.random()*1000);
       items.unshift(data);
-      save(); closeSheet(); render();
-      toast("とうろく できたよ！"); sparkle();
     }
+
+    if(!save()){
+      items = JSON.parse(before);
+      save(); render();
+      notice("保存できませんでした。しゃしんで いっぱいのようです。控えを保存してから、いらないカードを けしてみてね。");
+      return;
+    }
+
+    var wasEdit = !!editingId;
+    closeSheet(); render();
+    if(wasEdit){ toast("なおしたよ ✏️"); }
+    else{ toast("とうろく できたよ！"); sparkle(); }
   }
 
   /* ---------- 控え ---------- */
@@ -525,7 +718,7 @@
           items.unshift({
             id:"i"+Date.now()+Math.floor(Math.random()*10000),
             name:String(o.name), person:String(o.person||""),
-            genre: genreOf(o.genre).id, memo:String(o.memo||"")
+            genre: genreOf(o.genre).id, memo:String(o.memo||""), photo:String(o.photo||"")
           });
           added++;
         });
@@ -549,6 +742,18 @@
     buildGenrePick();
   });
   el("cards").addEventListener("click", function(e){
+    var ph = e.target.closest(".card-photo");
+    if(ph){
+      var pid = ph.dataset.photo;
+      for(var k=0;k<items.length;k++){
+        if(items[k].id === pid && items[k].photo){
+          el("lightboxImg").src = items[k].photo;
+          el("lightbox").classList.add("on");
+          break;
+        }
+      }
+      return;
+    }
     var p = e.target.closest(".card-person");
     if(p){ filterPerson = p.dataset.person; keyword=""; el("q").value=""; render(); window.scrollTo({top:0,behavior:"smooth"}); return; }
     var ed = e.target.closest("[data-edit]");
@@ -561,10 +766,11 @@
     if(de){
       var did = de.dataset.del, target = null;
       for(var j=0;j<items.length;j++){ if(items[j].id===did){ target = items[j]; break; } }
-      if(target && confirm("「"+target.name+"」を けしても いい？")){
+      if(!target) return;
+      askConfirm("「" + target.name + "」を\nけしても いい？", "🗑️", "けす", function(){
         items = items.filter(function(x){ return x.id !== did; });
         save(); render(); toast("けしたよ");
-      }
+      });
     }
   });
   el("personClear").addEventListener("click", function(){ filterPerson=""; render(); });
@@ -579,11 +785,47 @@
     if(this.files && this.files[0]) importData(this.files[0]);
     this.value = "";
   });
-  document.addEventListener("keydown", function(e){
-    if(e.key === "Escape" && el("sheet").classList.contains("on")) closeSheet();
+  el("btnPhoto").addEventListener("click", function(){ el("photoIn").click(); });
+  el("btnPhotoDel").addEventListener("click", function(){ pickedPhoto = ""; showPhotoUI(); });
+  el("photoIn").addEventListener("change", function(){
+    var f = this.files && this.files[0];
+    this.value = "";
+    if(!f) return;
+    el("btnPhoto").textContent = "⏳ しゃしんを ちいさくしてるよ…";
+    shrinkPhoto(f, function(dataUrl){
+      pickedPhoto = dataUrl;
+      showPhotoUI();
+    }, function(){
+      showPhotoUI();
+      toast("この しゃしんは 読めなかったよ");
+    });
+  });
+  el("lightbox").addEventListener("click", function(){
+    this.classList.remove("on");
+    el("lightboxImg").removeAttribute("src");
+  });
+  el("askNo").addEventListener("click", closeAsk);
+  el("askYes").addEventListener("click", function(){
+    var fn = askAction;
+    closeAsk();
+    if(fn) fn();
+  });
+  el("askBg").addEventListener("click", function(e){
+    if(e.target === this) closeAsk();
   });
 
-  load(); buildChips(); buildGenrePick(); render();
+  document.addEventListener("keydown", function(e){
+    if(e.key !== "Escape") return;
+    if(el("askBg").classList.contains("on")){ closeAsk(); return; }
+    if(el("lightbox").classList.contains("on")){
+      el("lightbox").classList.remove("on");
+      el("lightboxImg").removeAttribute("src");
+      return;
+    }
+    if(el("sheet").classList.contains("on")) closeSheet();
+  });
+
+  load(); buildChips(); buildGenrePick(); showPhotoUI(); render(); updateGauge();
 })();
 </script>
 </body>
