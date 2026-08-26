@@ -646,7 +646,7 @@
   /* ---------- 縦一列のレイアウト ---------- */
   var totalH = H;
   function layout() {
-    var y = Math.round(H * 0.12);
+    var y = Math.round(H * 0.07);
     items.forEach(function (it) {
       var dw = W - SIDE * 2;
       var dh = dw * (it.h / it.w);
@@ -655,7 +655,7 @@
       it.dx = Math.round((W - it.dw) / 2); it.y = y;
       y += it.dh + GAP;
     });
-    totalH = y + Math.round(H * 0.12) - GAP;
+    totalH = y + Math.round(H * 0.07) - GAP;
   }
 
   /* ---------- 描画 ---------- */
