@@ -213,6 +213,12 @@
   <section>
     <h2><span class="num">01</span>写真と動画をえらぶ</h2>
     <p class="lead">写真も動画も、いっしょに選べます。あとから追加もできます。</p>
+    <div class="note">
+      <b>写真と動画のバランスの目安</b><br>
+      写真が多いと、落ち着いてゆっくりした雰囲気になります。動画が多いと、動きの多いにぎやかな雰囲気になります。<br>
+      写真だけ・動画だけよりも、<b>両方を混ぜたほうがメリハリ</b>が出やすいのでおすすめです。<br>
+      動画を増やすほど、できあがる動画の<b>全体の長さも長く</b>なります。
+    </div>
     <label class="picker" for="filePickPhoto">
       <strong>＋ 写真をえらぶ</strong>
       <span>2〜3枚くらいがおすすめ</span>
@@ -646,7 +652,7 @@
   /* ---------- 縦一列のレイアウト ---------- */
   var totalH = H;
   function layout() {
-    var y = Math.round(H * 0.07);
+    var y = Math.round(H * 0.04);
     items.forEach(function (it) {
       var dw = W - SIDE * 2;
       var dh = dw * (it.h / it.w);
@@ -655,7 +661,7 @@
       it.dx = Math.round((W - it.dw) / 2); it.y = y;
       y += it.dh + GAP;
     });
-    totalH = y + Math.round(H * 0.07) - GAP;
+    totalH = y + Math.round(H * 0.04) - GAP;
   }
 
   /* ---------- 描画 ---------- */
