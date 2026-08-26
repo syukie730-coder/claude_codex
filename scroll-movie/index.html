@@ -420,93 +420,92 @@
   };
   var BGM_GAIN = 0.45; // 動画クリップ自体の音より控えめな、背景音楽らしい音量にする
 
-  // ファイルまるごと（blob）を先に取得してから鳴らす。ネットワーク待ちで
-  // 途中で音が切れることがないように、再生前に全部ローカルへ確保しておく。
-  var BGM_BLOB_CACHE = {};
-  var BGM_BLOB_PROMISE = {};
-  function fetchBgmBlobUrl(moodKey) {
+  // 曲データを Web Audio の AudioBuffer としてまるごとデコードしてから鳴らす。
+  // <audio>要素のloop属性やMediaElementSourceに頼ると、Safariでは
+  // 「ループのつなぎ目で音が出なくなる」ことがあるため、
+  // AudioBufferSourceNode（サンプル単位で確実にループする仕組み）に統一する。
+  function getAudioCtx() {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === 'suspended') actx.resume();
+    return actx;
+  }
+  var BGM_BUFFER_CACHE = {};
+  function fetchBgmBuffer(moodKey) {
     var track = BGM[moodKey];
     if (!track) return Promise.resolve(null);
-    if (BGM_BLOB_CACHE[moodKey]) return Promise.resolve(BGM_BLOB_CACHE[moodKey]);
-    if (BGM_BLOB_PROMISE[moodKey]) return BGM_BLOB_PROMISE[moodKey];
-    BGM_BLOB_PROMISE[moodKey] = fetch(track.file).then(function (r) {
+    if (BGM_BUFFER_CACHE[moodKey]) return BGM_BUFFER_CACHE[moodKey];
+    var ctxA = getAudioCtx();
+    BGM_BUFFER_CACHE[moodKey] = fetch(track.file).then(function (r) {
       if (!r.ok) throw new Error('bgm fetch failed: ' + r.status);
-      return r.blob();
-    }).then(function (blob) {
-      var url = URL.createObjectURL(blob);
-      BGM_BLOB_CACHE[moodKey] = url;
-      return url;
+      return r.arrayBuffer();
+    }).then(function (buf) {
+      return ctxA.decodeAudioData(buf);
     }).catch(function (e) {
-      console.warn('bgm fetch failed, falling back to direct url', e);
-      return track.file; // 取得できなければ直接ファイルを指す（従来どおりの動き）
+      console.warn('bgm decode failed', e);
+      BGM_BUFFER_CACHE[moodKey] = null;
+      return null;
     });
-    return BGM_BLOB_PROMISE[moodKey];
+    return BGM_BUFFER_CACHE[moodKey];
   }
-  // 曲を選んだ瞬間から、こっそり取得を始めておく
-  function preloadBgm(moodKey) { fetchBgmBlobUrl(moodKey); }
-  // 回線が遅いときに永久に待たされないための保険（一定時間で直リンクにフォールバック）
-  function bgmUrlWithTimeout(moodKey, ms) {
+  // 曲を選んだ瞬間から、こっそり取得・デコードを始めておく
+  function preloadBgm(moodKey) { fetchBgmBuffer(moodKey); }
+  // 回線が遅いときに永久に待たされないための保険（一定時間でBGMなしに切り替える）
+  function bgmBufferWithTimeout(moodKey, ms) {
     var track = BGM[moodKey];
     if (!track) return Promise.resolve(null);
     return new Promise(function (resolve) {
       var done = false;
-      fetchBgmBlobUrl(moodKey).then(function (url) {
-        if (!done) { done = true; resolve(url); }
+      fetchBgmBuffer(moodKey).then(function (buf) {
+        if (!done) { done = true; resolve(buf); }
       });
       setTimeout(function () {
-        if (!done) { done = true; resolve(track.file); }
+        if (!done) { done = true; resolve(null); }
       }, ms);
     });
   }
 
-  var previewEl = null, previewTimer = null;
+  var previewSourceNode = null, previewTimer = null;
   function previewBgm(moodKey) {
     stopPreviewBgm();
     var track = BGM[moodKey];
     if (!track) return;
-    fetchBgmBlobUrl(moodKey).then(function (url) {
-      if (!url || settings.bgm !== moodKey) return; // 途中で選び直されていたらやめる
-      try {
-        var el = new Audio(url);
-        el.volume = 0.8;
-        var p = el.play();
-        if (p && p.catch) p.catch(function () {});
-        previewEl = el;
-        previewTimer = setTimeout(function () { stopPreviewBgm(); }, 8000);
-      } catch (e) {}
+    fetchBgmBuffer(moodKey).then(function (buffer) {
+      if (!buffer || settings.bgm !== moodKey) return; // 途中で選び直されていたらやめる
+      var ctxA = getAudioCtx();
+      var src = ctxA.createBufferSource();
+      src.buffer = buffer;
+      var gainNode = ctxA.createGain();
+      gainNode.gain.value = 0.7;
+      src.connect(gainNode);
+      gainNode.connect(ctxA.destination);
+      src.start(0);
+      previewSourceNode = src;
+      previewTimer = setTimeout(function () { stopPreviewBgm(); }, 8000);
     });
   }
   function stopPreviewBgm() {
     if (previewTimer) { clearTimeout(previewTimer); previewTimer = null; }
-    if (previewEl) { try { previewEl.pause(); previewEl.currentTime = 0; } catch (e) {} previewEl = null; }
+    if (previewSourceNode) { try { previewSourceNode.stop(); } catch (e) {} previewSourceNode = null; }
   }
 
   // 「試し見する」でも「動画をつくる」でも使う、まるごと再生用（ループ再生つき）。
-  // url はすでに取得ずみの blob URL（run() 側で先に fetchBgmBlobUrl を待ってから渡す）。
-  var bgmPlayEl = null;
-  function startBgmPlayback(url, ctxA, dest) {
-    if (!url) return;
-    var el = new Audio(url);
-    el.loop = true;
-    // 念のための保険：ループが効かない場合に手動で先頭へ戻す
-    el.addEventListener('ended', function () {
-      try { el.currentTime = 0; var pp = el.play(); if (pp && pp.catch) pp.catch(function () {}); } catch (e) {}
-    });
-    bgmPlayEl = el;
-    if (ctxA && dest) {
-      var srcNode = ctxA.createMediaElementSource(el);
-      var gainNode = ctxA.createGain();
-      gainNode.gain.value = BGM_GAIN;
-      srcNode.connect(gainNode);
-      gainNode.connect(dest);
-    } else {
-      el.volume = 0.6;
-    }
-    var p = el.play();
-    if (p && p.catch) p.catch(function () {});
+  // buffer はすでにデコードずみの AudioBuffer（run() 側で先に待ってから渡す）。
+  var bgmSourceNode = null;
+  function startBgmPlayback(buffer, dest, gainValue) {
+    if (!buffer) return;
+    var ctxA = getAudioCtx();
+    var src = ctxA.createBufferSource();
+    src.buffer = buffer;
+    src.loop = true; // AudioBufferSourceNodeのloopはサンプル単位で確実に効く
+    var gainNode = ctxA.createGain();
+    gainNode.gain.value = gainValue;
+    src.connect(gainNode);
+    gainNode.connect(dest);
+    src.start(0);
+    bgmSourceNode = src;
   }
   function stopBgmPlayback() {
-    if (bgmPlayEl) { try { bgmPlayEl.pause(); } catch (e) {} bgmPlayEl = null; }
+    if (bgmSourceNode) { try { bgmSourceNode.stop(); } catch (e) {} bgmSourceNode = null; }
   }
 
   document.getElementById('segBgm').addEventListener('click', function (e) {
@@ -832,10 +831,10 @@
     var wantVideoAudio = record && optAudio.checked && items.some(function (i) { return i.kind === 'movie'; });
     var wantBgm = settings.bgm !== 'none';
     var useAudio = wantVideoAudio || (record && wantBgm);
-    var bgmUrlPromise = wantBgm ? bgmUrlWithTimeout(settings.bgm, 12000) : Promise.resolve(null);
+    var bgmBufferPromise = wantBgm ? bgmBufferWithTimeout(settings.bgm, 12000) : Promise.resolve(null);
 
-    Promise.all([unlockVideos(), bgmUrlPromise]).then(function (results) {
-      var bgmUrl = results[1];
+    Promise.all([unlockVideos(), bgmBufferPromise]).then(function (results) {
+      var bgmBuffer = results[1];
       var stream = canvas.captureStream(30);
       curStream = stream;
       if (record) {
@@ -855,8 +854,8 @@
                 if (it._srcNode) it._srcNode.connect(audioDest);
               });
             }
-            if (wantBgm && bgmUrl) {
-              startBgmPlayback(bgmUrl, actx, audioDest);
+            if (wantBgm && bgmBuffer) {
+              startBgmPlayback(bgmBuffer, audioDest, BGM_GAIN);
             }
             audioDest.stream.getAudioTracks().forEach(function (tr) { stream.addTrack(tr); });
           } catch (e) {
@@ -907,8 +906,8 @@
         }
         lamp.classList.add('on');
         rec = null;
-      } else if (wantBgm && bgmUrl) {
-        startBgmPlayback(bgmUrl);
+      } else if (wantBgm && bgmBuffer) {
+        startBgmPlayback(bgmBuffer, getAudioCtx().destination, 0.7);
       }
 
       var t0 = performance.now();
