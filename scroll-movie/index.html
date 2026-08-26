@@ -414,6 +414,20 @@
   };
   var BGM_GAIN = 0.45; // 動画クリップ自体の音より控えめな、背景音楽らしい音量にする
 
+  // 選んだ瞬間からこっそり読み込みを始めておく（再生時に途切れないように先読みする）
+  var BGM_PRELOADED = {};
+  function preloadBgm(moodKey) {
+    var track = BGM[moodKey];
+    if (!track || BGM_PRELOADED[moodKey]) return;
+    BGM_PRELOADED[moodKey] = true;
+    try {
+      var el = new Audio();
+      el.preload = 'auto';
+      el.src = track.file;
+      el.load();
+    } catch (e) {}
+  }
+
   var previewEl = null, previewTimer = null;
   function previewBgm(moodKey) {
     stopPreviewBgm();
@@ -421,6 +435,7 @@
     if (!track) return;
     try {
       var el = new Audio(track.file);
+      el.preload = 'auto';
       el.volume = 0.8;
       var p = el.play();
       if (p && p.catch) p.catch(function () {});
@@ -433,24 +448,33 @@
     if (previewEl) { try { previewEl.pause(); previewEl.currentTime = 0; } catch (e) {} previewEl = null; }
   }
 
-  var bgmRecEl = null;
-  function startBgmRecording(ctxA, dest, moodKey) {
+  // 「試し見する」でも「動画をつくる」でも使う、まるごと再生用（ループ再生つき）
+  var bgmPlayEl = null;
+  function startBgmPlayback(moodKey, ctxA, dest) {
     var track = BGM[moodKey];
     if (!track) return;
     var el = new Audio(track.file);
+    el.preload = 'auto';
     el.loop = true;
-    el.crossOrigin = null;
-    bgmRecEl = el;
-    var srcNode = ctxA.createMediaElementSource(el);
-    var gainNode = ctxA.createGain();
-    gainNode.gain.value = BGM_GAIN;
-    srcNode.connect(gainNode);
-    gainNode.connect(dest);
+    // Safari では Web Audio 接続後にネイティブの loop が効かないことがあるための保険
+    el.addEventListener('ended', function () {
+      try { el.currentTime = 0; var pp = el.play(); if (pp && pp.catch) pp.catch(function () {}); } catch (e) {}
+    });
+    bgmPlayEl = el;
+    if (ctxA && dest) {
+      var srcNode = ctxA.createMediaElementSource(el);
+      var gainNode = ctxA.createGain();
+      gainNode.gain.value = BGM_GAIN;
+      srcNode.connect(gainNode);
+      gainNode.connect(dest);
+    } else {
+      el.volume = 0.6;
+    }
     var p = el.play();
     if (p && p.catch) p.catch(function () {});
   }
-  function stopBgmRecording() {
-    if (bgmRecEl) { try { bgmRecEl.pause(); } catch (e) {} bgmRecEl = null; }
+  function stopBgmPlayback() {
+    if (bgmPlayEl) { try { bgmPlayEl.pause(); } catch (e) {} bgmPlayEl = null; }
   }
 
   document.getElementById('segBgm').addEventListener('click', function (e) {
@@ -460,6 +484,7 @@
       x.setAttribute('aria-pressed', String(x === b));
     });
     settings.bgm = b.dataset.v;
+    if (settings.bgm !== 'none') preloadBgm(settings.bgm);
     previewBgm(settings.bgm);
   });
 
@@ -773,8 +798,8 @@
     say(record ? '動画をつくっています。画面をそのままにしてね。' : '試し見ちゅうです。', false);
 
     var wantVideoAudio = record && optAudio.checked && items.some(function (i) { return i.kind === 'movie'; });
-    var wantBgm = record && settings.bgm !== 'none';
-    var useAudio = wantVideoAudio || wantBgm;
+    var wantBgm = settings.bgm !== 'none';
+    var useAudio = wantVideoAudio || (record && wantBgm);
 
     unlockVideos().then(function () {
       var stream = canvas.captureStream(30);
@@ -797,7 +822,7 @@
               });
             }
             if (wantBgm) {
-              startBgmRecording(actx, audioDest, settings.bgm);
+              startBgmPlayback(settings.bgm, actx, audioDest);
             }
             audioDest.stream.getAudioTracks().forEach(function (tr) { stream.addTrack(tr); });
           } catch (e) {
@@ -848,6 +873,8 @@
         }
         lamp.classList.add('on');
         rec = null;
+      } else if (wantBgm) {
+        startBgmPlayback(settings.bgm);
       }
 
       var t0 = performance.now();
@@ -886,7 +913,7 @@
   }
 
   function releaseStream() {
-    stopBgmRecording();
+    stopBgmPlayback();
     lamp.classList.remove('on');
     if (audioDest) {
       audioSources.forEach(function (s) { try { s.disconnect(audioDest); } catch (e) {} });
