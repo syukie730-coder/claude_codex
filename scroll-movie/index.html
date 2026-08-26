@@ -168,6 +168,8 @@
   .field label{display:block;font-size:15px;font-weight:600;margin-bottom:7px}
   .field .hint{font-size:14px;color:var(--text-soft);margin:5px 0 0}
   .seg{display:flex;gap:7px}
+  .seg.wrap{flex-wrap:wrap}
+  .seg.wrap button{flex:1 1 30%}
   .seg button{
     flex:1;background:#EFE7DA;font-size:15px;padding:11px 6px;
     border:2px solid transparent;
@@ -270,6 +272,18 @@
     </div>
 
     <div class="field">
+      <label>BGM（音楽）</label>
+      <div class="seg wrap" id="segBgm">
+        <button type="button" data-v="none" aria-pressed="true">なし</button>
+        <button type="button" data-v="shittori" aria-pressed="false">しっとり系</button>
+        <button type="button" data-v="akarui" aria-pressed="false">明るい系</button>
+        <button type="button" data-v="yasashii" aria-pressed="false">やさしい系</button>
+        <button type="button" data-v="atatakai" aria-pressed="false">あたたかい系</button>
+      </div>
+      <p class="hint">ボタンを押すと、少しだけ試聴できます。動画クリップ自体の音（下の「動画の音を入れる」）とは別に、できあがった動画に重なって流れます。</p>
+    </div>
+
+    <div class="field">
       <label class="check">
         <input type="checkbox" id="optPause" checked>
         <span>動画のところで止まって、最後まで再生する<br>
@@ -347,7 +361,7 @@
   var optAudio = document.getElementById('optAudio');
 
   var items = [];                 // {kind, el, w, h, dur, name, thumb, y, dw, dh, dx}
-  var settings = { color: '#FFFFFF', pos: 'top', speed: 340, bg: '#F4F1EC' };
+  var settings = { color: '#FFFFFF', pos: 'top', speed: 340, bg: '#F4F1EC', bgm: 'none' };
   var running = false, stopFlag = false;
   var recorder = null, outBlob = null, outName = 'omoide.mp4';
   var actx = null, audioDest = null, audioSources = [], curStream = null;
@@ -380,6 +394,121 @@
   seg('segSpeed', 'speed', Number);
   seg('segBg', 'bg');
   stampText.addEventListener('input', drawStill);
+
+  /* ---------- BGM（著作権フリー・自前生成の軽量メロディ／音源ファイルは使わない） ---------- */
+  var BGM = {
+    shittori: { name: 'しっとり系', bpm: 68, wave: 'sine', gain: .1, loop: 16,
+      mel: [[0, 'A3', 2], [2, 'C4', 1], [3, 'B3', 1], [4, 'A3', 2], [6, 'G3', 2],
+            [8, 'E3', 1], [9, 'G3', 1], [10, 'A3', 2], [12, 'C4', 1], [13, 'B3', 1], [14, 'A3', 2]],
+      bass: ['A2', 'A2', 'E2', 'E2', 'F2', 'F2', 'G2', 'G2'] },
+    akarui: { name: '明るい系', bpm: 128, wave: 'triangle', gain: .08, loop: 16,
+      mel: [[0, 'C5', .5], [.5, 'E5', .5], [1, 'G5', .5], [1.5, 'E5', .5], [2, 'F5', 1], [3, 'E5', 1],
+            [4, 'D5', .5], [4.5, 'F5', .5], [5, 'A5', .5], [5.5, 'F5', .5], [6, 'G5', 2],
+            [8, 'E5', .5], [8.5, 'G5', .5], [9, 'C6', .5], [9.5, 'G5', .5], [10, 'A5', 1], [11, 'G5', 1],
+            [12, 'F5', .5], [12.5, 'A5', .5], [13, 'C6', .5], [13.5, 'A5', .5], [14, 'G5', 2]],
+      bass: ['C3', 'C3', 'F3', 'F3', 'G3', 'G3', 'C3', 'C3'] },
+    yasashii: { name: 'やさしい系', bpm: 60, wave: 'sine', gain: .11, loop: 16,
+      mel: [[0, 'G4', 2], [2, 'E4', 2], [4, 'C4', 2], [6, 'D4', 2],
+            [8, 'E4', 2], [10, 'G4', 2], [12, 'F4', 2], [14, 'D4', 2]],
+      bass: ['C3', 'C3', 'G3', 'G3', 'C3', 'C3', 'G3', 'G3'] },
+    atatakai: { name: 'あたたかい系', bpm: 92, wave: 'sine', gain: .1, loop: 16,
+      mel: [[0, 'D5', 1], [1, 'C5', .5], [1.5, 'A4', .5], [2, 'G4', 2],
+            [4, 'A4', 1], [5, 'C5', .5], [5.5, 'D5', .5], [6, 'E5', 2],
+            [8, 'D5', 1], [9, 'C5', .5], [9.5, 'A4', .5], [10, 'G4', 2],
+            [12, 'A4', 1], [13, 'G4', .5], [13.5, 'F#4', .5], [14, 'G4', 2]],
+      bass: ['G2', 'G2', 'C3', 'C3', 'G2', 'G2', 'D3', 'D3'] }
+  };
+  var BGM_FREQ = (function () {
+    var names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+    var t = {};
+    for (var oct = 2; oct <= 6; oct++) {
+      for (var i = 0; i < 12; i++) {
+        var midi = (oct + 1) * 12 + i;
+        t[names[i] + oct] = 440 * Math.pow(2, (midi - 69) / 12);
+      }
+    }
+    return t;
+  })();
+
+  function bgmTone(ctxA, dest, f, t, du, g, ty) {
+    var o = ctxA.createOscillator(), o2 = ctxA.createOscillator(), gn = ctxA.createGain(), g2 = ctxA.createGain();
+    o.type = ty; o.frequency.value = f;
+    o2.type = 'sine'; o2.frequency.value = f * 2.005; g2.gain.value = .25;
+    o.connect(gn); o2.connect(g2); g2.connect(gn); gn.connect(dest);
+    gn.gain.setValueAtTime(.0001, t);
+    gn.gain.exponentialRampToValueAtTime(g, t + .02);
+    gn.gain.exponentialRampToValueAtTime(.0001, t + du);
+    o.start(t); o2.start(t); o.stop(t + du + .05); o2.stop(t + du + .05);
+  }
+  function bgmBass(ctxA, dest, f, t, du, g) {
+    var o = ctxA.createOscillator(), gn = ctxA.createGain();
+    o.type = 'sine'; o.frequency.value = f;
+    o.connect(gn); gn.connect(dest);
+    gn.gain.setValueAtTime(.0001, t);
+    gn.gain.exponentialRampToValueAtTime(g, t + .03);
+    gn.gain.exponentialRampToValueAtTime(.0001, t + du);
+    o.start(t); o.stop(t + du + .05);
+  }
+  function scheduleBgmLoop(ctxA, dest, track, startAt) {
+    var SPB = 60 / track.bpm;
+    track.mel.forEach(function (m) {
+      bgmTone(ctxA, dest, BGM_FREQ[m[1]], startAt + m[0] * SPB, m[2] * SPB * .92, track.gain, track.wave);
+    });
+    track.bass.forEach(function (b, i) {
+      bgmBass(ctxA, dest, BGM_FREQ[b], startAt + i * 2 * SPB, SPB * 1.5, track.gain * .5);
+    });
+  }
+
+  var bgmTimer = null;
+  function startBgm(ctxA, dest, totalSeconds, moodKey) {
+    var track = BGM[moodKey];
+    if (!track) return;
+    var SPB = 60 / track.bpm;
+    var loopDur = track.loop * SPB;
+    var nextTime = ctxA.currentTime + 0.05;
+    var endAt = ctxA.currentTime + totalSeconds + 0.6;
+    scheduleBgmLoop(ctxA, dest, track, nextTime);
+    nextTime += loopDur;
+    bgmTimer = setInterval(function () {
+      var ahead = ctxA.currentTime + 0.7;
+      while (nextTime < ahead && nextTime < endAt) {
+        scheduleBgmLoop(ctxA, dest, track, nextTime);
+        nextTime += loopDur;
+      }
+      if (nextTime >= endAt) { clearInterval(bgmTimer); bgmTimer = null; }
+    }, 400);
+  }
+  function stopBgm() {
+    if (bgmTimer) { clearInterval(bgmTimer); bgmTimer = null; }
+  }
+
+  var previewBgmCtx = null, previewBgmTimer = null;
+  function previewBgm(moodKey) {
+    stopPreviewBgm();
+    var track = BGM[moodKey];
+    if (!track) return;
+    try {
+      previewBgmCtx = previewBgmCtx || new (window.AudioContext || window.webkitAudioContext)();
+      if (previewBgmCtx.state === 'suspended') previewBgmCtx.resume();
+    } catch (e) { return; }
+    var SPB = 60 / track.bpm;
+    scheduleBgmLoop(previewBgmCtx, previewBgmCtx.destination, track, previewBgmCtx.currentTime + 0.05);
+    previewBgmTimer = setTimeout(function () { previewBgmTimer = null; }, (track.loop * SPB + 0.3) * 1000);
+  }
+  function stopPreviewBgm() {
+    if (previewBgmTimer) { clearTimeout(previewBgmTimer); previewBgmTimer = null; }
+    if (previewBgmCtx) { try { previewBgmCtx.close(); } catch (e) {} previewBgmCtx = null; }
+  }
+
+  document.getElementById('segBgm').addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (!b) return;
+    Array.prototype.forEach.call(this.querySelectorAll('button'), function (x) {
+      x.setAttribute('aria-pressed', String(x === b));
+    });
+    settings.bgm = b.dataset.v;
+    previewBgm(settings.bgm);
+  });
 
   /* ---------- ファイル読み込み ---------- */
   function handleFilePick(e) {
@@ -670,6 +799,7 @@
   function run(record) {
     if (!items.length) { say('先に写真か動画をえらんでください。'); return; }
     if (running) return;
+    stopPreviewBgm();
     layout();
     var plan = buildPlan();
     if (record && plan.total > 180) {
@@ -680,7 +810,9 @@
     btnPreview.disabled = true; btnMake.disabled = true; btnStop.disabled = false;
     say(record ? '動画をつくっています。画面をそのままにしてね。' : '試し見ちゅうです。', false);
 
-    var useAudio = record && optAudio.checked && items.some(function (i) { return i.kind === 'movie'; });
+    var wantVideoAudio = record && optAudio.checked && items.some(function (i) { return i.kind === 'movie'; });
+    var wantBgm = record && settings.bgm !== 'none';
+    var useAudio = wantVideoAudio || wantBgm;
 
     unlockVideos().then(function () {
       var stream = canvas.captureStream(30);
@@ -691,15 +823,20 @@
             actx = actx || new (window.AudioContext || window.webkitAudioContext)();
             if (actx.state === 'suspended') actx.resume();
             audioDest = actx.createMediaStreamDestination();
-            items.forEach(function (it) {
-              if (it.kind !== 'movie' || it._srcNode) return;
-              it.el.muted = false;
-              it._srcNode = actx.createMediaElementSource(it.el);
-              audioSources.push(it._srcNode);
-            });
-            items.forEach(function (it) {
-              if (it._srcNode) it._srcNode.connect(audioDest);
-            });
+            if (wantVideoAudio) {
+              items.forEach(function (it) {
+                if (it.kind !== 'movie' || it._srcNode) return;
+                it.el.muted = false;
+                it._srcNode = actx.createMediaElementSource(it.el);
+                audioSources.push(it._srcNode);
+              });
+              items.forEach(function (it) {
+                if (it._srcNode) it._srcNode.connect(audioDest);
+              });
+            }
+            if (wantBgm) {
+              startBgm(actx, audioDest, plan.total, settings.bgm);
+            }
             audioDest.stream.getAudioTracks().forEach(function (tr) { stream.addTrack(tr); });
           } catch (e) {
             console.warn('audio skipped', e);
@@ -787,6 +924,7 @@
   }
 
   function releaseStream() {
+    stopBgm();
     lamp.classList.remove('on');
     if (audioDest) {
       audioSources.forEach(function (s) { try { s.disconnect(audioDest); } catch (e) {} });
