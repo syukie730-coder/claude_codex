@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>給料明細アプリ つかいかたカード</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FBF2E4;
+    --paper:#FFFCF6;
+    --ink:#332B22;
+    --sage:#557A5B;
+    --sage-deep:#3E5C43;
+    --coral:#E28B72;
+    --coral-bg:#FCE9E1;
+    --blue:#7692AC;
+    --blue-bg:#E7EEF3;
+    --gold:#D9A441;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle at 20% 10%, #F5E6CE 0%, transparent 45%),
+      radial-gradient(circle at 85% 90%, #EFE1F0 0%, transparent 40%),
+      var(--cream);
+    font-family:"Zen Maru Gothic", sans-serif;
+    color:var(--ink);
+    padding:28px 14px 60px;
+    -webkit-text-size-adjust:100%;
+  }
+  .card{
+    max-width:440px;
+    margin:0 auto;
+    background:var(--paper);
+    border-radius:28px;
+    box-shadow:0 18px 40px -18px rgba(80,60,30,0.35), 0 2px 0 rgba(0,0,0,0.02);
+    overflow:hidden;
+    position:relative;
+    border:1px solid #EFE2C9;
+  }
+  .stub{
+    height:14px;
+    background:repeating-radial-gradient(circle at 10px 0, transparent 0 5px, var(--cream) 5px 6px);
+    background-size:20px 12px;
+    background-repeat:repeat-x;
+    background-position:top;
+  }
+  .header{
+    padding:30px 26px 22px;
+    text-align:center;
+    background:linear-gradient(180deg, #FFFDF8, #FFF9EF);
+    border-bottom:2px dashed #E9DAB8;
+  }
+  .stamp{
+    width:76px; height:76px;
+    margin:0 auto 14px;
+    border-radius:50%;
+    background:var(--sage);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 8px 18px -8px rgba(62,92,67,0.6), inset 0 0 0 4px #FFFCF6, inset 0 0 0 6px var(--sage);
+  }
+  .stamp svg{ width:44px; height:44px; }
+  .eyebrow{
+    font-size:13px; letter-spacing:.08em; color:var(--sage-deep); font-weight:700;
+    margin-bottom:6px;
+  }
+  h1{
+    margin:0 0 8px; font-size:24px; font-weight:900; line-height:1.4; color:var(--ink);
+  }
+  .sub{
+    font-size:15px; color:#6b6152; line-height:1.7; margin:0;
+  }
+  .to-line{
+    margin-top:16px; font-size:14px; color:#8a7c60; font-weight:500;
+  }
+  .steps{ padding:26px 22px 8px; }
+  .step{
+    display:flex; gap:14px;
+    background:var(--paper);
+    border:1.5px solid #EEE3CB;
+    border-radius:20px;
+    padding:16px 16px 16px 14px;
+    margin-bottom:14px;
+    position:relative;
+  }
+  .step .num{
+    flex:none; width:38px; height:38px; border-radius:50%;
+    background:var(--sage); color:#fff; font-weight:900; font-size:17px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .step .icon{ font-size:20px; margin-right:4px; }
+  .step h3{ margin:0 0 4px; font-size:16.5px; font-weight:700; }
+  .step p{ margin:0; font-size:15px; line-height:1.7; color:#4a4234; }
+  .step .tip{
+    display:inline-block; margin-top:8px; font-size:13.5px;
+    background:var(--blue-bg); color:#3f5a70; padding:5px 10px; border-radius:10px; font-weight:500;
+  }
+  .divider{
+    margin:6px 22px 0; border:none; border-top:2px dashed #E9DAB8;
+  }
+  .caution{
+    margin:22px 22px 4px; background:var(--coral-bg); border:1.5px solid #F3CFC0;
+    border-radius:20px; padding:18px 18px 16px;
+  }
+  .caution h3{
+    margin:0 0 10px; font-size:16px; color:#B5533A; display:flex; align-items:center; gap:6px;
+  }
+  .caution ul{ margin:0; padding-left:20px; }
+  .caution li{ font-size:14.5px; line-height:1.8; color:#5c3c30; margin-bottom:6px; }
+  .caution li:last-child{ margin-bottom:0; }
+  .footer{
+    padding:24px 26px 30px; text-align:center;
+  }
+  .footer .badge{
+    display:inline-block; background:var(--gold); color:#fff; font-weight:700; font-size:13.5px;
+    padding:7px 16px; border-radius:999px; margin-bottom:14px;
+  }
+  .footer p{ margin:0 0 6px; font-size:15px; line-height:1.8; color:#4a4234; }
+  .signature{
+    margin-top:10px; font-size:15px; font-weight:700; color:var(--sage-deep);
+  }
+  .stub.bottom{ transform:rotate(180deg); }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="stub"></div>
+    <div class="header">
+      <div class="stamp">
+        <svg viewBox="0 0 100 100" fill="none">
+          <circle cx="50" cy="50" r="48" fill="#FFFCF6"/>
+          <path d="M20 55 Q50 15 80 55" fill="#7A5A3A"/>
+          <circle cx="50" cy="58" r="26" fill="#FFE0B8"/>
+          <circle cx="41" cy="56" r="3" fill="#332B22"/>
+          <circle cx="59" cy="56" r="3" fill="#332B22"/>
+          <path d="M40 68 Q50 76 60 68" stroke="#332B22" stroke-width="3" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="eyebrow">つかいかた カード</div>
+      <h1>給料明細アプリの<br>つかいかた</h1>
+      <p class="sub">写真をえらんで、くろちゃんにお願いするだけ📮</p>
+      <div class="to-line">幸恵ちゃんへ ― くろちゃんより</div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="num">1</div>
+        <div>
+          <h3><span class="icon">📷</span>写真をえらぶ</h3>
+          <p>給与明細を、カメラで撮るか写真アプリからえらんでね。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <div>
+          <h3><span class="icon">📋</span>お願いをコピー</h3>
+          <p>「お願いをコピーする」ボタンを押すよ。読み取り用の文章がコピーされるよ。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num">3</div>
+        <div>
+          <h3><span class="icon">💬</span>くろちゃんに送る</h3>
+          <p>Claudeアプリを開いて、コピーした文章と<u>写真をいっしょに</u>送ってね。</p>
+          <span class="tip">写真を忘れずに！</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="num">4</div>
+        <div>
+          <h3><span class="icon">📥</span>答えを貼って保存</h3>
+          <p>くろちゃんの返事をコピーしてステップ3に貼る→「読み取る」→下までスクロールして緑の「保存する」ボタン。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="caution">
+      <h3>⚠️ まちがえやすいポイント</h3>
+      <ul>
+        <li>ステップ3に貼るのは「くろちゃんの<b>返事</b>」だけ。おまじない文そのものを貼らないでね</li>
+        <li>写真は明細そのものを撮った写真でOK。アプリの画面のスクショじゃなくて大丈夫だよ</li>
+        <li>保存ボタンは画面の<b>いちばん下</b>。忘れずスクロールしてね</li>
+      </ul>
+    </div>
+
+    <div class="footer">
+      <div class="badge">毎月27日、給料日に</div>
+      <p>このカードを見ながらやってみてね。<br>わからなくなったら、いつでも聞いてね😊</p>
+      <div class="signature">― くろちゃん 🐾</div>
+    </div>
+    <div class="stub bottom"></div>
+  </div>
+</body>
+</html>
