@@ -59,7 +59,6 @@ main{padding-top:18px;}
 .screen.show{display:block;}
 
 .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:18px 16px;margin-bottom:16px;}
-.lead{font-size:16px;font-weight:600;color:var(--ink-soft);margin:0 0 12px;line-height:1.7;}
 .hint{font-size:16px;font-weight:500;color:var(--ink-soft);margin-top:8px;line-height:1.7;}
 
 /* くろちゃん吹き出し */
@@ -527,7 +526,7 @@ table.kt .opbtn{border:1.5px solid var(--line);background:#fff;border-radius:8px
     $(id).classList.toggle("done", done);
   }
 
-  /* ================= 方式①：くろちゃん読み取り（プロンプト作成＋JSON抽出） ================= */
+  /* ================= くろちゃん読み取り（プロンプト作成＋JSON抽出） ================= */
   var PROMPT_TEXT = [
     "給与明細の写真を見て、書いてある数字を読み取ってください。",
     "",
@@ -851,18 +850,14 @@ table.kt .opbtn{border:1.5px solid var(--line);background:#fff;border-radius:8px
         html += '<td><div class="ops"><button class="opbtn" data-cmt="' + r.id + '">🐾</button><button class="opbtn" data-edit="' + r.id + '">✏️</button><button class="opbtn" data-del="' + r.id + '">🗑️</button></div></td></tr>';
       });
       var n = yearRecs.length;
-      html += '<tr class="total"><td colspan="2">年間合計</td>';
+      var totalCells = "", avgCells = "";
       TABLE_COLS.slice(2).forEach(function (c) {
         var sum = yearRecs.reduce(function (s, r) { return s + (c.k === "socialTotal" ? socialTotal(r) : num(r[c.k])); }, 0);
-        html += "<td>" + comma(sum) + "</td>";
+        totalCells += "<td>" + comma(sum) + "</td>";
+        avgCells += "<td>" + comma(sum / n) + "</td>";
       });
-      html += "<td>-</td></tr>";
-      html += '<tr class="total"><td colspan="2">月平均</td>';
-      TABLE_COLS.slice(2).forEach(function (c) {
-        var sum = yearRecs.reduce(function (s, r) { return s + (c.k === "socialTotal" ? socialTotal(r) : num(r[c.k])); }, 0);
-        html += "<td>" + comma(sum / n) + "</td>";
-      });
-      html += "<td>-</td></tr>";
+      html += '<tr class="total"><td colspan="2">年間合計</td>' + totalCells + "<td>-</td></tr>";
+      html += '<tr class="total"><td colspan="2">月平均</td>' + avgCells + "<td>-</td></tr>";
     }
     html += "</tbody>";
     $("recordTable").innerHTML = html;
@@ -955,11 +950,10 @@ table.kt .opbtn{border:1.5px solid var(--line);background:#fff;border-radius:8px
 
     var comboLabels, payArr, dedArr, netArr;
     if (period === "year") {
-      var years2 = Array.from(new Set(records.map(function (r) { return r.year; }))).sort();
-      comboLabels = years2.map(function (y) { return y + "年"; });
-      payArr = years2.map(function (y) { return records.filter(function (r) { return r.year === y; }).reduce(function (s, r) { return s + (num(r.totalPayment) || calcPayment(r)); }, 0); });
-      dedArr = years2.map(function (y) { return records.filter(function (r) { return r.year === y; }).reduce(function (s, r) { return s + (num(r.totalDeduction) || calcDeduction(r)); }, 0); });
-      netArr = years2.map(function (y) { return records.filter(function (r) { return r.year === y; }).reduce(function (s, r) { return s + (num(r.netPay) || calcNet(r)); }, 0); });
+      comboLabels = years.map(function (y) { return y + "年"; });
+      payArr = years.map(function (y) { return records.filter(function (r) { return r.year === y; }).reduce(function (s, r) { return s + (num(r.totalPayment) || calcPayment(r)); }, 0); });
+      dedArr = years.map(function (y) { return records.filter(function (r) { return r.year === y; }).reduce(function (s, r) { return s + (num(r.totalDeduction) || calcDeduction(r)); }, 0); });
+      netArr = years.map(function (y) { return records.filter(function (r) { return r.year === y; }).reduce(function (s, r) { return s + (num(r.netPay) || calcNet(r)); }, 0); });
     } else {
       var comboRecs = periodRecords(period === "6" ? "6" : "12");
       comboLabels = comboRecs.map(function (r) { return r.year + "/" + r.month; });
