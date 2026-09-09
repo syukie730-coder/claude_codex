@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>妻給与明細</title>
+<meta name="theme-color" content="#EAF2FB">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="妻給与明細">
+<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjogIuWmu+e1puS4juaYjue0sCIsICJzaG9ydF9uYW1lIjogIuWmu+e1puS4juaYjue0sCIsICJzdGFydF91cmwiOiAiLi9reXV5b19tZWlzYWlfd2F0YXNoaS5odG1sIiwgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNFQUYyRkIiLCAidGhlbWVfY29sb3IiOiAiIzJFN0Q1RSIsICJpY29ucyI6IFt7InNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSFpwWlhkQ2IzZzlJakFnTUNBeU1EQWdNakF3SWo0S1BISmxZM1FnZUQwaU1DSWdlVDBpTUNJZ2QybGtkR2c5SWpJd01DSWdhR1ZwWjJoMFBTSXlNREFpSUhKNFBTSTBOQ0lnWm1sc2JEMGlJMFZCUmpKR1FpSXZQZ284Y0dGMGFDQmtQU0pOTlRJZ01UZ3lJRkV4TURBZ01UUTRJREUwT0NBeE9ESWdUREUwT0NBeU1EQWdURFV5SURJd01DQmFJaUJtYVd4c1BTSWpNMEkyUlVFNElpOCtDanh3WVhSb0lHUTlJazAwTUNBNE5DQlJNamdnTVRFMElETTNJREUxTUNCUk5EWWdNVFUwSURVeUlERTBNeUJSTkRFZ01URTBJRFV5SURnMklGb2lJR1pwYkd3OUlpTTBRVE0zTWpnaUx6NEtQSEJoZEdnZ1pEMGlUVEUyTUNBNE5DQlJNVGN5SURFeE5DQXhOak1nTVRVd0lGRXhOVFFnTVRVMElERTBPQ0F4TkRNZ1VURTFPU0F4TVRRZ01UUTRJRGcySUZvaUlHWnBiR3c5SWlNMFFUTTNNamdpTHo0S1BHTnBjbU5zWlNCamVEMGlNVEF3SWlCamVUMGlPVFFpSUhJOUlqVXlJaUJtYVd4c1BTSWpSalpFTWtFNElpOCtDanhqYVhKamJHVWdZM2c5SWpRNUlpQmplVDBpT1RZaUlISTlJamtpSUdacGJHdzlJaU5HTmtReVFUZ2lMejRLUEdOcGNtTnNaU0JqZUQwaU1UVXhJaUJqZVQwaU9UWWlJSEk5SWpraUlHWnBiR3c5SWlOR05rUXlRVGdpTHo0S1BIQmhkR2dnWkQwaVRUUTBJRGc0SUZFek9DQXlPQ0F4TURBZ01qZ2dVVEUyTWlBeU9DQXhOVFlnT0RnZ1VURTFNaUExTkNBeE1EQWdOVEVnVVRRNElEVTBJRFEwSURnNElGb2lJR1pwYkd3OUlpTTBRVE0zTWpnaUx6NEtQSEJoZEdnZ1pEMGlUVGt3SURNeklFdzNOQ0F5TXlCUk5qZ2dNek1nTnpRZ05ERWdXaUlnWm1sc2JEMGlJMFE1TjBOQk1DSXZQZ284Y0dGMGFDQmtQU0pOTVRFd0lETXpJRXd4TWpZZ01qTWdVVEV6TWlBek15QXhNallnTkRFZ1dpSWdabWxzYkQwaUkwUTVOME5CTUNJdlBnbzhZMmx5WTJ4bElHTjRQU0l4TURBaUlHTjVQU0l6TXlJZ2NqMGlOUzQxSWlCbWFXeHNQU0lqUWpnMVF6Z3dJaTgrQ2p4amFYSmpiR1VnWTNnOUlqZ3dJaUJqZVQwaU9UUWlJSEk5SWpVdU5TSWdabWxzYkQwaUl6TkJNa1V5TWlJdlBnbzhZMmx5WTJ4bElHTjRQU0l4TWpBaUlHTjVQU0k1TkNJZ2NqMGlOUzQxSWlCbWFXeHNQU0lqTTBFeVJUSXlJaTgrQ2p4amFYSmpiR1VnWTNnOUlqWTFJaUJqZVQwaU1UQTRJaUJ5UFNJM0lpQm1hV3hzUFNJalJqTkJPRUV3SWlCdmNHRmphWFI1UFNJd0xqUTFJaTgrQ2p4amFYSmpiR1VnWTNnOUlqRXpOU0lnWTNrOUlqRXdPQ0lnY2owaU55SWdabWxzYkQwaUkwWXpRVGhCTUNJZ2IzQmhZMmwwZVQwaU1DNDBOU0l2UGdvOGNHRjBhQ0JrUFNKTk56WWdNVEUwSUZFeE1EQWdNVE0wSURFeU5DQXhNVFFpSUhOMGNtOXJaVDBpSXpOQk1rVXlNaUlnYzNSeWIydGxMWGRwWkhSb1BTSTFMalVpSUdacGJHdzlJbTV2Ym1VaUlITjBjbTlyWlMxc2FXNWxZMkZ3UFNKeWIzVnVaQ0l2UGdvOGNtVmpkQ0I0UFNJeU1pSWdlVDBpTVRVeUlpQjNhV1IwYUQwaU1UVTJJaUJvWldsbmFIUTlJak00SWlCeWVEMGlNVGtpSUdacGJHdzlJaU15UlRkRU5VVWlMejRLUEhSbGVIUWdlRDBpTVRBd0lpQjVQU0l4TnpnaUlHWnZiblF0Wm1GdGFXeDVQU0luU0dseVlXZHBibThnVTJGdWN5Y3NKMGhwY21GbmFXNXZJRXRoYTNVZ1IyOTBhR2xqSUZCeWIwNG5MQ2RaZFNCSGIzUm9hV01uTEhOaGJuTXRjMlZ5YVdZaUlHWnZiblF0YzJsNlpUMGlNalFpSUdadmJuUXRkMlZwWjJoMFBTSTNNREFpSUdacGJHdzlJaU5HUmtaR1JrWWlJSFJsZUhRdFlXNWphRzl5UFNKdGFXUmtiR1VpUHVlMXB1UzRqdWFZanVlMHNEd3ZkR1Y0ZEQ0S1BDOXpkbWMrQ2c9PSIsICJzaXplcyI6ICIxOTJ4MTkyIiwgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIsICJwdXJwb3NlIjogImFueSJ9LCB7InNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSFpwWlhkQ2IzZzlJakFnTUNBeU1EQWdNakF3SWo0S1BISmxZM1FnZUQwaU1DSWdlVDBpTUNJZ2QybGtkR2c5SWpJd01DSWdhR1ZwWjJoMFBTSXlNREFpSUhKNFBTSTBOQ0lnWm1sc2JEMGlJMFZCUmpKR1FpSXZQZ284Y0dGMGFDQmtQU0pOTlRJZ01UZ3lJRkV4TURBZ01UUTRJREUwT0NBeE9ESWdUREUwT0NBeU1EQWdURFV5SURJd01DQmFJaUJtYVd4c1BTSWpNMEkyUlVFNElpOCtDanh3WVhSb0lHUTlJazAwTUNBNE5DQlJNamdnTVRFMElETTNJREUxTUNCUk5EWWdNVFUwSURVeUlERTBNeUJSTkRFZ01URTBJRFV5SURnMklGb2lJR1pwYkd3OUlpTTBRVE0zTWpnaUx6NEtQSEJoZEdnZ1pEMGlUVEUyTUNBNE5DQlJNVGN5SURFeE5DQXhOak1nTVRVd0lGRXhOVFFnTVRVMElERTBPQ0F4TkRNZ1VURTFPU0F4TVRRZ01UUTRJRGcySUZvaUlHWnBiR3c5SWlNMFFUTTNNamdpTHo0S1BHTnBjbU5zWlNCamVEMGlNVEF3SWlCamVUMGlPVFFpSUhJOUlqVXlJaUJtYVd4c1BTSWpSalpFTWtFNElpOCtDanhqYVhKamJHVWdZM2c5SWpRNUlpQmplVDBpT1RZaUlISTlJamtpSUdacGJHdzlJaU5HTmtReVFUZ2lMejRLUEdOcGNtTnNaU0JqZUQwaU1UVXhJaUJqZVQwaU9UWWlJSEk5SWpraUlHWnBiR3c5SWlOR05rUXlRVGdpTHo0S1BIQmhkR2dnWkQwaVRUUTBJRGc0SUZFek9DQXlPQ0F4TURBZ01qZ2dVVEUyTWlBeU9DQXhOVFlnT0RnZ1VURTFNaUExTkNBeE1EQWdOVEVnVVRRNElEVTBJRFEwSURnNElGb2lJR1pwYkd3OUlpTTBRVE0zTWpnaUx6NEtQSEJoZEdnZ1pEMGlUVGt3SURNeklFdzNOQ0F5TXlCUk5qZ2dNek1nTnpRZ05ERWdXaUlnWm1sc2JEMGlJMFE1TjBOQk1DSXZQZ284Y0dGMGFDQmtQU0pOTVRFd0lETXpJRXd4TWpZZ01qTWdVVEV6TWlBek15QXhNallnTkRFZ1dpSWdabWxzYkQwaUkwUTVOME5CTUNJdlBnbzhZMmx5WTJ4bElHTjRQU0l4TURBaUlHTjVQU0l6TXlJZ2NqMGlOUzQxSWlCbWFXeHNQU0lqUWpnMVF6Z3dJaTgrQ2p4amFYSmpiR1VnWTNnOUlqZ3dJaUJqZVQwaU9UUWlJSEk5SWpVdU5TSWdabWxzYkQwaUl6TkJNa1V5TWlJdlBnbzhZMmx5WTJ4bElHTjRQU0l4TWpBaUlHTjVQU0k1TkNJZ2NqMGlOUzQxSWlCbWFXeHNQU0lqTTBFeVJUSXlJaTgrQ2p4amFYSmpiR1VnWTNnOUlqWTFJaUJqZVQwaU1UQTRJaUJ5UFNJM0lpQm1hV3hzUFNJalJqTkJPRUV3SWlCdmNHRmphWFI1UFNJd0xqUTFJaTgrQ2p4amFYSmpiR1VnWTNnOUlqRXpOU0lnWTNrOUlqRXdPQ0lnY2owaU55SWdabWxzYkQwaUkwWXpRVGhCTUNJZ2IzQmhZMmwwZVQwaU1DNDBOU0l2UGdvOGNHRjBhQ0JrUFNKTk56WWdNVEUwSUZFeE1EQWdNVE0wSURFeU5DQXhNVFFpSUhOMGNtOXJaVDBpSXpOQk1rVXlNaUlnYzNSeWIydGxMWGRwWkhSb1BTSTFMalVpSUdacGJHdzlJbTV2Ym1VaUlITjBjbTlyWlMxc2FXNWxZMkZ3UFNKeWIzVnVaQ0l2UGdvOGNtVmpkQ0I0UFNJeU1pSWdlVDBpTVRVeUlpQjNhV1IwYUQwaU1UVTJJaUJvWldsbmFIUTlJak00SWlCeWVEMGlNVGtpSUdacGJHdzlJaU15UlRkRU5VVWlMejRLUEhSbGVIUWdlRDBpTVRBd0lpQjVQU0l4TnpnaUlHWnZiblF0Wm1GdGFXeDVQU0luU0dseVlXZHBibThnVTJGdWN5Y3NKMGhwY21GbmFXNXZJRXRoYTNVZ1IyOTBhR2xqSUZCeWIwNG5MQ2RaZFNCSGIzUm9hV01uTEhOaGJuTXRjMlZ5YVdZaUlHWnZiblF0YzJsNlpUMGlNalFpSUdadmJuUXRkMlZwWjJoMFBTSTNNREFpSUdacGJHdzlJaU5HUmtaR1JrWWlJSFJsZUhRdFlXNWphRzl5UFNKdGFXUmtiR1VpUHVlMXB1UzRqdWFZanVlMHNEd3ZkR1Y0ZEQ0S1BDOXpkbWMrQ2c9PSIsICJzaXplcyI6ICI1MTJ4NTEyIiwgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIsICJwdXJwb3NlIjogImFueSJ9XX0=">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIj4KPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIHJ4PSI0NCIgZmlsbD0iI0VBRjJGQiIvPgo8cGF0aCBkPSJNNTIgMTgyIFExMDAgMTQ4IDE0OCAxODIgTDE0OCAyMDAgTDUyIDIwMCBaIiBmaWxsPSIjM0I2RUE4Ii8+CjxwYXRoIGQ9Ik00MCA4NCBRMjggMTE0IDM3IDE1MCBRNDYgMTU0IDUyIDE0MyBRNDEgMTE0IDUyIDg2IFoiIGZpbGw9IiM0QTM3MjgiLz4KPHBhdGggZD0iTTE2MCA4NCBRMTcyIDExNCAxNjMgMTUwIFExNTQgMTU0IDE0OCAxNDMgUTE1OSAxMTQgMTQ4IDg2IFoiIGZpbGw9IiM0QTM3MjgiLz4KPGNpcmNsZSBjeD0iMTAwIiBjeT0iOTQiIHI9IjUyIiBmaWxsPSIjRjZEMkE4Ii8+CjxjaXJjbGUgY3g9IjQ5IiBjeT0iOTYiIHI9IjkiIGZpbGw9IiNGNkQyQTgiLz4KPGNpcmNsZSBjeD0iMTUxIiBjeT0iOTYiIHI9IjkiIGZpbGw9IiNGNkQyQTgiLz4KPHBhdGggZD0iTTQ0IDg4IFEzOCAyOCAxMDAgMjggUTE2MiAyOCAxNTYgODggUTE1MiA1NCAxMDAgNTEgUTQ4IDU0IDQ0IDg4IFoiIGZpbGw9IiM0QTM3MjgiLz4KPHBhdGggZD0iTTkwIDMzIEw3NCAyMyBRNjggMzMgNzQgNDEgWiIgZmlsbD0iI0Q5N0NBMCIvPgo8cGF0aCBkPSJNMTEwIDMzIEwxMjYgMjMgUTEzMiAzMyAxMjYgNDEgWiIgZmlsbD0iI0Q5N0NBMCIvPgo8Y2lyY2xlIGN4PSIxMDAiIGN5PSIzMyIgcj0iNS41IiBmaWxsPSIjQjg1QzgwIi8+CjxjaXJjbGUgY3g9IjgwIiBjeT0iOTQiIHI9IjUuNSIgZmlsbD0iIzNBMkUyMiIvPgo8Y2lyY2xlIGN4PSIxMjAiIGN5PSI5NCIgcj0iNS41IiBmaWxsPSIjM0EyRTIyIi8+CjxjaXJjbGUgY3g9IjY1IiBjeT0iMTA4IiByPSI3IiBmaWxsPSIjRjNBOEEwIiBvcGFjaXR5PSIwLjQ1Ii8+CjxjaXJjbGUgY3g9IjEzNSIgY3k9IjEwOCIgcj0iNyIgZmlsbD0iI0YzQThBMCIgb3BhY2l0eT0iMC40NSIvPgo8cGF0aCBkPSJNNzYgMTE0IFExMDAgMTM0IDEyNCAxMTQiIHN0cm9rZT0iIzNBMkUyMiIgc3Ryb2tlLXdpZHRoPSI1LjUiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cmVjdCB4PSIyMiIgeT0iMTUyIiB3aWR0aD0iMTU2IiBoZWlnaHQ9IjM4IiByeD0iMTkiIGZpbGw9IiMyRTdENUUiLz4KPHRleHQgeD0iMTAwIiB5PSIxNzgiIGZvbnQtZmFtaWx5PSInSGlyYWdpbm8gU2FucycsJ0hpcmFnaW5vIEtha3UgR290aGljIFByb04nLCdZdSBHb3RoaWMnLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiNGRkZGRkYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPue1puS4juaYjue0sDwvdGV4dD4KPC9zdmc+Cg==">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIj4KPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIHJ4PSI0NCIgZmlsbD0iI0VBRjJGQiIvPgo8cGF0aCBkPSJNNTIgMTgyIFExMDAgMTQ4IDE0OCAxODIgTDE0OCAyMDAgTDUyIDIwMCBaIiBmaWxsPSIjM0I2RUE4Ii8+CjxwYXRoIGQ9Ik00MCA4NCBRMjggMTE0IDM3IDE1MCBRNDYgMTU0IDUyIDE0MyBRNDEgMTE0IDUyIDg2IFoiIGZpbGw9IiM0QTM3MjgiLz4KPHBhdGggZD0iTTE2MCA4NCBRMTcyIDExNCAxNjMgMTUwIFExNTQgMTU0IDE0OCAxNDMgUTE1OSAxMTQgMTQ4IDg2IFoiIGZpbGw9IiM0QTM3MjgiLz4KPGNpcmNsZSBjeD0iMTAwIiBjeT0iOTQiIHI9IjUyIiBmaWxsPSIjRjZEMkE4Ii8+CjxjaXJjbGUgY3g9IjQ5IiBjeT0iOTYiIHI9IjkiIGZpbGw9IiNGNkQyQTgiLz4KPGNpcmNsZSBjeD0iMTUxIiBjeT0iOTYiIHI9IjkiIGZpbGw9IiNGNkQyQTgiLz4KPHBhdGggZD0iTTQ0IDg4IFEzOCAyOCAxMDAgMjggUTE2MiAyOCAxNTYgODggUTE1MiA1NCAxMDAgNTEgUTQ4IDU0IDQ0IDg4IFoiIGZpbGw9IiM0QTM3MjgiLz4KPHBhdGggZD0iTTkwIDMzIEw3NCAyMyBRNjggMzMgNzQgNDEgWiIgZmlsbD0iI0Q5N0NBMCIvPgo8cGF0aCBkPSJNMTEwIDMzIEwxMjYgMjMgUTEzMiAzMyAxMjYgNDEgWiIgZmlsbD0iI0Q5N0NBMCIvPgo8Y2lyY2xlIGN4PSIxMDAiIGN5PSIzMyIgcj0iNS41IiBmaWxsPSIjQjg1QzgwIi8+CjxjaXJjbGUgY3g9IjgwIiBjeT0iOTQiIHI9IjUuNSIgZmlsbD0iIzNBMkUyMiIvPgo8Y2lyY2xlIGN4PSIxMjAiIGN5PSI5NCIgcj0iNS41IiBmaWxsPSIjM0EyRTIyIi8+CjxjaXJjbGUgY3g9IjY1IiBjeT0iMTA4IiByPSI3IiBmaWxsPSIjRjNBOEEwIiBvcGFjaXR5PSIwLjQ1Ii8+CjxjaXJjbGUgY3g9IjEzNSIgY3k9IjEwOCIgcj0iNyIgZmlsbD0iI0YzQThBMCIgb3BhY2l0eT0iMC40NSIvPgo8cGF0aCBkPSJNNzYgMTE0IFExMDAgMTM0IDEyNCAxMTQiIHN0cm9rZT0iIzNBMkUyMiIgc3Ryb2tlLXdpZHRoPSI1LjUiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cmVjdCB4PSIyMiIgeT0iMTUyIiB3aWR0aD0iMTU2IiBoZWlnaHQ9IjM4IiByeD0iMTkiIGZpbGw9IiMyRTdENUUiLz4KPHRleHQgeD0iMTAwIiB5PSIxNzgiIGZvbnQtZmFtaWx5PSInSGlyYWdpbm8gU2FucycsJ0hpcmFnaW5vIEtha3UgR290aGljIFByb04nLCdZdSBHb3RoaWMnLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiNGRkZGRkYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPue1puS4juaYjue0sDwvdGV4dD4KPC9zdmc+Cg==">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --blue:#2F5FA8; --blue-bg:#EAF2FB; --blue-line:#C7DBF2;
+  --red:#B23A3A; --red-bg:#FBEAEA; --red-line:#F0C9C9;
+  --green:#2E7D5E; --green-bg:#E9F6EF; --green-line:#C7E6D5;
+  --purple:#6B4E9E; --purple-bg:#EFE9F7; --purple-line:#D9CBEF;
+  --ink:#262220; --ink-soft:#463F37;
+  --card:#FFFFFF; --line:#E3DCCE;
+  --shadow:0 6px 18px rgba(60,50,30,.10);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{
+  min-height:100%;color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+  font-size:16px;font-weight:500;line-height:1.8;
+  background:linear-gradient(180deg,#FBF8F2 0%,#EDF3FA 100%);background-attachment:fixed;
+  -webkit-text-size-adjust:100%;overflow-x:hidden;
+}
+button,input,select,textarea{font:inherit;color:inherit;}
+a{color:var(--blue);}
+.wrap{max-width:640px;margin:0 auto;padding:0 16px calc(env(safe-area-inset-bottom) + 40px);}
+
+header{
+  background:rgba(251,248,242,.92);backdrop-filter:blur(8px);
+  border-bottom:2px solid var(--line);padding:calc(env(safe-area-inset-top) + 14px) 16px 12px;
+}
+.htop{display:flex;align-items:center;gap:10px;max-width:640px;margin:0 auto;}
+.htop svg{width:40px;height:40px;flex:none;border-radius:9px;}
+h1{margin:0;font-size:18px;font-weight:800;color:var(--ink);}
+.htop p{margin:2px 0 0;font-size:16px;color:var(--ink-soft);font-weight:600;}
+
+/* ---- タブ ---- */
+.tabbar{
+  position:sticky;top:0;z-index:6;display:flex;gap:8px;padding:10px 16px;
+  background:rgba(251,248,242,.96);backdrop-filter:blur(8px);border-bottom:2px solid var(--line);
+}
+.tabbtn{
+  flex:1;min-height:52px;border:2px solid var(--line);border-radius:14px;background:#fff;
+  font-size:16.5px;font-weight:800;color:var(--ink-soft);cursor:pointer;
+}
+.tabbtn.on{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:var(--shadow);}
+
+main{padding-top:18px;}
+.screen{display:none;}
+.screen.show{display:block;}
+
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:18px 16px;margin-bottom:16px;}
+.hint{font-size:16px;font-weight:500;color:var(--ink-soft);margin-top:8px;line-height:1.7;}
+
+/* くろちゃん吹き出し */
+#kuro{display:none;background:var(--card);border:2px solid var(--green-line);border-radius:20px;box-shadow:var(--shadow);padding:16px;margin-bottom:18px;gap:12px;align-items:flex-start;}
+#kuro.show{display:flex;}
+#kuro svg{width:56px;height:56px;flex:none;border-radius:13px;}
+#kuro .bubble{flex:1;background:var(--green-bg);border-radius:14px;padding:14px 16px;}
+#kuro .bubble p{margin:0 0 8px;font-size:16px;font-weight:600;color:var(--ink);line-height:1.75;}
+#kuro .bubble p:last-child{margin-bottom:0;}
+#kuro .name{font-size:16px;font-weight:800;color:var(--green);margin-bottom:6px;}
+
+/* ---- ステップカード ---- */
+.step{
+  display:flex;gap:14px;align-items:flex-start;background:var(--card);border:2px solid var(--line);
+  border-radius:20px;padding:18px 16px;margin-bottom:14px;transition:opacity .2s,border-color .2s,box-shadow .2s;
+  opacity:.55;
+}
+.step.active{opacity:1;border-color:var(--blue);box-shadow:0 8px 20px rgba(47,95,168,.16);}
+.step.done{opacity:.8;}
+.stepnum{
+  flex:none;width:34px;height:34px;border-radius:50%;background:#F2EEE4;color:var(--ink-soft);
+  display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;
+}
+.step.active .stepnum{background:var(--blue);color:#fff;}
+.step.done .stepnum{background:var(--green-bg);color:var(--green);}
+.stepbody{flex:1;min-width:0;}
+.steptitle{font-size:17.5px;font-weight:800;color:var(--ink);margin-bottom:4px;}
+.stepdesc{font-size:16px;font-weight:600;color:var(--ink-soft);margin-bottom:12px;line-height:1.7;}
+.stepbtn{
+  display:block;width:100%;min-height:52px;border:none;border-radius:999px;font-size:16.5px;font-weight:800;
+  cursor:pointer;padding:13px;text-align:center;background:#F2EEE4;color:var(--ink-soft);
+}
+.step.active .stepbtn{background:linear-gradient(180deg,#5B87C6,var(--blue));color:#fff;box-shadow:0 5px 0 #1F447F;}
+.step.active .stepbtn:active{transform:translateY(2px);box-shadow:0 3px 0 #1F447F;}
+.stepcheck{flex:none;width:30px;height:30px;border-radius:50%;background:var(--green);color:#fff;display:none;align-items:center;justify-content:center;font-size:16px;font-weight:800;}
+.step.done .stepcheck{display:flex;}
+.thumbwrap{width:120px;aspect-ratio:3/4;border-radius:12px;overflow:hidden;background:#F2EEE4;margin-bottom:12px;}
+.thumbwrap img{width:100%;height:100%;object-fit:cover;}
+.bignotice{background:var(--blue-bg);color:var(--blue);border-radius:14px;padding:14px 16px;font-size:16px;font-weight:700;line-height:1.8;margin-top:12px;}
+textarea#pasteArea{width:100%;min-height:120px;border:1.5px solid var(--line);border-radius:12px;padding:12px;font-size:16px;background:#FFFDF8;resize:vertical;margin-bottom:10px;}
+.statusline{font-size:16px;font-weight:700;margin-top:10px;line-height:1.7;}
+.statusline.ok{color:var(--green);}
+.statusline.err{color:var(--red);}
+
+.manuallink{text-align:center;margin:6px 0 18px;}
+.manuallink a{font-size:16px;font-weight:700;text-decoration:none;color:var(--ink-soft);border-bottom:1.5px dashed var(--ink-soft);padding-bottom:2px;}
+
+/* ---- フォーム ---- */
+.fieldgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:16px;font-weight:700;color:var(--ink-soft);margin-bottom:5px;}
+.field input[type=text],.field input[type=number],.field input[type=date]{
+  width:100%;font-size:16px;font-weight:700;color:var(--ink);background:#FFFDF8;
+  border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;
+}
+.field input:focus{outline:none;border-color:var(--blue);}
+.grouphead{font-size:16px;font-weight:800;border-radius:10px;padding:9px 12px;margin:16px 0 10px;}
+.grouphead.pay{background:var(--blue-bg);color:var(--blue);}
+.grouphead.deduct{background:var(--red-bg);color:var(--red);}
+.grouphead.net{background:var(--green-bg);color:var(--green);}
+.calcbox{border-radius:12px;padding:12px 14px;margin:6px 0 14px;font-size:16px;font-weight:700;}
+.calcbox.pay{background:var(--blue-bg);color:var(--blue);}
+.calcbox.deduct{background:var(--red-bg);color:var(--red);}
+.calcbox.net{background:var(--green-bg);color:var(--green);}
+.calcbox .diff{display:block;font-size:16px;font-weight:600;margin-top:4px;color:var(--ink-soft);}
+.si-box{background:#F2EEE4;border-radius:12px;padding:12px 14px;margin:4px 0 14px;font-size:16px;font-weight:800;color:var(--ink);}
+.btn{display:block;width:100%;min-height:52px;border:none;border-radius:999px;font-size:16.5px;font-weight:800;cursor:pointer;padding:13px;margin-top:10px;}
+.btn-green{background:linear-gradient(180deg,#57A582,var(--green));color:#fff;box-shadow:0 5px 0 #1D5C44;}
+.btn-green:active{transform:translateY(2px);box-shadow:0 3px 0 #1D5C44;}
+.btn-outline{background:#fff;border:1.5px solid var(--line)!important;color:var(--ink-soft);}
+.btn-outline:active{transform:scale(.98);}
+
+/* ---- 見る画面 ---- */
+.viewtop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.viewtop select{font-size:16px;font-weight:700;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:#fff;}
+.viewtoggle{display:flex;gap:8px;}
+.vtbtn{min-height:44px;border:1.5px solid var(--line);border-radius:999px;background:#fff;font-size:16px;font-weight:700;color:var(--ink-soft);padding:9px 16px;cursor:pointer;}
+.vtbtn.on{background:var(--blue);border-color:var(--blue);color:#fff;}
+
+.tablewrap{overflow-x:auto;border:1.5px solid var(--line);border-radius:14px;-webkit-overflow-scrolling:touch;}
+table.kt{border-collapse:collapse;width:max-content;min-width:100%;font-size:16px;}
+table.kt th,table.kt td{padding:10px 10px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line);}
+table.kt th{background:#F5F1E7;font-weight:800;color:var(--ink-soft);text-align:center;position:sticky;top:0;}
+table.kt td:first-child,table.kt th:first-child{text-align:center;position:sticky;left:0;background:#FFFDF8;font-weight:800;}
+table.kt th:first-child{background:#F5F1E7;z-index:2;}
+table.kt td.pay{color:var(--blue);}
+table.kt td.deduct{color:var(--red);}
+table.kt td.net{color:var(--green);font-weight:800;}
+table.kt tr.total td{background:#F5F1E7;font-weight:800;}
+table.kt .ops{display:flex;gap:5px;justify-content:center;}
+table.kt .opbtn{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:7px 8px;font-size:16px;cursor:pointer;}
+
+.chartcontrols{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;}
+.chartcontrols select{flex:1;min-width:140px;font-size:16px;font-weight:700;padding:9px 10px;border-radius:10px;border:1.5px solid var(--line);background:#fff;}
+.chartbox{position:relative;height:250px;margin-bottom:14px;}
+
+#monthComment{margin-top:16px;}
+.commentbubble{background:var(--green-bg);border:2px solid var(--green-line);border-radius:16px;padding:14px 16px;}
+.commentbubble .ttl{font-size:16px;font-weight:800;color:var(--green);margin-bottom:8px;}
+.commentbubble p{margin:0 0 6px;font-size:16px;font-weight:600;color:var(--ink);line-height:1.75;}
+.commentbubble p:last-child{margin-bottom:0;}
+
+.advanced{margin:6px 0 10px;}
+.advanced summary{font-size:16px;color:var(--ink-soft);cursor:pointer;list-style:none;user-select:none;display:inline-block;}
+.advanced summary::-webkit-details-marker{display:none;}
+.advanced summary::before{content:"▸ ";}
+.advanced[open] summary::before{content:"▾ ";}
+.advanced-body{margin-top:12px;display:flex;flex-wrap:wrap;gap:10px;}
+.btn-small2{flex:1 1 45%;min-height:46px;background:#fff;border:1.5px solid var(--line);border-radius:10px;font-size:16px;font-weight:700;color:var(--ink-soft);cursor:pointer;padding:9px;text-align:center;display:block;}
+
+#zoomModal{position:fixed;inset:0;z-index:60;background:rgba(20,16,10,.88);display:none;align-items:center;justify-content:center;padding:20px;}
+#zoomModal.on{display:flex;}
+#zoomModal img{max-width:100%;max-height:88vh;border-radius:12px;}
+#zoomModal button{position:fixed;top:calc(env(safe-area-inset-top) + 14px);right:16px;background:#fff;border:none;border-radius:999px;padding:10px 18px;font-weight:800;font-size:16px;color:var(--ink);}
+
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 24px);transform:translateX(-50%) translateY(14px);
+  background:var(--ink);color:#fff;font-size:16px;font-weight:700;padding:12px 22px;border-radius:999px;box-shadow:var(--shadow);
+  opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:70;max-width:88vw;text-align:center;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
+
+.grouphead.ytd{background:var(--purple-bg);color:var(--purple);}
+.calcbox.ytd{background:var(--purple-bg);color:var(--purple);}
+table.kt td.ytd{color:var(--purple);}
+.reiwa-preview{font-size:16px;font-weight:700;color:var(--ink-soft);margin-top:6px;}
+textarea#f_memo{width:100%;min-height:90px;border:1.5px solid var(--line);border-radius:12px;padding:12px;font-size:16px;font-weight:500;background:#FFFDF8;resize:vertical;color:var(--ink);}
+.memo-cell{max-width:180px;white-space:normal;text-align:left;cursor:pointer;color:var(--ink-soft);}
+.memo-cell.full{white-space:normal;}
+</style></head>
+<body>
+
+<header>
+  <div class="htop">
+    <svg viewBox="0 0 200 200" aria-hidden="true">
+      <rect x="0" y="0" width="200" height="200" rx="44" fill="#EAF2FB"/>
+      <path d="M52 182 Q100 148 148 182 L148 200 L52 200 Z" fill="#3B6EA8"/>
+      <path d="M40 84 Q28 114 37 150 Q46 154 52 143 Q41 114 52 86 Z" fill="#4A3728"/>
+      <path d="M160 84 Q172 114 163 150 Q154 154 148 143 Q159 114 148 86 Z" fill="#4A3728"/>
+      <circle cx="100" cy="94" r="52" fill="#F6D2A8"/>
+      <circle cx="49" cy="96" r="9" fill="#F6D2A8"/>
+      <circle cx="151" cy="96" r="9" fill="#F6D2A8"/>
+      <path d="M44 88 Q38 28 100 28 Q162 28 156 88 Q152 54 100 51 Q48 54 44 88 Z" fill="#4A3728"/>
+      <path d="M90 33 L74 23 Q68 33 74 41 Z" fill="#D97CA0"/>
+      <path d="M110 33 L126 23 Q132 33 126 41 Z" fill="#D97CA0"/>
+      <circle cx="100" cy="33" r="5.5" fill="#B85C80"/>
+      <circle cx="80" cy="94" r="5.5" fill="#3A2E22"/>
+      <circle cx="120" cy="94" r="5.5" fill="#3A2E22"/>
+      <path d="M76 114 Q100 134 124 114" stroke="#3A2E22" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <h1>妻給与明細</h1>
+      <p>写真をえらんで、くろちゃんにお願いするだけ</p>
+    </div>
+  </div>
+</header>
+
+<div class="tabbar">
+  <button type="button" class="tabbtn on" id="tabRecordBtn">📷 記録する</button>
+  <button type="button" class="tabbtn" id="tabViewBtn">📊 見る</button>
+</div>
+
+<main>
+<div class="wrap">
+
+  <!-- ============ 記録する ============ -->
+  <section id="screenRecord" class="screen show">
+
+    <div id="stepsWrap">
+      <div class="step" id="step1">
+        <div class="stepnum">1</div>
+        <div class="stepbody">
+          <div class="steptitle">給与明細の写真をえらぶ</div>
+          <div class="stepdesc">カメラで撮るか、写真アプリからえらんでね</div>
+          <div class="thumbwrap" id="slipThumbWrap" style="display:none"><img id="slipThumbImg" alt=""></div>
+          <label class="stepbtn" for="slipFile">📷 写真をえらぶ</label>
+          <input type="file" id="slipFile" accept="image/*" style="display:none">
+        </div>
+        <div class="stepcheck" id="step1Check">✓</div>
+      </div>
+
+      <div class="step" id="step2">
+        <div class="stepnum">2</div>
+        <div class="stepbody">
+          <div class="steptitle">くろちゃんへのお願いをコピー</div>
+          <div class="stepdesc">押すと、読み取りのお願い文がコピーされるよ</div>
+          <button type="button" class="stepbtn" id="btnCopyPrompt">📋 お願いをコピーする</button>
+          <div class="bignotice" id="copyNotice" style="display:none">
+            Claudeアプリを開いて、いまコピーした文章と<br>さっきの写真をいっしょに貼って、送ってね📮
+          </div>
+        </div>
+        <div class="stepcheck" id="step2Check">✓</div>
+      </div>
+
+      <div class="step" id="step3">
+        <div class="stepnum">3</div>
+        <div class="stepbody">
+          <div class="steptitle">くろちゃんの答えを貼り付ける</div>
+          <div class="stepdesc">Claudeからの返信を、そのままここに貼ってね</div>
+          <textarea id="pasteArea" placeholder="ここに貼り付けてね"></textarea>
+          <button type="button" class="stepbtn" id="btnImportPaste">🔍 読み取る</button>
+          <p class="statusline" id="pasteStatus"></p>
+        </div>
+        <div class="stepcheck" id="step3Check">✓</div>
+      </div>
+    </div>
+
+    <p class="manuallink" id="manualLinkWrap"><a href="#" id="btnManualToggle">✏️ 自分で入力する</a></p>
+
+    <div class="card" id="formCard" style="display:none">
+      <div class="fieldgrid">
+        <div class="field"><label>支給年（西暦）</label><input type="number" id="fYear" placeholder="2026" inputmode="numeric"></div>
+        <div class="field"><label>支給月</label><input type="number" id="fMonth" placeholder="4" inputmode="numeric" min="1" max="12"></div>
+      </div>
+      <div class="reiwa-preview" id="reiwaPreview">支給年月：－</div>
+
+      <div class="grouphead" style="background:#F2EEE4;color:var(--ink-soft);margin-top:16px;">🕒 勤怠</div>
+      <div class="fieldgrid">
+        <div class="field"><label>出勤日数（日）</label><input type="number" id="f_workDays" inputmode="numeric"></div>
+        <div class="field"><label>就業時間（時間）</label><input type="number" id="f_workHours" inputmode="decimal" step="0.1"></div>
+      </div>
+
+      <div class="grouphead pay">💙 支給</div>
+      <div class="fieldgrid">
+        <div class="field"><label>基本給（円）</label><input type="number" id="f_baseSalary" inputmode="numeric"></div>
+        <div class="field"><label>通勤手当（円）</label><input type="number" id="f_commutingAllowance" inputmode="numeric"></div>
+        <div class="field"><label>総支給額（円）</label><input type="number" id="f_totalPayment" inputmode="numeric"></div>
+      </div>
+
+      <div class="grouphead deduct">❤️ 控除・手取り</div>
+      <div class="fieldgrid">
+        <div class="field"><label>課税対象額（円）</label><input type="number" id="f_taxableAmount" inputmode="numeric"></div>
+        <div class="field"><label>所得税（円）</label><input type="number" id="f_incomeTax" inputmode="numeric"></div>
+        <div class="field"><label>差引支給額・手取り（円）</label><input type="number" id="f_netPay" inputmode="numeric"></div>
+      </div>
+
+      <div class="grouphead ytd">📈 累計（このページに書いてあれば）</div>
+      <div class="fieldgrid">
+        <div class="field"><label>課税支給額計（円）</label><input type="number" id="f_taxablePaymentYtd" inputmode="numeric"></div>
+        <div class="field"><label>社会保険料計（円）</label><input type="number" id="f_socialInsuranceYtd" inputmode="numeric"></div>
+        <div class="field"><label>所得税額計（円）</label><input type="number" id="f_incomeTaxYtd" inputmode="numeric"></div>
+      </div>
+
+      <div class="grouphead" style="background:#F2EEE4;color:var(--ink-soft);">📝 感想メモ</div>
+      <div class="field">
+        <label>くろちゃんの感想などを、自由にメモできます（省略してもOK）</label>
+        <textarea id="f_memo" placeholder="例：残業が多めだったけど、その分しっかり反映されてるね、と言われた"></textarea>
+      </div>
+
+      <button type="button" class="btn btn-green" id="btnSaveRecord">この内容で保存する</button>
+      <button type="button" class="btn btn-outline" id="btnCancelEdit" style="display:none">編集をやめる</button>
+    </div>
+
+  </section>
+
+  <!-- ============ 見る ============ -->
+  <section id="screenView" class="screen">
+    <div class="card">
+      <div class="viewtop">
+        <select id="yearSelect"></select>
+        <div class="viewtoggle">
+          <button type="button" class="vtbtn on" id="vtTable">表で見る</button>
+          <button type="button" class="vtbtn" id="vtChart">グラフで見る</button>
+        </div>
+      </div>
+
+      <div id="viewTable">
+        <div class="tablewrap"><table class="kt" id="recordTable"></table></div>
+      </div>
+
+      <div id="viewChart" style="display:none">
+        <div class="chartcontrols">
+          <select id="chartItem">
+            <option value="totalPayment">総支給額</option>
+            <option value="netPay">差引支給額（手取り）</option>
+            <option value="baseSalary">基本給</option>
+            <option value="commutingAllowance">通勤手当</option>
+            <option value="taxableAmount">課税対象額</option>
+            <option value="incomeTax">所得税</option>
+            <option value="taxablePaymentYtd">課税支給額計</option>
+            <option value="socialInsuranceYtd">社会保険料計</option>
+            <option value="incomeTaxYtd">所得税額計</option>
+            <option value="workDays">出勤日数</option>
+            <option value="workHours">就業時間</option>
+          </select>
+          <select id="chartPeriod">
+            <option value="6">直近6か月</option>
+            <option value="12" selected>直近12か月</option>
+            <option value="year">年ごと比較</option>
+          </select>
+        </div>
+        <div class="chartbox"><canvas id="mainChart"></canvas></div>
+      </div>
+    </div>
+
+    <details class="advanced">
+      <summary>データの書き出し・バックアップ</summary>
+      <div class="advanced-body">
+        <button type="button" class="btn-small2" id="btnExportCsv">📑 CSVで書き出す</button>
+        <button type="button" class="btn-small2" id="btnExportJson">💾 バックアップを書き出す</button>
+        <label class="btn-small2" for="btnImportJson">📤 バックアップを読み込む</label>
+        <input type="file" id="btnImportJson" accept="application/json" style="display:none">
+      </div>
+    </details>
+  </section>
+
+</div>
+</main>
+
+<div id="zoomModal"><button type="button" id="zoomClose">✕ 閉じる</button><img id="zoomImg" alt=""></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ================= 保存先 ================= */
+  var store = (function () {
+    try { localStorage.setItem("__t", "1"); localStorage.removeItem("__t"); return localStorage; }
+    catch (e) {
+      var mem = {};
+      return { getItem: function (k) { return k in mem ? mem[k] : null; }, setItem: function (k, v) { mem[k] = String(v); }, removeItem: function (k) { delete mem[k]; } };
+    }
+  })();
+  var RKEY = "kyuyo_meisai_watashi_records_v1";
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function num(v) {
+    if (v == null || v === "") return 0;
+    if (typeof v === "number") return isFinite(v) ? v : 0;
+    var s = String(v).replace(/[０-９]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); });
+    s = s.replace(/[,，¥￥円%％\s]/g, "");
+    var n = Number(s);
+    return isFinite(n) ? n : 0;
+  }
+  function comma(n) { return Math.round(num(n)).toLocaleString("ja-JP"); }
+  function pad2(n) { return String(n).length < 2 ? "0" + n : String(n); }
+
+  var $toast = $("toast");
+  function toast(msg) { $toast.textContent = msg; $toast.classList.add("show"); clearTimeout($toast._t); $toast._t = setTimeout(function () { $toast.classList.remove("show"); }, 2600); }
+
+  /* ================= 令和表示 ================= */
+  function reiwaLabel(year, month) {
+    var r = num(year) - 2018;
+    if (r >= 1) return "令和" + pad2(r) + "年" + pad2(month) + "月分";
+    return year + "年" + month + "月分";
+  }
+  function reiwaYearLabel(year) {
+    var r = num(year) - 2018;
+    if (r >= 1) return "令和" + pad2(r) + "年";
+    return year + "年";
+  }
+  function reiwaShort(year, month) {
+    var r = num(year) - 2018;
+    return (r >= 1 ? "R" + r : year) + "/" + month;
+  }
+
+  /* ================= 項目定義 ================= */
+  var ATTEND_FIELDS = ["workDays", "workHours"];
+  var PAY_FIELDS = ["baseSalary", "commutingAllowance"];
+  var DEDUCT_FIELDS = ["taxableAmount", "incomeTax"];
+  var YTD_FIELDS = ["taxablePaymentYtd", "socialInsuranceYtd", "incomeTaxYtd"];
+  var ALL_NUM_FIELDS = ATTEND_FIELDS.concat(PAY_FIELDS, ["totalPayment"], DEDUCT_FIELDS, ["netPay"], YTD_FIELDS);
+  var FIELD_LABEL = {
+    workDays: "出勤日数", workHours: "就業時間",
+    baseSalary: "基本給", commutingAllowance: "通勤手当", totalPayment: "総支給額",
+    taxableAmount: "課税対象額", incomeTax: "所得税", netPay: "差引支給額",
+    taxablePaymentYtd: "課税支給額計", socialInsuranceYtd: "社会保険料計", incomeTaxYtd: "所得税額計"
+  };
+
+  /* ================= 記録の読み書き ================= */
+  var records = [];
+  function loadRecords() {
+    try { var raw = store.getItem(RKEY); var d = raw ? JSON.parse(raw) : []; records = Array.isArray(d) ? d : []; }
+    catch (e) { records = []; }
+  }
+  function saveRecords() {
+    try { store.setItem(RKEY, JSON.stringify(records)); return true; }
+    catch (e) { toast("保存できませんでした。写真の容量が大きいかもしれません。"); return false; }
+  }
+  function ym(r) { return r.year * 12 + r.month; }
+  function sortedRecords() { return records.slice().sort(function (a, b) { return ym(a) - ym(b); }); }
+
+  /* ================= 写真：選択・圧縮・表示 ================= */
+  var slipPhoto = null;
+  function compressImage(file, maxSide, quality) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        var img = new Image();
+        img.onload = function () {
+          var w = img.width, h = img.height;
+          var scale = Math.min(1, maxSide / Math.max(w, h));
+          var cw = Math.max(1, Math.round(w * scale)), ch = Math.max(1, Math.round(h * scale));
+          var c = document.createElement("canvas"); c.width = cw; c.height = ch;
+          c.getContext("2d").drawImage(img, 0, 0, cw, ch);
+          resolve(c.toDataURL("image/jpeg", quality));
+        };
+        img.onerror = function () { reject(new Error("image")); };
+        img.src = e.target.result;
+      };
+      reader.onerror = function () { reject(new Error("read")); };
+      reader.readAsDataURL(file);
+    });
+  }
+  function renderSlipThumb() {
+    if (slipPhoto) {
+      $("slipThumbImg").src = slipPhoto;
+      $("slipThumbWrap").style.display = "block";
+      $("slipThumbWrap").onclick = function () { openZoom(slipPhoto); };
+    } else {
+      $("slipThumbWrap").style.display = "none";
+    }
+  }
+  $("slipFile").addEventListener("change", function (e) {
+    var f = e.target.files[0]; if (!f) return;
+    compressImage(f, 1200, 0.7).then(function (url) { slipPhoto = url; renderSlipThumb(); updateStepStates(); }).catch(function () { toast("写真を読み込めませんでした。"); });
+    e.target.value = "";
+  });
+  function openZoom(url) { $("zoomImg").src = url; $("zoomModal").classList.add("on"); }
+  $("zoomClose").addEventListener("click", function () { $("zoomModal").classList.remove("on"); $("zoomImg").src = ""; });
+  $("zoomModal").addEventListener("click", function (e) { if (e.target.id === "zoomModal") { $("zoomModal").classList.remove("on"); $("zoomImg").src = ""; } });
+
+  /* ================= タブ切り替え ================= */
+  function showScreen(name) {
+    $("screenRecord").classList.toggle("show", name === "record");
+    $("screenView").classList.toggle("show", name === "view");
+    $("tabRecordBtn").classList.toggle("on", name === "record");
+    $("tabViewBtn").classList.toggle("on", name === "view");
+    window.scrollTo({ top: 0 });
+  }
+  $("tabRecordBtn").addEventListener("click", function () { showScreen("record"); });
+  $("tabViewBtn").addEventListener("click", function () { showScreen("view"); renderTable(); });
+
+  $("vtTable").addEventListener("click", function () {
+    $("vtTable").classList.add("on"); $("vtChart").classList.remove("on");
+    $("viewTable").style.display = "block"; $("viewChart").style.display = "none";
+  });
+  $("vtChart").addEventListener("click", function () {
+    $("vtChart").classList.add("on"); $("vtTable").classList.remove("on");
+    $("viewTable").style.display = "none"; $("viewChart").style.display = "block";
+    renderCharts();
+  });
+
+  /* ================= ステップの状態表示 ================= */
+  var step2Done = false, step3Done = false;
+  function updateStepStates() {
+    var step1Done = !!slipPhoto;
+    setStepState("step1", step1Done);
+    setStepState("step2", step2Done);
+    setStepState("step3", step3Done);
+    var order = [["step1", step1Done], ["step2", step2Done], ["step3", step3Done]];
+    var activeSet = false;
+    order.forEach(function (pair) {
+      var el = $(pair[0]);
+      el.classList.remove("active");
+      if (!pair[1] && !activeSet) { el.classList.add("active"); activeSet = true; }
+    });
+  }
+  function setStepState(id, done) {
+    $(id).classList.toggle("done", done);
+  }
+
+  /* ================= くろちゃん読み取り（プロンプト作成＋JSON抽出） ================= */
+  var PROMPT_TEXT = [
+    "給与明細の写真を見て、書いてある数字を読み取ってください。",
+    "",
+    "次の項目を、下のJSON形式だけで出力してください。説明文はいらず、```で囲んでもかまいません。",
+    "",
+    "【とても大事なお願い】",
+    "・数字は半角の数字だけにしてください（コンマ「,」や円マーク「¥」、パーセントは付けない）。",
+    "・年は西暦4桁で書いてください。明細に「令和」など元号で書かれていたら、西暦に直してください（例：令和8年なら2026）。",
+    "・写真に書かれていない項目・読み取れない項目は、無理に埋めずに省略してください（0とは書かないでください。0と書くのは「本当に0円・0日」という意味になります）。",
+    "・JSONとして正しい形式で書いてください（いちばん最後の項目のあとにカンマ「,」を付けないでください）。",
+    "",
+    "{",
+    '  "year": 支給年（西暦4桁）,',
+    '  "month": 支給月（1〜12）,',
+    '  "workDays": 出勤日数,',
+    '  "workHours": 就業時間,',
+    '  "baseSalary": 基本給,',
+    '  "commutingAllowance": 通勤手当,',
+    '  "totalPayment": 総支給額,',
+    '  "taxableAmount": 課税対象額,',
+    '  "incomeTax": 所得税,',
+    '  "netPay": 差引支給額（手取り）,',
+    '  "taxablePaymentYtd": 課税支給額計（累計）,',
+    '  "socialInsuranceYtd": 社会保険料計（累計）,',
+    '  "incomeTaxYtd": 所得税額計（累計）',
+    "}"
+  ].join("\n");
+
+  $("btnCopyPrompt").addEventListener("click", function () {
+    copyText(PROMPT_TEXT, function () {
+      step2Done = true;
+      $("copyNotice").style.display = "block";
+      updateStepStates();
+      toast("コピーしたよ📋");
+    });
+  });
+  function copyText(text, onOk) {
+    function ok() { onOk(); }
+    function fallback() {
+      try {
+        var ta = document.createElement("textarea");
+        ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+        document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove();
+        ok();
+      } catch (e) { toast("コピーできませんでした。"); }
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok).catch(fallback);
+    else fallback();
+  }
+
+  function tryParseJson(str) {
+    try { return JSON.parse(str); } catch (e) {}
+    var cleaned = str.replace(/,(\s*[}\]])/g, "$1");
+    try { return JSON.parse(cleaned); } catch (e2) {}
+    return null;
+  }
+  function extractJsonFromText(text) {
+    if (!text) return null;
+    var fenceMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
+    var candidate = fenceMatch ? fenceMatch[1] : text;
+    var start = candidate.indexOf("{");
+    if (start === -1) return null;
+    var depth = 0, end = -1;
+    for (var i = start; i < candidate.length; i++) {
+      var c = candidate[i];
+      if (c === "{") depth++;
+      else if (c === "}") { depth--; if (depth === 0) { end = i; break; } }
+    }
+    if (end === -1) return null;
+    var jsonStr = candidate.slice(start, end + 1);
+    return tryParseJson(jsonStr);
+  }
+
+  $("btnImportPaste").addEventListener("click", function () {
+    var text = $("pasteArea").value;
+    var obj = extractJsonFromText(text);
+    var statusEl = $("pasteStatus");
+    if (!obj) {
+      statusEl.textContent = "うまく読み取れなかったよ。Claudeからの返信をそのまま貼り付けてみてね。";
+      statusEl.className = "statusline err";
+      return;
+    }
+    var result = applyParsedData(obj);
+    step3Done = true;
+    updateStepStates();
+    showFormCard();
+    statusEl.textContent = buildRecognitionMessage(result.recognized, result.notRecognized);
+    statusEl.className = "statusline ok";
+  });
+
+  function applyParsedData(obj) {
+    if (obj.year != null && obj.year !== "") $("fYear").value = num(obj.year);
+    if (obj.month != null && obj.month !== "") $("fMonth").value = num(obj.month);
+    var recognized = [], notRecognized = [];
+    ALL_NUM_FIELDS.forEach(function (k) {
+      var v = obj[k];
+      if (v != null && v !== "") {
+        $("f_" + k).value = num(v);
+        recognized.push(FIELD_LABEL[k]);
+      } else {
+        notRecognized.push(FIELD_LABEL[k]);
+      }
+    });
+    updateReiwaPreview();
+    return { recognized: recognized, notRecognized: notRecognized };
+  }
+  function joinLabels(list) {
+    if (list.length <= 3) return list.join("と");
+    return list.slice(0, 3).join("と") + "など" + list.length + "項目";
+  }
+  function buildRecognitionMessage(recognized, notRecognized) {
+    if (notRecognized.length === 0) return "ぜんぶの項目が読み取れたよ！内容を確認してね。";
+    if (recognized.length === 0) return "うまく読み取れなかったみたい。下の欄に自分で入力してね。";
+    return joinLabels(recognized) + "は読み取れたよ。" + joinLabels(notRecognized) + "は見つからなかったから、確認して入れてね。";
+  }
+
+  /* ================= 令和プレビュー ================= */
+  function updateReiwaPreview() {
+    var y = $("fYear").value, m = $("fMonth").value;
+    if (!y || !m) { $("reiwaPreview").textContent = "支給年月：－"; return; }
+    $("reiwaPreview").textContent = "支給年月：" + reiwaLabel(num(y), num(m));
+  }
+  $("fYear").addEventListener("input", updateReiwaPreview);
+  $("fMonth").addEventListener("input", updateReiwaPreview);
+
+  /* ================= フォームの表示・切替 ================= */
+  function showFormCard() {
+    $("formCard").style.display = "block";
+    $("formCard").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  $("btnManualToggle").addEventListener("click", function (e) {
+    e.preventDefault();
+    var visible = $("formCard").style.display !== "none";
+    if (visible) { $("formCard").style.display = "none"; }
+    else { showFormCard(); }
+  });
+
+  /* ================= 保存・編集・削除 ================= */
+  var editingId = null;
+  function currentFormRecord() {
+    var r = { year: num($("fYear").value), month: num($("fMonth").value), memo: $("f_memo").value };
+    ALL_NUM_FIELDS.forEach(function (k) { r[k] = num($("f_" + k).value); });
+    r.photoSlip = slipPhoto;
+    return r;
+  }
+  function resetForm() {
+    editingId = null;
+    ["fYear", "fMonth"].forEach(function (id) { $(id).value = ""; });
+    ALL_NUM_FIELDS.forEach(function (k) { $("f_" + k).value = ""; });
+    $("f_memo").value = "";
+    slipPhoto = null; renderSlipThumb();
+    $("pasteArea").value = ""; $("pasteStatus").textContent = "";
+    $("copyNotice").style.display = "none";
+    step2Done = false; step3Done = false;
+    $("btnSaveRecord").textContent = "この内容で保存する";
+    $("btnCancelEdit").style.display = "none";
+    $("formCard").style.display = "none";
+    $("stepsWrap").style.display = "block";
+    $("manualLinkWrap").style.display = "block";
+    updateStepStates();
+    updateReiwaPreview();
+  }
+  function fillFormFromRecord(r) {
+    $("fYear").value = r.year; $("fMonth").value = r.month;
+    ALL_NUM_FIELDS.forEach(function (k) { $("f_" + k).value = r[k] != null ? r[k] : ""; });
+    $("f_memo").value = r.memo || "";
+    slipPhoto = r.photoSlip || null; renderSlipThumb();
+    updateReiwaPreview();
+  }
+
+  $("btnSaveRecord").addEventListener("click", function () {
+    var r = currentFormRecord();
+    if (!r.year || !r.month) { toast("支給年月を入力してね。"); return; }
+    if (r.month < 1 || r.month > 12) { toast("支給月は1〜12で入力してね。"); return; }
+    r.id = editingId || (String(Date.now()) + Math.random().toString(16).slice(2, 6));
+    r.updatedAt = new Date().toISOString();
+
+    var dup = records.filter(function (x) { return x.year === r.year && x.month === r.month && x.id !== r.id; })[0];
+    if (dup && !confirm(reiwaLabel(r.year, r.month) + "の記録はすでにあります。上書きしますか？")) return;
+    if (dup) records = records.filter(function (x) { return x.id !== dup.id; });
+
+    if (editingId) {
+      var idx = records.findIndex(function (x) { return x.id === editingId; });
+      if (idx > -1) records[idx] = r; else records.push(r);
+    } else {
+      records.push(r);
+    }
+    if (!saveRecords()) return;
+    resetForm();
+    toast("保存したよ！");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+  $("btnCancelEdit").addEventListener("click", function () { resetForm(); showScreen("view"); });
+
+  function editRecord(id) {
+    var r = records.filter(function (x) { return x.id === id; })[0];
+    if (!r) return;
+    editingId = id;
+    showScreen("record");
+    $("stepsWrap").style.display = "none";
+    $("manualLinkWrap").style.display = "none";
+    fillFormFromRecord(r);
+    showFormCard();
+    $("btnSaveRecord").textContent = "この内容で更新する";
+    $("btnCancelEdit").style.display = "block";
+    toast(reiwaLabel(r.year, r.month) + "の記録を編集中");
+  }
+  function deleteRecord(id) {
+    var r = records.filter(function (x) { return x.id === id; })[0];
+    if (!r) return;
+    if (!confirm(reiwaLabel(r.year, r.month) + "の記録を削除します。よろしいですか？")) return;
+    records = records.filter(function (x) { return x.id !== id; });
+    saveRecords(); renderYearSelect(); renderTable(); renderCharts();
+    toast("削除したよ。");
+  }
+
+  /* ================= 年セレクト・一覧表 ================= */
+  var selectedYear = null;
+  function renderYearSelect() {
+    var years = Array.from(new Set(records.map(function (r) { return r.year; }))).sort(function (a, b) { return a - b; });
+    var curY = new Date().getFullYear();
+    if (!years.length) years = [curY];
+    if (selectedYear == null || years.indexOf(selectedYear) === -1) selectedYear = years[years.length - 1];
+    $("yearSelect").innerHTML = years.map(function (y) { return '<option value="' + y + '"' + (y === selectedYear ? " selected" : "") + ">" + esc(reiwaYearLabel(y)) + "</option>"; }).join("");
+  }
+  $("yearSelect").addEventListener("change", function (e) { selectedYear = num(e.target.value); renderTable(); renderCharts(); });
+
+  var TABLE_COLS = [
+    { k: "month", label: "支給年月" },
+    { k: "workDays", label: "出勤" }, { k: "workHours", label: "就業h" },
+    { k: "baseSalary", label: "基本給", cls: "pay" }, { k: "commutingAllowance", label: "通勤手当", cls: "pay" }, { k: "totalPayment", label: "総支給額", cls: "pay" },
+    { k: "taxableAmount", label: "課税対象額", cls: "deduct" }, { k: "incomeTax", label: "所得税", cls: "deduct" }, { k: "netPay", label: "手取り", cls: "net" },
+    { k: "taxablePaymentYtd", label: "課税支給額計", cls: "ytd" }, { k: "socialInsuranceYtd", label: "社会保険料計", cls: "ytd" }, { k: "incomeTaxYtd", label: "所得税額計", cls: "ytd" }
+  ];
+  function memoShort(memo) {
+    if (!memo) return "－";
+    return memo.length > 18 ? memo.slice(0, 18) + "…" : memo;
+  }
+  function renderTable() {
+    var yearRecs = records.filter(function (r) { return r.year === selectedYear; }).sort(function (a, b) { return a.month - b.month; });
+    var html = "<thead><tr><th>" + TABLE_COLS.map(function (c) { return esc(c.label); }).join("</th><th>") + "</th><th>感想メモ</th><th>操作</th></tr></thead><tbody>";
+    if (!yearRecs.length) {
+      html += '<tr><td colspan="' + (TABLE_COLS.length + 2) + '" style="text-align:center;color:var(--ink-soft);padding:22px;">まだ' + esc(reiwaYearLabel(selectedYear)) + "の記録がないよ🌱</td></tr>";
+    } else {
+      yearRecs.forEach(function (r) {
+        html += "<tr>";
+        TABLE_COLS.forEach(function (c) {
+          var v = c.k === "month" ? reiwaLabel(r.year, r.month) : comma(r[c.k]);
+          html += '<td class="' + (c.cls || "") + '">' + esc(v) + "</td>";
+        });
+        html += '<td class="memo-cell" data-memo="' + esc(r.memo || "") + '">' + esc(memoShort(r.memo)) + "</td>";
+        html += '<td><div class="ops"><button class="opbtn" data-edit="' + r.id + '">✏️</button><button class="opbtn" data-del="' + r.id + '">🗑️</button></div></td></tr>';
+      });
+    }
+    html += "</tbody>";
+    $("recordTable").innerHTML = html;
+    $("recordTable").querySelectorAll("[data-edit]").forEach(function (b) { b.addEventListener("click", function () { editRecord(b.dataset.edit); }); });
+    $("recordTable").querySelectorAll("[data-del]").forEach(function (b) { b.addEventListener("click", function () { deleteRecord(b.dataset.del); }); });
+    $("recordTable").querySelectorAll(".memo-cell").forEach(function (td) {
+      td.addEventListener("click", function () {
+        var full = td.dataset.memo || "";
+        if (!full) return;
+        td.classList.toggle("full");
+        td.textContent = td.classList.contains("full") ? full : memoShort(full);
+      });
+    });
+  }
+
+  /* ================= CSV書き出し ================= */
+  var CSV_COLS = ["year", "month"].concat(TABLE_COLS.slice(1).map(function (c) { return c.k; }), ["memo"]);
+  var CSV_LABELS = ["年", "月"].concat(TABLE_COLS.slice(1).map(function (c) { return c.label; }), ["感想メモ"]);
+  $("btnExportCsv").addEventListener("click", function () {
+    var yearRecs = records.filter(function (r) { return r.year === selectedYear; }).sort(function (a, b) { return a.month - b.month; });
+    if (!yearRecs.length) { toast("この年の記録がまだないよ。"); return; }
+    var rows = yearRecs.map(function (r) {
+      return CSV_COLS.map(function (k) { return r[k] != null ? r[k] : ""; });
+    });
+    var csv = "﻿" + CSV_LABELS.join(",") + "\n" + rows.map(function (row) { return row.map(function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(","); }).join("\n");
+    downloadBlob(csv, "kyuyo_watashi_" + selectedYear + ".csv", "text/csv;charset=utf-8;");
+  });
+  function downloadBlob(content, filename, mime) {
+    var blob = new Blob([content], { type: mime });
+    var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = filename;
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1200);
+  }
+
+  /* ================= JSONバックアップ ================= */
+  $("btnExportJson").addEventListener("click", function () {
+    downloadBlob(JSON.stringify(records, null, 2), "kyuyo_meisai_watashi_backup.json", "application/json");
+    toast("バックアップを書き出したよ。");
+  });
+  $("btnImportJson").addEventListener("change", function (e) {
+    var file = e.target.files[0]; if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function (ev) {
+      try {
+        var data = JSON.parse(ev.target.result);
+        if (!Array.isArray(data)) throw new Error("invalid");
+        if (!confirm(data.length + "件のデータを読み込みます。今のデータは上書きされます。よろしいですか？")) { e.target.value = ""; return; }
+        records = data;
+        saveRecords(); renderYearSelect(); renderTable(); renderCharts();
+        toast("読み込んだよ。");
+      } catch (err) { toast("読み込めませんでした。正しいバックアップファイルか確認してね。"); }
+      e.target.value = "";
+    };
+    reader.readAsText(file);
+  });
+
+  /* ================= グラフ ================= */
+  var mainChartInst = null;
+  function periodRecords(count) {
+    var sorted = sortedRecords();
+    if (count === "year") return sorted;
+    return sorted.slice(-Number(count));
+  }
+  function renderCharts() {
+    if (typeof Chart === "undefined") return;
+    if ($("viewChart").style.display === "none") return;
+    var itemKey = $("chartItem").value;
+    var itemLabel = $("chartItem").selectedOptions[0].textContent;
+    var period = $("chartPeriod").value;
+
+    var labels, data;
+    if (period === "year") {
+      var years = Array.from(new Set(records.map(function (r) { return r.year; }))).sort();
+      labels = years.map(function (y) { return reiwaYearLabel(y); });
+      data = years.map(function (y) { return records.filter(function (r) { return r.year === y; }).reduce(function (s, r) { return s + num(r[itemKey]); }, 0); });
+    } else {
+      var recs = periodRecords(period);
+      labels = recs.map(function (r) { return reiwaShort(r.year, r.month); });
+      data = recs.map(function (r) { return num(r[itemKey]); });
+    }
+    var ctx = $("mainChart").getContext("2d");
+    if (mainChartInst) mainChartInst.destroy();
+    mainChartInst = new Chart(ctx, {
+      type: period === "year" ? "bar" : "line",
+      data: { labels: labels, datasets: [{ label: itemLabel, data: data, borderColor: "#2F5FA8", backgroundColor: "rgba(47,95,168,.25)", tension: .25, fill: period !== "year" }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { callback: function (v) { return comma(v); } } } } }
+    });
+  }
+  $("chartItem").addEventListener("change", renderCharts);
+  $("chartPeriod").addEventListener("change", renderCharts);
+
+  /* ================= 起動 ================= */
+  loadRecords();
+  renderYearSelect();
+  renderTable();
+  updateStepStates();
+  updateReiwaPreview();
+})();
+</script>
+</body>
+</html>
