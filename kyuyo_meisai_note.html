@@ -533,46 +533,89 @@ textarea#restoreArea{width:100%;min-height:100px;border:2px solid var(--line);bo
   var PARSE_DEFS = [
     { key: "payDate", type: "date", labels: ["給与支払日", "給与支給日", "支給日", "支払日"] },
     { key: "workDays", type: "int", labels: ["出勤日数", "出勤日", "勤務日数"] },
-    { key: "workHours", type: "time", labels: ["出勤時間", "総労働時間", "実労働時間", "労働時間", "勤務時間"] },
+    { key: "workHours", type: "time", labels: ["出勤時間", "総労働時間", "実労働時間", "労働時間"] },
     { key: "totalPayment", type: "yen", labels: ["支給合計", "支給額合計", "総支給額", "支給額"] },
     { key: "totalDeduction", type: "yen", labels: ["控除合計", "控除額合計", "控除額"] },
     { key: "netPay", type: "yen", labels: ["差引支給額（手取り）", "差引支給額(手取り)", "差引支給額", "手取り額", "手取り"] }
   ];
+  var ERA_START_YEAR = { "令和": 2018, "平成": 1988 };
   function escapeReg(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
-  function extractOne(text, def) {
-    for (var i = 0; i < def.labels.length; i++) {
-      var label = escapeReg(def.labels[i]);
-      var re;
-      if (def.type === "date") re = new RegExp(label + "[^0-9]{0,20}(\\d{4}[-/年.]\\d{1,2}[-/月.]\\d{1,2})日?");
-      else if (def.type === "time") re = new RegExp(label + "[^0-9]{0,15}(\\d{1,4}:\\d{2})");
-      else if (def.type === "int") re = new RegExp(label + "[^0-9]{0,15}(\\d{1,3})");
-      else re = new RegExp(label + "[^0-9]{0,20}(\\d[\\d,]{0,11})");
-      var m = text.match(re);
-      if (m) return m[1];
+  function pad2(v) { return ("0" + parseInt(v, 10)).slice(-2); }
+
+  // パース対象のテキストを「ラベル行 → 値（同じ行の続き、または次の行）」という
+  // 並びとして読む。関係のない行まで探しに行かないので、別のラベルの値を
+  // 誤って拾うことを防げる。
+  function toLines(text) {
+    return text.split(/\r\n|\r|\n/)
+      .map(function (l) { return l.replace(/^[\s　・･\-*●○■□]+/, "").trim(); })
+      .filter(function (l) { return l.length > 0; });
+  }
+  function matchValueAtStart(str, type) {
+    var s = str.replace(/^[：:、,\s　]+/, "");
+    var m;
+    if (type === "time") m = s.match(/^(\d{1,4}:\d{2})/);
+    else if (type === "int") m = s.match(/^(\d{1,3})/);
+    else m = s.match(/^(\d[\d,]{0,11})/);
+    return m ? m[1] : null;
+  }
+  function extractLineBased(lines, def) {
+    for (var li = 0; li < lines.length; li++) {
+      for (var k = 0; k < def.labels.length; k++) {
+        var label = def.labels[k];
+        if (lines[li].indexOf(label) !== 0) continue;
+        var rest = lines[li].slice(label.length).replace(/^[：:、,\s　]+/, "");
+        var sameLine = matchValueAtStart(rest, def.type);
+        if (sameLine != null) return sameLine;
+        if (rest === "" && li + 1 < lines.length) {
+          var nextVal = matchValueAtStart(lines[li + 1], def.type);
+          if (nextVal != null) return nextVal;
+        }
+      }
     }
     return null;
   }
-  function toISODate(s) {
-    var m = s.match(/(\d{4})[-\/年.](\d{1,2})[-\/月.](\d{1,2})/);
-    if (!m) return "";
-    var y = m[1], mo = ("0" + m[2]).slice(-2), d = ("0" + m[3]).slice(-2);
-    return y + "-" + mo + "-" + d;
+
+  // 支給日は「令和 8 年 9 月 25 日」のように、文字や数字の間に空白・改行が
+  // 入っていても読み取れるよう、ラベルの後ろの文字を少しまとめてから
+  // 空白を取り除いて日付のパターンを探す。
+  function parseDateToken(s) {
+    for (var era in ERA_START_YEAR) {
+      var reEra = new RegExp(escapeReg(era) + "(\\d{1,2})年(\\d{1,2})月(\\d{1,2})日?");
+      var mEra = s.match(reEra);
+      if (mEra) {
+        var y = ERA_START_YEAR[era] + parseInt(mEra[1], 10);
+        return y + "-" + pad2(mEra[2]) + "-" + pad2(mEra[3]);
+      }
+    }
+    var m = s.match(/(\d{4})[-\/年.](\d{1,2})[-\/月.](\d{1,2})日?/);
+    if (m) return m[1] + "-" + pad2(m[2]) + "-" + pad2(m[3]);
+    return null;
   }
+  function extractDate(lines, def) {
+    for (var li = 0; li < lines.length; li++) {
+      for (var k = 0; k < def.labels.length; k++) {
+        var label = def.labels[k];
+        if (lines[li].indexOf(label) !== 0) continue;
+        var rest = lines[li].slice(label.length);
+        var windowText = [rest].concat(lines.slice(li + 1, li + 11)).join("");
+        windowText = windowText.replace(/[\s　:：、,]+/g, "").slice(0, 40);
+        var iso = parseDateToken(windowText);
+        if (iso) return iso;
+      }
+    }
+    return null;
+  }
+
   function parsePastedText(raw) {
     var text = toHalfWidth(raw || "");
+    var lines = toLines(text);
     var recognized = [], notRecognized = [], out = {};
     PARSE_DEFS.forEach(function (def) {
-      var v = extractOne(text, def);
+      var v = def.type === "date" ? extractDate(lines, def) : extractLineBased(lines, def);
       if (v == null) { notRecognized.push(FIELD_LABEL[def.key]); return; }
-      if (def.type === "date") {
-        var iso = toISODate(v);
-        if (!iso) { notRecognized.push(FIELD_LABEL[def.key]); return; }
-        out[def.key] = iso;
-      } else if (def.type === "time") {
-        out[def.key] = v;
-      } else {
-        out[def.key] = num(v);
-      }
+      if (def.type === "date") out[def.key] = v;
+      else if (def.type === "time") out[def.key] = v;
+      else out[def.key] = num(v);
       recognized.push(FIELD_LABEL[def.key]);
     });
     return { out: out, recognized: recognized, notRecognized: notRecognized };
