@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>給料明細ノート</title>
+<meta name="theme-color" content="#2F639A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="給料明細ノート">
+<link rel="apple-touch-icon" href="kyuyo_meisai_note-icon.png">
+<link rel="icon" href="kyuyo_meisai_note-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#2F639A;
+  --blue-deep:#153655;
+  --yellow:#FFE9A8;
+  --yellow-deep:#F2CE72;
+  --ink:#1A1A1A;
+  --ink2:#242424;
+  --green:#0F5A33;
+  --green-bg:#E3F3E9;
+  --green-line:#9FD4B4;
+  --red:#8A1F15;
+  --red-bg:#FBE6E3;
+  --red-line:#EFB3AA;
+  --card:#FFFFFF;
+  --line:#E3D7B4;
+  --shadow:0 8px 22px rgba(30,60,90,.14);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;overflow-x:hidden;}
+input,select,textarea{min-width:0;max-width:100%;}
+body{
+  min-height:100%;
+  color:var(--ink);
+  font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Hiragino Sans",sans-serif;
+  font-size:17px;font-weight:500;line-height:1.75;
+  background:linear-gradient(180deg,#FFF8E6 0%,#EAF2FB 55%,#EAF2FB 100%);
+  background-attachment:fixed;
+  -webkit-text-size-adjust:100%;
+  overflow-wrap:break-word;word-break:break-word;
+}
+button,input,select,textarea{font:inherit;color:inherit;}
+.wrap{max-width:640px;margin:0 auto;padding:0 16px calc(env(safe-area-inset-bottom) + 48px);}
+
+header{
+  background:var(--blue);
+  padding:calc(env(safe-area-inset-top) + 18px) 16px 20px;
+  box-shadow:var(--shadow);
+}
+.htop{display:flex;align-items:center;gap:14px;max-width:640px;margin:0 auto;}
+.htop img{width:60px;height:60px;border-radius:16px;flex:none;box-shadow:0 4px 10px rgba(0,0,0,.18);background:#fff;}
+h1{margin:0;font-size:23px;font-weight:900;color:#FFFFFF;}
+.htop p{margin:4px 0 0;font-size:16px;color:var(--yellow);font-weight:700;}
+
+main{padding-top:18px;}
+
+.card{background:var(--card);border:2px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:20px 17px;margin-bottom:18px;}
+h2{margin:0 0 14px;font-size:21px;font-weight:900;color:var(--blue-deep);display:flex;align-items:center;gap:8px;}
+
+.tip{background:var(--yellow);border-radius:18px;padding:15px 16px;margin-bottom:18px;font-size:16px;font-weight:700;color:var(--ink);line-height:1.8;box-shadow:var(--shadow);}
+.tip b{color:var(--blue-deep);}
+
+textarea#pasteArea{
+  width:100%;min-height:120px;border:2px solid var(--line);border-radius:14px;padding:13px;
+  font-size:16px;font-weight:600;background:#FFFDF6;resize:vertical;margin-bottom:12px;color:var(--ink);
+}
+textarea#pasteArea::placeholder{color:var(--ink2);opacity:.7;}
+
+.btn{display:block;width:100%;min-height:56px;border:none;border-radius:999px;font-size:18px;font-weight:900;
+  cursor:pointer;padding:14px;margin-top:10px;text-align:center;}
+.btn-blue{background:linear-gradient(180deg,#4C86C4,var(--blue));color:#fff;box-shadow:0 5px 0 var(--blue-deep);}
+.btn-blue:active{transform:translateY(3px);box-shadow:0 2px 0 var(--blue-deep);}
+.btn-green{background:linear-gradient(180deg,#3E9A68,var(--green));color:#fff;box-shadow:0 5px 0 #0B3E22;}
+.btn-green:active{transform:translateY(3px);box-shadow:0 2px 0 #0B3E22;}
+.btn-outline{background:#fff;border:2px solid var(--line)!important;color:var(--ink);}
+.btn-outline:active{transform:scale(.98);}
+.btn-small{min-height:48px;font-size:16px;}
+
+.statusline{font-size:16px;font-weight:800;margin-top:10px;line-height:1.7;padding:12px 14px;border-radius:12px;display:none;}
+.statusline.show{display:block;}
+.statusline.ok{color:var(--green);background:var(--green-bg);border:2px solid var(--green-line);}
+.statusline.err{color:var(--red);background:var(--red-bg);border:2px solid var(--red-line);}
+
+.editbanner{background:var(--yellow);border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:16px;font-weight:800;color:var(--blue-deep);display:none;align-items:center;justify-content:space-between;gap:10px;}
+.editbanner.show{display:flex;}
+.editbanner button{flex:none;min-height:40px;border:none;border-radius:999px;background:var(--blue);color:#fff;font-weight:800;font-size:15px;padding:8px 14px;}
+
+.field{margin-bottom:15px;min-width:0;}
+.field label{display:block;font-size:16px;font-weight:800;color:var(--ink);margin-bottom:6px;}
+.field input{
+  width:100%;min-width:0;font-size:19px;font-weight:800;color:var(--ink);background:#FFFDF6;
+  border:2px solid var(--line);border-radius:12px;padding:13px 14px;
+}
+.field input:focus{outline:none;border-color:var(--blue);}
+.fieldgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;min-width:0;}
+
+.netbox{background:var(--yellow);border-radius:18px;padding:16px 18px;margin:4px 0 16px;text-align:center;}
+.netbox .lbl{font-size:16px;font-weight:800;color:var(--blue-deep);margin-bottom:4px;}
+.netbox .val{font-size:40px;font-weight:900;color:var(--blue-deep);letter-spacing:.5px;}
+
+/* ---- 記録一覧 ---- */
+.reccard{border:2px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px;background:#FFFDF6;}
+.reccard .ym{font-size:19px;font-weight:900;color:var(--blue-deep);margin-bottom:10px;}
+.reccard .row{display:flex;justify-content:space-between;align-items:baseline;font-size:16px;font-weight:700;color:var(--ink);padding:5px 0;border-bottom:1px dashed var(--line);}
+.reccard .row:last-of-type{border-bottom:none;}
+.reccard .row .k{color:var(--ink2);}
+.reccard .row .v{font-weight:800;}
+.reccard .netrow{margin-top:10px;background:var(--yellow);border-radius:12px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;}
+.reccard .netrow .k{font-size:16px;font-weight:800;color:var(--blue-deep);}
+.reccard .netrow .v{font-size:24px;font-weight:900;color:var(--blue-deep);}
+.badge{display:inline-block;margin-top:10px;padding:8px 12px;border-radius:999px;font-size:15px;font-weight:800;}
+.badge.ok{background:var(--green-bg);color:var(--green);border:2px solid var(--green-line);}
+.badge.err{background:var(--red-bg);color:var(--red);border:2px solid var(--red-line);}
+.recops{display:flex;gap:10px;margin-top:14px;}
+.recops button{flex:1;min-height:48px;border-radius:999px;font-size:16px;font-weight:800;border:2px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;}
+.recops button.del{color:var(--red);border-color:var(--red-line);background:var(--red-bg);}
+.empty{font-size:16px;font-weight:700;color:var(--ink2);text-align:center;padding:14px 4px;}
+
+/* ---- 横棒グラフ ---- */
+.barrow{margin-bottom:14px;}
+.barrow .bhead{display:flex;justify-content:space-between;font-size:16px;font-weight:800;color:var(--ink);margin-bottom:6px;}
+.bartrack{background:#F3EEDD;border-radius:999px;height:26px;overflow:hidden;border:2px solid var(--line);}
+.barfill{height:100%;background:linear-gradient(90deg,#4C86C4,var(--blue));border-radius:999px 0 0 999px;min-width:6px;}
+
+/* ---- 年サマリー ---- */
+.yearpick{width:100%;font-size:18px;font-weight:800;color:var(--ink);padding:12px 14px;border-radius:12px;border:2px solid var(--line);background:#FFFDF6;margin-bottom:14px;}
+.sumgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.sumbox{background:var(--green-bg);border:2px solid var(--green-line);border-radius:16px;padding:14px;text-align:center;}
+.sumbox .lbl{font-size:15px;font-weight:800;color:var(--green);margin-bottom:4px;}
+.sumbox .val{font-size:24px;font-weight:900;color:var(--green);}
+
+/* ---- バックアップ ---- */
+details.backup summary{font-size:17px;font-weight:800;color:var(--blue-deep);cursor:pointer;list-style:none;padding:4px 0;}
+details.backup summary::-webkit-details-marker{display:none;}
+details.backup summary::before{content:"▸ ";}
+details.backup[open] summary::before{content:"▾ ";}
+details.backup{margin-top:4px;}
+textarea#restoreArea{width:100%;min-height:100px;border:2px solid var(--line);border-radius:12px;padding:12px;font-size:15px;font-weight:600;background:#FFFDF6;margin-top:12px;color:var(--ink);}
+
+.footnote{text-align:center;font-size:15px;font-weight:700;color:var(--ink2);line-height:1.8;margin:6px 0 10px;}
+
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 24px);transform:translateX(-50%) translateY(14px);
+  background:var(--blue-deep);color:#fff;font-size:16px;font-weight:800;padding:13px 22px;border-radius:999px;box-shadow:var(--shadow);
+  opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:70;max-width:88vw;text-align:center;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="htop">
+    <img src="kyuyo_meisai_note-icon.png" alt="給料袋をもったにこにこのアイコン">
+    <div>
+      <h1>給料明細ノート</h1>
+      <p>毎月の手取りを、かんたんに記録</p>
+    </div>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+
+  <div class="tip">
+    <b>つかいかた</b>：明細の文字をコピーして下に貼りつけると、わかる項目だけ自動で入ります。読み取れない項目は空らんのままなので、見て直してくださいね。
+  </div>
+
+  <!-- ============ 入力 ============ -->
+  <section class="card">
+    <h2>📋 文字を貼りつける</h2>
+    <textarea id="pasteArea" placeholder="ここに明細の文字を貼りつけてね"></textarea>
+    <button type="button" class="btn btn-blue" id="btnParse">🔍 読み取る</button>
+    <p class="statusline" id="parseStatus"></p>
+  </section>
+
+  <section class="card">
+    <h2 id="formTitle">✏️ この月の記録</h2>
+    <div class="editbanner" id="editBanner">
+      <span id="editBannerText">編集中だよ</span>
+      <button type="button" id="btnCancelEdit">やめる</button>
+    </div>
+
+    <div class="field">
+      <label>支給日</label>
+      <input type="date" id="fPayDate">
+    </div>
+
+    <div class="fieldgrid">
+      <div class="field">
+        <label>出勤日数（日）</label>
+        <input type="number" id="fWorkDays" inputmode="numeric" placeholder="例：21">
+      </div>
+      <div class="field">
+        <label>出勤時間</label>
+        <input type="text" id="fWorkHours" placeholder="例：126:00">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>支給合計（円）</label>
+      <input type="number" id="fTotalPayment" inputmode="numeric" placeholder="例：253000">
+    </div>
+    <div class="field">
+      <label>控除合計（円）</label>
+      <input type="number" id="fTotalDeduction" inputmode="numeric" placeholder="例：45000">
+    </div>
+    <div class="field">
+      <label>手取り（円）</label>
+      <input type="number" id="fNetPay" inputmode="numeric" placeholder="例：208000">
+    </div>
+
+    <div class="netbox">
+      <div class="lbl">この月の手取り</div>
+      <div class="val" id="netBig">¥0</div>
+    </div>
+
+    <p class="statusline" id="calcStatus"></p>
+
+    <button type="button" class="btn btn-green" id="btnSave">この内容で保存する</button>
+  </section>
+
+  <!-- ============ 一覧 ============ -->
+  <section class="card">
+    <h2>🗂️ 記録一覧（新しい順）</h2>
+    <div id="recordList"></div>
+  </section>
+
+  <!-- ============ 横棒グラフ ============ -->
+  <section class="card">
+    <h2>📊 手取りの移り変わり</h2>
+    <div id="barChart"></div>
+  </section>
+
+  <!-- ============ 年サマリー ============ -->
+  <section class="card">
+    <h2>🗓️ 年ごとの手取り</h2>
+    <select id="yearPick" class="yearpick"></select>
+    <div class="sumgrid">
+      <div class="sumbox">
+        <div class="lbl">手取り合計</div>
+        <div class="val" id="yearSum">¥0</div>
+      </div>
+      <div class="sumbox">
+        <div class="lbl">手取り平均（月）</div>
+        <div class="val" id="yearAvg">¥0</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ バックアップ ============ -->
+  <section class="card">
+    <h2>💾 記録のバックアップ</h2>
+    <p style="font-size:16px;font-weight:700;color:var(--ink2);margin:0 0 4px;">もしもの時のために、記録を文字としてコピーしておけます。</p>
+    <button type="button" class="btn btn-outline" id="btnCopyBackup">📋 記録をコピーする</button>
+    <details class="backup">
+      <summary>貼り付けて戻す</summary>
+      <textarea id="restoreArea" placeholder="コピーしておいた記録の文字をここに貼りつけてね"></textarea>
+      <button type="button" class="btn btn-outline btn-small" id="btnRestore">この内容で戻す</button>
+    </details>
+  </section>
+
+  <p class="footnote">記録はこの端末のブラウザだけに保存されます。<br>氏名・会社名・写真は記録しません。</p>
+
+</div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ================= 保存先 ================= */
+  var store = (function () {
+    try { localStorage.setItem("__t", "1"); localStorage.removeItem("__t"); return localStorage; }
+    catch (e) {
+      var mem = {};
+      return {
+        getItem: function (k) { return k in mem ? mem[k] : null; },
+        setItem: function (k, v) { mem[k] = String(v); },
+        removeItem: function (k) { delete mem[k]; }
+      };
+    }
+  })();
+  var RKEY = "kyuyo_meisai_note_records_v1";
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+  function toHalfWidth(s) {
+    return String(s == null ? "" : s)
+      .replace(/[０-９]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); })
+      .replace(/[，]/g, ",").replace(/[：]/g, ":").replace(/[．]/g, ".");
+  }
+  function num(v) {
+    if (v == null || v === "") return 0;
+    if (typeof v === "number") return isFinite(v) ? v : 0;
+    var s = toHalfWidth(v).replace(/[,，¥￥円%％\s]/g, "");
+    var n = Number(s);
+    return isFinite(n) ? n : 0;
+  }
+  function comma(n) { return Math.round(num(n)).toLocaleString("ja-JP"); }
+  function yen(n) { return "¥" + comma(n); }
+
+  var $toast = $("toast");
+  function toast(msg) {
+    $toast.textContent = msg; $toast.classList.add("show");
+    clearTimeout($toast._t); $toast._t = setTimeout(function () { $toast.classList.remove("show"); }, 2600);
+  }
+
+  /* ================= 記録の読み書き ================= */
+  var records = [];
+  function loadRecords() {
+    try { var raw = store.getItem(RKEY); var d = raw ? JSON.parse(raw) : []; records = Array.isArray(d) ? d : []; }
+    catch (e) { records = []; }
+  }
+  function saveRecords() {
+    try { store.setItem(RKEY, JSON.stringify(records)); return true; }
+    catch (e) { toast("保存できませんでした。端末の空き容量を確認してね。"); return false; }
+  }
+  function monthKey(payDate) { return String(payDate || "").slice(0, 7); }
+  function formatYm(payDate) {
+    var k = monthKey(payDate);
+    var m = k.match(/^(\d{4})-(\d{2})$/);
+    if (!m) return "（月が不明）";
+    return m[1] + "年" + parseInt(m[2], 10) + "月";
+  }
+  function sortedDesc() {
+    return records.slice().sort(function (a, b) { return monthKey(b.payDate).localeCompare(monthKey(a.payDate)); });
+  }
+  function calcNet(r) { return num(r.totalPayment) - num(r.totalDeduction); }
+  function isMatch(r) { return calcNet(r) === Math.round(num(r.netPay)); }
+
+  /* ================= フォーム ⇄ レコード ================= */
+  var editingKey = null;
+
+  function formToRecord() {
+    return {
+      payDate: $("fPayDate").value,
+      workDays: $("fWorkDays").value === "" ? "" : num($("fWorkDays").value),
+      workHours: toHalfWidth($("fWorkHours").value).trim(),
+      totalPayment: $("fTotalPayment").value === "" ? "" : num($("fTotalPayment").value),
+      totalDeduction: $("fTotalDeduction").value === "" ? "" : num($("fTotalDeduction").value),
+      netPay: $("fNetPay").value === "" ? "" : num($("fNetPay").value)
+    };
+  }
+  function recordToForm(r) {
+    $("fPayDate").value = r.payDate || "";
+    $("fWorkDays").value = r.workDays === "" || r.workDays == null ? "" : r.workDays;
+    $("fWorkHours").value = r.workHours || "";
+    $("fTotalPayment").value = r.totalPayment === "" || r.totalPayment == null ? "" : r.totalPayment;
+    $("fTotalDeduction").value = r.totalDeduction === "" || r.totalDeduction == null ? "" : r.totalDeduction;
+    $("fNetPay").value = r.netPay === "" || r.netPay == null ? "" : r.netPay;
+    updateCalcDisplay();
+  }
+  function clearForm() {
+    ["fPayDate", "fWorkDays", "fWorkHours", "fTotalPayment", "fTotalDeduction", "fNetPay"].forEach(function (id) { $(id).value = ""; });
+    updateCalcDisplay();
+  }
+
+  function updateCalcDisplay() {
+    var r = formToRecord();
+    $("netBig").textContent = yen(r.netPay === "" ? 0 : r.netPay);
+    var statusEl = $("calcStatus");
+    var hasAll = r.totalPayment !== "" && r.totalDeduction !== "" && r.netPay !== "";
+    if (!hasAll) { statusEl.className = "statusline"; statusEl.textContent = ""; return; }
+    var calc = num(r.totalPayment) - num(r.totalDeduction);
+    var diff = Math.round(calc - num(r.netPay));
+    if (diff === 0) {
+      statusEl.className = "statusline ok show";
+      statusEl.textContent = "✓ 支給合計－控除合計＝手取り が合っています";
+    } else {
+      statusEl.className = "statusline err show";
+      statusEl.textContent = "⚠ 計算が合いません。支給合計－控除合計＝" + yen(calc) + "（手取りと" + yen(Math.abs(diff)) + "ちがいます）。数字を確認してね。";
+    }
+  }
+  ["fPayDate", "fWorkDays", "fWorkHours", "fTotalPayment", "fTotalDeduction", "fNetPay"].forEach(function (id) {
+    $(id).addEventListener("input", updateCalcDisplay);
+  });
+
+  /* ================= 編集モード ================= */
+  function enterEditMode(key) {
+    editingKey = key;
+    $("editBanner").classList.add("show");
+    $("editBannerText").textContent = formatYm(key + "-01") + "の記録を編集中";
+    $("formTitle").textContent = "✏️ この月の記録を直す";
+    $("formTitle").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  function exitEditMode() {
+    editingKey = null;
+    $("editBanner").classList.remove("show");
+    $("formTitle").textContent = "✏️ この月の記録";
+  }
+  $("btnCancelEdit").addEventListener("click", function () { exitEditMode(); clearForm(); });
+
+  /* ================= 保存 ================= */
+  $("btnSave").addEventListener("click", function () {
+    var r = formToRecord();
+    if (!r.payDate) { toast("支給日を入れてね"); $("fPayDate").focus(); return; }
+    var key = monthKey(r.payDate);
+    if (editingKey && editingKey !== key) {
+      records = records.filter(function (x) { return monthKey(x.payDate) !== editingKey; });
+    }
+    var idx = records.findIndex(function (x) { return monthKey(x.payDate) === key; });
+    var overwritten = idx !== -1;
+    if (overwritten) records[idx] = r; else records.push(r);
+    if (!saveRecords()) return;
+    exitEditMode();
+    clearForm();
+    renderAll();
+    toast(overwritten ? formatYm(r.payDate) + "の記録を上書きしたよ" : formatYm(r.payDate) + "の記録を保存したよ");
+  });
+
+  /* ================= 一覧の表示 ================= */
+  function renderList() {
+    var list = sortedDesc();
+    var wrap = $("recordList");
+    if (list.length === 0) {
+      wrap.innerHTML = '<p class="empty">まだ記録がありません。上のフォームから入れてみてね。</p>';
+      return;
+    }
+    wrap.innerHTML = list.map(function (r) {
+      var key = monthKey(r.payDate);
+      var ok = isMatch(r);
+      var badge = ok
+        ? '<span class="badge ok">✓ 計算が合っています</span>'
+        : '<span class="badge err">⚠ 計算が合いません</span>';
+      return '' +
+        '<div class="reccard">' +
+          '<div class="ym">' + esc(formatYm(r.payDate)) + '</div>' +
+          '<div class="row"><span class="k">支給日</span><span class="v">' + esc(r.payDate || "未入力") + '</span></div>' +
+          '<div class="row"><span class="k">出勤日数</span><span class="v">' + (r.workDays === "" || r.workDays == null ? "未入力" : comma(r.workDays) + "日") + '</span></div>' +
+          '<div class="row"><span class="k">出勤時間</span><span class="v">' + esc(r.workHours || "未入力") + '</span></div>' +
+          '<div class="row"><span class="k">支給合計</span><span class="v">' + (r.totalPayment === "" || r.totalPayment == null ? "未入力" : yen(r.totalPayment)) + '</span></div>' +
+          '<div class="row"><span class="k">控除合計</span><span class="v">' + (r.totalDeduction === "" || r.totalDeduction == null ? "未入力" : yen(r.totalDeduction)) + '</span></div>' +
+          '<div class="netrow"><span class="k">手取り</span><span class="v">' + yen(r.netPay) + '</span></div>' +
+          badge +
+          '<div class="recops">' +
+            '<button type="button" class="edit" data-key="' + esc(key) + '">直す</button>' +
+            '<button type="button" class="del" data-key="' + esc(key) + '">消す</button>' +
+          '</div>' +
+        '</div>';
+    }).join("");
+
+    wrap.querySelectorAll(".edit").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var key = btn.getAttribute("data-key");
+        var r = records.find(function (x) { return monthKey(x.payDate) === key; });
+        if (!r) return;
+        recordToForm(r);
+        enterEditMode(key);
+      });
+    });
+    wrap.querySelectorAll(".del").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var key = btn.getAttribute("data-key");
+        var r = records.find(function (x) { return monthKey(x.payDate) === key; });
+        if (!r) return;
+        var ok = confirm(formatYm(r.payDate) + "の記録を消します。よろしいですか？");
+        if (!ok) return;
+        records = records.filter(function (x) { return monthKey(x.payDate) !== key; });
+        saveRecords();
+        if (editingKey === key) { exitEditMode(); clearForm(); }
+        renderAll();
+        toast("消したよ");
+      });
+    });
+  }
+
+  /* ================= 横棒グラフ ================= */
+  function renderBarChart() {
+    var list = sortedDesc();
+    var wrap = $("barChart");
+    if (list.length === 0) {
+      wrap.innerHTML = '<p class="empty">記録がたまると、ここにグラフが出るよ。</p>';
+      return;
+    }
+    var max = list.reduce(function (m, r) { return Math.max(m, num(r.netPay)); }, 1);
+    wrap.innerHTML = list.map(function (r) {
+      var w = Math.max(2, Math.round((num(r.netPay) / max) * 100));
+      return '' +
+        '<div class="barrow">' +
+          '<div class="bhead"><span>' + esc(formatYm(r.payDate)) + '</span><span>' + yen(r.netPay) + '</span></div>' +
+          '<div class="bartrack"><div class="barfill" style="width:' + w + '%"></div></div>' +
+        '</div>';
+    }).join("");
+  }
+
+  /* ================= 年サマリー ================= */
+  function renderYearSummary() {
+    var years = Array.from(new Set(records.map(function (r) { return monthKey(r.payDate).slice(0, 4); }).filter(Boolean))).sort().reverse();
+    var sel = $("yearPick");
+    var prevValue = sel.value;
+    if (years.length === 0) {
+      sel.innerHTML = '<option value="">記録なし</option>';
+      $("yearSum").textContent = yen(0);
+      $("yearAvg").textContent = yen(0);
+      return;
+    }
+    sel.innerHTML = years.map(function (y) { return '<option value="' + y + '">' + y + '年</option>'; }).join("");
+    sel.value = years.indexOf(prevValue) !== -1 ? prevValue : years[0];
+    updateYearSummary();
+  }
+  function updateYearSummary() {
+    var y = $("yearPick").value;
+    var list = records.filter(function (r) { return monthKey(r.payDate).slice(0, 4) === y; });
+    var sum = list.reduce(function (s, r) { return s + num(r.netPay); }, 0);
+    var avg = list.length ? sum / list.length : 0;
+    $("yearSum").textContent = yen(sum);
+    $("yearAvg").textContent = yen(avg);
+  }
+  $("yearPick").addEventListener("change", updateYearSummary);
+
+  function renderAll() {
+    renderList();
+    renderBarChart();
+    renderYearSummary();
+  }
+
+  /* ================= 文字の貼り付け：自動読み取り ================= */
+  var FIELD_LABEL = {
+    payDate: "支給日", workDays: "出勤日数", workHours: "出勤時間",
+    totalPayment: "支給合計", totalDeduction: "控除合計", netPay: "手取り"
+  };
+  var PARSE_DEFS = [
+    { key: "payDate", type: "date", labels: ["給与支払日", "給与支給日", "支給日", "支払日"] },
+    { key: "workDays", type: "int", labels: ["出勤日数", "出勤日", "勤務日数"] },
+    { key: "workHours", type: "time", labels: ["出勤時間", "総労働時間", "実労働時間", "労働時間", "勤務時間"] },
+    { key: "totalPayment", type: "yen", labels: ["支給合計", "支給額合計", "総支給額", "支給額"] },
+    { key: "totalDeduction", type: "yen", labels: ["控除合計", "控除額合計", "控除額"] },
+    { key: "netPay", type: "yen", labels: ["差引支給額（手取り）", "差引支給額(手取り)", "差引支給額", "手取り額", "手取り"] }
+  ];
+  function escapeReg(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+  function extractOne(text, def) {
+    for (var i = 0; i < def.labels.length; i++) {
+      var label = escapeReg(def.labels[i]);
+      var re;
+      if (def.type === "date") re = new RegExp(label + "[^0-9]{0,20}(\\d{4}[-/年.]\\d{1,2}[-/月.]\\d{1,2})日?");
+      else if (def.type === "time") re = new RegExp(label + "[^0-9]{0,15}(\\d{1,4}:\\d{2})");
+      else if (def.type === "int") re = new RegExp(label + "[^0-9]{0,15}(\\d{1,3})");
+      else re = new RegExp(label + "[^0-9]{0,20}(\\d[\\d,]{0,11})");
+      var m = text.match(re);
+      if (m) return m[1];
+    }
+    return null;
+  }
+  function toISODate(s) {
+    var m = s.match(/(\d{4})[-\/年.](\d{1,2})[-\/月.](\d{1,2})/);
+    if (!m) return "";
+    var y = m[1], mo = ("0" + m[2]).slice(-2), d = ("0" + m[3]).slice(-2);
+    return y + "-" + mo + "-" + d;
+  }
+  function parsePastedText(raw) {
+    var text = toHalfWidth(raw || "");
+    var recognized = [], notRecognized = [], out = {};
+    PARSE_DEFS.forEach(function (def) {
+      var v = extractOne(text, def);
+      if (v == null) { notRecognized.push(FIELD_LABEL[def.key]); return; }
+      if (def.type === "date") {
+        var iso = toISODate(v);
+        if (!iso) { notRecognized.push(FIELD_LABEL[def.key]); return; }
+        out[def.key] = iso;
+      } else if (def.type === "time") {
+        out[def.key] = v;
+      } else {
+        out[def.key] = num(v);
+      }
+      recognized.push(FIELD_LABEL[def.key]);
+    });
+    return { out: out, recognized: recognized, notRecognized: notRecognized };
+  }
+  function joinLabels(list) {
+    if (list.length === 0) return "";
+    if (list.length <= 3) return list.join("と");
+    return list.slice(0, 3).join("と") + "など" + list.length + "項目";
+  }
+
+  $("btnParse").addEventListener("click", function () {
+    var text = $("pasteArea").value;
+    var statusEl = $("parseStatus");
+    if (!text.trim()) {
+      statusEl.className = "statusline err show";
+      statusEl.textContent = "まだ文字が貼りつけられていないみたい。明細の文字をコピーして貼りつけてね。";
+      return;
+    }
+    var result = parsePastedText(text);
+    if (result.out.payDate) $("fPayDate").value = result.out.payDate;
+    if (result.out.workDays != null) $("fWorkDays").value = result.out.workDays;
+    if (result.out.workHours != null) $("fWorkHours").value = result.out.workHours;
+    if (result.out.totalPayment != null) $("fTotalPayment").value = result.out.totalPayment;
+    if (result.out.totalDeduction != null) $("fTotalDeduction").value = result.out.totalDeduction;
+    if (result.out.netPay != null) $("fNetPay").value = result.out.netPay;
+    updateCalcDisplay();
+
+    if (result.recognized.length === 0) {
+      statusEl.className = "statusline err show";
+      statusEl.textContent = "うまく読み取れなかったよ。下の欄に自分で入力してね。";
+    } else if (result.notRecognized.length === 0) {
+      statusEl.className = "statusline ok show";
+      statusEl.textContent = "ぜんぶの項目が読み取れたよ！内容を確認してね。";
+    } else {
+      statusEl.className = "statusline ok show";
+      statusEl.textContent = joinLabels(result.recognized) + "は読み取れたよ。" + joinLabels(result.notRecognized) + "は見つからなかったから、確認して入れてね。";
+    }
+    $("formTitle").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  /* ================= バックアップ：コピー／貼り付けて戻す ================= */
+  function copyText(text, onOk) {
+    function ok() { onOk(); }
+    function fallback() {
+      try {
+        var ta = document.createElement("textarea");
+        ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+        document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove();
+        ok();
+      } catch (e) { toast("コピーできませんでした。"); }
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok).catch(fallback);
+    else fallback();
+  }
+  $("btnCopyBackup").addEventListener("click", function () {
+    if (records.length === 0) { toast("まだ記録がないよ"); return; }
+    copyText(JSON.stringify(records), function () { toast("記録をコピーしたよ。どこかに貼って保管してね"); });
+  });
+  $("btnRestore").addEventListener("click", function () {
+    var text = $("restoreArea").value;
+    if (!text.trim()) { toast("貼りつける文字が入っていないよ"); return; }
+    var data;
+    try { data = JSON.parse(text); } catch (e) { toast("読み取れなかったよ。コピーした文字のままか確認してね。"); return; }
+    if (!Array.isArray(data)) { toast("読み取れなかったよ。コピーした文字のままか確認してね。"); return; }
+    var valid = data.filter(function (r) { return r && typeof r === "object" && r.payDate; });
+    if (valid.length === 0) { toast("使える記録が見つからなかったよ。"); return; }
+    var ok = confirm(valid.length + "件の記録を読み込みます。同じ月は上書きされます。よろしいですか？");
+    if (!ok) return;
+    valid.forEach(function (r) {
+      var key = monthKey(r.payDate);
+      var idx = records.findIndex(function (x) { return monthKey(x.payDate) === key; });
+      var clean = {
+        payDate: r.payDate || "",
+        workDays: r.workDays === "" || r.workDays == null ? "" : num(r.workDays),
+        workHours: r.workHours || "",
+        totalPayment: r.totalPayment === "" || r.totalPayment == null ? "" : num(r.totalPayment),
+        totalDeduction: r.totalDeduction === "" || r.totalDeduction == null ? "" : num(r.totalDeduction),
+        netPay: r.netPay === "" || r.netPay == null ? "" : num(r.netPay)
+      };
+      if (idx !== -1) records[idx] = clean; else records.push(clean);
+    });
+    saveRecords();
+    renderAll();
+    $("restoreArea").value = "";
+    toast(valid.length + "件を読み込んだよ");
+  });
+
+  /* ================= 起動 ================= */
+  loadRecords();
+  renderAll();
+  updateCalcDisplay();
+})();
+</script>
+</body>
+</html>
