@@ -606,15 +606,72 @@ textarea#restoreArea{width:100%;min-height:100px;border:2px solid var(--line);bo
     return null;
   }
 
+  // 勤怠表のように「項目名がいくつか続けて並び、そのあとに同じ数だけ値が
+  // 続けて並ぶ」形にも対応する。ラベルらしき文字のかたまりの直後に、
+  // 同じ個数だけ値らしきもの（数字や時刻）が続いていたら、順番で対応させる。
+  // 見覚えのないラベルや個数が合わないときは何も対応させない（空欄のまま）。
+  function tokenize(text) {
+    return text.split(/[\s　]+/).filter(function (t) { return t.length > 0; });
+  }
+  function isValueToken(tok) {
+    return /^\d{1,4}:\d{2}$/.test(tok) || /^\d+(\.\d{1,2})?$/.test(tok) || /^\d[\d,]{0,11}$/.test(tok);
+  }
+  function valueMatchesType(tok, type) {
+    if (type === "time") return /^\d{1,4}:\d{2}$/.test(tok);
+    if (type === "int") return /^\d+(\.\d{1,2})?$/.test(tok);
+    if (type === "yen") return /^\d[\d,]{0,11}$/.test(tok);
+    return false;
+  }
+  function findLabelDef(token) {
+    for (var i = 0; i < PARSE_DEFS.length; i++) {
+      var def = PARSE_DEFS[i];
+      if (def.type === "date") continue;
+      if (def.labels.indexOf(token) !== -1) return def;
+    }
+    return null;
+  }
+  function extractBlockPairs(text) {
+    var tokens = tokenize(text);
+    var found = {};
+    var i = 0;
+    while (i < tokens.length) {
+      if (isValueToken(tokens[i])) { i++; continue; }
+      var j = i;
+      while (j < tokens.length && !isValueToken(tokens[j])) j++;
+      var labelRun = tokens.slice(i, j);
+      if (labelRun.length >= 2) {
+        var k = j, valueRun = [];
+        while (k < tokens.length && valueRun.length < labelRun.length && isValueToken(tokens[k])) {
+          valueRun.push(tokens[k]); k++;
+        }
+        if (valueRun.length === labelRun.length) {
+          for (var p = 0; p < labelRun.length; p++) {
+            var def = findLabelDef(labelRun[p]);
+            if (def && valueMatchesType(valueRun[p], def.type) && !(def.key in found)) {
+              found[def.key] = valueRun[p];
+            }
+          }
+          i = k;
+          continue;
+        }
+      }
+      i = j > i ? j : i + 1;
+    }
+    return found;
+  }
+
   function parsePastedText(raw) {
     var text = toHalfWidth(raw || "");
     var lines = toLines(text);
+    var blockPairs = extractBlockPairs(text);
     var recognized = [], notRecognized = [], out = {};
     PARSE_DEFS.forEach(function (def) {
       var v = def.type === "date" ? extractDate(lines, def) : extractLineBased(lines, def);
+      if (v == null && def.type !== "date" && blockPairs[def.key] != null) v = blockPairs[def.key];
       if (v == null) { notRecognized.push(FIELD_LABEL[def.key]); return; }
       if (def.type === "date") out[def.key] = v;
       else if (def.type === "time") out[def.key] = v;
+      else if (def.type === "int") out[def.key] = Math.round(num(v));
       else out[def.key] = num(v);
       recognized.push(FIELD_LABEL[def.key]);
     });
