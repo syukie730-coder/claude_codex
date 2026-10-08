@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>給料明細ノート</title>
 <meta name="theme-color" content="#2F639A">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -97,6 +97,8 @@ textarea#pasteArea::placeholder{color:var(--ink2);opacity:.7;}
   border:2px solid var(--line);border-radius:12px;padding:13px 14px;
 }
 .field input:focus{outline:none;border-color:var(--blue);}
+.dateboxwrap{overflow:hidden;border-radius:12px;}
+.dateboxwrap input{min-width:0;max-width:100%;}
 .fieldgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;min-width:0;}
 
 .netbox{background:var(--yellow);border-radius:18px;padding:16px 18px;margin:4px 0 16px;text-align:center;}
@@ -174,6 +176,7 @@ textarea#restoreArea{width:100%;min-height:100px;border:2px solid var(--line);bo
   <section class="card">
     <h2>📋 文字を貼りつける</h2>
     <textarea id="pasteArea" placeholder="ここに明細の文字を貼りつけてね"></textarea>
+    <button type="button" class="btn btn-outline" id="btnClipPaste">📥 貼りつけボタン（クリップボードから読み取る）</button>
     <button type="button" class="btn btn-blue" id="btnParse">🔍 読み取る</button>
     <p class="statusline" id="parseStatus"></p>
   </section>
@@ -187,7 +190,7 @@ textarea#restoreArea{width:100%;min-height:100px;border:2px solid var(--line);bo
 
     <div class="field">
       <label>支給日</label>
-      <input type="date" id="fPayDate">
+      <div class="dateboxwrap"><input type="date" id="fPayDate"></div>
     </div>
 
     <div class="fieldgrid">
@@ -579,6 +582,20 @@ textarea#restoreArea{width:100%;min-height:100px;border:2px solid var(--line);bo
     if (list.length <= 3) return list.join("と");
     return list.slice(0, 3).join("と") + "など" + list.length + "項目";
   }
+
+  $("btnClipPaste").addEventListener("click", function () {
+    if (!navigator.clipboard || !navigator.clipboard.readText) {
+      toast("この画面からは読み取れなかったよ。欄を長押しして「ペースト」を試してね。");
+      return;
+    }
+    navigator.clipboard.readText().then(function (text) {
+      if (!text) { toast("コピーした文字が見つからなかったよ。"); return; }
+      $("pasteArea").value = text;
+      toast("貼りつけたよ");
+    }).catch(function () {
+      toast("読み取れなかったよ。欄を長押しして「ペースト」を試すか、設定でクリップボードの許可を確認してね。");
+    });
+  });
 
   $("btnParse").addEventListener("click", function () {
     var text = $("pasteArea").value;
