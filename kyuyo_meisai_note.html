@@ -606,13 +606,29 @@ textarea#restoreArea{width:100%;min-height:100px;border:2px solid var(--line);bo
     return null;
   }
 
-  // 勤怠表のように「項目名がいくつか続けて並び、そのあとに同じ数だけ値が
-  // 続けて並ぶ」形にも対応する。ラベルらしき文字のかたまりの直後に、
-  // 同じ個数だけ値らしきもの（数字や時刻）が続いていたら、順番で対応させる。
-  // 見覚えのないラベルや個数が合わないときは何も対応させない（空欄のまま）。
-  function tokenize(text) {
-    return text.split(/[\s　]+/).filter(function (t) { return t.length > 0; });
+  // 勤怠表のように「項目名がいくつか並び、そのあとに同じ数だけ値が並ぶ」形に
+  // 対応する。iPhoneの文字認識では、項目名どうしが空白なしでくっついて
+  // 1つのかたまりになることがあるため、よくある項目名の辞書を使って
+  // そのかたまりを項目ごとに分け、同じ順番で値と対応させる。
+  // 対応する項目名が見つからない・値の種類が合わないときは、その項目は
+  // 何も入れない（空欄のまま）。
+  var COMMON_OTHER_LABELS = [
+    "就業日数", "欠勤日数", "欠勤日", "60H超残業時", "特休日数", "教育時間",
+    "普通残業時間", "深夜勤務時間", "休出勤務時間", "休出深夜時間",
+    "有休残日数", "有休日数", "今回付与日数", "付与日数"
+  ];
+  function buildLabelDict() {
+    var dict = [];
+    PARSE_DEFS.forEach(function (def) {
+      if (def.type === "date") return;
+      def.labels.forEach(function (l) { dict.push({ token: l, def: def }); });
+    });
+    COMMON_OTHER_LABELS.forEach(function (l) { dict.push({ token: l, def: null }); });
+    dict.sort(function (a, b) { return b.token.length - a.token.length; });
+    return dict;
   }
+  var LABEL_DICT = buildLabelDict();
+
   function isValueToken(tok) {
     return /^\d{1,4}:\d{2}$/.test(tok) || /^\d+(\.\d{1,2})?$/.test(tok) || /^\d[\d,]{0,11}$/.test(tok);
   }
@@ -622,40 +638,63 @@ textarea#restoreArea{width:100%;min-height:100px;border:2px solid var(--line);bo
     if (type === "yen") return /^\d[\d,]{0,11}$/.test(tok);
     return false;
   }
-  function findLabelDef(token) {
-    for (var i = 0; i < PARSE_DEFS.length; i++) {
-      var def = PARSE_DEFS[i];
-      if (def.type === "date") continue;
-      if (def.labels.indexOf(token) !== -1) return def;
-    }
-    return null;
-  }
-  function extractBlockPairs(text) {
-    var tokens = tokenize(text);
-    var found = {};
-    var i = 0;
-    while (i < tokens.length) {
-      if (isValueToken(tokens[i])) { i++; continue; }
-      var j = i;
-      while (j < tokens.length && !isValueToken(tokens[j])) j++;
-      var labelRun = tokens.slice(i, j);
-      if (labelRun.length >= 2) {
-        var k = j, valueRun = [];
-        while (k < tokens.length && valueRun.length < labelRun.length && isValueToken(tokens[k])) {
-          valueRun.push(tokens[k]); k++;
-        }
-        if (valueRun.length === labelRun.length) {
-          for (var p = 0; p < labelRun.length; p++) {
-            var def = findLabelDef(labelRun[p]);
-            if (def && valueMatchesType(valueRun[p], def.type) && !(def.key in found)) {
-              found[def.key] = valueRun[p];
-            }
-          }
-          i = k;
-          continue;
-        }
+  // 1つのかたまり（空白なしでくっついているかもしれない文字列）を、
+  // 辞書に載っている項目名ごとに切り分ける。知らない部分は
+  // 「よくわからない1項目分」としてまとめて扱うが、辞書に載っている
+  // 言葉を1つも含まないときは known:false をまとめて返し、
+  // 呼び出し側で「見出しの並びとは関係ない文章」と判断できるようにする。
+  function segmentLabelChunk(str) {
+    var slots = [];
+    var i = 0, n = str.length;
+    while (i < n) {
+      var matched = null;
+      for (var k = 0; k < LABEL_DICT.length; k++) {
+        var tok = LABEL_DICT[k].token;
+        if (str.indexOf(tok, i) === i) { matched = LABEL_DICT[k]; break; }
       }
-      i = j > i ? j : i + 1;
+      if (matched) { slots.push({ def: matched.def, known: true }); i += matched.token.length; continue; }
+      i++;
+      while (i < n) {
+        var found = false;
+        for (var k2 = 0; k2 < LABEL_DICT.length; k2++) {
+          if (str.indexOf(LABEL_DICT[k2].token, i) === i) { found = true; break; }
+        }
+        if (found) break;
+        i++;
+      }
+      slots.push({ def: null, known: false });
+    }
+    return slots;
+  }
+  function extractGridPairs(text) {
+    // 空白・改行のどちらで区切られていても良いように、まとめて1つの並びにする。
+    var pieces = text.split(/[\s　]+/).filter(function (t) { return t.length > 0; });
+    // 縦書きの見出し文字などが1文字だけ紛れ込むことがあるので取り除く。
+    pieces = pieces.filter(function (p) { return !(p.length === 1 && !isValueToken(p)); });
+    var found = {};
+    var pending = [];
+    var i = 0;
+    while (i < pieces.length) {
+      var piece = pieces[i];
+      if (isValueToken(piece)) {
+        if (pending.length === 0) { i++; continue; }
+        var values = [];
+        while (i < pieces.length && isValueToken(pieces[i])) { values.push(pieces[i]); i++; }
+        for (var idx = 0; idx < pending.length && idx < values.length; idx++) {
+          var def = pending[idx].def;
+          if (def && valueMatchesType(values[idx], def.type) && !(def.key in found)) {
+            found[def.key] = values[idx];
+          }
+        }
+        pending = [];
+        continue;
+      }
+      var segs = segmentLabelChunk(piece);
+      var hasKnown = segs.some(function (s) { return s.known; });
+      // 辞書の言葉を含まない文章（あいさつ文や会社名など）が出てきたら、
+      // それまで溜めていた見出しの並びは関係ないものとして忘れる。
+      pending = hasKnown ? pending.concat(segs) : [];
+      i++;
     }
     return found;
   }
@@ -663,11 +702,11 @@ textarea#restoreArea{width:100%;min-height:100px;border:2px solid var(--line);bo
   function parsePastedText(raw) {
     var text = toHalfWidth(raw || "");
     var lines = toLines(text);
-    var blockPairs = extractBlockPairs(text);
+    var gridPairs = extractGridPairs(text);
     var recognized = [], notRecognized = [], out = {};
     PARSE_DEFS.forEach(function (def) {
       var v = def.type === "date" ? extractDate(lines, def) : extractLineBased(lines, def);
-      if (v == null && def.type !== "date" && blockPairs[def.key] != null) v = blockPairs[def.key];
+      if (v == null && def.type !== "date" && gridPairs[def.key] != null) v = gridPairs[def.key];
       if (v == null) { notRecognized.push(FIELD_LABEL[def.key]); return; }
       if (def.type === "date") out[def.key] = v;
       else if (def.type === "time") out[def.key] = v;
