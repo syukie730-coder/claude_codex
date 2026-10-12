@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>帰省レシピ</title>
+<meta name="theme-color" content="#FFE8C2">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="帰省レシピ">
+<link rel="apple-touch-icon" href="kisei_icon.png">
+<link rel="icon" href="kisei_icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FFE8C2;
+  --cream-deep:#FBDBA3;
+  --card:#FFFBF2;
+  --ink:#3A2A1E;
+  --ink-deep:#2C2015;
+  --orange:#E8820F;
+  --orange-deep:#B5600A;
+  --green:#3F8A33;
+  --green-deep:#2B6322;
+  --red:#C73A2B;
+  --red-deep:#9C2D20;
+  --pink:#F2998A;
+  --line:#EBD3A0;
+  --shadow:0 8px 20px rgba(80,55,20,.14);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;overflow-x:hidden;}
+input,select,textarea{min-width:0;max-width:100%;}
+body{
+  min-height:100%;
+  color:var(--ink);
+  font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Hiragino Sans",sans-serif;
+  font-size:17px;font-weight:500;line-height:1.75;
+  background:linear-gradient(180deg,#FFF3DC 0%,var(--cream) 100%);
+  -webkit-text-size-adjust:100%;
+  overflow-wrap:break-word;word-break:break-word;
+}
+button,input,select,textarea{font:inherit;color:inherit;}
+.wrap{max-width:620px;margin:0 auto;padding:0 16px calc(env(safe-area-inset-bottom) + 48px);}
+
+header{text-align:center;padding:calc(env(safe-area-inset-top) + 18px) 16px 16px;}
+.header-icon{width:64px;height:64px;border-radius:20px;box-shadow:var(--shadow);transform-origin:50% 70%;}
+.header-icon.nod{animation:nod .9s ease-in-out;}
+h1{margin:10px 0 2px;font-size:26px;font-weight:900;color:var(--ink-deep);}
+header p{margin:0;font-size:16px;font-weight:700;color:var(--orange-deep);}
+
+main{padding-top:6px;}
+
+.card{background:var(--card);border:2px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:18px 14px;margin-bottom:18px;}
+
+.navrow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:14px;}
+.navbtn{flex:0 0 auto;min-height:52px;padding:0 16px;border:none;border-radius:999px;background:var(--orange);color:#fff;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 4px 0 var(--orange-deep);}
+.navbtn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--orange-deep);}
+.monthlabel{flex:1;text-align:center;font-size:20px;font-weight:900;color:var(--ink-deep);}
+
+.weekrow{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px;}
+.weekrow span{text-align:center;font-size:16px;font-weight:800;color:var(--ink);}
+.weekrow span.sun{color:var(--red-deep);}
+.weekrow span.sat{color:var(--orange-deep);}
+
+.calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.daycell{all:unset;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:2px;min-height:70px;border-radius:12px;background:#fff;border:2px solid var(--line);padding:6px 2px 5px;cursor:pointer;}
+.daycell.empty{visibility:hidden;border:none;background:none;}
+.daycell.today{border-color:var(--orange);background:var(--cream-deep);}
+.daycell .dnum{font-size:17px;font-weight:800;color:var(--ink);}
+.daycell.today .dnum{color:var(--orange-deep);}
+.daycell .mark{display:flex;align-items:center;justify-content:center;gap:3px;min-height:12px;}
+.daycell .dot{width:10px;height:10px;border-radius:50%;background:var(--orange);display:inline-block;}
+.daycell .star{font-size:13px;line-height:1;color:var(--orange-deep);}
+.daycell .snip{font-size:16px;font-weight:700;color:var(--ink);line-height:1.2;text-align:center;max-width:100%;overflow:hidden;}
+@keyframes popIn{0%{transform:scale(0);opacity:0;}60%{transform:scale(1.2);opacity:1;}100%{transform:scale(1);}}
+.daycell .dot,.daycell .star{animation:popIn .35s cubic-bezier(.34,1.56,.64,1) both;}
+
+details.backup{margin-top:2px;}
+details.backup summary{font-size:17px;font-weight:800;color:var(--orange-deep);cursor:pointer;list-style:none;padding:4px 0;}
+details.backup summary::-webkit-details-marker{display:none;}
+details.backup summary::before{content:"▸ ";}
+details.backup[open] summary::before{content:"▾ ";}
+.backup p{font-size:16px;font-weight:600;color:var(--ink);margin:10px 0;line-height:1.8;}
+.btn{display:block;width:100%;min-height:54px;border:none;border-radius:999px;font-size:17px;font-weight:800;cursor:pointer;padding:12px;margin-top:10px;text-align:center;}
+.btn-outline{background:#fff;border:2px solid var(--line);color:var(--ink);}
+.btn-outline:active{transform:scale(.98);}
+
+/* ===== モーダル ===== */
+#backdrop{position:fixed;inset:0;background:rgba(40,25,10,.45);display:none;z-index:50;}
+#backdrop.show{display:block;}
+#sheetWrap{position:fixed;inset:0;z-index:51;display:none;align-items:flex-end;justify-content:center;padding:0;}
+#sheetWrap.show{display:flex;}
+.sheet{width:100%;max-width:620px;max-height:92vh;overflow-y:auto;background:var(--card);border-radius:26px 26px 0 0;padding:20px 18px calc(env(safe-area-inset-bottom) + 24px);box-shadow:0 -8px 24px rgba(60,40,10,.22);}
+@keyframes sheetIn{0%{transform:translateY(40px) scale(.94);opacity:0;}60%{transform:translateY(-4px) scale(1.01);opacity:1;}100%{transform:translateY(0) scale(1);}}
+.sheet.anim{animation:sheetIn .32s cubic-bezier(.34,1.56,.64,1) both;}
+.sheetclose{display:block;margin:0 auto 10px;width:44px;height:5px;border-radius:3px;background:var(--line);border:none;}
+.modaldate{text-align:center;font-size:20px;font-weight:900;color:var(--ink-deep);margin-bottom:16px;}
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:16px;font-weight:800;color:var(--ink);margin-bottom:6px;}
+.field input[type=text],.field textarea{
+  width:100%;font-size:17px;font-weight:600;color:var(--ink);background:#FFFDF8;
+  border:2px solid var(--line);border-radius:12px;padding:12px 13px;
+}
+.field textarea{min-height:110px;resize:vertical;line-height:1.7;}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--orange);}
+
+.photosec{margin-bottom:16px;}
+.photosec label{display:block;font-size:16px;font-weight:800;color:var(--ink);margin-bottom:8px;}
+.thumbs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
+.thumb{position:relative;width:88px;height:88px;border-radius:14px;overflow:hidden;border:2px solid var(--line);background:#fff;}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.thumbdel{position:absolute;top:3px;right:3px;width:26px;height:26px;border-radius:50%;border:none;background:rgba(40,25,10,.72);color:#fff;font-size:16px;font-weight:800;line-height:1;cursor:pointer;}
+.photobtn{display:block;width:100%;min-height:52px;border:2px dashed var(--orange);border-radius:14px;background:#FFF6E6;color:var(--orange-deep);font-size:16px;font-weight:800;cursor:pointer;}
+.photolimit{font-size:16px;font-weight:700;color:var(--orange-deep);text-align:center;margin:0;}
+
+.likedbtn{position:relative;overflow:visible;display:block;width:100%;min-height:54px;border:2px solid var(--orange);border-radius:999px;background:#fff;color:var(--orange-deep);font-size:17px;font-weight:800;cursor:pointer;margin-bottom:18px;}
+.likedbtn.on{background:linear-gradient(180deg,#FFD873,var(--orange));border-color:var(--orange-deep);color:#fff;}
+.sparkle-piece{position:absolute;pointer-events:none;font-size:18px;animation:sparkleOut .9s ease-out both;}
+@keyframes sparkleOut{0%{transform:scale(0) rotate(0deg);opacity:0;}40%{transform:scale(1.25) rotate(15deg);opacity:1;}100%{transform:scale(.6) rotate(28deg);opacity:0;}}
+
+.btn-green{background:linear-gradient(180deg,#5FAE52,var(--green));color:#fff;box-shadow:0 5px 0 var(--green-deep);}
+.btn-green:active{transform:translateY(3px);box-shadow:0 2px 0 var(--green-deep);}
+.btn-ghost{background:#fff;border:2px solid var(--line);color:var(--ink);}
+.btn-ghost:active{transform:scale(.98);}
+.btn-del{background:var(--card);border:2px solid var(--red);color:var(--red-deep);}
+.btn-del:active{transform:scale(.98);}
+
+@keyframes nod{0%,100%{transform:rotate(0deg);}25%{transform:rotate(-6deg);}50%{transform:rotate(0deg);}75%{transform:rotate(5deg);}}
+
+#confettiLayer{position:fixed;left:0;right:0;top:0;height:0;overflow:visible;z-index:70;pointer-events:none;}
+.confetti-piece{position:fixed;top:-16px;width:9px;height:15px;border-radius:2px;animation:confettiFall var(--dur,1.6s) ease-in var(--delay,0s) both;}
+.confetti-piece.heart{background:none !important;color:var(--red);font-size:18px;width:auto;height:auto;}
+@keyframes confettiFall{0%{transform:translateY(0) rotate(0deg);opacity:1;}100%{transform:translateY(62vh) rotate(var(--rot,220deg));opacity:0;}}
+
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 24px);transform:translateX(-50%) translateY(14px);
+  background:var(--ink-deep);color:#fff;font-size:16px;font-weight:800;padding:13px 22px;border-radius:999px;box-shadow:var(--shadow);
+  opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:80;max-width:88vw;text-align:center;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+@media (prefers-reduced-motion:reduce){
+  .header-icon.nod,.sheet.anim,.daycell .dot,.daycell .star,.confetti-piece,.sparkle-piece{
+    animation-duration:.01ms !important;animation-iteration-count:1 !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <img class="header-icon" id="headerIcon" src="kisei_icon.png" alt="お父さんと赤ちゃんとごはんのイラスト">
+  <h1>帰省レシピ</h1>
+  <p>帰ってきた日のごはんを、記録しておこう</p>
+</header>
+
+<main>
+<div class="wrap">
+
+  <div class="card">
+    <div class="navrow">
+      <button type="button" class="navbtn" id="btnPrev">◀ 前の月</button>
+      <div class="monthlabel" id="monthLabel"></div>
+      <button type="button" class="navbtn" id="btnNext">次の月 ▶</button>
+    </div>
+    <div class="weekrow">
+      <span class="sun">日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span class="sat">土</span>
+    </div>
+    <div class="calgrid" id="calGrid"></div>
+  </div>
+
+  <div class="card">
+    <details class="backup">
+      <summary>記録のバックアップ</summary>
+      <div class="backup">
+        <p>もしもの時のために、記録と写真をファイルとして保存しておけます。この端末に保存されるだけで、どこかに送られることはありません。</p>
+        <button type="button" class="btn btn-outline" id="btnExport">📦 バックアップを書き出す</button>
+        <p>書き出しておいたファイルを選ぶと、記録を元に戻せます。</p>
+        <label class="btn btn-outline" for="importFile">📂 バックアップを読み込む</label>
+        <input type="file" id="importFile" accept="application/json" style="display:none">
+      </div>
+    </details>
+  </div>
+
+</div>
+</main>
+
+<div id="backdrop"></div>
+<div id="sheetWrap">
+  <div class="sheet" id="sheet">
+    <button type="button" class="sheetclose" id="btnSheetClose" aria-label="閉じる"></button>
+    <div class="modaldate" id="modalDateLabel"></div>
+
+    <div class="field">
+      <label>メニュー名</label>
+      <input type="text" id="fMenu" placeholder="例：ハンバーグ">
+    </div>
+
+    <div class="field">
+      <label>かんたんレシピ</label>
+      <textarea id="fRecipe" placeholder="作り方を書いてね。音声入力も使えます"></textarea>
+    </div>
+
+    <div class="photosec">
+      <label>写真（1日3枚まで）</label>
+      <div class="thumbs" id="photoThumbs"></div>
+      <button type="button" class="photobtn" id="btnAddPhoto">📷 写真をえらぶ・撮る</button>
+      <p class="photolimit" id="photoLimitMsg" style="display:none">もう3枚えらんでいるよ。消してから追加してね。</p>
+      <input type="file" id="photoInput" accept="image/*" multiple style="display:none">
+    </div>
+
+    <button type="button" class="likedbtn" id="btnLiked">☆ おいしかった！</button>
+
+    <button type="button" class="btn btn-green" id="btnSave">この内容で保存する</button>
+    <button type="button" class="btn btn-ghost" id="btnCancel">やめる</button>
+    <button type="button" class="btn btn-del" id="btnDeleteDay">この日の記録を消す</button>
+  </div>
+</div>
+
+<div id="confettiLayer"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function pad2(n) { return (n < 10 ? "0" : "") + n; }
+  function prefersReducedMotion() {
+    try { return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; }
+    catch (e) { return false; }
+  }
+
+  var $toast = $("toast");
+  function toast(msg) {
+    $toast.textContent = msg; $toast.classList.add("show");
+    clearTimeout($toast._t); $toast._t = setTimeout(function () { $toast.classList.remove("show"); }, 2600);
+  }
+
+  /* ================= 保存先（テキスト） ================= */
+  var store = (function () {
+    try { localStorage.setItem("__t", "1"); localStorage.removeItem("__t"); return localStorage; }
+    catch (e) {
+      var mem = {};
+      return {
+        getItem: function (k) { return k in mem ? mem[k] : null; },
+        setItem: function (k, v) { mem[k] = String(v); },
+        removeItem: function (k) { delete mem[k]; }
+      };
+    }
+  })();
+  var RKEY = "kisei_recipe_records_v1";
+  function loadRecords() {
+    try {
+      var raw = store.getItem(RKEY);
+      var d = raw ? JSON.parse(raw) : {};
+      return (d && typeof d === "object" && !Array.isArray(d)) ? d : {};
+    } catch (e) { return {}; }
+  }
+  function saveRecords(records) {
+    try { store.setItem(RKEY, JSON.stringify(records)); return true; }
+    catch (e) { toast("保存できませんでした。端末の空き容量を確認してね。"); return false; }
+  }
+
+  /* ================= 保存先（写真：IndexedDB） ================= */
+  var DB_NAME = "kisei_recipe_db", DB_VERSION = 1, STORE_NAME = "photos";
+  var dbPromise = null;
+  function openDB() {
+    return new Promise(function (resolve, reject) {
+      if (!window.indexedDB) { reject(new Error("no indexeddb")); return; }
+      var req = indexedDB.open(DB_NAME, DB_VERSION);
+      req.onupgradeneeded = function (e) {
+        var db = e.target.result;
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+          var os = db.createObjectStore(STORE_NAME, { keyPath: "id" });
+          os.createIndex("dateKey", "dateKey", { unique: false });
+        }
+      };
+      req.onsuccess = function (e) { resolve(e.target.result); };
+      req.onerror = function () { reject(req.error); };
+    });
+  }
+  function getDB() {
+    if (!dbPromise) dbPromise = openDB().catch(function (e) { dbPromise = null; throw e; });
+    return dbPromise;
+  }
+  function addPhoto(dateKey, blob) {
+    return getDB().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var id = dateKey + "_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
+        var tx = db.transaction(STORE_NAME, "readwrite");
+        tx.objectStore(STORE_NAME).add({ id: id, dateKey: dateKey, blob: blob, createdAt: Date.now() });
+        tx.oncomplete = function () { resolve(id); };
+        tx.onerror = function () { reject(tx.error); };
+      });
+    });
+  }
+  function getPhotosByDate(dateKey) {
+    return getDB().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction(STORE_NAME, "readonly");
+        var req = tx.objectStore(STORE_NAME).index("dateKey").getAll(dateKey);
+        req.onsuccess = function () { resolve(req.result || []); };
+        req.onerror = function () { reject(req.error); };
+      });
+    });
+  }
+  function getAllPhotos() {
+    return getDB().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction(STORE_NAME, "readonly");
+        var req = tx.objectStore(STORE_NAME).getAll();
+        req.onsuccess = function () { resolve(req.result || []); };
+        req.onerror = function () { reject(req.error); };
+      });
+    });
+  }
+  function deletePhoto(id) {
+    return getDB().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction(STORE_NAME, "readwrite");
+        tx.objectStore(STORE_NAME).delete(id);
+        tx.oncomplete = function () { resolve(); };
+        tx.onerror = function () { reject(tx.error); };
+      });
+    });
+  }
+  function deletePhotosByDate(dateKey) {
+    return getPhotosByDate(dateKey).then(function (photos) {
+      return Promise.all(photos.map(function (p) { return deletePhoto(p.id); }));
+    });
+  }
+  function putPhotoRaw(photoObj) {
+    return getDB().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction(STORE_NAME, "readwrite");
+        tx.objectStore(STORE_NAME).put(photoObj);
+        tx.oncomplete = function () { resolve(); };
+        tx.onerror = function () { reject(tx.error); };
+      });
+    });
+  }
+
+  /* ================= 日付の計算 ================= */
+  var WEEKDAY_LABELS = ["日", "月", "火", "水", "木", "金", "土"];
+  function dateKey(y, m, d) { return y + "-" + pad2(m) + "-" + pad2(d); }
+  function daysInMonth(y, m) { return new Date(y, m, 0).getDate(); }
+  function firstWeekdayOfMonth(y, m) { return new Date(y, m - 1, 1).getDay(); }
+  function addMonths(y, m, delta) {
+    var total = (y * 12 + (m - 1)) + delta;
+    var ny = Math.floor(total / 12);
+    var nm = ((total % 12) + 12) % 12 + 1;
+    return { year: ny, month: nm };
+  }
+  function todayKey() {
+    var d = new Date();
+    return dateKey(d.getFullYear(), d.getMonth() + 1, d.getDate());
+  }
+  function formatDateLabel(key) {
+    var m = key.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!m) return key;
+    var y = +m[1], mo = +m[2], d = +m[3];
+    var wd = WEEKDAY_LABELS[new Date(y, mo - 1, d).getDay()];
+    return y + "年" + mo + "月" + d + "日（" + wd + "）";
+  }
+
+  /* ================= カレンダー ================= */
+  var viewYear, viewMonth;
+  function renderCalendar() {
+    var records = loadRecords();
+    $("monthLabel").textContent = viewYear + "年" + viewMonth + "月";
+    var fw = firstWeekdayOfMonth(viewYear, viewMonth);
+    var dim = daysInMonth(viewYear, viewMonth);
+    var totalCells = Math.ceil((fw + dim) / 7) * 7;
+    var today = todayKey();
+    var html = "";
+    for (var i = 0; i < totalCells; i++) {
+      var dayNum = i - fw + 1;
+      if (dayNum < 1 || dayNum > dim) { html += '<div class="daycell empty"></div>'; continue; }
+      var key = dateKey(viewYear, viewMonth, dayNum);
+      var rec = records[key];
+      var isToday = key === today;
+      var cls = "daycell" + (isToday ? " today" : "");
+      var dot = rec ? '<span class="dot"></span>' : "";
+      var star = rec && rec.liked ? '<span class="star">★</span>' : "";
+      var snippet = rec && rec.menu ? '<span class="snip">' + esc(rec.menu.slice(0, 2)) + "</span>" : "";
+      html += '<button type="button" class="' + cls + '" data-date="' + key + '">' +
+        '<span class="dnum">' + dayNum + "</span>" +
+        '<span class="mark">' + dot + star + "</span>" +
+        snippet +
+        "</button>";
+    }
+    var grid = $("calGrid");
+    grid.innerHTML = html;
+    Array.prototype.forEach.call(grid.querySelectorAll(".daycell:not(.empty)"), function (btn) {
+      btn.addEventListener("click", function () { openDetail(btn.getAttribute("data-date")); });
+    });
+  }
+  $("btnPrev").addEventListener("click", function () {
+    var r = addMonths(viewYear, viewMonth, -1); viewYear = r.year; viewMonth = r.month; renderCalendar();
+  });
+  $("btnNext").addEventListener("click", function () {
+    var r = addMonths(viewYear, viewMonth, 1); viewYear = r.year; viewMonth = r.month; renderCalendar();
+  });
+
+  /* ================= 詳細（記録）画面 ================= */
+  var currentDateKey = null;
+  var modalPhotos = [];
+  var likedState = false;
+
+  function setLikedUI(v) {
+    likedState = v;
+    var btn = $("btnLiked");
+    btn.classList.toggle("on", v);
+    btn.textContent = v ? "★ おいしかった！" : "☆ おいしかった！";
+  }
+
+  function renderPhotoThumbs() {
+    var wrap = $("photoThumbs");
+    wrap.innerHTML = modalPhotos.map(function (p) {
+      return '<div class="thumb"><img src="' + p.url + '" alt=""><button type="button" class="thumbdel" data-id="' + esc(p.id) + '">×</button></div>';
+    }).join("");
+    Array.prototype.forEach.call(wrap.querySelectorAll(".thumbdel"), function (btn) {
+      btn.addEventListener("click", function () {
+        var id = btn.getAttribute("data-id");
+        deletePhoto(id).then(function () {
+          var target = null;
+          modalPhotos = modalPhotos.filter(function (p) {
+            if (p.id === id) { target = p; return false; }
+            return true;
+          });
+          if (target) URL.revokeObjectURL(target.url);
+          renderPhotoThumbs();
+        }).catch(function () { toast("写真を消せなかったよ"); });
+      });
+    });
+    var full = modalPhotos.length >= 3;
+    $("btnAddPhoto").style.display = full ? "none" : "block";
+    $("photoLimitMsg").style.display = full ? "block" : "none";
+  }
+
+  function openDetail(key) {
+    currentDateKey = key;
+    var records = loadRecords();
+    var rec = records[key] || { menu: "", recipe: "", liked: false };
+    $("modalDateLabel").textContent = formatDateLabel(key);
+    $("fMenu").value = rec.menu || "";
+    $("fRecipe").value = rec.recipe || "";
+    setLikedUI(!!rec.liked);
+    modalPhotos = [];
+    renderPhotoThumbs();
+    getPhotosByDate(key).then(function (photos) {
+      modalPhotos = photos.map(function (p) { return { id: p.id, url: URL.createObjectURL(p.blob) }; });
+      renderPhotoThumbs();
+    }).catch(function () { /* 写真が読み込めなくても文字の記録は使える */ });
+
+    $("backdrop").classList.add("show");
+    $("sheetWrap").classList.add("show");
+    var sheet = $("sheet");
+    sheet.classList.remove("anim");
+    void sheet.offsetWidth;
+    sheet.classList.add("anim");
+    $("sheetWrap").scrollTop = 0;
+  }
+  function closeDetail() {
+    $("backdrop").classList.remove("show");
+    $("sheetWrap").classList.remove("show");
+    modalPhotos.forEach(function (p) { URL.revokeObjectURL(p.url); });
+    modalPhotos = [];
+    currentDateKey = null;
+  }
+  $("backdrop").addEventListener("click", closeDetail);
+  $("btnSheetClose").addEventListener("click", closeDetail);
+  $("btnCancel").addEventListener("click", closeDetail);
+
+  /* ================= 写真の追加 ================= */
+  function resizeImageFile(file) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        var img = new Image();
+        img.onload = function () {
+          var w = img.width, h = img.height;
+          var scale = Math.min(1, 800 / Math.max(w, h));
+          var cw = Math.max(1, Math.round(w * scale)), ch = Math.max(1, Math.round(h * scale));
+          var c = document.createElement("canvas"); c.width = cw; c.height = ch;
+          c.getContext("2d").drawImage(img, 0, 0, cw, ch);
+          c.toBlob(function (blob) {
+            if (blob) resolve(blob); else reject(new Error("toBlob failed"));
+          }, "image/jpeg", 0.6);
+        };
+        img.onerror = function () { reject(new Error("image load failed")); };
+        img.src = e.target.result;
+      };
+      reader.onerror = function () { reject(new Error("read failed")); };
+      reader.readAsDataURL(file);
+    });
+  }
+  $("btnAddPhoto").addEventListener("click", function () { $("photoInput").click(); });
+  $("photoInput").addEventListener("change", function (e) {
+    var files = Array.prototype.slice.call(e.target.files || []);
+    e.target.value = "";
+    if (!currentDateKey || files.length === 0) return;
+    var remain = 3 - modalPhotos.length;
+    files = files.slice(0, Math.max(0, remain));
+    files.reduce(function (p, file) {
+      return p.then(function () {
+        return resizeImageFile(file).then(function (blob) {
+          return addPhoto(currentDateKey, blob).then(function (id) {
+            modalPhotos.push({ id: id, url: URL.createObjectURL(blob) });
+            renderPhotoThumbs();
+          });
+        }).catch(function () { toast("写真を読み込めなかったよ"); });
+      });
+    }, Promise.resolve());
+  });
+
+  /* ================= おいしかった！ ================= */
+  function sparkle(targetEl) {
+    var reduce = prefersReducedMotion();
+    var count = reduce ? 2 : 5;
+    for (var i = 0; i < count; i++) {
+      (function () {
+        var el = document.createElement("span");
+        el.className = "sparkle-piece";
+        el.textContent = "✨";
+        el.style.left = (8 + Math.random() * 80) + "%";
+        el.style.top = (Math.random() * 55) + "%";
+        el.style.animationDuration = (reduce ? 0.5 : (0.7 + Math.random() * 0.4)) + "s";
+        targetEl.appendChild(el);
+        setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, reduce ? 600 : 1200);
+      })();
+    }
+  }
+  $("btnLiked").addEventListener("click", function () {
+    setLikedUI(!likedState);
+    if (likedState) sparkle($("btnLiked"));
+  });
+
+  /* ================= 保存・削除 ================= */
+  function confettiBurst() {
+    var reduce = prefersReducedMotion();
+    var layer = $("confettiLayer");
+    layer.innerHTML = "";
+    var count = reduce ? 6 : 20;
+    var colors = ["#E8820F", "#C73A2B", "#3F8A33", "#F2998A", "#FFD873"];
+    for (var i = 0; i < count; i++) {
+      var el = document.createElement("span");
+      var isHeart = i % 4 === 0;
+      el.className = "confetti-piece" + (isHeart ? " heart" : "");
+      el.style.left = (Math.random() * 100) + "%";
+      el.style.setProperty("--dur", (reduce ? 0.6 : (1.3 + Math.random() * 0.9)) + "s");
+      el.style.setProperty("--delay", (Math.random() * 0.3) + "s");
+      el.style.setProperty("--rot", (120 + Math.random() * 240) + "deg");
+      if (isHeart) el.textContent = "♥"; else el.style.background = colors[i % colors.length];
+      layer.appendChild(el);
+    }
+    setTimeout(function () { layer.innerHTML = ""; }, reduce ? 900 : 2300);
+  }
+
+  $("btnSave").addEventListener("click", function () {
+    if (!currentDateKey) return;
+    var menu = $("fMenu").value.trim();
+    var recipe = $("fRecipe").value.trim();
+    var records = loadRecords();
+    var hasPhotos = modalPhotos.length > 0;
+    if (!menu && !recipe && !likedState && !hasPhotos) {
+      delete records[currentDateKey];
+    } else {
+      records[currentDateKey] = {
+        menu: menu, recipe: recipe, liked: likedState,
+        photoIds: modalPhotos.map(function (p) { return p.id; })
+      };
+    }
+    if (!saveRecords(records)) return;
+    closeDetail();
+    renderCalendar();
+    confettiBurst();
+    toast("保存したよ");
+  });
+
+  $("btnDeleteDay").addEventListener("click", function () {
+    if (!currentDateKey) return;
+    var key = currentDateKey;
+    var ok = confirm(formatDateLabel(key) + "の記録を消します。写真も消えます。よろしいですか？");
+    if (!ok) return;
+    var records = loadRecords();
+    delete records[key];
+    saveRecords(records);
+    deletePhotosByDate(key).catch(function () {}).then(function () {
+      closeDetail();
+      renderCalendar();
+      toast("消したよ");
+    });
+  });
+
+  /* ================= バックアップ ================= */
+  function blobToDataURL(blob) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function () { resolve(reader.result); };
+      reader.onerror = function () { reject(reader.error); };
+      reader.readAsDataURL(blob);
+    });
+  }
+  function dataURLToBlob(dataURL) {
+    var parts = String(dataURL).split(",");
+    var mimeMatch = parts[0].match(/:(.*?);/);
+    var mime = mimeMatch ? mimeMatch[1] : "image/jpeg";
+    var bstr = atob(parts[1] || "");
+    var n = bstr.length;
+    var u8 = new Uint8Array(n);
+    for (var i = 0; i < n; i++) u8[i] = bstr.charCodeAt(i);
+    return new Blob([u8], { type: mime });
+  }
+  $("btnExport").addEventListener("click", function () {
+    var records = loadRecords();
+    getAllPhotos().then(function (photos) {
+      return Promise.all(photos.map(function (p) {
+        return blobToDataURL(p.blob).then(function (dataUrl) {
+          return { id: p.id, dateKey: p.dateKey, dataUrl: dataUrl, createdAt: p.createdAt };
+        });
+      }));
+    }).then(function (photoList) {
+      var backup = { app: "kisei_recipe", version: 1, exportedAt: new Date().toISOString(), records: records, photos: photoList };
+      var json = JSON.stringify(backup);
+      var blob = new Blob([json], { type: "application/json" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      var now = new Date();
+      var fname = "帰省レシピ_バックアップ_" + now.getFullYear() + pad2(now.getMonth() + 1) + pad2(now.getDate()) + ".json";
+      a.href = url; a.download = fname;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+      toast("バックアップを書き出したよ");
+    }).catch(function () { toast("書き出しに失敗したよ"); });
+  });
+  $("importFile").addEventListener("change", function (e) {
+    var file = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function (ev) {
+      var data;
+      try { data = JSON.parse(ev.target.result); } catch (err) { toast("ファイルを読み取れなかったよ"); return; }
+      if (!data || typeof data.records !== "object" || data.records === null) { toast("ファイルを読み取れなかったよ"); return; }
+      var recCount = Object.keys(data.records).length;
+      var photoCount = (data.photos || []).length;
+      var ok = confirm(recCount + "件の記録と" + photoCount + "枚の写真を読み込みます。同じ日の記録は上書きされます。よろしいですか？");
+      if (!ok) return;
+      var records = loadRecords();
+      Object.keys(data.records).forEach(function (k) { records[k] = data.records[k]; });
+      if (!saveRecords(records)) return;
+      Promise.all((data.photos || []).map(function (p) {
+        return putPhotoRaw({ id: p.id, dateKey: p.dateKey, blob: dataURLToBlob(p.dataUrl), createdAt: p.createdAt || Date.now() });
+      })).then(function () {
+        renderCalendar();
+        toast("読み込んだよ");
+      }).catch(function () { toast("写真の読み込みに失敗したよ"); });
+    };
+    reader.onerror = function () { toast("ファイルを読み取れなかったよ"); };
+    reader.readAsText(file);
+  });
+
+  /* ================= にっこり揺れる ================= */
+  if (!prefersReducedMotion()) {
+    setInterval(function () {
+      var icon = $("headerIcon");
+      icon.classList.add("nod");
+      setTimeout(function () { icon.classList.remove("nod"); }, 1000);
+    }, 7000);
+  }
+
+  /* ================= 起動 ================= */
+  var now = new Date();
+  viewYear = now.getFullYear();
+  viewMonth = now.getMonth() + 1;
+  renderCalendar();
+})();
+</script>
+</body>
+</html>
