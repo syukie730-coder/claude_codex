@@ -46,9 +46,31 @@ button,input,select,textarea{font:inherit;color:inherit;}
 .wrap{max-width:620px;margin:0 auto;padding:0 16px calc(env(safe-area-inset-bottom) + 48px);}
 
 header{text-align:center;padding:calc(env(safe-area-inset-top) + 18px) 16px 16px;}
-.header-icon{width:64px;height:64px;border-radius:20px;box-shadow:var(--shadow);transform-origin:50% 70%;}
-.header-icon.nod{animation:nod .9s ease-in-out;}
-h1{margin:10px 0 2px;font-size:26px;font-weight:900;color:var(--ink-deep);}
+.header-icon-btn{all:unset;position:relative;display:block;width:176px;height:150px;margin:0 auto;cursor:pointer;filter:drop-shadow(0 6px 10px rgba(80,55,20,.22));}
+#headerSvg{width:100%;height:100%;display:block;}
+#headerSvg [id]{transform-box:fill-box;}
+#dadGroup{transform-origin:50% 92%;}
+#babyGroup{transform-origin:50% 92%;}
+.eye,.cheek{transform-origin:center;}
+.mouth-smile,.mouth-laugh{transform-origin:center;transition:opacity .18s ease,transform .22s cubic-bezier(.34,1.56,.64,1);}
+.mouth-laugh{opacity:0;transform:scale(.55);}
+.show-laugh .mouth-smile{opacity:0;}
+.show-laugh .mouth-laugh{opacity:1;transform:scale(1);}
+.steam-piece{fill:none;stroke:#fff;stroke-width:6;stroke-linecap:round;opacity:0;animation:kanim-steam 2.6s ease-in-out infinite;}
+@keyframes kanim-steam{0%{opacity:0;transform:translateY(6px) scaleX(1);}15%{opacity:.8;}50%{opacity:.95;transform:translateY(-8px) scaleX(1.12);}100%{opacity:0;transform:translateY(-18px) scaleX(1);}}
+@keyframes kanim-wink{0%,100%{transform:scaleY(1);}50%{transform:scaleY(.1);}}
+.kanim-wink{animation:kanim-wink .42s ease-in-out;}
+@keyframes kanim-blush{0%,100%{opacity:.55;transform:scale(1);}50%{opacity:.95;transform:scale(1.18);}}
+.kanim-blush{animation:kanim-blush .85s ease-in-out;}
+@keyframes kanim-hop{0%,100%{transform:translateY(0);}35%{transform:translateY(-9px);}55%{transform:translateY(0);}72%{transform:translateY(-3px);}}
+.kanim-hop{animation:kanim-hop .6s cubic-bezier(.34,1.56,.64,1);}
+@keyframes kanim-bigjump{0%{transform:translateY(0) scale(1);}40%{transform:translateY(-18px) scale(1.07);}65%{transform:translateY(0) scale(.97);}100%{transform:translateY(0) scale(1);}}
+.kanim-bigjump{animation:kanim-bigjump .7s cubic-bezier(.34,1.56,.64,1);}
+@keyframes kanim-yatta{0%{transform:rotate(0deg) translateY(0);}30%{transform:rotate(-7deg) translateY(-9px);}60%{transform:rotate(5deg) translateY(0);}100%{transform:rotate(0deg) translateY(0);}}
+.kanim-yatta{animation:kanim-yatta .8s cubic-bezier(.34,1.56,.64,1);}
+@keyframes kanim-headerpop{0%{transform:scale(.4);opacity:0;}60%{transform:scale(1.08);opacity:1;}100%{transform:scale(1);}}
+.header-icon-btn{animation:kanim-headerpop .5s cubic-bezier(.34,1.56,.64,1) both;}
+h1{margin:10px 0 2px;font-size:26px;font-weight:900;color:var(--ink-deep);animation:kanim-headerpop .5s .08s cubic-bezier(.34,1.56,.64,1) both;}
 header p{margin:0;font-size:16px;font-weight:700;color:var(--orange-deep);}
 
 main{padding-top:6px;}
@@ -66,17 +88,22 @@ main{padding-top:6px;}
 .weekrow span.sat{color:var(--orange-deep);}
 
 .calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
-.daycell{all:unset;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:2px;min-height:70px;border-radius:12px;background:#fff;border:2px solid var(--line);padding:6px 2px 5px;cursor:pointer;}
+.daycell{all:unset;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:2px;min-height:70px;border-radius:12px;background:#fff;border:2px solid var(--line);padding:6px 2px 5px;cursor:pointer;transition:transform .12s ease;}
+.daycell:active{transform:scale(.94);}
 .daycell.empty{visibility:hidden;border:none;background:none;}
 .daycell.today{border-color:var(--orange);background:var(--cream-deep);}
 .daycell .dnum{font-size:17px;font-weight:800;color:var(--ink);}
 .daycell.today .dnum{color:var(--orange-deep);}
-.daycell .mark{display:flex;align-items:center;justify-content:center;gap:3px;min-height:12px;}
-.daycell .dot{width:10px;height:10px;border-radius:50%;background:var(--orange);display:inline-block;}
+.daycell .mark{display:flex;align-items:center;justify-content:center;gap:3px;min-height:14px;}
+.daycell .food-icon{font-size:15px;line-height:1;display:inline-block;}
 .daycell .star{font-size:13px;line-height:1;color:var(--orange-deep);}
 .daycell .snip{font-size:16px;font-weight:700;color:var(--ink);line-height:1.2;text-align:center;max-width:100%;overflow:hidden;}
 @keyframes popIn{0%{transform:scale(0);opacity:0;}60%{transform:scale(1.2);opacity:1;}100%{transform:scale(1);}}
-.daycell .dot,.daycell .star{animation:popIn .35s cubic-bezier(.34,1.56,.64,1) both;}
+.daycell .food-icon,.daycell .star{animation:popIn .35s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes kanim-slide-next{0%{transform:translateX(26px);opacity:0;}100%{transform:translateX(0);opacity:1;}}
+@keyframes kanim-slide-prev{0%{transform:translateX(-26px);opacity:0;}100%{transform:translateX(0);opacity:1;}}
+.kanim-slide-next{animation:kanim-slide-next .3s ease-out both;}
+.kanim-slide-prev{animation:kanim-slide-prev .3s ease-out both;}
 
 details.backup{margin-top:2px;}
 details.backup summary{font-size:17px;font-weight:800;color:var(--orange-deep);cursor:pointer;list-style:none;padding:4px 0;}
@@ -96,7 +123,8 @@ details.backup[open] summary::before{content:"▾ ";}
 .sheet{width:100%;max-width:620px;max-height:92vh;overflow-y:auto;background:var(--card);border-radius:26px 26px 0 0;padding:20px 18px calc(env(safe-area-inset-bottom) + 24px);box-shadow:0 -8px 24px rgba(60,40,10,.22);}
 @keyframes sheetIn{0%{transform:translateY(40px) scale(.94);opacity:0;}60%{transform:translateY(-4px) scale(1.01);opacity:1;}100%{transform:translateY(0) scale(1);}}
 .sheet.anim{animation:sheetIn .32s cubic-bezier(.34,1.56,.64,1) both;}
-.sheetclose{display:block;margin:0 auto 10px;width:44px;height:5px;border-radius:3px;background:var(--line);border:none;}
+.sheetclose{display:block;margin:0 auto 10px;width:44px;height:5px;border-radius:3px;background:var(--line);border:none;transition:transform .12s ease;}
+.sheetclose:active{transform:scale(.9);}
 .modaldate{text-align:center;font-size:20px;font-weight:900;color:var(--ink-deep);margin-bottom:16px;}
 .field{margin-bottom:16px;}
 .field label{display:block;font-size:16px;font-weight:800;color:var(--ink);margin-bottom:6px;}
@@ -110,13 +138,17 @@ details.backup[open] summary::before{content:"▾ ";}
 .photosec{margin-bottom:16px;}
 .photosec label{display:block;font-size:16px;font-weight:800;color:var(--ink);margin-bottom:8px;}
 .thumbs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
-.thumb{position:relative;width:88px;height:88px;border-radius:14px;overflow:hidden;border:2px solid var(--line);background:#fff;}
+.thumb{position:relative;width:88px;height:88px;border-radius:14px;overflow:hidden;border:2px solid var(--line);background:#fff;animation:kanim-thumbspin .45s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes kanim-thumbspin{0%{transform:rotate(-200deg) scale(.4);opacity:0;}70%{transform:rotate(10deg) scale(1.05);opacity:1;}100%{transform:rotate(0deg) scale(1);}}
 .thumb img{width:100%;height:100%;object-fit:cover;display:block;}
-.thumbdel{position:absolute;top:3px;right:3px;width:26px;height:26px;border-radius:50%;border:none;background:rgba(40,25,10,.72);color:#fff;font-size:16px;font-weight:800;line-height:1;cursor:pointer;}
-.photobtn{display:block;width:100%;min-height:52px;border:2px dashed var(--orange);border-radius:14px;background:#FFF6E6;color:var(--orange-deep);font-size:16px;font-weight:800;cursor:pointer;}
+.thumbdel{position:absolute;top:3px;right:3px;width:26px;height:26px;border-radius:50%;border:none;background:rgba(40,25,10,.72);color:#fff;font-size:16px;font-weight:800;line-height:1;cursor:pointer;transition:transform .12s ease;}
+.thumbdel:active{transform:scale(.88);}
+.photobtn{display:block;width:100%;min-height:52px;border:2px dashed var(--orange);border-radius:14px;background:#FFF6E6;color:var(--orange-deep);font-size:16px;font-weight:800;cursor:pointer;transition:transform .12s ease;}
+.photobtn:active{transform:scale(.97);}
 .photolimit{font-size:16px;font-weight:700;color:var(--orange-deep);text-align:center;margin:0;}
 
-.likedbtn{position:relative;overflow:visible;display:block;width:100%;min-height:54px;border:2px solid var(--orange);border-radius:999px;background:#fff;color:var(--orange-deep);font-size:17px;font-weight:800;cursor:pointer;margin-bottom:18px;}
+.likedbtn{position:relative;overflow:visible;display:block;width:100%;min-height:54px;border:2px solid var(--orange);border-radius:999px;background:#fff;color:var(--orange-deep);font-size:17px;font-weight:800;cursor:pointer;margin-bottom:18px;transition:transform .12s ease;}
+.likedbtn:active{transform:scale(.97);}
 .likedbtn.on{background:linear-gradient(180deg,#FFD873,var(--orange));border-color:var(--orange-deep);color:#fff;}
 .sparkle-piece{position:absolute;pointer-events:none;font-size:18px;animation:sparkleOut .9s ease-out both;}
 @keyframes sparkleOut{0%{transform:scale(0) rotate(0deg);opacity:0;}40%{transform:scale(1.25) rotate(15deg);opacity:1;}100%{transform:scale(.6) rotate(28deg);opacity:0;}}
@@ -127,8 +159,6 @@ details.backup[open] summary::before{content:"▾ ";}
 .btn-ghost:active{transform:scale(.98);}
 .btn-del{background:var(--card);border:2px solid var(--red);color:var(--red-deep);}
 .btn-del:active{transform:scale(.98);}
-
-@keyframes nod{0%,100%{transform:rotate(0deg);}25%{transform:rotate(-6deg);}50%{transform:rotate(0deg);}75%{transform:rotate(5deg);}}
 
 #confettiLayer{position:fixed;left:0;right:0;top:0;height:0;overflow:visible;z-index:70;pointer-events:none;}
 .confetti-piece{position:fixed;top:-16px;width:9px;height:15px;border-radius:2px;animation:confettiFall var(--dur,1.6s) ease-in var(--delay,0s) both;}
@@ -141,8 +171,10 @@ details.backup[open] summary::before{content:"▾ ";}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
 @media (prefers-reduced-motion:reduce){
-  .header-icon.nod,.sheet.anim,.daycell .dot,.daycell .star,.confetti-piece,.sparkle-piece{
-    animation-duration:.01ms !important;animation-iteration-count:1 !important;
+  .sheet.anim,.daycell .food-icon,.daycell .star,.confetti-piece,.sparkle-piece,
+  .header-icon-btn,h1,.thumb,.steam-piece,
+  [class*="kanim-"]{
+    animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;
   }
 }
 </style>
@@ -150,7 +182,58 @@ details.backup[open] summary::before{content:"▾ ";}
 <body>
 
 <header>
-  <img class="header-icon" id="headerIcon" src="kisei_icon.png" alt="お父さんと赤ちゃんとごはんのイラスト">
+  <button type="button" class="header-icon-btn" id="headerIconBtn" aria-label="絵をタッチしてみてね">
+    <svg id="headerSvg" viewBox="0 0 400 340" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+      <g id="steamGroup">
+        <path class="steam-piece" d="M150,210 C150,195 165,195 165,180 C165,165 150,165 150,150" style="animation-delay:0s"/>
+        <path class="steam-piece" d="M200,205 C200,190 215,190 215,175 C215,160 200,160 200,145" style="animation-delay:.5s"/>
+        <path class="steam-piece" d="M250,210 C250,195 265,195 265,180 C265,165 250,165 250,150" style="animation-delay:1s"/>
+      </g>
+
+      <g id="dadGroup">
+        <circle cx="120" cy="120" r="72" fill="#F6C9A0"/>
+        <circle cx="68" cy="128" r="14" fill="#F6C9A0"/>
+        <circle cx="172" cy="128" r="14" fill="#F6C9A0"/>
+        <path d="M48,108 Q40,36 120,36 Q200,36 192,108 Q186,64 120,60 Q54,64 48,108 Z" fill="#4A3426"/>
+        <circle id="dadCheekL" class="cheek" cx="90" cy="135" r="13" fill="#F2998A" opacity="0.55"/>
+        <circle id="dadCheekR" class="cheek" cx="150" cy="135" r="13" fill="#F2998A" opacity="0.55"/>
+        <path id="dadEyeL" class="eye" d="M90,110 Q100,98 110,110" fill="none" stroke="#3A2A1E" stroke-width="5" stroke-linecap="round"/>
+        <path id="dadEyeR" class="eye" d="M130,110 Q140,98 150,110" fill="none" stroke="#3A2A1E" stroke-width="5" stroke-linecap="round"/>
+        <path id="dadMouthSmile" class="mouth-smile" d="M100,145 Q120,162 140,145" fill="none" stroke="#9C2D20" stroke-width="6" stroke-linecap="round"/>
+        <g id="dadMouthLaugh" class="mouth-laugh">
+          <path d="M92,138 Q120,175 148,138 Q120,155 92,138 Z" fill="#7A2318"/>
+          <ellipse cx="120" cy="143" rx="17" ry="5" fill="#fff" opacity=".9"/>
+        </g>
+      </g>
+
+      <g id="babyGroup">
+        <circle cx="280" cy="150" r="52" fill="#FADCC0"/>
+        <path d="M268,104 Q280,88 292,104" fill="none" stroke="#6B4A33" stroke-width="5" stroke-linecap="round"/>
+        <circle id="babyCheekL" class="cheek" cx="256" cy="160" r="10" fill="#F2998A" opacity="0.55"/>
+        <circle id="babyCheekR" class="cheek" cx="304" cy="160" r="10" fill="#F2998A" opacity="0.55"/>
+        <circle id="babyEyeL" class="eye" cx="263" cy="145" r="5" fill="#3A2A1E"/>
+        <circle id="babyEyeR" class="eye" cx="297" cy="145" r="5" fill="#3A2A1E"/>
+        <path id="babyMouthSmile" class="mouth-smile" d="M268,168 Q280,178 292,168" fill="none" stroke="#9C2D20" stroke-width="5" stroke-linecap="round"/>
+        <g id="babyMouthLaugh" class="mouth-laugh">
+          <path d="M264,164 Q280,188 296,164 Q280,176 264,164 Z" fill="#7A2318"/>
+          <ellipse cx="280" cy="168" rx="11" ry="3.5" fill="#fff" opacity=".9"/>
+        </g>
+      </g>
+
+      <g id="plateGroup">
+        <ellipse cx="185" cy="255" rx="105" ry="38" fill="#fff" stroke="#EBD3A0" stroke-width="3"/>
+        <ellipse cx="185" cy="250" rx="55" ry="22" fill="#8B5A34"/>
+        <ellipse cx="185" cy="244" rx="26" ry="14" fill="#fff"/>
+        <circle cx="185" cy="242" r="8" fill="#F5B82E"/>
+        <circle cx="125" cy="246" r="13" fill="#5BAE48"/>
+        <circle cx="112" cy="252" r="11" fill="#5BAE48"/>
+        <circle cx="130" cy="258" r="10" fill="#5BAE48"/>
+        <circle cx="250" cy="238" r="12" fill="#E04B3A"/>
+        <circle cx="255" cy="260" r="9" fill="#F08A24"/>
+        <circle cx="268" cy="262" r="9" fill="#F08A24"/>
+      </g>
+    </svg>
+  </button>
   <h1>帰省レシピ</h1>
   <p>帰ってきた日のごはんを、記録しておこう</p>
 </header>
@@ -367,8 +450,33 @@ details.backup[open] summary::before{content:"▾ ";}
   }
 
   /* ================= カレンダー ================= */
+  var FOOD_ICON_TABLE = [
+    [/ハンバーグ|肉団子|ミートボール/, "🍔"],
+    [/鍋|なべ|すき焼き|しゃぶしゃぶ/, "🍲"],
+    [/魚|さかな|サーモン|鮭|さば|サバ|ぶり|ブリ|塩焼き/, "🐟"],
+    [/寿司|すし|刺身|さしみ/, "🍣"],
+    [/カレー/, "🍛"],
+    [/ラーメン|うどん|そば|麺/, "🍜"],
+    [/餃子|ぎょうざ/, "🥟"],
+    [/天ぷら|フライ|唐揚げ|からあげ|エビ|えび/, "🍤"],
+    [/サラダ/, "🥗"],
+    [/パン|サンド/, "🥪"],
+    [/ピザ/, "🍕"],
+    [/オムライス|卵|たまご|玉子/, "🍳"],
+    [/焼肉|ステーキ|ロース|肉/, "🥩"],
+    [/おにぎり|ご飯|ごはん|丼/, "🍙"],
+    [/ケーキ|お菓子|デザート/, "🍰"]
+  ];
+  function foodIcon(menu) {
+    if (!menu) return "🍽️";
+    for (var i = 0; i < FOOD_ICON_TABLE.length; i++) {
+      if (FOOD_ICON_TABLE[i][0].test(menu)) return FOOD_ICON_TABLE[i][1];
+    }
+    return "🍽️";
+  }
+
   var viewYear, viewMonth;
-  function renderCalendar() {
+  function renderCalendar(direction) {
     var records = loadRecords();
     $("monthLabel").textContent = viewYear + "年" + viewMonth + "月";
     var fw = firstWeekdayOfMonth(viewYear, viewMonth);
@@ -383,12 +491,12 @@ details.backup[open] summary::before{content:"▾ ";}
       var rec = records[key];
       var isToday = key === today;
       var cls = "daycell" + (isToday ? " today" : "");
-      var dot = rec ? '<span class="dot"></span>' : "";
+      var icon = rec ? '<span class="food-icon">' + foodIcon(rec.menu) + "</span>" : "";
       var star = rec && rec.liked ? '<span class="star">★</span>' : "";
       var snippet = rec && rec.menu ? '<span class="snip">' + esc(rec.menu.slice(0, 2)) + "</span>" : "";
       html += '<button type="button" class="' + cls + '" data-date="' + key + '">' +
         '<span class="dnum">' + dayNum + "</span>" +
-        '<span class="mark">' + dot + star + "</span>" +
+        '<span class="mark">' + icon + star + "</span>" +
         snippet +
         "</button>";
     }
@@ -397,12 +505,17 @@ details.backup[open] summary::before{content:"▾ ";}
     Array.prototype.forEach.call(grid.querySelectorAll(".daycell:not(.empty)"), function (btn) {
       btn.addEventListener("click", function () { openDetail(btn.getAttribute("data-date")); });
     });
+    grid.classList.remove("kanim-slide-next", "kanim-slide-prev");
+    if (direction) {
+      void grid.offsetWidth;
+      grid.classList.add(direction === "next" ? "kanim-slide-next" : "kanim-slide-prev");
+    }
   }
   $("btnPrev").addEventListener("click", function () {
-    var r = addMonths(viewYear, viewMonth, -1); viewYear = r.year; viewMonth = r.month; renderCalendar();
+    var r = addMonths(viewYear, viewMonth, -1); viewYear = r.year; viewMonth = r.month; renderCalendar("prev");
   });
   $("btnNext").addEventListener("click", function () {
-    var r = addMonths(viewYear, viewMonth, 1); viewYear = r.year; viewMonth = r.month; renderCalendar();
+    var r = addMonths(viewYear, viewMonth, 1); viewYear = r.year; viewMonth = r.month; renderCalendar("next");
   });
 
   /* ================= 詳細（記録）画面 ================= */
@@ -536,8 +649,46 @@ details.backup[open] summary::before{content:"▾ ";}
   }
   $("btnLiked").addEventListener("click", function () {
     setLikedUI(!likedState);
-    if (likedState) sparkle($("btnLiked"));
+    if (likedState) {
+      sparkle($("btnLiked"));
+      sparkle($("headerIconBtn"));
+      playOnce($("headerSvg"), "show-laugh", 1000);
+      playOnce($("dadGroup"), "kanim-bigjump", 700);
+      playOnce($("babyGroup"), "kanim-bigjump", 700);
+    }
   });
+
+  /* ================= 顔のアニメーション ================= */
+  function playOnce(el, cls, ms) {
+    if (!el) return;
+    el.classList.remove(cls);
+    void el.offsetWidth;
+    el.classList.add(cls);
+    clearTimeout(el["_t_" + cls]);
+    el["_t_" + cls] = setTimeout(function () { el.classList.remove(cls); }, ms);
+  }
+  (function () {
+    var headerBtn = $("headerIconBtn");
+    headerBtn.addEventListener("click", function () {
+      playOnce($("dadGroup"), "kanim-bigjump", 700);
+      setTimeout(function () { playOnce($("babyGroup"), "kanim-bigjump", 700); }, 90);
+    });
+    if (prefersReducedMotion()) return;
+    setInterval(function () {
+      var dad = Math.random() < 0.5;
+      var eyeL = dad ? $("dadEyeL") : $("babyEyeL");
+      var cheek = dad ? $("dadCheekL") : $("babyCheekL");
+      var cheekR = dad ? $("dadCheekR") : $("babyCheekR");
+      playOnce(eyeL, "kanim-wink", 420);
+      playOnce(cheek, "kanim-blush", 850);
+      playOnce(cheekR, "kanim-blush", 850);
+    }, 6000);
+    var hopDadTurn = true;
+    setInterval(function () {
+      playOnce(hopDadTurn ? $("dadGroup") : $("babyGroup"), "kanim-hop", 600);
+      hopDadTurn = !hopDadTurn;
+    }, 4200);
+  })();
 
   /* ================= 保存・削除 ================= */
   function confettiBurst() {
@@ -578,6 +729,8 @@ details.backup[open] summary::before{content:"▾ ";}
     closeDetail();
     renderCalendar();
     confettiBurst();
+    playOnce($("dadGroup"), "kanim-yatta", 800);
+    playOnce($("babyGroup"), "kanim-yatta", 800);
     toast("保存したよ");
   });
 
@@ -663,15 +816,6 @@ details.backup[open] summary::before{content:"▾ ";}
     reader.onerror = function () { toast("ファイルを読み取れなかったよ"); };
     reader.readAsText(file);
   });
-
-  /* ================= にっこり揺れる ================= */
-  if (!prefersReducedMotion()) {
-    setInterval(function () {
-      var icon = $("headerIcon");
-      icon.classList.add("nod");
-      setTimeout(function () { icon.classList.remove("nod"); }, 1000);
-    }, 7000);
-  }
 
   /* ================= 起動 ================= */
   var now = new Date();
