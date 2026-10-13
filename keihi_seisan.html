@@ -658,14 +658,12 @@ input:focus, select:focus{ outline:3px solid #9DB8E0; outline-offset:0; }
       var top = S_TOP + ROW_H * j, cy = top + ROW_H / 2;
       if(j > 0) line(S_L, top, S_R, top, 0.2);
       spread(kname, S_L + 1, S_K - 1, cy);
-      text('0', S_R - 0.8, cy, 'right');
     });
     line(S_L, ROWS_END, S_R, ROWS_END, 0.3);
     line(S_L, ROWS_END + 0.8, S_R, ROWS_END + 0.8, 0.3);
     font(9);
     spread('合計', S_L + 4, S_K - 4, (ROWS_END + 0.8 + T_BOTTOM) / 2);
     text('差額', (S_L + S_K) / 2, 278.6, 'center');
-    text('0', S_R - 1, 278.6, 'right');
 
     return cv;
   }
