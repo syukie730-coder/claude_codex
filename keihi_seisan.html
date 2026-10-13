@@ -152,77 +152,20 @@ input:focus, select:focus{ outline:3px solid #9DB8E0; outline-offset:0; }
 .total-area .t-val{ font-size:24px; font-weight:700; }
 .bottom-inner .btn{ min-width:140px; }
 
-/* ===== 印刷用 ===== */
-#print-area{ display:none; }
-
-@page{ size:A4 portrait; margin:8mm; }
-
-@media print{
-  body{ background:#FFFFFF; padding:0; font-size:8.5pt; }
-  .screen{ display:none !important; }
-  #print-area{ display:block; }
-  /* 紙の寸法に合わせた配置（mm）：左に明細 143.5mm、右に科目別の表 37mm */
-  .sheet{ width:194mm; height:280mm; color:#000000; position:relative; }
-  .col-left{ position:absolute; left:3.5mm; top:3mm; width:143.5mm; }
-  .col-right{ position:absolute; left:152.5mm; top:186.7mm; width:37mm; }
-
-  .head-top{ display:flex; justify-content:space-between; align-items:flex-end; height:6mm; }
-  .ul{ border-bottom:0.3mm solid #000000; height:6mm; display:flex; align-items:flex-end; padding:0 1mm 0.5mm; font-size:10.5pt; }
-  .ul-month{ width:24mm; justify-content:center; }
-  .ul-no{ width:39mm; justify-content:flex-end; }
-  .head-title{
-    text-align:center; font-size:15pt; font-weight:700;
-    letter-spacing:0.95em; text-indent:0.95em; height:9mm; line-height:9mm; margin-top:0.5mm;
-  }
-  .head-date{ display:flex; justify-content:flex-end; align-items:flex-end; height:4.5mm; font-size:9pt; }
-  .head-date .line{ width:40mm; border-bottom:0.3mm solid #000000; height:4mm; margin-left:0.5mm; }
-
-  table{ border-collapse:collapse; table-layout:fixed; }
-  .list{ width:143.5mm; margin-top:1mm; border:0.45mm solid #000000; }
-  .list th{
-    height:6mm; font-size:9pt; font-weight:400;
-    border-left:0.25mm solid #000000; border-bottom:0.3mm solid #000000;
-    border-top:1.1mm double #000000;
-  }
-  .list td{
-    height:4.6mm; padding:0 0.8mm; font-size:8.5pt; line-height:1;
-    border-left:0.25mm solid #000000; border-top:none; border-bottom:none;
-    white-space:nowrap; overflow:hidden; color:#000000;
-  }
-  .list th:first-child, .list td:first-child{ border-left:none; }
-  .list td.c-no{ text-align:center; font-size:7.5pt; }
-  .list td.c-date{ text-align:right; padding-right:1.5mm; }
-  .list td.c-amt{ text-align:right; }
-  .list td.c-amt .en{ display:inline-block; width:4mm; text-align:right; }
-  .list td.small{ font-size:5.8pt; white-space:normal; line-height:1.05; }
-  .list tfoot td{
-    height:6mm; font-size:8.5pt; position:relative;
-    border-top:1.1mm double #000000; border-bottom:1.1mm double #000000;
-  }
-  .list tfoot td.t-lbl{ text-align:center; }
-  .slash{ position:absolute; left:0; top:0; width:100%; height:100%; }
-
-  .sum-box{ width:37mm; border:0.45mm solid #000000; }
-  .sum-box td{
-    height:4.6mm; padding:0 0.8mm; font-size:8pt; line-height:1;
-    border-top:0.2mm solid #000000; border-left:0.25mm solid #000000; color:#000000;
-  }
-  .sum-box td.k{
-    width:21mm; border-left:none; padding:0 1mm;
-    text-align:justify; text-align-last:justify; white-space:nowrap;
-  }
-  .sum-box tr:first-child td{ border-top:none; }
-  .sum-box tr.sep td{ height:6mm; border-top:1.1mm double #000000; font-size:9pt; }
-  .sum-box tr.sep td.k{ padding:0 4mm; }
-  .sagaku{ display:flex; height:6mm; align-items:center; font-size:9pt; }
-  .sagaku .k{ width:21mm; text-align:center; }
-  .sagaku .v{ flex:1; text-align:right; padding-right:1mm; }
-  .sum-box td.v{ text-align:right; }
-
-  .bottom-row{ display:flex; justify-content:space-between; margin-top:1.5mm; }
-  .bottom-row .b{ width:34mm; height:10mm; border:0.3mm solid #000000; }
-  .bottom-row .b .bl{ display:block; font-size:8pt; padding:0.6mm 1.2mm 0; }
+/* ===== PDFができたときの画面 ===== */
+#pdfPanel{
+  display:none; position:fixed; inset:0; z-index:10;
+  background:#FFFFFF; overflow-y:auto;
+  padding:calc(16px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom));
 }
+#pdfPanel.show{ display:block; }
+#pdfPanel .inner{ max-width:640px; margin:0 auto; }
+#pdfPanel h2{ font-size:20px; font-weight:700; margin-bottom:8px; }
+#pdfPanel .fname{ font-size:16px; margin-bottom:12px; word-break:break-all; }
+#pdfPanel .btn{ margin-bottom:12px; text-decoration:none; color:var(--text); }
+#pdfPanel .btn.main{ color:#FFFFFF; }
+#pdfPanel .preview{ width:100%; border:1px solid var(--line-dark); margin:4px 0 16px; display:block; }
+#pdfMsg{ font-size:16px; margin-bottom:12px; }
 </style>
 </head>
 <body>
@@ -258,11 +201,11 @@ input:focus, select:focus{ outline:3px solid #9DB8E0; outline-offset:0; }
 
     <div style="height:16px;"></div>
 
-    <!-- 印刷 -->
+    <!-- PDF -->
     <section class="box">
-      <h2>印刷・PDF保存</h2>
-      <button type="button" class="btn main wide" id="printBtn2">印刷画面を開く</button>
-      <p class="note">印刷画面が開いたら、iPhoneでは右上の共有ボタン（□に↑）から「ファイルに保存」を選ぶと、PDFとして保存できます。そのPDFをネットプリントのアプリで送ってください。</p>
+      <h2>PDF（ネットプリント用）</h2>
+      <button type="button" class="btn main wide" id="pdfBtn2">PDFを作って共有する</button>
+      <p class="note">A4縦1枚のPDFを作って、共有メニューを開きます。「ファイルに保存」や、ネットプリントのアプリを選んでください。</p>
     </section>
 
     <!-- よく使う支払先 -->
@@ -290,12 +233,23 @@ input:focus, select:focus{ outline:3px solid #9DB8E0; outline-offset:0; }
         <div class="t-lbl">合計</div>
         <div class="t-val" id="totalView">0円</div>
       </div>
-      <button type="button" class="btn main" id="printBtn">印刷</button>
+      <button type="button" class="btn main" id="pdfBtn">PDFを作って<br>共有する</button>
     </div>
   </div>
 </div>
 
-<div id="print-area"></div>
+<div id="pdfPanel" role="dialog" aria-label="PDF">
+  <div class="inner">
+    <h2>PDFができました</h2>
+    <p class="fname" id="pdfName"></p>
+    <p id="pdfMsg"></p>
+    <button type="button" class="btn main wide" id="pdfShare">共有する（ファイルに保存・ネットプリント）</button>
+    <a class="btn wide" id="pdfOpen" target="_blank" rel="noopener">PDFを新しいタブで開く</a>
+    <a class="btn wide" id="pdfDownload">PDFをダウンロードする</a>
+    <button type="button" class="btn wide" id="pdfClose">閉じる</button>
+    <img class="preview" id="pdfPreview" alt="PDFの見本">
+  </div>
+</div>
 
 <script>
 (function(){
@@ -562,83 +516,269 @@ input:focus, select:focus{ outline:3px solid #9DB8E0; outline-offset:0; }
     renderRows();
   });
 
-  // ---------- 印刷 ----------
-  function cell(cls, text, limit){
-    var small = text && text.length > limit ? ' small' : '';
-    return '<td class="' + cls + small + '">' + esc(text) + '</td>';
-  }
+  // ---------- PDF ----------
+  // 紙の用紙（A4縦）を、mm単位でキャンバスにかいて、1枚のPDFにする
+  var DPI = 300;
+  var MM = DPI / 25.4;                 // 1mmあたりの点の数
+  var PT = 25.4 / 72;                  // 1ポイントは何mmか
+  var FONT = '"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo","Noto Sans JP","Noto Sans CJK JP","IPAGothic",sans-serif';
 
-  var SLASH = '<svg class="slash" viewBox="0 0 100 100" preserveAspectRatio="none">' +
-    '<line x1="0" y1="100" x2="100" y2="0" stroke="#000" stroke-width="0.8" vector-effect="non-scaling-stroke"/></svg>';
+  // 紙の寸法（mm）
+  var L = 11.5, R = 155;                                  // 明細の表の左右
+  var COLS = [11.5, 18.1, 35.8, 56.8, 79.2, 115.4, 155];   // No｜日付｜科目｜金額｜支払先｜内容・目的
+  var T_TOP = 32, H_BOTTOM = 38.5, ROW_H = 4.6;           // 表の上、見出しの下、1行の高さ
+  var ROWS_END = H_BOTTOM + ROW_H * MAX_ROWS;             // 50行目の下
+  var T_BOTTOM = 275.2;                                    // 表の一番下
+  var S_L = 160.5, S_R = 197.5, S_K = 181.5;              // 右下の表の左・右・科目と金額のさかい
+  var S_TOP = H_BOTTOM + ROW_H * 34;                      // 右下の表は35行目の高さから
 
-  function buildPrint(){
+  function drawSheet(){
+    var cv = document.createElement('canvas');
+    cv.width = Math.round(210 * MM);
+    cv.height = Math.round(297 * MM);
+    var c = cv.getContext('2d');
+    c.fillStyle = '#FFFFFF';
+    c.fillRect(0, 0, cv.width, cv.height);
+    c.setTransform(MM, 0, 0, MM, 0, 0);   // ここから先は mm でかく
+    c.fillStyle = '#000000';
+    c.strokeStyle = '#000000';
+    c.lineCap = 'butt';
+
+    function font(pt, bold){ c.font = (bold ? 'bold ' : '') + (pt * PT).toFixed(3) + 'px ' + FONT; }
+    function line(x1, y1, x2, y2, w){
+      c.lineWidth = w || 0.25;
+      c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.stroke();
+    }
+    function rect(x1, y1, x2, y2, w){ c.lineWidth = w || 0.3; c.strokeRect(x1, y1, x2 - x1, y2 - y1); }
+    function text(t, x, y, align, maxW){
+      c.textAlign = align || 'left';
+      c.textBaseline = 'middle';
+      if(maxW) c.fillText(t, x, y, maxW); else c.fillText(t, x, y);
+    }
+    // 幅に入らない文は、小さい字で2行にする（それでも長いときは横に縮める）
+    function fitText(t, x, y, maxW){
+      if(!t) return;
+      font(8.5);
+      if(c.measureText(t).width <= maxW){ text(t, x, y); return; }
+      font(6);
+      var cut = t.length;
+      while(cut > 1 && c.measureText(t.slice(0, cut)).width > maxW) cut--;
+      text(t.slice(0, cut), x, y - 1.05, 'left', maxW);
+      text(t.slice(cut), x, y + 1.05, 'left', maxW);
+    }
+    // 文字を枠いっぱいに均等にならべる（消 耗 品 費 のように）
+    function spread(t, x1, x2, y){
+      var chars = t.split('');
+      if(chars.length === 1){ text(t, (x1 + x2) / 2, y, 'center'); return; }
+      var first = c.measureText(chars[0]).width / 2, last = c.measureText(chars[chars.length - 1]).width / 2;
+      var step = (x2 - x1 - first - last) / (chars.length - 1);
+      chars.forEach(function(ch, i){ text(ch, x1 + first + step * i, y, 'center'); });
+    }
+
     var rows = monthRows();
-    var p = month.split('-');
+    var mp = month.split('-');
     var no = (state.months[month] && state.months[month].no) || '1';
-    var html = '<div class="sheet"><div class="col-left">' +
-      '<div class="head-top">' +
-        '<div class="ul ul-month">' + p[0] + '. ' + (+p[1]) + '</div>' +
-        '<div class="ul ul-no">No.&nbsp;' + esc(no) + '</div>' +
-      '</div>' +
-      '<div class="head-title">経費精算請求書</div>' +
-      '<div class="head-date">【精算日】<span class="line"></span></div>' +
-      '<table class="list"><colgroup>' +
-        '<col style="width:6.6mm"><col style="width:17.7mm"><col style="width:21mm">' +
-        '<col style="width:22.4mm"><col style="width:36.2mm"><col style="width:39.6mm">' +
-      '</colgroup><thead><tr>' +
-        '<th>No</th><th>日&ensp;付</th><th>科&ensp;目</th><th>金&ensp;額</th><th>支払先</th><th>内容・目的</th>' +
-      '</tr></thead><tbody>';
+
+    // 上の段：左に年月、右に No.
+    font(10.5);
+    text(mp[0] + '. ' + (+mp[1]), (L + 35.5) / 2, 15.3, 'center');
+    line(L, 17, 35.5, 17, 0.3);
+    text('No. ' + no, R - 1, 15.3, 'right');
+    line(116, 17, R, 17, 0.3);
+
+    // 題名（文字の間をあけて、表のまん中に）
+    font(15, true);
+    var title = '経費精算請求書'.split('');
+    var stepT = 15 * PT * 1.95;
+    title.forEach(function(ch, i){ text(ch, (L + R) / 2 + (i - 3) * stepT, 22, 'center'); });
+
+    // 【精算日】
+    font(9);
+    text('【精算日】', 114.5, 29.4, 'right');
+    line(115, 31, R, 31, 0.3);
+
+    // 明細の表：外わく、上は二重線（合計の行では、支払先と内容・目的は1つの枠）
+    rect(L, T_TOP, R, T_BOTTOM, 0.45);
+    line(L, T_TOP + 0.8, R, T_TOP + 0.8, 0.3);
+    line(L, H_BOTTOM, R, H_BOTTOM, 0.3);
+    for(var k = 1; k < COLS.length - 1; k++) line(COLS[k], T_TOP + 0.8, COLS[k], k < 5 ? T_BOTTOM : ROWS_END, 0.25);
+
+    font(9);
+    var heads = ['No', '日 付', '科 目', '金 額', '支払先', '内容・目的'];
+    var hy = (T_TOP + 0.8 + H_BOTTOM) / 2;
+    heads.forEach(function(h, i){ text(h, (COLS[i] + COLS[i + 1]) / 2, hy, 'center'); });
+
+    // 50行
     var shownMonth = false;
     for(var i = 0; i < MAX_ROWS; i++){
       var r = rows[i] || {};
-      var amt = toNumber(r.amount);
-      var dateText = '';
+      var y = H_BOTTOM + ROW_H * i + ROW_H / 2;
+      font(7.5);
+      text(String(i + 1), (COLS[0] + COLS[1]) / 2, y, 'center');
+      font(8.5);
       if(r.date){
         var dp = r.date.split('-');
-        dateText = (shownMonth ? '' : (+dp[1]) + '月') + (+dp[2]) + '日';
+        text((shownMonth ? '' : (+dp[1]) + '月') + (+dp[2]) + '日', COLS[2] - 1.5, y, 'right');
         shownMonth = true;
       }
-      html += '<tr>' +
-        '<td class="c-no">' + (i + 1) + '</td>' +
-        '<td class="c-date">' + dateText + '</td>' +
-        '<td></td>' +
-        '<td class="c-amt">' + (amt ? yen(amt) : '') + '<span class="en">円</span></td>' +
-        cell('', r.payee || '', 12) +
-        cell('', r.purpose || '', 13) +
-      '</tr>';
+      var amt = toNumber(r.amount);
+      if(amt) text(yen(amt), COLS[4] - 4.8, y, 'right');
+      text('円', COLS[4] - 0.8, y, 'right');
+      fitText(r.payee || '', COLS[4] + 0.8, y, COLS[5] - COLS[4] - 1.6);
+      fitText(r.purpose || '', COLS[5] + 0.8, y, COLS[6] - COLS[5] - 1.6);
     }
-    html += '</tbody><tfoot><tr>' +
-        '<td>' + SLASH + '</td>' +
-        '<td class="t-lbl">合計</td>' +
-        '<td>' + SLASH + '</td>' +
-        '<td class="c-amt">' + yen(total()) + '&ensp;<span class="en">円</span></td>' +
-        '<td colspan="2">' + SLASH + '</td>' +
-      '</tr></tfoot></table>' +
-      '<div class="bottom-row">' + BOTTOM.map(function(t){ return '<div class="b"><span class="bl">' + t + '</span></div>'; }).join('') + '</div>' +
-      '</div>';
 
-    // 右下の科目別の表：明細の36行目から合計行までとそろえる
-    html += '<div class="col-right" id="sumCol"><table class="sum-box"><tbody>';
-    KAMOKU.forEach(function(k){ html += '<tr><td class="k">' + k + '</td><td class="v">0</td></tr>'; });
-    html += '<tr class="sep"><td class="k">合計</td><td></td></tr></tbody></table>' +
-      '<div class="sagaku"><span class="k">差額</span><span class="v">0</span></div></div>';
-    html += '</div>';
-    $('print-area').innerHTML = html;
+    // 左下の合計の行（上下とも二重線、斜めの線）
+    line(L, ROWS_END, R, ROWS_END, 0.3);
+    line(L, ROWS_END + 0.8, R, ROWS_END + 0.8, 0.3);
+    line(L, T_BOTTOM - 0.8, R, T_BOTTOM - 0.8, 0.3);
+    var fTop = ROWS_END + 0.8, fBot = T_BOTTOM - 0.8, fy = (fTop + fBot) / 2;
+    line(COLS[0], fBot, COLS[1], fTop, 0.2);
+    line(COLS[2], fBot, COLS[3], fTop, 0.2);
+    line(COLS[4], fBot, COLS[6], fTop, 0.2);
+    font(8.5);
+    text('合計', (COLS[1] + COLS[2]) / 2, fy, 'center');
+    text(yen(total()), COLS[4] - 5.8, fy, 'right');
+    text('円', COLS[4] - 0.8, fy, 'right');
+
+    // 一番下の4つの欄
+    font(8);
+    var bw = 34, gap = (R - L - bw * 4) / 3;
+    BOTTOM.forEach(function(t, j){
+      var x = L + (bw + gap) * j;
+      rect(x, 276.4, x + bw, 286.4, 0.3);
+      text(t, x + 1.2, 278.4, 'left');
+    });
+
+    // 右下の科目別の表
+    rect(S_L, S_TOP, S_R, T_BOTTOM, 0.45);
+    line(S_K, S_TOP, S_K, T_BOTTOM, 0.25);
+    font(8);
+    KAMOKU.forEach(function(kname, j){
+      var top = S_TOP + ROW_H * j, cy = top + ROW_H / 2;
+      if(j > 0) line(S_L, top, S_R, top, 0.2);
+      spread(kname, S_L + 1, S_K - 1, cy);
+      text('0', S_R - 0.8, cy, 'right');
+    });
+    line(S_L, ROWS_END, S_R, ROWS_END, 0.3);
+    line(S_L, ROWS_END + 0.8, S_R, ROWS_END + 0.8, 0.3);
+    font(9);
+    spread('合計', S_L + 4, S_K - 4, (ROWS_END + 0.8 + T_BOTTOM) / 2);
+    text('差額', (S_L + S_K) / 2, 278.6, 'center');
+    text('0', S_R - 1, 278.6, 'right');
+
+    return cv;
   }
 
-  function doPrint(){
+  // JPEGの絵を1枚だけのせたA4のPDFを組み立てる
+  function makePdf(jpeg, wPx, hPx, title){
+    var enc = function(str){
+      var out = new Uint8Array(str.length);
+      for(var i = 0; i < str.length; i++) out[i] = str.charCodeAt(i) & 0xFF;
+      return out;
+    };
+    var hex16 = function(str){
+      var h = 'FEFF';
+      for(var i = 0; i < str.length; i++) h += ('000' + str.charCodeAt(i).toString(16).toUpperCase()).slice(-4);
+      return '<' + h + '>';
+    };
+    var W = '595.28', H = '841.89';
+    var content = 'q ' + W + ' 0 0 ' + H + ' 0 0 cm /Im0 Do Q';
+    var parts = [], offsets = [], len = 0;
+    var push = function(u8){ parts.push(u8); len += u8.length; };
+    var obj = function(n, body){ offsets[n] = len; push(enc(n + ' 0 obj\n' + body + '\nendobj\n')); };
+
+    push(enc('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n'));
+    obj(1, '<< /Type /Catalog /Pages 2 0 R >>');
+    obj(2, '<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
+    obj(3, '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + W + ' ' + H + '] ' +
+           '/Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>');
+    offsets[4] = len;
+    push(enc('4 0 obj\n<< /Type /XObject /Subtype /Image /Width ' + wPx + ' /Height ' + hPx +
+             ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + jpeg.length + ' >>\nstream\n'));
+    push(jpeg);
+    push(enc('\nendstream\nendobj\n'));
+    obj(5, '<< /Length ' + content.length + ' >>\nstream\n' + content + '\nendstream');
+    obj(6, '<< /Title ' + hex16(title) + ' /Producer (keihi_seisan) >>');
+    var xref = len, x = 'xref\n0 7\n0000000000 65535 f \n';
+    for(var n = 1; n <= 6; n++) x += ('000000000' + offsets[n]).slice(-10) + ' 00000 n \n';
+    push(enc(x + 'trailer\n<< /Size 7 /Root 1 0 R /Info 6 0 R >>\nstartxref\n' + xref + '\n%%EOF\n'));
+
+    var all = new Uint8Array(len), pos = 0;
+    parts.forEach(function(u8){ all.set(u8, pos); pos += u8.length; });
+    return all;
+  }
+
+  var pdfFile = null, pdfUrl = null;
+
+  function buildPdf(){
+    var cv = drawSheet();
+    var dataUrl = cv.toDataURL('image/jpeg', 0.92);
+    var bin = atob(dataUrl.split(',')[1]);
+    var jpeg = new Uint8Array(bin.length);
+    for(var i = 0; i < bin.length; i++) jpeg[i] = bin.charCodeAt(i);
+    var name = '経費精算請求書_' + month;
+    var bytes = makePdf(jpeg, cv.width, cv.height, name);
+    cv.width = cv.height = 1;   // メモリをすぐ返す
+    var blob = new Blob([bytes], { type: 'application/pdf' });
+    try{ pdfFile = new File([blob], name + '.pdf', { type: 'application/pdf' }); }
+    catch(e){ pdfFile = blob; pdfFile.name = name + '.pdf'; }
+    if(pdfUrl) URL.revokeObjectURL(pdfUrl);
+    pdfUrl = URL.createObjectURL(blob);
+    return { name: name + '.pdf', preview: dataUrl };
+  }
+
+  function canShareFile(){
+    try{
+      return !!(navigator.share && navigator.canShare && pdfFile instanceof File &&
+                navigator.canShare({ files: [pdfFile] }));
+    }catch(e){ return false; }
+  }
+
+  function sharePdf(){
+    if(!canShareFile()) return Promise.reject(new Error('cannot-share'));
+    return navigator.share({ files: [pdfFile], title: pdfFile.name });
+  }
+
+  function showPanel(info){
+    $('pdfName').textContent = 'ファイル名：' + info.name;
+    $('pdfPreview').src = info.preview;
+    $('pdfOpen').href = pdfUrl;
+    $('pdfDownload').href = pdfUrl;
+    $('pdfDownload').setAttribute('download', info.name);
+    var ok = canShareFile();
+    $('pdfShare').style.display = ok ? '' : 'none';
+    $('pdfMsg').textContent = ok
+      ? '共有メニューが出なかったときは、下の「共有する」を押してください。'
+      : 'この画面では共有メニューが使えません。「PDFを新しいタブで開く」を押して、開いたPDFの共有ボタン（□に↑）から保存してください。';
+    $('pdfPanel').classList.add('show');
+    $('pdfPanel').scrollTop = 0;
+  }
+
+  function onMakePdf(){
     if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
-    buildPrint();
-    var oldTitle = document.title;
-    document.title = '経費精算請求書_' + month;   // PDFのファイル名になります
-    setTimeout(function(){
-      window.print();
-      setTimeout(function(){ document.title = oldTitle; }, 1000);
-    }, 50);
+    var info;
+    try{ info = buildPdf(); }
+    catch(e){ alert('PDFを作れませんでした。もう一度お試しください。'); return; }
+    showPanel(info);
+    // ボタンを押した流れのまま、すぐに共有メニューを開く
+    if(canShareFile()){
+      sharePdf().catch(function(err){
+        if(err && err.name === 'AbortError') return;   // 自分で閉じたとき
+        $('pdfMsg').textContent = '共有メニューを開けませんでした。下の「共有する」をもう一度押してください。';
+      });
+    }
   }
-  $('printBtn').addEventListener('click', doPrint);
-  $('printBtn2').addEventListener('click', doPrint);
-  window.addEventListener('beforeprint', buildPrint);
+
+  $('pdfBtn').addEventListener('click', onMakePdf);
+  $('pdfBtn2').addEventListener('click', onMakePdf);
+  $('pdfShare').addEventListener('click', function(){
+    sharePdf().catch(function(err){
+      if(err && err.name === 'AbortError') return;
+      $('pdfMsg').textContent = '共有メニューを開けませんでした。「PDFを新しいタブで開く」を使ってください。';
+    });
+  });
+  $('pdfClose').addEventListener('click', function(){ $('pdfPanel').classList.remove('show'); });
 
   // ---------- はじめ ----------
   state.current = month;
