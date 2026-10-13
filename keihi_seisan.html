@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="経費精算">
+<meta name="theme-color" content="#FFFFFF">
+<title>経費精算請求書</title>
+<style>
+:root{
+  --text:#111111;
+  --sub:#222222;
+  --line:#999999;
+  --line-dark:#555555;
+  --bg:#F4F5F7;
+  --card:#FFFFFF;
+  --main:#1F4E8C;
+  --main-dark:#163A69;
+  --danger:#B3261E;
+}
+*{ box-sizing:border-box; margin:0; padding:0; }
+html{ -webkit-text-size-adjust:100%; }
+body{
+  font-family:-apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+  font-size:17px;
+  line-height:1.5;
+  color:var(--text);
+  background:var(--bg);
+  padding-bottom:calc(110px + env(safe-area-inset-bottom));
+}
+button, input, select{ font:inherit; color:var(--text); }
+
+/* ===== 画面 ===== */
+.top{
+  background:#FFFFFF;
+  border-bottom:1px solid var(--line);
+  padding:calc(14px + env(safe-area-inset-top)) 16px 14px;
+}
+.top h1{ font-size:21px; font-weight:700; }
+main{ max-width:640px; margin:0 auto; padding:16px; }
+.box{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:16px;
+  margin-bottom:16px;
+}
+.box h2{ font-size:18px; font-weight:700; margin-bottom:10px; }
+label.lbl{ display:block; font-size:16px; font-weight:700; margin-bottom:4px; }
+input[type=text], input[type=date], input[type=month], input[type=tel], select{
+  width:100%;
+  min-height:48px;
+  font-size:17px;
+  padding:8px 10px;
+  border:1px solid var(--line-dark);
+  border-radius:6px;
+  background:#FFFFFF;
+  -webkit-appearance:none;
+  appearance:none;
+}
+select{
+  background-image:linear-gradient(45deg, transparent 50%, #111 50%), linear-gradient(135deg, #111 50%, transparent 50%);
+  background-position:calc(100% - 18px) 50%, calc(100% - 12px) 50%;
+  background-size:6px 6px, 6px 6px;
+  background-repeat:no-repeat;
+  padding-right:32px;
+}
+::placeholder{ color:#555555; opacity:1; }
+input:focus, select:focus{ outline:3px solid #9DB8E0; outline-offset:0; }
+.btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  min-height:52px;
+  padding:10px 18px;
+  font-size:17px; font-weight:700;
+  border-radius:8px;
+  border:1px solid var(--line-dark);
+  background:#FFFFFF;
+  cursor:pointer;
+}
+.btn:active{ background:#E6E8EC; }
+.btn.main{ background:var(--main); border-color:var(--main); color:#FFFFFF; }
+.btn.main:active{ background:var(--main-dark); }
+.btn.danger{ color:var(--danger); border-color:var(--danger); }
+.btn.wide{ width:100%; }
+.btn:disabled{ background:#DDDDDD; border-color:#AAAAAA; color:#444444; }
+.note{ font-size:16px; color:var(--sub); margin-top:8px; }
+
+.month-row{ display:flex; gap:10px; align-items:flex-end; }
+.month-row > div{ flex:1; }
+
+/* 明細カード */
+.row-card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:12px 14px 14px;
+  margin-bottom:12px;
+}
+.row-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.row-no{ font-size:18px; font-weight:700; }
+.row-head .btn{ min-height:44px; padding:6px 14px; font-size:16px; }
+.grid2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.field{ margin-bottom:10px; }
+.field:last-child{ margin-bottom:0; }
+.yen-wrap{ position:relative; }
+.yen-wrap input{ padding-right:34px; text-align:right; }
+.yen-wrap span{ position:absolute; right:10px; top:50%; transform:translateY(-50%); font-size:17px; }
+.pick{ margin-top:6px; }
+.empty{ text-align:center; padding:24px 8px; font-size:17px; color:var(--sub); }
+.count{ font-size:16px; color:var(--sub); text-align:right; margin:4px 0 10px; }
+
+/* よく使う支払先 */
+.fav-list{ list-style:none; margin-top:10px; }
+.fav-list li{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:8px 0; border-bottom:1px solid #DDDDDD; font-size:17px;
+}
+.fav-list li:last-child{ border-bottom:none; }
+.fav-list .btn{ min-height:44px; padding:6px 14px; font-size:16px; }
+.fav-add{ display:flex; gap:8px; }
+.fav-add input{ flex:1; }
+
+/* 保存した月 */
+.saved-list{ list-style:none; }
+.saved-list li{ border-bottom:1px solid #DDDDDD; }
+.saved-list li:last-child{ border-bottom:none; }
+.saved-list button{
+  width:100%; min-height:52px; background:none; border:none; text-align:left;
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:17px; padding:8px 4px; cursor:pointer;
+}
+.saved-list button:active{ background:#E6E8EC; }
+.saved-list button span{ white-space:nowrap; }
+.saved-list button{ flex-wrap:wrap; gap:0 12px; }
+.saved-list .cur{ font-weight:700; }
+
+/* 下の固定バー */
+.bottom-bar{
+  position:fixed; left:0; right:0; bottom:0;
+  background:#FFFFFF;
+  border-top:1px solid var(--line-dark);
+  padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+}
+.bottom-inner{ max-width:640px; margin:0 auto; display:flex; align-items:center; gap:12px; }
+.total-area{ flex:1; }
+.total-area .t-lbl{ font-size:16px; }
+.total-area .t-val{ font-size:24px; font-weight:700; }
+.bottom-inner .btn{ min-width:140px; }
+
+/* ===== 印刷用 ===== */
+#print-area{ display:none; }
+
+@page{ size:A4 portrait; margin:10mm; }
+
+@media print{
+  body{ background:#FFFFFF; padding:0; font-size:10pt; }
+  .screen{ display:none !important; }
+  #print-area{ display:block; }
+  .sheet{
+    width:190mm;
+    page-break-after:always;
+    break-after:page;
+    color:#000000;
+  }
+  .sheet:last-child{ page-break-after:auto; break-after:auto; }
+  .sheet-head{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    margin-bottom:4mm;
+  }
+  .sheet-title{ font-size:18pt; font-weight:700; letter-spacing:0.3em; }
+  .sheet-month{ font-size:12pt; }
+  .sheet-page{ font-size:9pt; }
+  table{ border-collapse:collapse; width:100%; table-layout:fixed; }
+  th, td{ border:0.3mm solid #000000; color:#000000; }
+  .list th{ height:7mm; font-size:9.5pt; font-weight:700; background:#FFFFFF; }
+  .list td{
+    height:6.4mm; font-size:9pt; padding:0 1.2mm;
+    white-space:nowrap; overflow:hidden; line-height:1.1;
+  }
+  .list td.c-no{ text-align:center; }
+  .list td.c-date{ text-align:center; }
+  .list td.c-amt{ text-align:right; }
+  .list td.small{ font-size:7pt; white-space:normal; }
+  .foot{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    margin-top:4mm;
+  }
+  .total-box{ width:80mm; }
+  .total-box td{ height:10mm; font-size:12pt; padding:0 2mm; }
+  .total-box td.t-lbl{ width:22mm; text-align:center; font-weight:700; }
+  .total-box td.t-val{ text-align:right; font-weight:700; }
+  .sum-box{ width:80mm; }
+  .sum-box th{ height:6mm; font-size:9pt; font-weight:700; }
+  .sum-box td{ height:6mm; font-size:9pt; padding:0 2mm; }
+  .sum-box td.k{ width:32mm; text-align:center; }
+  .sum-box tr.sep td{ border-top:0.6mm solid #000000; }
+}
+</style>
+</head>
+<body>
+
+<div class="screen">
+  <div class="top">
+    <h1>経費精算請求書</h1>
+  </div>
+
+  <main>
+    <!-- 月 -->
+    <section class="box">
+      <div class="month-row">
+        <div>
+          <label class="lbl" for="month">月</label>
+          <input type="month" id="month">
+        </div>
+      </div>
+      <p class="note">入力した内容は、この月の分として自動で保存されます。</p>
+    </section>
+
+    <!-- 明細 -->
+    <section>
+      <div class="count" id="count"></div>
+      <div id="rows"></div>
+      <button type="button" class="btn wide" id="addRow">＋ 行を追加する</button>
+      <p class="note" id="maxNote" style="display:none;">行は50行までです。</p>
+    </section>
+
+    <div style="height:16px;"></div>
+
+    <!-- 印刷 -->
+    <section class="box">
+      <h2>印刷・PDF保存</h2>
+      <button type="button" class="btn main wide" id="printBtn2">印刷画面を開く</button>
+      <p class="note">印刷画面が開いたら、iPhoneでは右上の共有ボタン（□に↑）から「ファイルに保存」を選ぶと、PDFとして保存できます。そのPDFをネットプリントのアプリで送ってください。</p>
+    </section>
+
+    <!-- よく使う支払先 -->
+    <section class="box">
+      <h2>よく使う支払先</h2>
+      <div class="fav-add">
+        <input type="text" id="favInput" placeholder="例：セブンイレブン" maxlength="30">
+        <button type="button" class="btn" id="favAdd">登録</button>
+      </div>
+      <ul class="fav-list" id="favList"></ul>
+    </section>
+
+    <!-- 保存した月 -->
+    <section class="box">
+      <h2>保存した月</h2>
+      <ul class="saved-list" id="savedList"></ul>
+      <div style="height:12px;"></div>
+      <button type="button" class="btn danger wide" id="clearMonth">表示中の月の内容をすべて消す</button>
+    </section>
+  </main>
+
+  <div class="bottom-bar">
+    <div class="bottom-inner">
+      <div class="total-area">
+        <div class="t-lbl">合計</div>
+        <div class="t-val" id="totalView">0円</div>
+      </div>
+      <button type="button" class="btn main" id="printBtn">印刷</button>
+    </div>
+  </div>
+</div>
+
+<div id="print-area"></div>
+
+<script>
+(function(){
+  'use strict';
+
+  var STORE_KEY = 'keihi_seisan_v1';
+  var MAX_ROWS = 50;
+  var ROWS_PER_PAGE = 25;
+  var KAMOKU = ['消耗品費','事務用品費','旅費交通費','通信費','会議費','接待交際費','新聞図書費','雑費','その他'];
+  var DEFAULT_FAVS = ['セブンイレブン','ローソン','ファミリーマート','Amazon','ダイソー','郵便局'];
+
+  // ---------- 保存まわり ----------
+  function load(){
+    var data = null;
+    try{ data = JSON.parse(localStorage.getItem(STORE_KEY)); }catch(e){}
+    if(!data || typeof data !== 'object') data = {};
+    if(!data.months || typeof data.months !== 'object') data.months = {};
+    if(!Array.isArray(data.favs)) data.favs = DEFAULT_FAVS.slice();
+    return data;
+  }
+  function save(){
+    try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
+    catch(e){ alert('保存できませんでした。ブラウザの設定（プライベートブラウズなど）をご確認ください。'); }
+  }
+
+  var state = load();
+
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function thisMonth(){ var d = new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1); }
+  function todayStr(){ var d = new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function lastDay(ym){ var p = ym.split('-'); return new Date(+p[0], +p[1], 0).getDate(); }
+
+  var month = state.current && /^\d{4}-\d{2}$/.test(state.current) ? state.current : thisMonth();
+
+  function monthRows(){
+    if(!state.months[month]) state.months[month] = { rows: [] };
+    return state.months[month].rows;
+  }
+
+  // 全角数字やカンマを直して数字にする
+  function toNumber(s){
+    if(s === null || s === undefined) return 0;
+    s = String(s).replace(/[０-９]/g, function(c){ return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); })
+                 .replace(/[^0-9\-]/g, '');
+    var n = parseInt(s, 10);
+    return isNaN(n) ? 0 : n;
+  }
+  function yen(n){ return n.toLocaleString('ja-JP'); }
+  function esc(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+  function monthLabel(ym){ var p = ym.split('-'); return p[0] + '年' + (+p[1]) + '月'; }
+
+  // ---------- 画面 ----------
+  var $ = function(id){ return document.getElementById(id); };
+  var rowsEl = $('rows');
+
+  function total(){
+    return monthRows().reduce(function(sum, r){ return sum + toNumber(r.amount); }, 0);
+  }
+
+  function updateTotal(){
+    $('totalView').textContent = yen(total()) + '円';
+    var n = monthRows().length;
+    $('count').textContent = n + ' / ' + MAX_ROWS + ' 行';
+    $('addRow').disabled = n >= MAX_ROWS;
+    $('maxNote').style.display = n >= MAX_ROWS ? 'block' : 'none';
+  }
+
+  function favOptions(){
+    var html = '<option value="">よく使う支払先から選ぶ</option>';
+    state.favs.forEach(function(f){ html += '<option value="' + esc(f) + '">' + esc(f) + '</option>'; });
+    return html;
+  }
+
+  function renderRows(){
+    var rows = monthRows();
+    var minD = month + '-01', maxD = month + '-' + pad(lastDay(month));
+    if(rows.length === 0){
+      rowsEl.innerHTML = '<div class="box empty">まだ入力がありません。<br>下の「＋ 行を追加する」を押してください。</div>';
+      updateTotal();
+      return;
+    }
+    var opts = favOptions();
+    var html = '';
+    rows.forEach(function(r, i){
+      html +=
+        '<div class="row-card" data-i="' + i + '">' +
+          '<div class="row-head">' +
+            '<span class="row-no">No.' + (i + 1) + '</span>' +
+            '<button type="button" class="btn danger" data-act="del">この行を削除</button>' +
+          '</div>' +
+          '<div class="grid2 field">' +
+            '<div><label class="lbl">日付</label>' +
+              '<input type="date" data-k="date" value="' + esc(r.date) + '" min="' + minD + '" max="' + maxD + '"></div>' +
+            '<div><label class="lbl">金額</label>' +
+              '<div class="yen-wrap"><input type="tel" inputmode="numeric" data-k="amount" value="' + esc(r.amount ? yen(toNumber(r.amount)) : '') + '" placeholder="0"><span>円</span></div></div>' +
+          '</div>' +
+          '<div class="field"><label class="lbl">支払先</label>' +
+            '<input type="text" data-k="payee" value="' + esc(r.payee) + '" maxlength="30">' +
+            '<select class="pick" data-act="pick">' + opts + '</select></div>' +
+          '<div class="field"><label class="lbl">内容・目的</label>' +
+            '<input type="text" data-k="purpose" value="' + esc(r.purpose) + '" maxlength="50"></div>' +
+        '</div>';
+    });
+    rowsEl.innerHTML = html;
+    updateTotal();
+  }
+
+  function renderFavs(){
+    var ul = $('favList');
+    if(state.favs.length === 0){
+      ul.innerHTML = '<li>登録はまだありません。</li>';
+      return;
+    }
+    ul.innerHTML = state.favs.map(function(f, i){
+      return '<li><span>' + esc(f) + '</span><button type="button" class="btn danger" data-fav="' + i + '">削除</button></li>';
+    }).join('');
+  }
+
+  function renderSaved(){
+    var keys = Object.keys(state.months).filter(function(k){
+      return state.months[k].rows && state.months[k].rows.length > 0;
+    });
+    if(keys.indexOf(month) < 0) keys.push(month);
+    keys.sort().reverse();
+    $('savedList').innerHTML = keys.map(function(k){
+      var rows = (state.months[k] && state.months[k].rows) || [];
+      var t = rows.reduce(function(s, r){ return s + toNumber(r.amount); }, 0);
+      return '<li><button type="button" data-month="' + k + '"' + (k === month ? ' class="cur"' : '') + '>' +
+        '<span>' + monthLabel(k) + (k === month ? '（表示中）' : '') + '</span>' +
+        '<span>' + rows.length + '件　' + yen(t) + '円</span></button></li>';
+    }).join('');
+  }
+
+  function setMonth(ym){
+    if(!/^\d{4}-\d{2}$/.test(ym)) return;
+    // 空のまま離れた月は残さない
+    if(state.months[month] && state.months[month].rows.length === 0) delete state.months[month];
+    month = ym;
+    state.current = ym;
+    $('month').value = ym;
+    save();
+    renderRows();
+    renderSaved();
+    window.scrollTo(0, 0);
+  }
+
+  // ---------- 入力のできごと ----------
+  rowsEl.addEventListener('input', function(e){
+    var k = e.target.getAttribute('data-k');
+    if(!k) return;
+    var card = e.target.closest('.row-card');
+    var i = +card.getAttribute('data-i');
+    monthRows()[i][k] = e.target.value;
+    save();
+    if(k === 'amount') updateTotal();
+  });
+
+  // 金額はカンマ付きに整える
+  rowsEl.addEventListener('blur', function(e){
+    if(e.target.getAttribute('data-k') !== 'amount') return;
+    var n = toNumber(e.target.value);
+    var card = e.target.closest('.row-card');
+    monthRows()[+card.getAttribute('data-i')].amount = n ? String(n) : '';
+    e.target.value = n ? yen(n) : '';
+    save();
+    updateTotal();
+    renderSaved();
+  }, true);
+  rowsEl.addEventListener('focus', function(e){
+    if(e.target.getAttribute('data-k') !== 'amount') return;
+    var n = toNumber(e.target.value);
+    e.target.value = n ? String(n) : '';
+  }, true);
+
+  rowsEl.addEventListener('change', function(e){
+    if(e.target.getAttribute('data-act') === 'pick'){
+      var v = e.target.value;
+      if(!v) return;
+      var card = e.target.closest('.row-card');
+      monthRows()[+card.getAttribute('data-i')].payee = v;
+      card.querySelector('[data-k="payee"]').value = v;
+      e.target.value = '';
+      save();
+    }
+  });
+
+  rowsEl.addEventListener('click', function(e){
+    var b = e.target.closest('[data-act="del"]');
+    if(!b) return;
+    var i = +b.closest('.row-card').getAttribute('data-i');
+    var r = monthRows()[i];
+    var hasData = r.date || r.amount || r.payee || r.purpose;
+    if(hasData && !confirm('No.' + (i + 1) + ' の行を削除しますか？')) return;
+    monthRows().splice(i, 1);
+    save();
+    renderRows();
+    renderSaved();
+  });
+
+  $('addRow').addEventListener('click', function(){
+    var rows = monthRows();
+    if(rows.length >= MAX_ROWS) return;
+    // 日付は、ひとつ前の行と同じ日を入れておく（今月なら今日）
+    var d = '';
+    if(rows.length > 0 && rows[rows.length - 1].date) d = rows[rows.length - 1].date;
+    else if(todayStr().slice(0, 7) === month) d = todayStr();
+    rows.push({ date: d, amount: '', payee: '', purpose: '' });
+    save();
+    renderRows();
+    renderSaved();
+    var cards = rowsEl.querySelectorAll('.row-card');
+    var last = cards[cards.length - 1];
+    if(last) last.scrollIntoView({ block: 'center' });
+  });
+
+  $('month').addEventListener('change', function(e){ setMonth(e.target.value); });
+
+  $('savedList').addEventListener('click', function(e){
+    var b = e.target.closest('[data-month]');
+    if(b) setMonth(b.getAttribute('data-month'));
+  });
+
+  $('clearMonth').addEventListener('click', function(){
+    if(monthRows().length === 0) return;
+    if(!confirm(monthLabel(month) + ' の内容をすべて消します。元には戻せません。よろしいですか？')) return;
+    state.months[month].rows = [];
+    save();
+    renderRows();
+    renderSaved();
+  });
+
+  // よく使う支払先
+  $('favAdd').addEventListener('click', function(){
+    var v = $('favInput').value.trim();
+    if(!v) return;
+    if(state.favs.indexOf(v) < 0) state.favs.push(v);
+    $('favInput').value = '';
+    save();
+    renderFavs();
+    renderRows();
+  });
+  $('favInput').addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ e.preventDefault(); $('favAdd').click(); }
+  });
+  $('favList').addEventListener('click', function(e){
+    var b = e.target.closest('[data-fav]');
+    if(!b) return;
+    var i = +b.getAttribute('data-fav');
+    if(!confirm('「' + state.favs[i] + '」を、よく使う支払先から外しますか？')) return;
+    state.favs.splice(i, 1);
+    save();
+    renderFavs();
+    renderRows();
+  });
+
+  // ---------- 印刷 ----------
+  function fmtDate(d){
+    if(!d) return '';
+    var p = d.split('-');
+    return (+p[1]) + '/' + (+p[2]);
+  }
+  function cell(cls, text, limit){
+    var small = text && text.length > limit ? ' small' : '';
+    return '<td class="' + cls + small + '">' + esc(text) + '</td>';
+  }
+
+  function buildPrint(){
+    var rows = monthRows();
+    var pages = rows.length > ROWS_PER_PAGE ? 2 : 1;
+    var html = '';
+    for(var p = 0; p < pages; p++){
+      html += '<div class="sheet">' +
+        '<div class="sheet-head">' +
+          '<div class="sheet-title">経費精算請求書</div>' +
+          '<div class="sheet-month">' + monthLabel(month) + '分' +
+            (pages > 1 ? '　<span class="sheet-page">（' + (p + 1) + ' / ' + pages + '）</span>' : '') +
+          '</div>' +
+        '</div>' +
+        '<table class="list"><colgroup>' +
+          '<col style="width:9mm"><col style="width:16mm"><col style="width:26mm">' +
+          '<col style="width:24mm"><col style="width:40mm"><col>' +
+        '</colgroup><thead><tr>' +
+          '<th>No</th><th>日付</th><th>科目</th><th>金額</th><th>支払先</th><th>内容・目的</th>' +
+        '</tr></thead><tbody>';
+      for(var j = 0; j < ROWS_PER_PAGE; j++){
+        var idx = p * ROWS_PER_PAGE + j;
+        var r = rows[idx] || {};
+        var amt = toNumber(r.amount);
+        html += '<tr>' +
+          '<td class="c-no">' + (idx + 1) + '</td>' +
+          '<td class="c-date">' + esc(fmtDate(r.date)) + '</td>' +
+          '<td></td>' +
+          '<td class="c-amt">' + (amt ? yen(amt) : '') + '</td>' +
+          cell('', r.payee || '', 11) +
+          cell('', r.purpose || '', 22) +
+        '</tr>';
+      }
+      html += '</tbody></table>';
+
+      if(p === pages - 1){
+        html += '<div class="foot">' +
+          '<table class="total-box"><tr><td class="t-lbl">合計</td><td class="t-val">' + yen(total()) + '円</td></tr></table>' +
+          '<table class="sum-box"><thead><tr><th>科目</th><th>金額</th></tr></thead><tbody>';
+        KAMOKU.forEach(function(k){ html += '<tr><td class="k">' + k + '</td><td></td></tr>'; });
+        html += '<tr class="sep"><td class="k">合計</td><td></td></tr>' +
+          '<tr><td class="k">差額</td><td></td></tr>' +
+          '</tbody></table></div>';
+      }
+      html += '</div>';
+    }
+    $('print-area').innerHTML = html;
+  }
+
+  function doPrint(){
+    if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+    buildPrint();
+    var oldTitle = document.title;
+    document.title = '経費精算請求書_' + month;   // PDFのファイル名になります
+    setTimeout(function(){
+      window.print();
+      setTimeout(function(){ document.title = oldTitle; }, 1000);
+    }, 50);
+  }
+  $('printBtn').addEventListener('click', doPrint);
+  $('printBtn2').addEventListener('click', doPrint);
+  window.addEventListener('beforeprint', buildPrint);
+
+  // ---------- はじめ ----------
+  state.current = month;
+  $('month').value = month;
+  renderRows();
+  renderFavs();
+  renderSaved();
+})();
+</script>
+</body>
+</html>
