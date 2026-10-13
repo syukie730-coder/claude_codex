@@ -216,9 +216,12 @@ input:focus, select:focus{ outline:3px solid #9DB8E0; outline-offset:0; }
   .sum-box tr.sep td.k{ padding:0 4mm; }
   .sagaku{ display:flex; height:6mm; align-items:center; font-size:9pt; }
   .sagaku .k{ width:21mm; text-align:center; }
+  .sagaku .v{ flex:1; text-align:right; padding-right:1mm; }
+  .sum-box td.v{ text-align:right; }
 
   .bottom-row{ display:flex; justify-content:space-between; margin-top:1.5mm; }
   .bottom-row .b{ width:34mm; height:10mm; border:0.3mm solid #000000; }
+  .bottom-row .b .bl{ display:block; font-size:8pt; padding:0.6mm 1.2mm 0; }
 }
 </style>
 </head>
@@ -302,6 +305,7 @@ input:focus, select:focus{ outline:3px solid #9DB8E0; outline-offset:0; }
   var MAX_ROWS = 50;
   var KAMOKU = ['消耗品費','会議費','旅費交通費','車両関係費','通信費','福利厚生費','交際費','租税公課',
                 '支払手数料','諸会費','水道光熱費','図書研究費','広告宣伝費','衛生管理費','雑費','その他'];
+  var BOTTOM = ['前月繰越金','今月補給','現金残高','次月繰越金'];   // 紙の一番下の4つの欄
   var DEFAULT_FAVS = ['セブンイレブン','ローソン','ファミリーマート','Amazon','ダイソー','郵便局'];
 
   // ---------- 保存まわり ----------
@@ -610,14 +614,14 @@ input:focus, select:focus{ outline:3px solid #9DB8E0; outline-offset:0; }
         '<td class="c-amt">' + yen(total()) + '&ensp;<span class="en">円</span></td>' +
         '<td colspan="2">' + SLASH + '</td>' +
       '</tr></tfoot></table>' +
-      '<div class="bottom-row"><div class="b"></div><div class="b"></div><div class="b"></div><div class="b"></div></div>' +
+      '<div class="bottom-row">' + BOTTOM.map(function(t){ return '<div class="b"><span class="bl">' + t + '</span></div>'; }).join('') + '</div>' +
       '</div>';
 
     // 右下の科目別の表：明細の36行目から合計行までとそろえる
     html += '<div class="col-right" id="sumCol"><table class="sum-box"><tbody>';
-    KAMOKU.forEach(function(k){ html += '<tr><td class="k">' + k + '</td><td></td></tr>'; });
+    KAMOKU.forEach(function(k){ html += '<tr><td class="k">' + k + '</td><td class="v">0</td></tr>'; });
     html += '<tr class="sep"><td class="k">合計</td><td></td></tr></tbody></table>' +
-      '<div class="sagaku"><span class="k">差額</span></div></div>';
+      '<div class="sagaku"><span class="k">差額</span><span class="v">0</span></div></div>';
     html += '</div>';
     $('print-area').innerHTML = html;
   }
