@@ -98,6 +98,8 @@ main{padding-top:6px;}
 .daycell .food-icon{font-size:15px;line-height:1;display:inline-block;}
 .daycell .star{font-size:13px;line-height:1;color:var(--orange-deep);}
 .daycell .snip{font-size:16px;font-weight:700;color:var(--ink);line-height:1.2;text-align:center;max-width:100%;overflow:hidden;}
+.daycell .more{font-size:13px;font-weight:800;color:var(--orange-deep);line-height:1.2;text-align:center;max-width:100%;}
+.daycell .more span{display:inline-block;white-space:nowrap;}
 @keyframes popIn{0%{transform:scale(0);opacity:0;}60%{transform:scale(1.2);opacity:1;}100%{transform:scale(1);}}
 .daycell .food-icon,.daycell .star{animation:popIn .35s cubic-bezier(.34,1.56,.64,1) both;}
 @keyframes kanim-slide-next{0%{transform:translateX(26px);opacity:0;}100%{transform:translateX(0);opacity:1;}}
@@ -126,14 +128,29 @@ details.backup[open] summary::before{content:"▾ ";}
 .sheetclose{display:block;margin:0 auto 10px;width:44px;height:5px;border-radius:3px;background:var(--line);border:none;transition:transform .12s ease;}
 .sheetclose:active{transform:scale(.9);}
 .modaldate{text-align:center;font-size:20px;font-weight:900;color:var(--ink-deep);margin-bottom:16px;}
-.field{margin-bottom:16px;}
-.field label{display:block;font-size:16px;font-weight:800;color:var(--ink);margin-bottom:6px;}
-.field input[type=text],.field textarea{
+/* ===== 料理の行 ===== */
+.dishsec{margin-bottom:18px;}
+.dishhead{font-size:17px;font-weight:900;color:var(--ink-deep);margin-bottom:2px;}
+.dishhint{font-size:16px;font-weight:600;color:var(--ink);margin:0 0 10px;}
+.dishrow{display:grid;grid-template-columns:34px 1fr 48px;gap:8px;align-items:start;background:#fff;border:2px solid var(--line);border-radius:16px;padding:10px 8px 10px 10px;margin-bottom:10px;animation:kanim-dishin .32s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes kanim-dishin{0%{transform:translateY(-8px) scale(.94);opacity:0;}100%{transform:none;opacity:1;}}
+.dishrow.removing{animation:kanim-dishout .2s ease-in both;}
+@keyframes kanim-dishout{0%{transform:none;opacity:1;}100%{transform:translateX(30px);opacity:0;}}
+.dishno{width:34px;height:34px;margin-top:8px;border-radius:50%;background:var(--orange);color:#fff;font-size:16px;font-weight:900;display:flex;align-items:center;justify-content:center;}
+.dishfields{display:flex;flex-direction:column;gap:6px;min-width:0;}
+.dishfields input,.dishfields textarea{
   width:100%;font-size:17px;font-weight:600;color:var(--ink);background:#FFFDF8;
-  border:2px solid var(--line);border-radius:12px;padding:12px 13px;
+  border:2px solid var(--line);border-radius:12px;padding:10px 12px;
 }
-.field textarea{min-height:110px;resize:vertical;line-height:1.7;}
-.field input:focus,.field textarea:focus{outline:none;border-color:var(--orange);}
+.dishfields input{font-weight:800;}
+.dishfields textarea{min-height:52px;resize:none;overflow:hidden;line-height:1.6;}
+.dishfields input:focus,.dishfields textarea:focus{outline:none;border-color:var(--orange);}
+.dishfields ::placeholder{color:#8A7460;opacity:1;}
+.dishdel{width:48px;height:48px;border-radius:50%;border:2px solid var(--line);background:var(--card);color:var(--red-deep);font-size:24px;font-weight:900;line-height:1;cursor:pointer;transition:transform .12s ease;}
+.dishdel:active{transform:scale(.88);}
+.addbtn{display:block;width:100%;min-height:58px;border:none;border-radius:999px;background:var(--orange);color:#fff;font-size:18px;font-weight:900;cursor:pointer;box-shadow:0 5px 0 var(--orange-deep);margin-top:4px;}
+.addbtn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--orange-deep);}
+.dishlimit{font-size:16px;font-weight:700;color:var(--orange-deep);text-align:center;margin:8px 0 0;}
 
 .photosec{margin-bottom:16px;}
 .photosec label{display:block;font-size:16px;font-weight:800;color:var(--ink);margin-bottom:8px;}
@@ -172,7 +189,7 @@ details.backup[open] summary::before{content:"▾ ";}
 
 @media (prefers-reduced-motion:reduce){
   .sheet.anim,.daycell .food-icon,.daycell .star,.confetti-piece,.sparkle-piece,
-  .header-icon-btn,h1,.thumb,.steam-piece,
+  .header-icon-btn,h1,.thumb,.steam-piece,.dishrow,
   [class*="kanim-"]{
     animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;
   }
@@ -275,14 +292,12 @@ details.backup[open] summary::before{content:"▾ ";}
     <button type="button" class="sheetclose" id="btnSheetClose" aria-label="閉じる"></button>
     <div class="modaldate" id="modalDateLabel"></div>
 
-    <div class="field">
-      <label>メニュー名</label>
-      <input type="text" id="fMenu" placeholder="例：ハンバーグ">
-    </div>
-
-    <div class="field">
-      <label>かんたんレシピ</label>
-      <textarea id="fRecipe" placeholder="作り方を書いてね。音声入力も使えます"></textarea>
+    <div class="dishsec">
+      <div class="dishhead">この日の料理</div>
+      <p class="dishhint">1行に1品ずつ書いてね。音声入力も使えます</p>
+      <div id="dishList"></div>
+      <button type="button" class="addbtn" id="btnAddDish">＋ 料理を追加</button>
+      <p class="dishlimit" id="dishLimitMsg" style="display:none">15品まで書けるよ。いっぱい作ったね！</p>
     </div>
 
     <div class="photosec">
@@ -345,6 +360,17 @@ details.backup[open] summary::before{content:"▾ ";}
   function saveRecords(records) {
     try { store.setItem(RKEY, JSON.stringify(records)); return true; }
     catch (e) { toast("保存できませんでした。端末の空き容量を確認してね。"); return false; }
+  }
+  // 料理の一覧を取り出す。昔の記録（menu / recipe が1つだけ）は1品目として読む
+  var MAX_DISHES = 15;
+  function getDishes(rec) {
+    if (!rec) return [];
+    if (Array.isArray(rec.dishes)) {
+      return rec.dishes.filter(function (d) { return d && (d.name || d.recipe); })
+        .map(function (d) { return { name: String(d.name || ""), recipe: String(d.recipe || "") }; });
+    }
+    if (rec.menu || rec.recipe) return [{ name: String(rec.menu || ""), recipe: String(rec.recipe || "") }];
+    return [];
   }
 
   /* ================= 保存先（写真：IndexedDB） ================= */
@@ -491,13 +517,16 @@ details.backup[open] summary::before{content:"▾ ";}
       var rec = records[key];
       var isToday = key === today;
       var cls = "daycell" + (isToday ? " today" : "");
-      var icon = rec ? '<span class="food-icon">' + foodIcon(rec.menu) + "</span>" : "";
+      var dishes = getDishes(rec);
+      var firstName = dishes.length ? dishes[0].name : "";
+      var icon = rec ? '<span class="food-icon">' + foodIcon(firstName) + "</span>" : "";
       var star = rec && rec.liked ? '<span class="star">★</span>' : "";
-      var snippet = rec && rec.menu ? '<span class="snip">' + esc(rec.menu.slice(0, 2)) + "</span>" : "";
+      var snippet = firstName ? '<span class="snip">' + esc(firstName.slice(0, 2)) + "</span>" : "";
+      var more = dishes.length > 1 ? '<span class="more"><span>ほか</span><span>' + (dishes.length - 1) + "品</span></span>" : "";
       html += '<button type="button" class="' + cls + '" data-date="' + key + '">' +
         '<span class="dnum">' + dayNum + "</span>" +
         '<span class="mark">' + icon + star + "</span>" +
-        snippet +
+        snippet + more +
         "</button>";
     }
     var grid = $("calGrid");
@@ -554,13 +583,74 @@ details.backup[open] summary::before{content:"▾ ";}
     $("photoLimitMsg").style.display = full ? "block" : "none";
   }
 
+  /* ----- 料理の行 ----- */
+  function autoGrow(ta) {
+    ta.style.height = "auto";
+    ta.style.height = ta.scrollHeight + 4 + "px";
+  }
+  function dishRows() { return Array.prototype.slice.call($("dishList").querySelectorAll(".dishrow:not(.removing)")); }
+  function refreshDishUI() {
+    var rows = dishRows();
+    rows.forEach(function (row, i) { row.querySelector(".dishno").textContent = i + 1; });
+    var full = rows.length >= MAX_DISHES;
+    $("btnAddDish").style.display = full ? "none" : "block";
+    $("dishLimitMsg").style.display = full ? "block" : "none";
+  }
+  function addDishRow(dish, focus) {
+    if (dishRows().length >= MAX_DISHES) return;
+    var row = document.createElement("div");
+    row.className = "dishrow";
+    row.innerHTML =
+      '<div class="dishno"></div>' +
+      '<div class="dishfields">' +
+        '<input type="text" class="dname" placeholder="料理名（例：ハンバーグ）" enterkeyhint="next" aria-label="料理名">' +
+        '<textarea class="drecipe" rows="2" placeholder="ひとことレシピ（例：玉ねぎは飴色に）" aria-label="ひとことレシピ"></textarea>' +
+      "</div>" +
+      '<button type="button" class="dishdel" aria-label="この料理を消す">×</button>';
+    var nameEl = row.querySelector(".dname");
+    var recipeEl = row.querySelector(".drecipe");
+    nameEl.value = dish ? dish.name : "";
+    recipeEl.value = dish ? dish.recipe : "";
+    nameEl.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); recipeEl.focus(); }
+    });
+    recipeEl.addEventListener("input", function () { autoGrow(recipeEl); });
+    row.querySelector(".dishdel").addEventListener("click", function () { removeDishRow(row); });
+    $("dishList").appendChild(row);
+    autoGrow(recipeEl);
+    refreshDishUI();
+    if (focus) {
+      nameEl.focus();
+      row.scrollIntoView({ block: "center", behavior: prefersReducedMotion() ? "auto" : "smooth" });
+    }
+  }
+  function removeDishRow(row) {
+    var name = row.querySelector(".dname").value.trim();
+    var recipe = row.querySelector(".drecipe").value.trim();
+    if ((name || recipe) && !confirm((name ? "「" + name + "」" : "この料理") + "を消しますか？")) return;
+    row.classList.add("removing");
+    refreshDishUI();
+    setTimeout(function () {
+      if (row.parentNode) row.parentNode.removeChild(row);
+      if (dishRows().length === 0) addDishRow(null, false);
+    }, 200);
+  }
+  function collectDishes() {
+    return dishRows().map(function (row) {
+      return { name: row.querySelector(".dname").value.trim(), recipe: row.querySelector(".drecipe").value.trim() };
+    }).filter(function (d) { return d.name || d.recipe; });
+  }
+  $("btnAddDish").addEventListener("click", function () { addDishRow(null, true); });
+
   function openDetail(key) {
     currentDateKey = key;
     var records = loadRecords();
-    var rec = records[key] || { menu: "", recipe: "", liked: false };
+    var rec = records[key] || { liked: false };
     $("modalDateLabel").textContent = formatDateLabel(key);
-    $("fMenu").value = rec.menu || "";
-    $("fRecipe").value = rec.recipe || "";
+    $("dishList").innerHTML = "";
+    var dishes = getDishes(rec);
+    var rowCount = Math.min(MAX_DISHES, Math.max(3, dishes.length));
+    for (var i = 0; i < rowCount; i++) addDishRow(dishes[i] || null, false);
     setLikedUI(!!rec.liked);
     modalPhotos = [];
     renderPhotoThumbs();
@@ -576,6 +666,9 @@ details.backup[open] summary::before{content:"▾ ";}
     void sheet.offsetWidth;
     sheet.classList.add("anim");
     $("sheetWrap").scrollTop = 0;
+    sheet.scrollTop = 0;
+    // 画面に出てから高さを合わせる（隠れている間は高さが測れないため）
+    Array.prototype.forEach.call($("dishList").querySelectorAll(".drecipe"), autoGrow);
   }
   function closeDetail() {
     $("backdrop").classList.remove("show");
@@ -713,15 +806,18 @@ details.backup[open] summary::before{content:"▾ ";}
 
   $("btnSave").addEventListener("click", function () {
     if (!currentDateKey) return;
-    var menu = $("fMenu").value.trim();
-    var recipe = $("fRecipe").value.trim();
+    var dishes = collectDishes();
     var records = loadRecords();
     var hasPhotos = modalPhotos.length > 0;
-    if (!menu && !recipe && !likedState && !hasPhotos) {
+    if (dishes.length === 0 && !likedState && !hasPhotos) {
       delete records[currentDateKey];
     } else {
+      // menu / recipe には1品目も入れておく（古い形でも読めるように）
       records[currentDateKey] = {
-        menu: menu, recipe: recipe, liked: likedState,
+        dishes: dishes,
+        menu: dishes.length ? dishes[0].name : "",
+        recipe: dishes.length ? dishes[0].recipe : "",
+        liked: likedState,
         photoIds: modalPhotos.map(function (p) { return p.id; })
       };
     }
