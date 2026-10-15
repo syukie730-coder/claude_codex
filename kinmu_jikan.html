@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="勤務時間表">
+<meta name="theme-color" content="#FFFFFF">
+<title>勤務時間表</title>
+<!-- アイコン：この2つの画像ファイルを差しかえると、アイコンが変わります -->
+<link rel="apple-touch-icon" href="kinmu_jikan_icon.png">
+<link rel="icon" type="image/png" href="kinmu_jikan_favicon.png">
+<style>
+:root{
+  --text:#111111;
+  --sub:#222222;
+  --line:#999999;
+  --line-dark:#444444;
+  --bg:#F4F5F7;
+  --main:#1F4E8C;
+  --main-dark:#163A69;
+  --off:#EFEFEF;
+}
+*{ box-sizing:border-box; margin:0; padding:0; }
+html{ -webkit-text-size-adjust:100%; }
+body{
+  font-family:-apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+  font-size:17px;
+  line-height:1.5;
+  color:var(--text);
+  background:var(--bg);
+  padding-bottom:calc(100px + env(safe-area-inset-bottom));
+}
+button, input, select{ font:inherit; color:var(--text); }
+
+.top{
+  background:#FFFFFF;
+  border-bottom:1px solid var(--line);
+  padding:calc(14px + env(safe-area-inset-top)) 16px 14px;
+}
+.top h1{ font-size:21px; font-weight:700; }
+main{ max-width:640px; margin:0 auto; padding:16px 12px; }
+.box{
+  background:#FFFFFF;
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:14px;
+  margin-bottom:14px;
+}
+label.lbl{ display:block; font-size:16px; font-weight:700; margin-bottom:4px; }
+input[type=text], select{
+  width:100%;
+  min-height:48px;
+  font-size:17px;
+  padding:8px 10px;
+  border:1px solid var(--line-dark);
+  border-radius:6px;
+  background:#FFFFFF;
+  -webkit-appearance:none;
+  appearance:none;
+}
+select{
+  background-image:linear-gradient(45deg, transparent 50%, #111 50%), linear-gradient(135deg, #111 50%, transparent 50%);
+  background-position:calc(100% - 18px) 50%, calc(100% - 12px) 50%;
+  background-size:6px 6px, 6px 6px;
+  background-repeat:no-repeat;
+  padding-right:32px;
+}
+input:focus, select:focus{ outline:3px solid #9DB8E0; outline-offset:0; }
+.field{ margin-bottom:12px; }
+.field:last-child{ margin-bottom:0; }
+.note{ font-size:16px; color:var(--sub); }
+
+.btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  min-height:52px;
+  padding:10px 18px;
+  font-size:17px; font-weight:700;
+  border-radius:8px;
+  border:1px solid var(--line-dark);
+  background:#FFFFFF;
+  cursor:pointer;
+  text-decoration:none;
+  color:var(--text);
+}
+.btn:active{ background:#E6E8EC; }
+.btn.main{ background:var(--main); border-color:var(--main); color:#FFFFFF; }
+.btn.main:active{ background:var(--main-dark); }
+.btn.wide{ width:100%; }
+
+/* ===== 紙と同じ形の表 ===== */
+.sheet-head{ display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:0 12px; margin-bottom:8px; }
+.sheet-head .ttl{ font-size:19px; font-weight:700; }
+.sheet-head .who{ font-size:16px; }
+.sheet-head .period{ width:100%; font-size:16px; }
+table.sheet{
+  width:100%;
+  border-collapse:collapse;
+  table-layout:fixed;
+  background:#FFFFFF;
+  font-size:16px;
+}
+table.sheet th, table.sheet td{
+  border:1px solid #333333;
+  text-align:center;
+  padding:6px 1px;
+  height:44px;
+  white-space:nowrap;
+  overflow:hidden;
+}
+table.sheet th{ font-size:16px; font-weight:700; background:#FFFFFF; height:36px; }
+table.sheet col.c-date{ width:16%; }
+table.sheet col.c-dow{ width:10%; }
+table.sheet col.c-t{ width:14.5%; }
+table.sheet col.c-note{ width:16%; }
+table.sheet td.tap{ cursor:pointer; }
+table.sheet td.tap:active{ background:#DDE6F3; }
+table.sheet tr.off td{ background:var(--off); }
+table.sheet td.date{ font-weight:700; }
+table.sheet td.note{ font-size:16px; text-overflow:ellipsis; text-align:left; padding-left:4px; }
+table.sheet td.note .pen{ color:#555555; }
+.circle{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:30px; height:30px;
+  border:2px solid #111111; border-radius:50%;
+  line-height:1;
+}
+/* 31日がない月の行：紙と同じく斜線 */
+table.sheet tr.none td.slash{
+  background:linear-gradient(to bottom right, transparent calc(50% - 1px), #333333 calc(50% - 1px), #333333 calc(50% + 1px), transparent calc(50% + 1px));
+}
+table.sheet tr.none td{ background-color:#FFFFFF; }
+table.sheet tr.total td{ height:52px; font-weight:700; padding:0; overflow:visible; }
+table.sheet tr.total td.slash{
+  background:linear-gradient(to bottom right, transparent calc(50% - 1px), #333333 calc(50% - 1px), #333333 calc(50% + 1px), transparent calc(50% + 1px));
+}
+.money{ font-size:16px; color:var(--sub); text-align:right; margin-top:8px; white-space:pre-line; }
+
+/* 下の固定バー */
+.bottom-bar{
+  position:fixed; left:0; right:0; bottom:0;
+  background:#FFFFFF;
+  border-top:1px solid var(--line-dark);
+  padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+  z-index:5;
+}
+.bottom-inner{ max-width:640px; margin:0 auto; display:flex; align-items:center; gap:12px; }
+.bottom-inner .sum{ flex:1; }
+.bottom-inner .sum .l{ font-size:16px; }
+.bottom-inner .sum .v{ font-size:23px; font-weight:700; }
+.bottom-inner .btn{ min-width:150px; }
+
+/* ===== 1日を直す画面 ===== */
+#dayCover{
+  display:none; position:fixed; inset:0; z-index:20;
+  background:rgba(0,0,0,0.45);
+}
+#dayCover.show{ display:block; }
+#dayPanel{
+  position:absolute; left:0; right:0; bottom:0;
+  max-height:92vh; overflow-y:auto;
+  background:#FFFFFF;
+  border-radius:14px 14px 0 0;
+  padding:18px 16px calc(18px + env(safe-area-inset-bottom));
+}
+#dayPanel .inner{ max-width:560px; margin:0 auto; }
+#dayPanel h2{ font-size:20px; font-weight:700; margin-bottom:4px; }
+#dayHol{ font-size:16px; color:var(--sub); margin-bottom:12px; }
+.seg{ display:flex; gap:10px; margin-bottom:14px; }
+.seg .btn{ flex:1; }
+.seg .btn.on{ background:var(--main); border-color:var(--main); color:#FFFFFF; }
+.grid3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:12px; }
+#dayWork{ font-size:18px; font-weight:700; margin-bottom:14px; }
+.row-btns{ display:flex; gap:10px; margin-top:16px; }
+.row-btns .btn{ flex:1; }
+
+/* ===== PDFができたときの画面 ===== */
+#pdfPanel{
+  display:none; position:fixed; inset:0; z-index:30;
+  background:#FFFFFF; overflow-y:auto;
+  padding:calc(16px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom));
+}
+#pdfPanel.show{ display:block; }
+#pdfPanel .inner{ max-width:640px; margin:0 auto; }
+#pdfPanel h2{ font-size:20px; font-weight:700; margin-bottom:8px; }
+#pdfPanel .fname{ font-size:16px; margin-bottom:12px; word-break:break-all; }
+#pdfPanel .btn{ margin-bottom:12px; }
+#pdfPanel .preview{ width:100%; border:1px solid var(--line-dark); margin:4px 0 16px; display:block; }
+#pdfMsg{ font-size:16px; margin-bottom:12px; }
+
+#printImg{ display:none; }
+
+/* ===== 印刷：用紙の絵だけを出す ===== */
+@page{ size:A4 portrait; margin:0; }
+@media print{
+  body{ background:#FFFFFF; padding:0; }
+  body > *{ display:none !important; }
+  body > #printImg{ display:block !important; width:210mm; height:297mm; }
+}
+</style>
+</head>
+<body>
+
+<div class="top"><h1>勤務時間表</h1></div>
+
+<main>
+  <div class="box">
+    <div class="field">
+      <label class="lbl" for="period">何月分？（毎月15日に提出）</label>
+      <select id="period"></select>
+    </div>
+    <div class="field">
+      <label class="lbl" for="name">氏名</label>
+      <input type="text" id="name" autocomplete="off">
+    </div>
+    <p class="note">・日付をタップ → 出勤とお休みが切りかわります<br>・時刻や備考をタップ → 時刻を直したり、備考を書けます<br>・入れた内容は、自動で保存されます</p>
+  </div>
+
+  <div class="box">
+    <div class="sheet-head">
+      <span class="ttl">勤務時間表</span>
+      <span class="who" id="whoView"></span>
+      <span class="period" id="periodView"></span>
+    </div>
+    <table class="sheet">
+      <colgroup>
+        <col class="c-date"><col class="c-dow"><col class="c-t"><col class="c-t"><col class="c-t"><col class="c-t"><col class="c-note">
+      </colgroup>
+      <thead>
+        <tr><th>日付</th><th>曜</th><th>開始</th><th>終了</th><th>休憩</th><th>勤務</th><th>備考</th></tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <p class="money" id="money"></p>
+  </div>
+
+  <div class="box">
+    <button type="button" class="btn wide" id="resetBtn">この月を最初の状態にもどす</button>
+    <p class="note" style="margin-top:8px;">お休みの切りかえ・時刻・備考を、きまりどおりの最初の形にもどします。</p>
+  </div>
+</main>
+
+<div class="bottom-bar">
+  <div class="bottom-inner">
+    <div class="sum"><div class="l">勤務時間の合計</div><div class="v" id="sumView"></div></div>
+    <button type="button" class="btn main" id="printBtn">印刷する</button>
+  </div>
+</div>
+
+<!-- 1日を直す画面 -->
+<div id="dayCover">
+  <div id="dayPanel" role="dialog" aria-label="この日を直す">
+    <div class="inner">
+      <h2 id="dayTitle"></h2>
+      <p id="dayHol"></p>
+      <div class="seg">
+        <button type="button" class="btn" id="segWork">出勤</button>
+        <button type="button" class="btn" id="segOff">お休み</button>
+      </div>
+      <div id="timeArea">
+        <div class="grid3">
+          <div><label class="lbl" for="tStart">開始</label><select id="tStart"></select></div>
+          <div><label class="lbl" for="tEnd">終了</label><select id="tEnd"></select></div>
+          <div><label class="lbl" for="tBrk">休憩</label><select id="tBrk"></select></div>
+        </div>
+        <p id="dayWork"></p>
+      </div>
+      <div class="field">
+        <label class="lbl" for="tNote">備考（空のままでもOK）</label>
+        <input type="text" id="tNote" autocomplete="off" placeholder="例：通院のため">
+      </div>
+      <div class="row-btns">
+        <button type="button" class="btn" id="dayReset">最初の状態</button>
+        <button type="button" class="btn main" id="dayClose">閉じる</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PDFができたときの画面 -->
+<div id="pdfPanel" role="dialog" aria-label="印刷">
+  <div class="inner">
+    <h2>印刷用のPDFができました</h2>
+    <p class="fname" id="pdfName"></p>
+    <p id="pdfMsg"></p>
+    <button type="button" class="btn main wide" id="pdfShare">共有する（ネットプリント・ファイルに保存）</button>
+    <a class="btn wide" id="pdfOpen" target="_blank" rel="noopener">PDFを新しいタブで開く</a>
+    <a class="btn wide" id="pdfDownload">PDFをダウンロードする</a>
+    <button type="button" class="btn wide" id="pdfPrint">この画面から印刷する</button>
+    <button type="button" class="btn wide" id="pdfClose">閉じる</button>
+    <p class="note">セブンイレブンで印刷するときは、共有メニューから「netprint」のアプリを選んで登録し、出てきた番号をマルチコピーに入れてください（A4・白黒でOK）。</p>
+    <img class="preview" id="pdfPreview" alt="印刷される用紙の見本">
+  </div>
+</div>
+
+<img id="printImg" alt="">
+
+<script>
+(function(){
+  'use strict';
+  var $ = function(id){ return document.getElementById(id); };
+
+  // ---------- きまり ----------
+  var NAME = '宮本 幸恵';
+  var WAGE = 1700;                                            // 時給（画面にだけ出す）
+  var WEEKDAY = { start:'9:30', end:'18:00', brk:'2:30' };    // 月・火・木・金（12:30〜15:00が休憩）
+  var SATURDAY = { start:'9:30', end:'12:30', brk:'0:00' };   // 土
+  var DOW = ['日', '月', '火', '水', '木', '金', '土'];
+  var STORE_KEY = 'kinmu_jikan_v1';
+
+  // ---------- 保存 ----------
+  var state = { name:NAME, days:{} };
+  try{
+    var saved = JSON.parse(localStorage.getItem(STORE_KEY));
+    if(saved && typeof saved === 'object'){
+      if(typeof saved.name === 'string') state.name = saved.name;
+      if(saved.days && typeof saved.days === 'object') state.days = saved.days;
+    }
+  }catch(e){}
+  function save(){
+    try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){}
+  }
+
+  // ---------- 日付と祝日 ----------
+  function pad2(n){ return (n < 10 ? '0' : '') + n; }
+  function iso(d){ return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+  function daysIn(y, m){ return new Date(y, m, 0).getDate(); }   // m は 1〜12
+
+  var holCache = {};
+  function holidays(y){
+    if(holCache[y]) return holCache[y];
+    var h = {};
+    function add(m, d, name){ h[iso(new Date(y, m - 1, d))] = name; }
+    function nthMonday(m, n){
+      var first = new Date(y, m - 1, 1).getDay();
+      return 1 + ((8 - first) % 7) + 7 * (n - 1);
+    }
+    var k = Math.floor((y - 1980) / 4);
+    add(1, 1, '元日');
+    add(1, nthMonday(1, 2), '成人の日');
+    add(2, 11, '建国記念の日');
+    add(2, 23, '天皇誕生日');
+    add(3, Math.floor(20.8431 + 0.242194 * (y - 1980) - k), '春分の日');
+    add(4, 29, '昭和の日');
+    add(5, 3, '憲法記念日');
+    add(5, 4, 'みどりの日');
+    add(5, 5, 'こどもの日');
+    add(7, nthMonday(7, 3), '海の日');
+    add(8, 11, '山の日');
+    add(9, nthMonday(9, 3), '敬老の日');
+    add(9, Math.floor(23.2488 + 0.242194 * (y - 1980) - k), '秋分の日');
+    add(10, nthMonday(10, 2), 'スポーツの日');
+    add(11, 3, '文化の日');
+    add(11, 23, '勤労感謝の日');
+    // 祝日にはさまれた日（国民の休日）
+    var base = Object.keys(h);
+    base.forEach(function(s){
+      var p = s.split('-');
+      var d2 = new Date(+p[0], +p[1] - 1, +p[2] + 2);
+      var mid = new Date(+p[0], +p[1] - 1, +p[2] + 1);
+      if(h[iso(d2)] && !h[iso(mid)] && mid.getDay() !== 0) h[iso(mid)] = '国民の休日';
+    });
+    // 日曜の祝日のあとの振替休日
+    base.forEach(function(s){
+      var p = s.split('-');
+      var d = new Date(+p[0], +p[1] - 1, +p[2]);
+      if(d.getDay() !== 0) return;
+      do{ d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1); }while(h[iso(d)]);
+      h[iso(d)] = '振替休日';
+    });
+    holCache[y] = h;
+    return h;
+  }
+  function holidayName(d){ return holidays(d.getFullYear())[iso(d)] || ''; }
+
+  // ---------- 時刻 ----------
+  function toMin(t){ var p = String(t || '0:00').split(':'); return (+p[0] || 0) * 60 + (+p[1] || 0); }
+  function toHM(min){ return Math.floor(min / 60) + ':' + pad2(min % 60); }
+  // 紙の書き方：「6:00」「2:30」、0のときは「:0」
+  function parts(min){
+    var h = Math.floor(min / 60), m = min % 60;
+    return h ? [String(h), pad2(m)] : ['', String(m)];
+  }
+  function show(min){ var p = parts(min); return p[0] + ':' + p[1]; }
+
+  // ---------- 期間（前月16日〜当月15日） ----------
+  // 期間の名前は「当月」の 'YYYY-MM'
+  function periodKey(y, m){ return y + '-' + pad2(m); }
+  function shift(y, m, n){ var d = new Date(y, m - 1 + n, 1); return [d.getFullYear(), d.getMonth() + 1]; }
+  function periodOf(key){
+    var p = key.split('-'), y = +p[0], m = +p[1];
+    var pr = shift(y, m, -1);
+    return { y:y, m:m, py:pr[0], pm:pr[1] };
+  }
+  // 31行：前月の16〜31日、当月の1〜15日（ない日は null）
+  function slots(key){
+    var P = periodOf(key), list = [], last = daysIn(P.py, P.pm);
+    for(var d = 16; d <= 31; d++) list.push(d <= last ? new Date(P.py, P.pm - 1, d) : null);
+    for(var e = 1; e <= 15; e++) list.push(new Date(P.y, P.m - 1, e));
+    return list;
+  }
+  function todaysPeriod(){
+    var t = new Date(), y = t.getFullYear(), m = t.getMonth() + 1;
+    if(t.getDate() > 15){ var n = shift(y, m, 1); y = n[0]; m = n[1]; }
+    return periodKey(y, m);
+  }
+
+  // ---------- 1日の中身 ----------
+  function info(d){
+    var key = iso(d), o = state.days[key] || {};
+    var dow = d.getDay(), hol = holidayName(d);
+    var pat = dow === 6 ? SATURDAY : WEEKDAY;
+    var defWork = !(dow === 0 || dow === 3 || hol);
+    var work = (typeof o.work === 'boolean') ? o.work : defWork;
+    var start = o.start || pat.start, end = o.end || pat.end, brk = o.brk || pat.brk;
+    var min = work ? Math.max(0, toMin(end) - toMin(start) - toMin(brk)) : 0;
+    return { key:key, date:d, dow:dow, hol:hol, work:work, start:start, end:end, brk:brk, min:min, note:o.note || '' };
+  }
+  function setDay(key, field, value){
+    var o = state.days[key] || {};
+    o[field] = value;
+    state.days[key] = o;
+    save();
+  }
+
+  // ---------- 画面 ----------
+  var current = todaysPeriod();
+
+  function fillPeriodSelect(){
+    var c = current.split('-'), opts = [], sel = $('period');
+    for(var n = -12; n <= 3; n++){
+      var s = shift(+c[0], +c[1], n), key = periodKey(s[0], s[1]), P = periodOf(key);
+      opts.push('<option value="' + key + '">' + P.y + '年' + P.m + '月分（' + P.pm + '/16〜' + P.m + '/15）</option>');
+    }
+    sel.innerHTML = opts.join('');
+    sel.value = current;
+  }
+
+  function esc(s){ return String(s).replace(/[&<>"']/g, function(ch){ return '&#' + ch.charCodeAt(0) + ';'; }); }
+
+  function totalMin(){
+    return slots(current).reduce(function(sum, d){ return sum + (d ? info(d).min : 0); }, 0);
+  }
+
+  function render(){
+    var P = periodOf(current), html = [];
+    var sl = slots(current);
+    sl.forEach(function(d, i){
+      var label = (i < 16 ? P.pm : P.m) + '/' + (i < 16 ? 16 + i : i - 15);
+      if(!d){
+        html.push('<tr class="none"><td class="date">' + label + '</td>' +
+          '<td class="slash"></td><td class="slash"></td><td class="slash"></td><td class="slash"></td><td class="slash"></td><td></td></tr>');
+        return;
+      }
+      var r = info(d);
+      var dowHtml = r.work ? DOW[r.dow] : '<span class="circle">' + DOW[r.dow] + '</span>';
+      var t = r.work ? [r.start, r.end, show(toMin(r.brk)), show(r.min)] : [':0', ':0', ':0', ':0'];
+      var noteHtml = r.note ? esc(r.note) : '<span class="pen">✎</span>';
+      html.push('<tr class="' + (r.work ? 'work' : 'off') + '" data-key="' + r.key + '">' +
+        '<td class="date tap" data-act="toggle">' + label + '</td>' +
+        '<td class="tap" data-act="toggle">' + dowHtml + '</td>' +
+        '<td class="tap" data-act="edit">' + t[0] + '</td>' +
+        '<td class="tap" data-act="edit">' + t[1] + '</td>' +
+        '<td class="tap" data-act="edit">' + t[2] + '</td>' +
+        '<td class="tap" data-act="edit">' + t[3] + '</td>' +
+        '<td class="note tap" data-act="note">' + noteHtml + '</td></tr>');
+    });
+    var tm = totalMin();
+    html.push('<tr class="total"><td>合計</td><td class="slash"></td><td class="slash"></td><td class="slash"></td><td class="slash"></td><td>' + show(tm) + '</td><td></td></tr>');
+    $('rows').innerHTML = html.join('');
+
+    $('whoView').textContent = '氏名　' + state.name;
+    $('periodView').textContent = P.py + '年 ' + P.pm + '月16日〜' + P.m + '月15日';
+    $('sumView').textContent = show(tm) === ':0' ? '0:00' : toHM(tm);
+    var yenVal = Math.round(tm * WAGE / 60);
+    $('money').textContent = '合計金額（時給' + WAGE.toLocaleString() + '円）：' + yenVal.toLocaleString() + '円\n（画面だけ・印刷されません）';
+  }
+
+  $('rows').addEventListener('click', function(ev){
+    var td = ev.target.closest('td.tap');
+    if(!td) return;
+    var key = td.parentNode.getAttribute('data-key');
+    var act = td.getAttribute('data-act');
+    if(act === 'toggle'){
+      var p = key.split('-');
+      var r = info(new Date(+p[0], +p[1] - 1, +p[2]));
+      setDay(key, 'work', !r.work);
+      render();
+    }else{
+      openDay(key, act === 'note');
+    }
+  });
+
+  $('period').addEventListener('change', function(){ current = this.value; render(); window.scrollTo(0, 0); });
+  $('name').addEventListener('input', function(){ state.name = this.value; save(); render(); });
+
+  $('resetBtn').addEventListener('click', function(){
+    var P = periodOf(current);
+    if(!confirm(P.y + '年' + P.m + '月分を、最初の状態にもどしますか？\n（直した時刻や備考は消えます）')) return;
+    slots(current).forEach(function(d){ if(d) delete state.days[iso(d)]; });
+    save();
+    render();
+  });
+
+  // ---------- 1日を直す画面 ----------
+  function timeOptions(from, to, step){
+    var out = [];
+    for(var t = from; t <= to; t += step) out.push('<option value="' + toHM(t) + '">' + toHM(t) + '</option>');
+    return out.join('');
+  }
+  $('tStart').innerHTML = timeOptions(5 * 60, 23 * 60, 15);
+  $('tEnd').innerHTML = timeOptions(5 * 60, 24 * 60, 15);
+  $('tBrk').innerHTML = timeOptions(0, 6 * 60, 15);
+
+  function setSelect(sel, value){
+    sel.value = value;
+    if(sel.value !== value){   // 一覧にない時刻のときは足す
+      var o = document.createElement('option');
+      o.value = o.textContent = value;
+      sel.appendChild(o);
+      sel.value = value;
+    }
+  }
+
+  var editKey = null;
+  function fillDay(){
+    var p = editKey.split('-');
+    var r = info(new Date(+p[0], +p[1] - 1, +p[2]));
+    $('dayTitle').textContent = (+p[1]) + '月' + (+p[2]) + '日（' + DOW[r.dow] + '）';
+    $('dayHol').textContent = r.hol ? '祝日：' + r.hol : '';
+    $('dayHol').style.display = r.hol ? '' : 'none';
+    $('segWork').classList.toggle('on', r.work);
+    $('segOff').classList.toggle('on', !r.work);
+    $('timeArea').style.display = r.work ? '' : 'none';
+    setSelect($('tStart'), r.start);
+    setSelect($('tEnd'), r.end);
+    setSelect($('tBrk'), r.brk);
+    $('dayWork').textContent = '勤務時間　' + toHM(r.min);
+    if(document.activeElement !== $('tNote')) $('tNote').value = r.note;
+  }
+  function openDay(key, focusNote){
+    editKey = key;
+    fillDay();
+    $('dayCover').classList.add('show');
+    $('dayPanel').scrollTop = 0;
+    if(focusNote) $('tNote').focus();
+  }
+  function closeDay(){
+    if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+    $('dayCover').classList.remove('show');
+    editKey = null;
+  }
+  function changed(field, value){ setDay(editKey, field, value); fillDay(); render(); }
+
+  $('segWork').addEventListener('click', function(){ changed('work', true); });
+  $('segOff').addEventListener('click', function(){ changed('work', false); });
+  $('tStart').addEventListener('change', function(){ changed('start', this.value); });
+  $('tEnd').addEventListener('change', function(){ changed('end', this.value); });
+  $('tBrk').addEventListener('change', function(){ changed('brk', this.value); });
+  $('tNote').addEventListener('input', function(){ setDay(editKey, 'note', this.value); render(); });
+  $('dayReset').addEventListener('click', function(){
+    delete state.days[editKey]; save();
+    $('tNote').value = '';
+    fillDay(); render();
+  });
+  $('dayClose').addEventListener('click', closeDay);
+  $('dayCover').addEventListener('click', function(ev){ if(ev.target === this) closeDay(); });
+
+  // ---------- 印刷用の用紙（A4縦）を mm でかく ----------
+  var DPI = 300;
+  var MM = DPI / 25.4;
+  var PT = 25.4 / 72;
+  var FONT = '"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo","Noto Sans JP","Noto Sans CJK JP","IPAGothic",sans-serif';
+
+  // 表の寸法（mm）
+  var L = 12;
+  var COLS = [12, 31.5, 42.9, 67.4, 91.6, 115.8, 140, 179.9, 198];  // 日付｜曜日｜開始｜終了｜休憩｜勤務｜備考｜確認印
+  var R = COLS[COLS.length - 1];
+  var T_TOP = 33, H_BOTTOM = 40, ROW_H = 7.5, TOTAL_H = 11;
+  var ROWS_END = H_BOTTOM + ROW_H * 31;
+  var T_BOTTOM = ROWS_END + TOTAL_H;
+
+  function drawSheet(){
+    var cv = document.createElement('canvas');
+    cv.width = Math.round(210 * MM);
+    cv.height = Math.round(297 * MM);
+    var c = cv.getContext('2d');
+    c.fillStyle = '#FFFFFF';
+    c.fillRect(0, 0, cv.width, cv.height);
+    c.setTransform(MM, 0, 0, MM, 0, 0);
+    c.fillStyle = '#000000';
+    c.strokeStyle = '#000000';
+    c.lineCap = 'round';
+
+    function font(pt, bold){ c.font = (bold ? 'bold ' : '') + (pt * PT).toFixed(3) + 'px ' + FONT; }
+    function line(x1, y1, x2, y2, w){
+      c.lineWidth = w || 0.25;
+      c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.stroke();
+    }
+    function text(t, x, y, align, maxW){
+      c.textAlign = align || 'left';
+      c.textBaseline = 'middle';
+      if(maxW) c.fillText(t, x, y, maxW); else c.fillText(t, x, y);
+    }
+    function fitText(t, x, y, maxW){
+      if(!t) return;
+      font(9);
+      if(c.measureText(t).width <= maxW){ text(t, x, y); return; }
+      font(6.5);
+      var cut = t.length;
+      while(cut > 1 && c.measureText(t.slice(0, cut)).width > maxW) cut--;
+      text(t.slice(0, cut), x, y - 1.4, 'left', maxW);
+      text(t.slice(cut), x, y + 1.4, 'left', maxW);
+    }
+    // 「時：分」の欄（まん中に「:」、左に時、右に分）
+    function timeCell(col, y, min){
+      var cx = (COLS[col] + COLS[col + 1]) / 2;
+      font(9);
+      text(':', cx, y - 0.3, 'center');
+      if(min === null) return;
+      var p = parts(min);
+      font(11);
+      if(p[0]) text(p[0], cx - 1.3, y, 'right');
+      text(p[1], cx + 1.3, y, 'left');
+    }
+    function slashCell(col, top, bottom){ line(COLS[col] + 0.4, bottom - 0.4, COLS[col + 1] - 0.4, top + 0.4, 0.25); }
+
+    var P = periodOf(current);
+
+    // 題名
+    font(15, true);
+    text('勤務時間表', L + 1, 16, 'left');
+
+    // 氏名
+    font(10, true);
+    text('氏名', 130, 26.3, 'left');
+    line(127, 28, R, 28, 0.5);
+    font(13);
+    text(state.name || '', 142, 25.6, 'left', R - 143);
+
+    // 期間「年 月 日〜 月 日」
+    font(10, true);
+    var py = 30.6;
+    var labels = [['年', 26], ['月', 37.5], ['日〜', 49.5], ['月', 67], ['日', 78.5]];
+    var vals = [String(P.py), String(P.pm), '16', String(P.m), '15'];
+    labels.forEach(function(lb, i){
+      font(10, true);
+      text(lb[0], lb[1], py, 'left');
+      font(11);
+      text(vals[i], lb[1] - 0.8, py, 'right');
+    });
+
+    // 表のわく
+    c.lineWidth = 0.5;
+    c.strokeRect(L, T_TOP, R - L, T_BOTTOM - T_TOP);
+    line(L, H_BOTTOM, R, H_BOTTOM, 0.35);
+    for(var k = 1; k < COLS.length - 1; k++) line(COLS[k], T_TOP, COLS[k], T_BOTTOM, 0.3);
+    for(var j = 1; j < 31; j++) line(L, H_BOTTOM + ROW_H * j, R, H_BOTTOM + ROW_H * j, 0.25);
+    line(L, ROWS_END, R, ROWS_END, 0.35);
+
+    // 見出し
+    font(9, true);
+    var heads = ['日付', '曜日', '勤務開始時刻', '勤務終了時刻', '休憩時間', '勤務時間', '備考', '確認印'];
+    var hy = (T_TOP + H_BOTTOM) / 2;
+    heads.forEach(function(h, i){ text(h, (COLS[i] + COLS[i + 1]) / 2, hy, 'center', COLS[i + 1] - COLS[i] - 1); });
+
+    // 31行
+    var sl = slots(current);
+    sl.forEach(function(d, i){
+      var top = H_BOTTOM + ROW_H * i, bottom = top + ROW_H, y = top + ROW_H / 2;
+      var dayNum = i < 16 ? 16 + i : i - 15;
+      font(9.5, true);
+      var label = dayNum + '日';
+      if(i === 0) label = P.pm + '月' + label;
+      if(i === 16) label = P.m + '月 ' + label;
+      text(label, COLS[1] - 1.2, y, 'right');
+
+      if(!d){
+        // その月にない日：曜日と時刻の欄に斜線
+        slashCell(1, top, bottom);
+        for(var col = 2; col <= 5; col++){
+          timeCell(col, y, null);
+          var cx = (COLS[col] + COLS[col + 1]) / 2;
+          line(cx + 0.6, bottom - 0.8, COLS[col + 1] - 3, top + 0.8, 0.25);
+        }
+        return;
+      }
+      var r = info(d);
+      font(11);
+      var dx = (COLS[1] + COLS[2]) / 2;
+      text(DOW[r.dow], dx, y, 'center');
+      if(!r.work){
+        c.lineWidth = 0.3;
+        c.beginPath(); c.arc(dx, y, 2.9, 0, Math.PI * 2); c.stroke();
+      }
+      if(r.work){
+        timeCell(2, y, toMin(r.start));
+        timeCell(3, y, toMin(r.end));
+        timeCell(4, y, toMin(r.brk));
+        timeCell(5, y, r.min);
+      }else{
+        for(var c2 = 2; c2 <= 5; c2++) timeCell(c2, y, 0);
+      }
+      fitText(r.note, COLS[6] + 1, y, COLS[7] - COLS[6] - 2);
+    });
+
+    // 合計の行
+    var fy = ROWS_END + TOTAL_H / 2;
+    font(10, true);
+    text('合計', (COLS[0] + COLS[1]) / 2, fy, 'center');
+    for(var s = 1; s <= 4; s++) slashCell(s, ROWS_END, T_BOTTOM);
+    timeCell(5, fy, totalMin());
+
+    return cv;
+  }
+
+  // JPEGの絵を1枚だけのせたA4のPDFを組み立てる
+  function makePdf(jpeg, wPx, hPx, title){
+    var enc = function(str){
+      var out = new Uint8Array(str.length);
+      for(var i = 0; i < str.length; i++) out[i] = str.charCodeAt(i) & 0xFF;
+      return out;
+    };
+    var hex16 = function(str){
+      var h = 'FEFF';
+      for(var i = 0; i < str.length; i++) h += ('000' + str.charCodeAt(i).toString(16).toUpperCase()).slice(-4);
+      return '<' + h + '>';
+    };
+    var W = '595.28', H = '841.89';
+    var content = 'q ' + W + ' 0 0 ' + H + ' 0 0 cm /Im0 Do Q';
+    var chunks = [], offsets = [], len = 0;
+    var push = function(u8){ chunks.push(u8); len += u8.length; };
+    var obj = function(n, body){ offsets[n] = len; push(enc(n + ' 0 obj\n' + body + '\nendobj\n')); };
+
+    push(enc('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n'));
+    obj(1, '<< /Type /Catalog /Pages 2 0 R >>');
+    obj(2, '<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
+    obj(3, '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + W + ' ' + H + '] ' +
+           '/Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>');
+    offsets[4] = len;
+    push(enc('4 0 obj\n<< /Type /XObject /Subtype /Image /Width ' + wPx + ' /Height ' + hPx +
+             ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + jpeg.length + ' >>\nstream\n'));
+    push(jpeg);
+    push(enc('\nendstream\nendobj\n'));
+    obj(5, '<< /Length ' + content.length + ' >>\nstream\n' + content + '\nendstream');
+    obj(6, '<< /Title ' + hex16(title) + ' /Producer (kinmu_jikan) >>');
+    var xref = len, x = 'xref\n0 7\n0000000000 65535 f \n';
+    for(var n = 1; n <= 6; n++) x += ('000000000' + offsets[n]).slice(-10) + ' 00000 n \n';
+    push(enc(x + 'trailer\n<< /Size 7 /Root 1 0 R /Info 6 0 R >>\nstartxref\n' + xref + '\n%%EOF\n'));
+
+    var all = new Uint8Array(len), pos = 0;
+    chunks.forEach(function(u8){ all.set(u8, pos); pos += u8.length; });
+    return all;
+  }
+
+  var pdfFile = null, pdfUrl = null;
+
+  function buildPdf(){
+    var cv = drawSheet();
+    var dataUrl = cv.toDataURL('image/jpeg', 0.92);
+    var bin = atob(dataUrl.split(',')[1]);
+    var jpeg = new Uint8Array(bin.length);
+    for(var i = 0; i < bin.length; i++) jpeg[i] = bin.charCodeAt(i);
+    var P = periodOf(current);
+    var name = '勤務時間表_' + P.y + '年' + P.m + '月分';
+    var bytes = makePdf(jpeg, cv.width, cv.height, name);
+    cv.width = cv.height = 1;
+    var blob = new Blob([bytes], { type: 'application/pdf' });
+    try{ pdfFile = new File([blob], name + '.pdf', { type: 'application/pdf' }); }
+    catch(e){ pdfFile = blob; pdfFile.name = name + '.pdf'; }
+    if(pdfUrl) URL.revokeObjectURL(pdfUrl);
+    pdfUrl = URL.createObjectURL(blob);
+    return { name: name + '.pdf', preview: dataUrl };
+  }
+
+  function canShareFile(){
+    try{
+      return !!(navigator.share && navigator.canShare && pdfFile instanceof File &&
+                navigator.canShare({ files: [pdfFile] }));
+    }catch(e){ return false; }
+  }
+  function sharePdf(){
+    if(!canShareFile()) return Promise.reject(new Error('cannot-share'));
+    return navigator.share({ files: [pdfFile], title: pdfFile.name });
+  }
+
+  function showPanel(info){
+    $('pdfName').textContent = 'ファイル名：' + info.name;
+    $('pdfPreview').src = info.preview;
+    $('printImg').src = info.preview;
+    $('pdfOpen').href = pdfUrl;
+    $('pdfDownload').href = pdfUrl;
+    $('pdfDownload').setAttribute('download', info.name);
+    var ok = canShareFile();
+    $('pdfShare').style.display = ok ? '' : 'none';
+    $('pdfMsg').textContent = ok
+      ? '共有メニューが出なかったときは、下の「共有する」を押してください。'
+      : 'この画面では共有メニューが使えません。「PDFを新しいタブで開く」を押して、開いたPDFの共有ボタン（□に↑）から保存してください。';
+    $('pdfPanel').classList.add('show');
+    $('pdfPanel').scrollTop = 0;
+  }
+
+  $('printBtn').addEventListener('click', function(){
+    if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+    var info;
+    try{ info = buildPdf(); }
+    catch(e){ alert('PDFを作れませんでした。もう一度お試しください。'); return; }
+    showPanel(info);
+    if(canShareFile()){
+      sharePdf().catch(function(err){
+        if(err && err.name === 'AbortError') return;
+        $('pdfMsg').textContent = '共有メニューを開けませんでした。下の「共有する」をもう一度押してください。';
+      });
+    }
+  });
+  $('pdfShare').addEventListener('click', function(){
+    sharePdf().catch(function(err){
+      if(err && err.name === 'AbortError') return;
+      $('pdfMsg').textContent = '共有メニューを開けませんでした。「PDFを新しいタブで開く」を使ってください。';
+    });
+  });
+  $('pdfPrint').addEventListener('click', function(){ window.print(); });
+  $('pdfClose').addEventListener('click', function(){ $('pdfPanel').classList.remove('show'); });
+
+  // ---------- はじめ ----------
+  $('name').value = state.name;
+  fillPeriodSelect();
+  render();
+})();
+</script>
+</body>
+</html>
