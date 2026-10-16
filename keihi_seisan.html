@@ -584,14 +584,18 @@ input:focus, select:focus{ outline:3px solid #9DB8E0; outline-offset:0; }
       c.textBaseline = 'middle';
       if(maxW) c.fillText(t, x, y, maxW); else c.fillText(t, x, y);
     }
-    // 幅に入らない文は、小さい字で2行にする（それでも長いときは横に縮める）
+    // 幅に入らない文は、まず1行のまま字を少し小さく（7ptまで）、それでも入らなければ横に少し縮める。
+    // とても長い文だけ、2行に半分ずつ分ける
     function fitText(t, x, y, maxW){
       if(!t) return;
-      font(8.5);
-      if(c.measureText(t).width <= maxW){ text(t, x, y); return; }
-      font(6);
-      var cut = t.length;
-      while(cut > 1 && c.measureText(t.slice(0, cut)).width > maxW) cut--;
+      for(var pt = 8.5; pt >= 7; pt -= 0.5){
+        font(pt);
+        if(c.measureText(t).width <= maxW){ text(t, x, y); return; }
+      }
+      if(c.measureText(t).width * 0.65 <= maxW){ text(t, x, y, 'left', maxW); return; }
+      font(6.5);
+      var half = c.measureText(t).width / 2, cut = 1;
+      while(cut < t.length - 1 && c.measureText(t.slice(0, cut + 1)).width <= half) cut++;
       text(t.slice(0, cut), x, y - 1.05, 'left', maxW);
       text(t.slice(cut), x, y + 1.05, 'left', maxW);
     }
