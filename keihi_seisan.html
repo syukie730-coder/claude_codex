@@ -114,6 +114,13 @@ input:focus, select:focus{ outline:3px solid #9DB8E0; outline-offset:0; }
 .empty{ text-align:center; padding:24px 8px; font-size:17px; color:var(--sub); }
 .count{ font-size:16px; color:var(--sub); text-align:right; margin:4px 0 10px; }
 
+/* 精算表 */
+.settle{ width:100%; border-collapse:collapse; font-size:17px; }
+.settle th, .settle td{ border:1px solid var(--line-dark); padding:10px 10px; }
+.settle thead th{ background:#EEF1F5; font-weight:700; text-align:center; }
+.settle td.amt{ text-align:right; white-space:nowrap; width:9em; }
+.settle tr.balance td{ font-weight:700; font-size:19px; background:#FFF8E1; border-top:2px solid var(--text); }
+
 /* よく使う支払先 */
 .fav-list{ list-style:none; margin-top:10px; }
 .fav-list li{
@@ -201,6 +208,21 @@ input:focus, select:focus{ outline:3px solid #9DB8E0; outline-offset:0; }
 
     <div style="height:16px;"></div>
 
+    <!-- 精算表 -->
+    <section class="box">
+      <h2>精算表</h2>
+      <table class="settle">
+        <thead><tr><th>項目</th><th>金額</th></tr></thead>
+        <tbody>
+          <tr><td>前渡金（院長からお預かり）</td><td class="amt" id="advView">10,000円</td></tr>
+          <tr><td>経費合計</td><td class="amt" id="expView">0円</td></tr>
+          <tr class="balance"><td>差引残高（院長へお返しする額）</td><td class="amt" id="balView">10,000円</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div style="height:16px;"></div>
+
     <!-- PDF -->
     <section class="box">
       <h2>PDF（ネットプリント用）</h2>
@@ -260,6 +282,8 @@ input:focus, select:focus{ outline:3px solid #9DB8E0; outline-offset:0; }
   var KAMOKU = ['消耗品費','会議費','旅費交通費','車両関係費','通信費','福利厚生費','交際費','租税公課',
                 '支払手数料','諸会費','水道光熱費','図書研究費','広告宣伝費','衛生管理費','雑費','その他'];
   var BOTTOM = ['前月繰越金','今月補給','現金残高','次月繰越金'];   // 紙の一番下の4つの欄
+  var ADVANCE = 10000;   // 前渡金（院長からお預かり）毎月固定
+  var SETTLE = ['前渡金（院長からお預かり）', '経費合計', '差引残高（院長へお返しする額）'];
   var DEFAULT_FAVS = ['セブンイレブン','ローソン','ファミリーマート','Amazon','ダイソー','郵便局'];
 
   // ---------- 保存まわり ----------
@@ -315,7 +339,11 @@ input:focus, select:focus{ outline:3px solid #9DB8E0; outline-offset:0; }
   }
 
   function updateTotal(){
-    $('totalView').textContent = yen(total()) + '円';
+    var t = total();
+    $('totalView').textContent = yen(t) + '円';
+    $('advView').textContent = yen(ADVANCE) + '円';
+    $('expView').textContent = yen(t) + '円';
+    $('balView').textContent = yen(ADVANCE - t) + '円';
     var n = monthRows().length;
     $('count').textContent = n + ' / ' + MAX_ROWS + ' 行';
     $('addRow').disabled = n >= MAX_ROWS;
@@ -526,9 +554,12 @@ input:focus, select:focus{ outline:3px solid #9DB8E0; outline-offset:0; }
   // 紙の寸法（mm）
   var L = 11.5, R = 155;                                  // 明細の表の左右
   var COLS = [11.5, 18.1, 35.8, 56.8, 79.2, 115.4, 155];   // No｜日付｜科目｜金額｜支払先｜内容・目的
-  var T_TOP = 32, H_BOTTOM = 38.5, ROW_H = 4.6;           // 表の上、見出しの下、1行の高さ
+  var T_TOP = 32, H_BOTTOM = 38.5, ROW_H = 4.2;           // 表の上、見出しの下、1行の高さ（下に精算表を入れるため少しつめる）
   var ROWS_END = H_BOTTOM + ROW_H * MAX_ROWS;             // 50行目の下
-  var T_BOTTOM = 275.2;                                    // 表の一番下
+  var T_BOTTOM = ROWS_END + 6.7;                           // 表の一番下
+  var B_TOP = T_BOTTOM + 1.2, B_BOT = B_TOP + 10;         // 一番下の4つの欄の上と下
+  var P_TOP = B_BOT + 3, P_HEAD = 5, P_ROW = 5.2;         // 精算表の上、見出しの高さ、1行の高さ
+  var P_K = 105;                                           // 精算表の項目と金額のさかい
   var S_L = 160.5, S_R = 197.5, S_K = 181.5;              // 右下の表の左・右・科目と金額のさかい
   var S_TOP = H_BOTTOM + ROW_H * 34;                      // 右下の表は35行目の高さから
 
@@ -646,8 +677,8 @@ input:focus, select:focus{ outline:3px solid #9DB8E0; outline-offset:0; }
     var bw = 34, gap = (R - L - bw * 4) / 3;
     BOTTOM.forEach(function(t, j){
       var x = L + (bw + gap) * j;
-      rect(x, 276.4, x + bw, 286.4, 0.3);
-      text(t, x + 1.2, 278.4, 'left');
+      rect(x, B_TOP, x + bw, B_BOT, 0.3);
+      text(t, x + 1.2, B_TOP + 2, 'left');
     });
 
     // 右下の科目別の表
@@ -663,7 +694,26 @@ input:focus, select:focus{ outline:3px solid #9DB8E0; outline-offset:0; }
     line(S_L, ROWS_END + 0.8, S_R, ROWS_END + 0.8, 0.3);
     font(9);
     spread('合計', S_L + 4, S_K - 4, (ROWS_END + 0.8 + T_BOTTOM) / 2);
-    text('差額', (S_L + S_K) / 2, 278.6, 'center');
+    text('差額', (S_L + S_K) / 2, B_TOP + 2.2, 'center');
+
+    // 精算表（項目｜金額、差引残高は太字）
+    var t = total();
+    var pVals = [ADVANCE, t, ADVANCE - t];
+    var pEnd = P_TOP + P_HEAD + P_ROW * 3;
+    rect(L, P_TOP, R, pEnd, 0.45);
+    line(L, P_TOP + P_HEAD, R, P_TOP + P_HEAD, 0.3);
+    line(P_K, P_TOP, P_K, pEnd, 0.25);
+    font(9);
+    text('項 目', (L + P_K) / 2, P_TOP + P_HEAD / 2, 'center');
+    text('金 額', (P_K + R) / 2, P_TOP + P_HEAD / 2, 'center');
+    SETTLE.forEach(function(name, j){
+      var top = P_TOP + P_HEAD + P_ROW * j, cy = top + P_ROW / 2;
+      var last = j === SETTLE.length - 1;
+      if(j > 0) line(L, top, R, top, last ? 0.45 : 0.2);
+      font(last ? 10 : 9, last);
+      text(name, L + 2, cy, 'left');
+      text(yen(pVals[j]) + '円', R - 2, cy, 'right');
+    });
 
     return cv;
   }
