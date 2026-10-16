@@ -281,7 +281,6 @@ input:focus, select:focus{ outline:3px solid #9DB8E0; outline-offset:0; }
   var MAX_ROWS = 50;
   var KAMOKU = ['消耗品費','会議費','旅費交通費','車両関係費','通信費','福利厚生費','交際費','租税公課',
                 '支払手数料','諸会費','水道光熱費','図書研究費','広告宣伝費','衛生管理費','雑費','その他'];
-  var BOTTOM = ['前月繰越金','今月補給','現金残高','次月繰越金'];   // 紙の一番下の4つの欄
   var ADVANCE = 10000;   // 前渡金（院長からお預かり）毎月固定
   var SETTLE = ['前渡金（院長からお預かり）', '経費合計', '差引残高（院長へお返しする額）'];
   var DEFAULT_FAVS = ['セブンイレブン','ローソン','ファミリーマート','Amazon','ダイソー','郵便局'];
@@ -557,8 +556,7 @@ input:focus, select:focus{ outline:3px solid #9DB8E0; outline-offset:0; }
   var T_TOP = 32, H_BOTTOM = 38.5, ROW_H = 4.2;           // 表の上、見出しの下、1行の高さ（下に精算表を入れるため少しつめる）
   var ROWS_END = H_BOTTOM + ROW_H * MAX_ROWS;             // 50行目の下
   var T_BOTTOM = ROWS_END + 6.7;                           // 表の一番下
-  var B_TOP = T_BOTTOM + 1.2, B_BOT = B_TOP + 10;         // 一番下の4つの欄の上と下
-  var P_TOP = B_BOT + 3, P_HEAD = 5, P_ROW = 5.2;         // 精算表の上、見出しの高さ、1行の高さ
+  var P_TOP = T_BOTTOM + 1.2, P_HEAD = 5, P_ROW = 5.2;    // 精算表（合計のすぐ下）の上、見出しの高さ、1行の高さ
   var P_K = 105;                                           // 精算表の項目と金額のさかい
   var S_L = 160.5, S_R = 197.5, S_K = 181.5;              // 右下の表の左・右・科目と金額のさかい
   var S_TOP = H_BOTTOM + ROW_H * 34;                      // 右下の表は35行目の高さから
@@ -672,15 +670,6 @@ input:focus, select:focus{ outline:3px solid #9DB8E0; outline-offset:0; }
     text(yen(total()), COLS[4] - 5.8, fy, 'right');
     text('円', COLS[4] - 0.8, fy, 'right');
 
-    // 一番下の4つの欄
-    font(8);
-    var bw = 34, gap = (R - L - bw * 4) / 3;
-    BOTTOM.forEach(function(t, j){
-      var x = L + (bw + gap) * j;
-      rect(x, B_TOP, x + bw, B_BOT, 0.3);
-      text(t, x + 1.2, B_TOP + 2, 'left');
-    });
-
     // 右下の科目別の表
     rect(S_L, S_TOP, S_R, T_BOTTOM, 0.45);
     line(S_K, S_TOP, S_K, T_BOTTOM, 0.25);
@@ -694,7 +683,7 @@ input:focus, select:focus{ outline:3px solid #9DB8E0; outline-offset:0; }
     line(S_L, ROWS_END + 0.8, S_R, ROWS_END + 0.8, 0.3);
     font(9);
     spread('合計', S_L + 4, S_K - 4, (ROWS_END + 0.8 + T_BOTTOM) / 2);
-    text('差額', (S_L + S_K) / 2, B_TOP + 2.2, 'center');
+    text('差額', (S_L + S_K) / 2, P_TOP + 2.2, 'center');
 
     // 精算表（項目｜金額、差引残高は太字）
     var t = total();
