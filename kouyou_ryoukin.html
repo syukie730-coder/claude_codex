@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="公共料金">
+<meta name="theme-color" content="#FBF6EE">
+<title>公共料金の記録</title>
+<style>
+  :root {
+    --bg: #FBF6EE;
+    --card: #FFFFFF;
+    --ink: #2B2724;
+    --sub: #5E5650;
+    --line: #D9CFC3;
+    --head: #EFE6DA;
+    --elec: #FFF3D1;
+    --gas: #FFE6DC;
+    --water: #E1F1FA;
+    --total: #EAF4E6;
+    --accent: #2F6E8F;
+    --now: #FFF9E8;
+    --focus: #E07B39;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    -webkit-text-size-adjust: 100%;
+    overflow-x: hidden;
+  }
+  body {
+    padding: calc(10px + env(safe-area-inset-top)) 8px calc(40px + env(safe-area-inset-bottom));
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  input, textarea, button { font-family: inherit; }
+
+  /* 年の切り替え */
+  .yearbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .yearbtn {
+    width: 64px; height: 56px;
+    font-size: 26px;
+    border: 2px solid var(--accent);
+    background: var(--card);
+    color: var(--accent);
+    border-radius: 14px;
+    font-weight: bold;
+  }
+  .yearbtn:active { background: #DCEBF3; }
+  .yearlabel {
+    flex: 1;
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+    letter-spacing: 0.02em;
+  }
+  .backnow {
+    display: none;
+    margin: -4px auto 10px;
+    padding: 8px 18px;
+    font-size: 16px;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    background: var(--card);
+    border-radius: 999px;
+  }
+  .backnow.show { display: block; }
+
+  /* メモ */
+  .memo-box {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 10px 12px 12px;
+    margin-bottom: 12px;
+  }
+  .memo-box label {
+    display: block;
+    font-size: 17px;
+    font-weight: bold;
+    margin-bottom: 6px;
+  }
+  .memo-box textarea {
+    width: 100%;
+    min-height: 96px;
+    font-size: 17px;
+    line-height: 1.6;
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #FFFDF8;
+    color: var(--ink);
+    resize: vertical;
+  }
+  .memo-box textarea:focus { outline: 3px solid var(--focus); outline-offset: 0; }
+
+  .hint {
+    font-size: 15px;
+    color: var(--sub);
+    margin: 0 4px 8px;
+    line-height: 1.5;
+  }
+
+  /* 表 */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    background: var(--card);
+    font-variant-numeric: tabular-nums;
+  }
+  th, td {
+    border: 1px solid var(--line);
+    text-align: center;
+    padding: 0;
+  }
+  col.c-month { width: 13%; }
+  col.c-val { width: 21%; }
+  col.c-sum { width: 24%; }
+  thead th {
+    background: var(--head);
+    font-size: 16px;
+    padding: 6px 2px;
+    line-height: 1.3;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+  thead th small { display: block; font-size: 12px; font-weight: normal; color: var(--sub); }
+  thead th.h-elec { background: var(--elec); }
+  thead th.h-gas { background: var(--gas); }
+  thead th.h-water { background: var(--water); }
+  thead th.h-total { background: var(--total); }
+
+  td.month {
+    font-size: 16px;
+    white-space: nowrap;
+    font-weight: bold;
+    background: var(--head);
+  }
+  tr.now td.month { background: #F6D58E; }
+  tr.now td { background: var(--now); }
+
+  td.cell input {
+    display: block;
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: var(--ink);
+    text-align: right;
+    font-size: 16px;
+    padding: 0 3px;
+    letter-spacing: -0.3px;
+    border-radius: 0;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  td.cell input.yen { height: 40px; font-weight: bold; }
+  td.cell input.use {
+    height: 30px;
+    font-size: 16px;
+    color: var(--sub);
+    border-top: 1px dashed var(--line);
+  }
+  td.cell input.solo { height: 70px; font-weight: bold; }
+  td.cell input::placeholder { color: #B5ABA0; font-weight: normal; font-size: 14px; }
+  td.cell input:focus {
+    outline: 3px solid var(--focus);
+    outline-offset: -3px;
+    background: #FFFFFF;
+  }
+  td.sum {
+    background: var(--total);
+    font-size: 16px;
+    font-weight: bold;
+    text-align: right;
+    padding: 0 3px;
+    letter-spacing: -0.3px;
+    white-space: nowrap;
+  }
+  tr.now td.sum { background: #DDEFD6; }
+
+  tfoot td {
+    font-size: 14px;
+    letter-spacing: -0.3px;
+    font-weight: bold;
+    text-align: right;
+    padding: 6px 3px;
+    line-height: 1.35;
+    white-space: nowrap;
+    background: #F4EFE7;
+  }
+  tfoot td.label {
+    text-align: center;
+    white-space: normal;
+    font-size: 15px;
+    background: var(--head);
+    padding: 6px 1px;
+  }
+  tfoot tr.year td { border-top: 3px solid var(--sub); }
+  tfoot td small { display: block; font-size: 13px; font-weight: normal; color: var(--sub); }
+  tfoot td.big { background: var(--total); font-size: 15px; }
+
+  .avgnote {
+    font-size: 14px;
+    color: var(--sub);
+    margin: 6px 4px 0;
+    line-height: 1.5;
+  }
+
+  /* バックアップ */
+  .backup {
+    margin-top: 28px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    text-align: center;
+  }
+  .backup p { font-size: 14px; color: var(--sub); margin-bottom: 8px; }
+  .backup button {
+    font-size: 15px;
+    padding: 10px 14px;
+    margin: 4px;
+    border: 1px solid var(--sub);
+    background: var(--card);
+    color: var(--ink);
+    border-radius: 10px;
+  }
+  .backup button:active { background: var(--head); }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(24px + env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    background: #2B2724;
+    color: #fff;
+    font-size: 17px;
+    padding: 12px 20px;
+    border-radius: 12px;
+    display: none;
+    z-index: 10;
+    max-width: 90%;
+    text-align: center;
+  }
+  .toast.show { display: block; }
+</style>
+</head>
+<body>
+
+  <div class="yearbar">
+    <button class="yearbtn" id="prevYear" aria-label="前の年">◀</button>
+    <div class="yearlabel" id="yearLabel">2026年</div>
+    <button class="yearbtn" id="nextYear" aria-label="次の年">▶</button>
+  </div>
+  <button class="backnow" id="backNow">今年にもどる</button>
+
+  <div class="memo-box">
+    <label for="memo">📝 メモ</label>
+    <textarea id="memo" placeholder="例）ガス料金は25日頃に楽天カード明細で確認&#10;電気は毎月18日朝9時ごろメールが届く&#10;ガスお客様番号："></textarea>
+  </div>
+
+  <p class="hint">マスをタップして数字を入れてください。自動で保存されます。</p>
+
+  <table>
+    <colgroup>
+      <col class="c-month"><col class="c-val"><col class="c-val"><col class="c-val"><col class="c-sum">
+    </colgroup>
+    <thead>
+      <tr>
+        <th>月</th>
+        <th class="h-elec">⚡電気<small>円／kWh</small></th>
+        <th class="h-gas">🔥ガス<small>円</small></th>
+        <th class="h-water">💧水道<small>円／㎥</small></th>
+        <th class="h-total">合計<small>円</small></th>
+      </tr>
+    </thead>
+    <tbody id="rows"></tbody>
+    <tfoot>
+      <tr class="year">
+        <td class="label">年間<br>合計</td>
+        <td id="yElec"></td>
+        <td id="yGas"></td>
+        <td id="yWater"></td>
+        <td id="yTotal" class="big"></td>
+      </tr>
+      <tr>
+        <td class="label">月の<br>平均</td>
+        <td id="aElec"></td>
+        <td id="aGas"></td>
+        <td id="aWater"></td>
+        <td id="aTotal" class="big"></td>
+      </tr>
+    </tfoot>
+  </table>
+  <p class="avgnote" id="avgNote"></p>
+
+  <div class="backup">
+    <p>機種変更などにそなえて、ときどき書き出しておくと安心です</p>
+    <button id="exportBtn">データを書き出す</button>
+    <button id="importBtn">データを読み込む</button>
+    <input type="file" id="importFile" accept=".json,application/json" style="display:none">
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  var KEY = 'kouyou_ryoukin_v1';
+  // 1か月分の項目：e=電気(円) eu=電気(kWh) g=ガス(円) w=水道(円) wu=水道(㎥)
+  var FIELDS = ['e', 'eu', 'g', 'w', 'wu'];
+  var YEN_FIELDS = { e: true, g: true, w: true };
+
+  var today = new Date();
+  var thisYear = today.getFullYear();
+  var thisMonth = today.getMonth() + 1;
+  var year = thisYear;
+
+  var data = load();
+
+  function load() {
+    try {
+      var d = JSON.parse(localStorage.getItem(KEY));
+      if (d && typeof d === 'object') {
+        if (typeof d.memo !== 'string') d.memo = '';
+        if (!d.years || typeof d.years !== 'object') d.years = {};
+        return d;
+      }
+    } catch (e) {}
+    return { memo: '', years: {} };
+  }
+
+  function save() {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(data));
+    } catch (e) {
+      toast('保存できませんでした。プライベートブラウズを切ってください');
+    }
+  }
+
+  // 消えにくい保存をお願いしておく（対応している場合のみ）
+  if (navigator.storage && navigator.storage.persist) {
+    try { navigator.storage.persist(); } catch (e) {}
+  }
+
+  function num(v) {
+    var n = Number(v);
+    return isFinite(n) ? n : 0;
+  }
+
+  function yen(n) {
+    return Math.round(n).toLocaleString('ja-JP') + '円';
+  }
+
+  function amount(n, unit) {
+    var r = Math.round(n * 10) / 10;
+    return r.toLocaleString('ja-JP', { maximumFractionDigits: 1 }) + unit;
+  }
+
+  function getMonth(m) {
+    var y = data.years[year];
+    return (y && y[m]) || {};
+  }
+
+  function setValue(m, field, value) {
+    if (!data.years[year]) data.years[year] = {};
+    if (!data.years[year][m]) data.years[year][m] = {};
+    var rec = data.years[year][m];
+    if (value === null) {
+      delete rec[field];
+    } else {
+      rec[field] = value;
+    }
+    if (Object.keys(rec).length === 0) delete data.years[year][m];
+    if (Object.keys(data.years[year]).length === 0) delete data.years[year];
+    save();
+  }
+
+  // 全角数字やカンマが入っても数字だけ取り出す
+  function parseInput(str, allowDecimal) {
+    var s = String(str)
+      .replace(/[０-９．]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); })
+      .replace(allowDecimal ? /[^0-9.]/g : /[^0-9]/g, '');
+    if (allowDecimal) {
+      var i = s.indexOf('.');
+      if (i >= 0) s = s.slice(0, i + 1) + s.slice(i + 1).replace(/\./g, '');
+    }
+    if (s === '' || s === '.') return null;
+    return Number(s);
+  }
+
+  function display(field, v) {
+    if (v === undefined || v === null || v === '') return '';
+    if (YEN_FIELDS[field]) return yen(v);
+    return amount(v, field === 'eu' ? 'kWh' : '㎥');
+  }
+
+  function monthTotal(r) {
+    return num(r.e) + num(r.g) + num(r.w);
+  }
+
+  var rowsEl = document.getElementById('rows');
+  var inputs = {}; // inputs[month][field]
+
+  function makeInput(m, field, cls, placeholder) {
+    var inp = document.createElement('input');
+    inp.type = 'text';
+    inp.className = cls;
+    inp.placeholder = placeholder;
+    inp.autocomplete = 'off';
+    if (YEN_FIELDS[field]) {
+      inp.inputMode = 'numeric';
+      inp.setAttribute('pattern', '[0-9]*');
+    } else {
+      inp.inputMode = 'decimal';
+    }
+    inp.setAttribute('aria-label', m + '月 ' + placeholder);
+
+    inp.addEventListener('focus', function () {
+      var v = getMonth(m)[field];
+      inp.value = (v === undefined) ? '' : String(v);
+      setTimeout(function () { try { inp.select(); } catch (e) {} }, 0);
+    });
+    inp.addEventListener('input', function () {
+      setValue(m, field, parseInput(inp.value, !YEN_FIELDS[field]));
+      updateSums();
+    });
+    inp.addEventListener('blur', function () {
+      inp.value = display(field, getMonth(m)[field]);
+    });
+    inp.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter') inp.blur();
+    });
+    inputs[m][field] = inp;
+    return inp;
+  }
+
+  function buildTable() {
+    for (var m = 1; m <= 12; m++) {
+      inputs[m] = {};
+      var tr = document.createElement('tr');
+      tr.id = 'row' + m;
+
+      var tdM = document.createElement('td');
+      tdM.className = 'month';
+      tdM.textContent = m + '月';
+      tr.appendChild(tdM);
+
+      var tdE = document.createElement('td');
+      tdE.className = 'cell';
+      tdE.appendChild(makeInput(m, 'e', 'yen', '円'));
+      tdE.appendChild(makeInput(m, 'eu', 'use', 'kWh'));
+      tr.appendChild(tdE);
+
+      var tdG = document.createElement('td');
+      tdG.className = 'cell';
+      tdG.appendChild(makeInput(m, 'g', 'solo', '円'));
+      tr.appendChild(tdG);
+
+      var tdW = document.createElement('td');
+      tdW.className = 'cell';
+      tdW.appendChild(makeInput(m, 'w', 'yen', '円'));
+      tdW.appendChild(makeInput(m, 'wu', 'use', '㎥'));
+      tr.appendChild(tdW);
+
+      var tdT = document.createElement('td');
+      tdT.className = 'sum';
+      tdT.id = 'sum' + m;
+      tr.appendChild(tdT);
+
+      rowsEl.appendChild(tr);
+    }
+  }
+
+  function render() {
+    document.getElementById('yearLabel').textContent = year + '年';
+    document.getElementById('backNow').classList.toggle('show', year !== thisYear);
+    for (var m = 1; m <= 12; m++) {
+      var r = getMonth(m);
+      FIELDS.forEach(function (f) {
+        var inp = inputs[m][f];
+        if (document.activeElement !== inp) inp.value = display(f, r[f]);
+      });
+      document.getElementById('row' + m).classList.toggle('now', year === thisYear && m === thisMonth);
+    }
+    updateSums();
+  }
+
+  function updateSums() {
+    var s = { e: 0, eu: 0, g: 0, w: 0, wu: 0 };
+    var filled = 0;
+    for (var m = 1; m <= 12; m++) {
+      var r = getMonth(m);
+      var t = monthTotal(r);
+      FIELDS.forEach(function (f) { s[f] += num(r[f]); });
+      var hasAny = FIELDS.some(function (f) { return r[f] !== undefined; });
+      if (hasAny) filled++;
+      document.getElementById('sum' + m).textContent = hasAny ? yen(t) : '';
+    }
+    var total = s.e + s.g + s.w;
+
+    document.getElementById('yElec').innerHTML = yen(s.e) + '<small>' + amount(s.eu, 'kWh') + '</small>';
+    document.getElementById('yGas').textContent = yen(s.g);
+    document.getElementById('yWater').innerHTML = yen(s.w) + '<small>' + amount(s.wu, '㎥') + '</small>';
+    document.getElementById('yTotal').textContent = yen(total);
+
+    var d = filled || 1;
+    document.getElementById('aElec').innerHTML = yen(s.e / d) + '<small>' + amount(s.eu / d, 'kWh') + '</small>';
+    document.getElementById('aGas').textContent = yen(s.g / d);
+    document.getElementById('aWater').innerHTML = yen(s.w / d) + '<small>' + amount(s.wu / d, '㎥') + '</small>';
+    document.getElementById('aTotal').textContent = yen(total / d);
+
+    document.getElementById('avgNote').textContent = filled
+      ? '※ 平均は、数字が入っている ' + filled + 'か月分 で計算しています（空欄は0円）。'
+      : '';
+  }
+
+  // 年の切り替え
+  function changeYear(diff) {
+    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+    year += diff;
+    render();
+  }
+  document.getElementById('prevYear').addEventListener('click', function () { changeYear(-1); });
+  document.getElementById('nextYear').addEventListener('click', function () { changeYear(1); });
+  document.getElementById('backNow').addEventListener('click', function () { changeYear(thisYear - year); });
+
+  // メモ
+  var memoEl = document.getElementById('memo');
+  memoEl.value = data.memo;
+  function fitMemo() {
+    memoEl.style.height = 'auto';
+    memoEl.style.height = Math.max(96, memoEl.scrollHeight + 2) + 'px';
+  }
+  memoEl.addEventListener('input', function () {
+    data.memo = memoEl.value;
+    save();
+    fitMemo();
+  });
+
+  // お知らせ
+  var toastTimer;
+  function toast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2600);
+  }
+
+  // 書き出し
+  document.getElementById('exportBtn').addEventListener('click', function () {
+    var d = new Date();
+    var stamp = d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');
+    var name = '公共料金_' + stamp + '.json';
+    var json = JSON.stringify({ app: 'kouyou_ryoukin', version: 1, savedAt: d.toISOString(), memo: data.memo, years: data.years }, null, 2);
+    var blob = new Blob([json], { type: 'application/json' });
+
+    // iPhoneでは「共有」から「ファイルに保存」できるようにする
+    try {
+      var file = new File([blob], name, { type: 'application/json' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({ files: [file], title: name }).catch(function () {});
+        return;
+      }
+    } catch (e) {}
+
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    toast('書き出しました');
+  });
+
+  // 読み込み
+  var fileEl = document.getElementById('importFile');
+  document.getElementById('importBtn').addEventListener('click', function () {
+    fileEl.value = '';
+    fileEl.click();
+  });
+  fileEl.addEventListener('change', function () {
+    var f = fileEl.files && fileEl.files[0];
+    if (!f) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      var d;
+      try { d = JSON.parse(reader.result); } catch (e) { d = null; }
+      if (!d || typeof d !== 'object' || !d.years || typeof d.years !== 'object') {
+        alert('このファイルは読み込めませんでした。\n書き出したファイルを選んでください。');
+        return;
+      }
+      if (!confirm('いまのデータを、このファイルの内容に置きかえます。\nよろしいですか？')) return;
+      data = { memo: typeof d.memo === 'string' ? d.memo : '', years: d.years };
+      save();
+      memoEl.value = data.memo;
+      fitMemo();
+      render();
+      toast('読み込みました');
+    };
+    reader.readAsText(f);
+  });
+
+  buildTable();
+  render();
+  fitMemo();
+})();
+</script>
+</body>
+</html>
