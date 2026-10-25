@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>T字勘定 答案用紙</title>
+<meta name="theme-color" content="#FAF8F2">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="T字勘定">
+<link rel="apple-touch-icon" href="boki-index-icon.png">
+<style>
+:root{
+  --paper:#FFFFFF; --bg:#F4F1EA; --ink:#222; --sub:#666; --line:#333; --fill:#FFF9DB; --accent:#3F8A6C;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:"Hiragino Mincho ProN","Yu Mincho","Hiragino Sans",serif;
+  -webkit-text-size-adjust:100%;
+  padding:16px 12px 40px;
+}
+.wrap{max-width:560px;margin:0 auto;}
+h1{font-size:18px;margin:0 0 4px;font-family:"Hiragino Sans",sans-serif;}
+.lead{font-size:13px;color:var(--sub);margin:0 0 12px;font-family:"Hiragino Sans",sans-serif;}
+
+.words{background:var(--paper);border:1.5px solid var(--line);padding:8px 10px;margin-bottom:16px;}
+.words ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:2px 8px;font-size:15px;}
+.words li{white-space:nowrap;}
+
+.acct{background:var(--paper);padding:10px 6px 14px;margin-bottom:14px;border:1px solid #ddd;}
+.acct h2{text-align:center;font-size:17px;margin:0;letter-spacing:.4em;padding-left:.4em;}
+.side{display:flex;justify-content:space-between;font-size:11px;color:var(--sub);padding:0 2px 2px;font-family:"Hiragino Sans",sans-serif;}
+
+table{width:100%;border-collapse:collapse;table-layout:fixed;}
+thead th{border-bottom:2px solid var(--line);height:0;padding:0;}
+td{padding:6px 1px;height:38px;vertical-align:middle;font-size:14px;}
+td.mid{border-left:2px solid var(--line);}
+col.d{width:14%;} col.t{width:13%;} col.a{width:23%;}
+
+.f{display:flex;align-items:center;width:100%;font-size:14px;line-height:1;}
+.f::before,.f::after{flex:none;}
+.f.date::before{content:"(";} .f.date::after{content:")";}
+.f.tek::before{content:"［";margin-left:-3px;} .f.tek::after{content:"］";margin-right:-3px;}
+.f.amt::before{content:"(";} .f.amt::after{content:")";}
+input{
+  flex:1;min-width:0;width:100%;
+  border:none;border-radius:3px;background:var(--fill);
+  font:inherit;font-size:15px;color:#0B4FA8;text-align:center;
+  padding:4px 0;margin:0 1px;
+}
+.f.amt input{text-align:right;padding-right:2px;font-size:14px;letter-spacing:-.02em;}
+input:focus{outline:2px solid var(--accent);background:#fff;}
+
+td.slash{
+  background:linear-gradient(to top right,transparent calc(50% - .8px),var(--line) calc(50% - .4px),var(--line) calc(50% + .4px),transparent calc(50% + .8px));
+}
+tr.total td{border-bottom:4px double var(--line);}
+tr.total td.amtcell .f{border-top:1.5px solid var(--line);padding-top:4px;}
+
+.btns{display:flex;gap:10px;justify-content:center;margin-top:8px;font-family:"Hiragino Sans",sans-serif;}
+button{font:inherit;font-size:15px;padding:10px 18px;border-radius:999px;border:1.5px solid var(--accent);background:#fff;color:var(--accent);}
+.note{font-size:12px;color:var(--sub);text-align:center;margin-top:10px;font-family:"Hiragino Sans",sans-serif;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>第2問(1) T字勘定 答案用紙</h1>
+  <p class="lead">黄色の空欄をタップして書きこめます。書いた内容は自動で残ります。</p>
+
+  <div class="words">
+    <ul>
+      <li>ア．前期繰越</li><li>イ．次期繰越</li>
+      <li>ウ．損益</li><li>エ．繰越利益剰余金</li>
+      <li>オ．利益準備金</li><li>カ．未払配当金</li>
+      <li>キ．売上</li><li>ク．仕入</li>
+    </ul>
+  </div>
+
+  <div id="sheet"></div>
+
+  <div class="btns"><button type="button" id="clear">ぜんぶ消す</button></div>
+  <p class="note">摘要は記号（ア〜ク）で書いてもOKです。</p>
+</div>
+
+<script>
+// 各行：'in' = 書く行、数字 = その行数ぶん斜線
+const ACCOUNTS = [
+  {name:'損益',           left:['in','in'],       right:['in',1]},
+  {name:'利益準備金',     left:['in',1],          right:['in','in']},
+  {name:'繰越利益剰余金', left:['in','in','in'],  right:['in','in',1]},
+];
+const KEY = 'boki_t_kanjo_v1';
+let saved = {};
+try{ saved = JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){}
+
+function field(kind, id){
+  const mode = kind==='tek' ? '' : (kind==='amt' ? ' inputmode="numeric"' : ' inputmode="text"');
+  const v = (saved[id]||'').replace(/"/g,'&quot;');
+  return `<span class="f ${kind}"><input id="${id}" value="${v}" autocomplete="off"${mode}></span>`;
+}
+// 片側の行リストを「行ごとのセル」に展開（斜線は rowspan でまとめる）
+function expand(list, prefix){
+  const rows = [];
+  list.forEach(item=>{
+    if(item==='in'){
+      const i = rows.length;
+      rows.push(`<td>${field('date',prefix+i+'d')}</td><td>${field('tek',prefix+i+'t')}</td><td class="amtcell">${field('amt',prefix+i+'a')}</td>`);
+    }else{
+      rows.push(`<td class="slash" colspan="3" rowspan="${item}"></td>`);
+      for(let k=1;k<item;k++) rows.push('');
+    }
+  });
+  return rows;
+}
+document.getElementById('sheet').innerHTML = ACCOUNTS.map((ac,n)=>{
+  const L = expand(ac.left,'a'+n+'L'), R = expand(ac.right,'a'+n+'R');
+  let body = '';
+  for(let i=0;i<Math.max(L.length,R.length);i++){
+    body += `<tr>${L[i]||''}${(R[i]||'').replace('<td','<td data-mid')}</tr>`;
+  }
+  const tot = s => `<td></td><td></td><td class="amtcell">${field('amt','a'+n+s+'sum')}</td>`;
+  body += `<tr class="total">${tot('L')}${tot('R').replace('<td','<td data-mid')}</tr>`;
+  return `<section class="acct">
+    <h2>${ac.name}</h2>
+    <div class="side"><span>（借方）</span><span>（貸方）</span></div>
+    <table>
+      <colgroup><col class="d"><col class="t"><col class="a"><col class="d"><col class="t"><col class="a"></colgroup>
+      <thead><tr><th colspan="6"></th></tr></thead>
+      <tbody>${body}</tbody>
+    </table>
+  </section>`;
+}).join('');
+// 右側（貸方）の最初のセルに真ん中の縦線
+document.querySelectorAll('td[data-mid]').forEach(td=>td.classList.add('mid'));
+
+function save(){
+  const data = {};
+  document.querySelectorAll('#sheet input').forEach(el=>{ if(el.value) data[el.id]=el.value; });
+  try{ localStorage.setItem(KEY, JSON.stringify(data)); }catch(e){}
+}
+document.getElementById('sheet').addEventListener('input', save);
+document.getElementById('clear').addEventListener('click', ()=>{
+  if(!confirm('書いた内容をぜんぶ消しますか？')) return;
+  document.querySelectorAll('#sheet input').forEach(el=>el.value='');
+  save();
+});
+</script>
+</body>
+</html>
