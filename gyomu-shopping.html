@@ -226,6 +226,21 @@ section.show{display:block;animation:fadein .3s ease}
   background:rgba(255,255,255,.92);font-size:1.05rem;
   box-shadow:0 2px 8px rgba(0,0,0,.12);
 }
+/* ---------- 予備（バックアップ） ---------- */
+.backup{
+  margin:26px 0 8px;padding:16px 16px 14px;
+  background:var(--white);border-radius:var(--radius);
+  border:2px dashed #E3D3F3;box-shadow:var(--shadow);
+}
+.backup-title{font-family:'Kiwi Maru',serif;font-size:1.02rem;color:var(--title);text-align:center}
+.backup-desc{font-size:.9rem;color:var(--text-soft);text-align:center;line-height:1.6;margin:4px 0 12px}
+.backup-btns{display:flex;flex-direction:column;gap:10px}
+.backup-btns .btn{width:100%}
+.backup-last{font-size:.88rem;color:var(--text-soft);text-align:center;margin-top:10px}
+.restore-list{
+  background:var(--pink-soft);border-radius:16px;padding:12px 16px;
+  font-size:1.02rem;line-height:1.9;margin-bottom:6px;
+}
 /* ---------- 空っぽ表示 ---------- */
 .empty{
   text-align:center;padding:36px 16px;color:var(--text-soft);
@@ -376,6 +391,16 @@ section.show{display:block;animation:fadein .3s ease}
         <div class="note-foot" id="memoSaved"></div>
       </div>
       <p class="note-help">書いたものは 自動で保存されます💕<br>いらなくなったら 文字を消すだけでOK</p>
+
+    <div class="backup">
+      <div class="backup-title">📦 予備（バックアップ）</div>
+      <p class="backup-desc">付箋と おすすめ商品（写真も）を<br>「ファイル」アプリに 取っておけます</p>
+      <div class="backup-btns">
+        <button class="btn btn-pink" onclick="saveBackup()">💾 予備に保存する</button>
+        <button class="btn btn-ghost" onclick="pickBackup()">📂 予備から戻す</button>
+      </div>
+      <div class="backup-last"></div>
+    </div>
     </div>
   </section>
 
@@ -390,6 +415,16 @@ section.show{display:block;animation:fadein .3s ease}
     <div class="empty" id="recoEmpty" style="display:none">
       <span class="big">🌸</span>
       お気に入り商品を写真つきで<br>登録してみてね✨
+    </div>
+
+    <div class="backup">
+      <div class="backup-title">📦 予備（バックアップ）</div>
+      <p class="backup-desc">付箋と おすすめ商品（写真も）を<br>「ファイル」アプリに 取っておけます</p>
+      <div class="backup-btns">
+        <button class="btn btn-pink" onclick="saveBackup()">💾 予備に保存する</button>
+        <button class="btn btn-ghost" onclick="pickBackup()">📂 予備から戻す</button>
+      </div>
+      <div class="backup-last"></div>
     </div>
   </section>
 </main>
@@ -429,6 +464,19 @@ section.show{display:block;animation:fadein .3s ease}
       <button class="btn btn-lav" onclick="editRecoFromAct()">✏️ 書きなおす</button>
       <button class="btn btn-pink" onclick="askDeleteReco()">🗑 削除する</button>
       <button class="btn btn-ghost" onclick="closeOv('ovRecoAct')">とじる</button>
+    </div>
+  </div>
+</div>
+
+<!-- 予備から戻す 確認 -->
+<input type="file" id="backupInput" accept=".json,application/json" style="display:none" onchange="onBackupPicked(event)">
+<div class="overlay" id="ovRestore" onclick="closeIfBg(event,'ovRestore')">
+  <div class="sheet">
+    <h3>📂 予備から戻しますか？</h3>
+    <div class="confirm-msg" id="restoreMsg"></div>
+    <div class="sheet-btns">
+      <button class="btn btn-ghost" onclick="closeOv('ovRestore')">やめておく</button>
+      <button class="btn btn-lav" id="restoreYes">戻す ✨</button>
     </div>
   </div>
 </div>
@@ -826,10 +874,116 @@ function renderRecos(){
   });
 }
 
+/* =========================================================
+   📦 予備（バックアップ）
+   付箋とおすすめ商品（写真も）を1つのファイルにまとめて、
+   iPhoneの「ファイル」アプリに取っておく／そこから戻す
+========================================================= */
+const BACKUP_LAST_KEY = 'gs_backup_last_v1';
+
+function showBackupLast(){
+  let t = null;
+  try{ t = Number(localStorage.getItem(BACKUP_LAST_KEY)) || null; }catch(e){}
+  const msg = t
+    ? '前回の予備：' + new Date(t).toLocaleDateString('ja-JP',{month:'long',day:'numeric'})
+    : 'まだ 予備はありません';
+  document.querySelectorAll('.backup-last').forEach(el=>el.textContent = msg);
+}
+
+async function saveBackup(){
+  if(saveTimer) saveNow();
+  const now = new Date();
+  const data = {app:'gyomu-shopping', version:1, savedAt:now.getTime(), memo:memoEl.value, recos};
+  const day = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+  const fileName = 'okaimono_yobi_'+day+'.json';   // 英字の名前（日本語だと名前が消える機種があるため）
+  const file = new File([JSON.stringify(data)], fileName, {type:'application/json'});
+  const done = ()=>{
+    try{ localStorage.setItem(BACKUP_LAST_KEY, String(now.getTime())); }catch(e){}
+    showBackupLast();
+  };
+  // iPhone：「ファイルに保存」が出る画面をひらく
+  if(navigator.canShare && navigator.canShare({files:[file]})){
+    try{
+      await navigator.share({files:[file]});
+      done();
+      toast('予備を保存しました 📦');
+    }catch(e){
+      if(e.name !== 'AbortError') downloadFile(file, fileName, done);
+    }
+    return;
+  }
+  downloadFile(file, fileName, done);
+}
+function downloadFile(file, fileName, done){
+  const url = URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = url; a.download = fileName;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 10000);
+  done();
+  toast('予備を保存しました 📦');
+}
+
+function pickBackup(){
+  const inp = document.getElementById('backupInput');
+  inp.value = '';
+  inp.click();
+}
+function onBackupPicked(ev){
+  const file = ev.target.files && ev.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    let data = null;
+    try{ data = JSON.parse(reader.result); }catch(e){}
+    if(!data || data.app !== 'gyomu-shopping'){
+      toast('このファイルは お買い物リストの予備ではないみたい…');
+      return;
+    }
+    const bRecos = Array.isArray(data.recos) ? data.recos.filter(r=>r && r.id && r.name) : [];
+    const bLines = String(data.memo||'').split('\n').map(l=>l.trim()).filter(Boolean);
+    const when = data.savedAt
+      ? new Date(data.savedAt).toLocaleDateString('ja-JP',{month:'long',day:'numeric'}) + 'の予備'
+      : '予備';
+    document.getElementById('restoreMsg').innerHTML =
+      esc(when) + 'です<div class="restore-list">📝 付箋：' + bLines.length + '行<br>🌸 おすすめ商品：' + bRecos.length + 'こ</div>' +
+      '<span style="font-size:.92rem">今あるものは 消えずに そのまま残ります💕</span>';
+    document.getElementById('restoreYes').onclick = ()=>{
+      closeOv('ovRestore');
+      restoreBackup(bLines, bRecos);
+    };
+    openOv('ovRestore');
+  };
+  reader.readAsText(file);
+}
+/* 今あるものは残して、予備にしかないものを足す */
+async function restoreBackup(bLines, bRecos){
+  const have = memoLines();
+  const add = bLines.filter(l=>!have.includes(norm(l)));
+  if(add.length){
+    const v = memoEl.value;
+    memoEl.value = (v && !v.endsWith('\n') ? v + '\n' : v) + add.join('\n') + '\n';
+    fitMemo();
+    saveNow();
+  }
+  let n = 0;
+  for(const r of bRecos){
+    if(recos.some(x=>x.id===r.id)) continue;
+    const rec = {id:r.id, name:String(r.name), memo:String(r.memo||''), fav:!!r.fav,
+                 img:r.img||null, thumb:r.thumb||null, created:r.created||Date.now()};
+    try{ await dbPut(rec); recos.push(rec); n++; }catch(e){}
+  }
+  recos.sort((a,b)=>(b.created||0)-(a.created||0));
+  renderRecos();
+  toast('予備から戻しました ✨（付箋 '+add.length+'行・おすすめ '+n+'こ）');
+  sparkle(null);
+}
+
 /* ========================================================= 起動 */
 (async function init(){
   memoEl.value = loadMemo();
   fitMemo();
+  showBackupLast();
   try{
     db = await openDB();
     recos = (await dbGetAll()).sort((a,b)=>(b.created||0)-(a.created||0));
