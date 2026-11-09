@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ja"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>伊豆高原 旅のしおり 印刷用</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@500;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+@page{size:A4;margin:0}
+:root{--ink:#4A3A2C;--sub:#7E6754;--momiji:#D9622B;--kaki:#F2A03D;--umi:#3E7FA3;--umi-l:#E6F1F7;--line:#EADBC8;--pink:#E98A9A;--pink-l:#FCEBEE;--green:#4F8B60;--green-l:#E8F3EA;--cream:#FFF8EE}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#fff}
+body{font-family:"Zen Maru Gothic","IPAPGothic",sans-serif;color:var(--ink);line-height:1.5;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.page{width:210mm;height:297mm;padding:9mm 11mm 8mm;position:relative;overflow:hidden;page-break-after:always;background:#FFFCF7}
+.page:last-child{page-break-after:auto}
+.page::before{content:"";position:absolute;inset:4mm;border:1.2px solid var(--line);border-radius:5mm;pointer-events:none}
+h1,h2,.serif{font-family:"Kaisei Decol",serif}
+
+/* 表紙帯 */
+.hero{position:relative;border-radius:4mm;overflow:hidden;background:linear-gradient(160deg,#A9D5E8 0%,#D7EAF0 40%,#FBE3C6 75%,#F5C49A 100%);padding:5mm 7mm 6mm;text-align:center}
+.hero .badge{display:inline-block;background:var(--momiji);color:#fff;font-size:9pt;letter-spacing:.15em;padding:1mm 4mm;border-radius:99px}
+.hero h1{font-size:25pt;line-height:1.2;margin:2mm 0 1mm;color:#3B2A1E}
+.hero h1 small{font-size:11pt;color:var(--momiji);letter-spacing:.25em;display:block}
+.hero .date{display:inline-block;background:rgba(255,255,255,.8);border-radius:3mm;padding:.8mm 4mm;font-weight:700;font-size:11pt}
+.hero .who{font-size:9.5pt;margin-top:1.5mm}
+.hero .lf{position:absolute;font-size:16pt}
+
+.row{display:grid;gap:3mm;margin-top:3mm}
+.r2{grid-template-columns:1fr 1.35fr}
+.box{border-radius:3mm;padding:2.6mm 3.4mm;border:1px solid var(--line);background:#fff}
+.box h3{font-size:10.5pt;color:var(--momiji);margin-bottom:1mm}
+.meet{background:var(--pink-l);border:1.5px solid var(--pink);text-align:center}
+.meet .big{font-family:"Kaisei Decol",serif;font-size:17pt;color:#B94A5E;line-height:1.3}
+.meet .big b{font-size:26pt}
+.meet p{font-size:8.5pt}
+.ticket{border:1.5px dashed var(--kaki);background:var(--cream)}
+.ticket .tr{font-family:"Kaisei Decol",serif;font-size:12pt}
+.ticket .rt{display:flex;align-items:center;gap:2mm;margin:1mm 0}
+.ticket .rt b{font-family:"Kaisei Decol",serif;font-size:15pt;color:var(--umi)}
+.ticket .rt i{flex:1;border-top:1.5px dashed var(--kaki)}
+.ticket .rt span{font-size:8.5pt;color:var(--sub)}
+.seats{display:flex;gap:1.5mm;flex-wrap:wrap;margin:1mm 0}
+.seats span{background:var(--umi-l);color:var(--umi);font-weight:700;font-size:8.5pt;border-radius:2mm;padding:.4mm 2mm}
+.small{font-size:8.3pt;color:var(--sub)}
+.ticket p{font-size:8.5pt}
+
+/* 日見出し */
+.day{display:flex;align-items:center;gap:3mm;margin:3.5mm 0 2mm}
+.day .n{background:var(--momiji);color:#fff;border-radius:3mm;text-align:center;padding:.8mm 3mm;font-family:"Kaisei Decol",serif;font-size:8pt;line-height:1.1}
+.day .n b{display:block;font-size:16pt}
+.day h2{font-size:15pt;line-height:1.2}
+.day h2 span{display:block;font-family:"Zen Maru Gothic";font-size:8.5pt;color:var(--sub);font-weight:500}
+
+/* タイムライン */
+.tl{position:relative}
+.tl::before{content:"";position:absolute;left:19mm;top:2mm;bottom:2mm;border-left:2px dashed var(--kaki)}
+.ev{display:grid;grid-template-columns:16mm 1fr;gap:6mm;margin-bottom:1.6mm;position:relative}
+.ev .t{text-align:right;font-weight:700;color:var(--momiji);font-size:10pt;line-height:1.15;padding-top:1.4mm}
+.ev .t small{display:block;font-size:7pt;color:var(--sub);font-weight:500}
+.ev .b{background:#fff;border:1px solid var(--line);border-radius:2.5mm;padding:1.4mm 3mm;position:relative}
+.ev .b::before{content:"";position:absolute;left:-5.4mm;top:2.2mm;width:2.6mm;height:2.6mm;border-radius:50%;background:#fff;border:2px solid var(--momiji)}
+.ev.hi .b{background:var(--cream);border-color:var(--kaki)}
+.ev h4{font-size:10pt;line-height:1.35}
+.ev p,.ev li{font-size:8.6pt;line-height:1.45}
+.ev ul{padding-left:4mm}
+.tag{display:inline-block;font-size:7.6pt;font-weight:700;border-radius:99px;padding:0 2mm;margin:.6mm 1mm 0 0;background:var(--umi-l);color:var(--umi)}
+.tag.o{background:#FDEBD9;color:var(--momiji)}
+.tag.g{background:var(--green-l);color:var(--green)}
+.tag.p{background:var(--pink-l);color:#B94A5E}
+.mv{margin:0 0 1.6mm 22mm;background:var(--umi-l);color:#24597A;border-radius:2.5mm;padding:1mm 3mm;font-size:8.3pt;line-height:1.45}
+.mv b{color:#173F57}
+.front{background:#FFF1E4;border-radius:2mm;padding:1mm 2.4mm;margin-top:1mm;font-size:8.3pt}
+.front li{margin-left:4mm}
+
+/* 2ページ目 */
+.p2top{display:flex;align-items:center;justify-content:space-between;border-bottom:1.5px dashed var(--kaki);padding-bottom:1.5mm}
+.p2top .serif{font-size:12pt}
+.rooms{display:grid;grid-template-columns:repeat(3,1fr);gap:2.4mm}
+.room{background:#fff;border:1px solid var(--line);border-radius:3mm;padding:2mm 2.6mm;text-align:center}
+.room .ic{font-size:17pt;line-height:1.2}
+.room h4{font-size:9.6pt}
+.room p{font-size:8pt;color:var(--sub);line-height:1.4}
+.cafes{display:grid;grid-template-columns:repeat(3,1fr);gap:2.4mm}
+.cafe{background:#fff;border:1px solid var(--line);border-radius:3mm;padding:2mm 2.6mm}
+.cafe h4{font-size:9.2pt;line-height:1.35}
+.cafe p{font-size:8pt;line-height:1.45}
+.sech{font-family:"Kaisei Decol",serif;font-size:12.5pt;margin:3mm 0 1.6mm;display:flex;align-items:center;gap:2mm}
+.sech::before{content:"";width:3mm;height:3mm;border-radius:1mm;background:var(--momiji)}
+.memo{display:grid;grid-template-columns:1fr 1fr;gap:2.4mm}
+.memo .box ul{padding-left:4mm;font-size:8.6pt}
+.memo .box p{font-size:8.6pt}
+.p2 .sech{margin:5.5mm 0 2.4mm}.p2 .day{margin:5.5mm 0 2.6mm}.p2 .ev{margin-bottom:2.2mm}.p2 .mv{margin-bottom:2.2mm}.p2 .room,.p2 .cafe{padding:2.8mm 3mm}
+.foot{position:absolute;left:0;right:0;bottom:6.5mm;text-align:center;font-size:8pt;color:var(--sub)}
+.write{border-bottom:1px solid var(--sub);display:inline-block;width:16mm}
+</style>
+</head>
+<body>
+
+<!-- ===== 1ページ目 ===== -->
+<section class="page">
+  <div class="hero">
+    <span class="lf" style="left:6mm;top:4mm">🍁</span><span class="lf" style="right:8mm;top:6mm">🍂</span>
+    <span class="lf" style="left:18mm;bottom:4mm">🍂</span><span class="lf" style="right:20mm;bottom:5mm">🍁</span>
+    <span class="badge">1泊2日 ・ 4人旅</span>
+    <h1><small>秋のおとな旅</small>伊豆高原 温泉とおそばの旅</h1>
+    <div class="date">2026年 11月23日(月・祝) 〜 24日(火)</div>
+    <div class="who">🌸 桜ちゃん ・ 🐱 たまちゃん ・ 🍀 幸恵ちゃん ・ 🍎 あきちゃん</div>
+  </div>
+
+  <div class="row r2">
+    <div class="box meet">
+      <h3 style="color:#B94A5E">🤝 待ち合わせ</h3>
+      <p style="font-weight:700">JR横浜駅 東海道線（下り）ホーム</p>
+      <div class="big"><b>6</b>番線 ・ <b>12:00</b></div>
+      <p>焼売弁当と缶チューハイを買ってから集合♪<br><span class="small">当日は電光掲示板でも番線を確認してね</span></p>
+    </div>
+    <div class="box ticket">
+      <h3>🎫 行きの特急（あきちゃん予約）　予約番号 E06885</h3>
+      <div class="tr">特急 踊り子9号 <span class="small">（伊東編成）指定席・チケットレス</span></div>
+      <div class="rt"><b>12:24</b><span>横浜 発</span><i></i>🚃<i></i><b>14:09</b><span>伊豆高原 着</span></div>
+      <div class="seats"><span>8号車</span><span>12A</span><span>12B</span><span>13A</span><span>13B</span><span style="background:#FDEBD9;color:var(--momiji)">4人で7,280円</span></div>
+      <p>💳 乗車券は買っていないので、<b>Suicaでそのまま改札へ</b>（残高は多めに）</p>
+    </div>
+  </div>
+
+  <div class="day"><div class="n">DAY<b>1</b></div><h2>11月23日（月・祝）<span>伊豆高原へ ／ 温泉 → おそば → ワイン → 部屋飲み</span></h2></div>
+
+  <div class="tl">
+    <div class="ev hi"><div class="t">12:24<small>横浜 発</small></div><div class="b"><h4>🚃 特急 踊り子9号で出発！</h4><p>8号車 12番・13番のA・B席。お弁当と乾杯で、わいわい移動♪</p></div></div>
+    <div class="ev"><div class="t">14:09<small>伊豆高原 着</small></div><div class="b"><h4>🏪 駅のまわりでお買いもの</h4>
+      <p>コーヒー・パン・缶チューハイ・おつまみ（部屋飲み用）、翌朝の朝ごはん（パン・おにぎり）<br><span class="small">駅ビル「やまもプラザ」、歩いて4〜7分のセブン‑イレブン。ホテルのまわりはお店が少ないよ</span></p></div></div>
+    <div class="mv">🚕 駅 → ホテル　<b>タクシーで約8分</b>（約1,500円）　🚌 バス約10分＋「東大室」から歩いて5〜10分</div>
+    <div class="ev hi"><div class="t">15:00</div><div class="b"><h4>🏨 ホテルにチェックイン　ポイントバケーション伊豆高原</h4>
+      <p>ザ・グラン伊豆高原 内　伊東市富戸1317-14　<span class="tag">大浴場・露天風呂</span><span class="tag">温泉 15〜24時／朝6〜10時</span></p>
+      <div class="front">🛎️ <b>フロントでお願いすること</b>（荷物は少ないので普通のタクシー1台でOK）
+        <ul><li>明日のタクシー予約「明日11:15ごろ、4人で観音亭（伊豆高原体験の里）まで」</li><li>夕ごはんにタクシーで行くなら「今日16:50ごろ、4人で砂場まで」</li></ul></div></div></div>
+    <div class="ev"><div class="t">15:30<small>〜16:30</small></div><div class="b"><h4>♨️ 温泉 ＆ ひと休み</h4><p>入りたい人は温泉へ。お部屋でゴロゴロするのもよし♪</p></div></div>
+    <div class="mv">ホテル → お蕎麦屋さん　約1km　🚶 <b>歩いて約15分</b>（16:40ごろ出発）／🚕 タクシー約5分（16:50ごろ出発）<br>日の入りは16時半ごろ。歩くならスマホのライトを用意してね🔦</div>
+    <div class="ev hi"><div class="t">17:00<small>ごろ</small></div><div class="b"><h4>🍜 夕ごはん「手打そば 砂場 伊豆高原」</h4>
+      <p>手打ちそばと海老の天ぷらが人気。伊東市富戸1038-7　☎0557-51-7280<br><span class="tag o">3連休は予約できないので、17時ごろ直接お店へ</span><span class="tag g">L.O. 20:00</span></p></div></div>
+    <div class="mv">🚶 お蕎麦屋さん → ワインバー　<b>歩いて約7分</b>（ぐらんぱる公園の前から、県道111号沿い）</div>
+    <div class="ev hi"><div class="t">19:00<small>予約</small></div><div class="b"><h4>🍷 2次会「Wine shop &amp; bar Viticult」</h4>
+      <p><span class="tag p">予約済み 19:00〜 4名・お名前「宮本」</span> 席はカウンターかテーブル（当日の状況による）<br>伊東市富戸1317-5760　☎090-4706-9827　営業12〜22時（水・木休み）</p></div></div>
+    <div class="mv">🍷 ワインバー → ホテル　約1.5km　🚕 <b>タクシーで約5分</b>（おすすめ・お店の人に呼んでもらおう）／🚶 歩くと20〜25分</div>
+    <div class="ev"><div class="t">20:30<small>ごろ〜</small></div><div class="b"><h4>🥂 3次会は お部屋飲み</h4><p>買っておいた缶チューハイとおつまみで、だらだら楽しく♪</p></div></div>
+  </div>
+  <div class="foot">🍁 伊豆高原 秋のおとな旅 ・ 1 / 2 🍁</div>
+</section>
+
+<!-- ===== 2ページ目 ===== -->
+<section class="page p2">
+  <div class="p2top"><span class="serif">🍂 伊豆高原 秋のおとな旅</span><span class="small">2026年11月23日(月・祝)〜24日(火)</span></div>
+
+  <div class="sech">お部屋わり　<span class="small" style="font-family:'Zen Maru Gothic'">ツイン2部屋 ＋ 和室1部屋</span></div>
+  <div class="rooms">
+    <div class="room" style="background:var(--pink-l)"><div class="ic">🌸🐱</div><h4>ツイン①<br>桜ちゃん ＆ たまちゃん</h4><p>ふたりとも すやすや静かに眠れるタイプ。朝までぐっすり💤</p></div>
+    <div class="room" style="background:var(--green-l)"><div class="ic">🍀</div><h4>ツイン②<br>幸恵ちゃん</h4><p>ひとり部屋だから、歯ぎしりも気にせず ぐっすり眠れますように🦷✨</p></div>
+    <div class="room" style="background:#FDEBD9"><div class="ic">🍎</div><h4>和室<br>あきちゃん</h4><p>いびきをどれだけかいても、だ〜れにも聞こえません！安心して大合唱どうぞ🎺</p></div>
+  </div>
+
+  <div class="day"><div class="n">DAY<b>2</b></div><h2>11月24日（火）<span>そば打ち体験 → カフェ → 横浜へ</span></h2></div>
+  <div class="tl">
+    <div class="ev"><div class="t">朝</div><div class="b"><h4>🥐 お部屋で朝ごはん ＆ 朝風呂</h4><p>前の日に買ったパンやおにぎりで。朝の温泉は 6:00〜10:00</p></div></div>
+    <div class="ev hi"><div class="t">11:00</div><div class="b"><h4>🧳 チェックアウト</h4><p><span class="tag g">あきちゃんが会員なので 11:00 でOK（確認済み）</span><br>前の日に予約したタクシーで、そば打ち体験へ出発🚕</p></div></div>
+    <div class="mv">🚕 ホテル → 観音亭　<b>タクシーで約10〜15分</b>（11:15ごろ出発）</div>
+    <div class="ev hi"><div class="t">12:00<small>予約済み</small></div><div class="b"><h4>🥢 そば打ち体験「観音亭」</h4>
+      <p>石臼でそばの実をひくところから体験！打ったおそばは天ぷらといっしょにその場で♪<br>伊東市八幡野1666-4（伊豆高原体験の里の中）　☎0557-54-3006　<span class="tag g">約90分</span></p></div></div>
+    <div class="ev"><div class="t">13:30<small>ごろ</small></div><div class="b"><h4>☕ カフェでひと休み</h4><p>下の「カフェ候補」から気分で選んでね。<b>15:15ごろ</b>にはお店を出て駅へ</p></div></div>
+    <div class="mv">🚶 観音亭 → 伊豆高原駅　<b>歩いて約15分</b>／🚕 タクシー約5分</div>
+    <div class="ev hi"><div class="t">15:46<small>伊豆高原 発</small></div><div class="b"><h4>🚃 特急 踊り子号（10号）で横浜へ</h4>
+      <p>帰りのきっぷは<b>あきちゃんが買ってくれたよ</b>🎫 ありがとう！　15:40ごろにはホームへ<br>座席 <span class="write"></span>号車 <span class="write"></span>　横浜着 <span class="write"></span>：<span class="write" style="width:10mm"></span></p></div></div>
+  </div>
+
+  <div class="sech">そば打ちのあとの カフェ候補</div>
+  <div class="cafes">
+    <div class="cafe"><h4>🍦 ケニーズハウスカフェ<br>伊豆高原本店</h4><p>しぼりたて牛乳のソフトクリームが評判。洋館風のすてきな建物で、ケーキも◎</p></div>
+    <div class="cafe"><h4>🌹 雑貨＆カフェ<br>伊豆高原ローズテラス</h4><p>絵本の世界のような、かわいい外観。雑貨も見られるよ（水曜休み・火曜はOK）</p></div>
+    <div class="cafe"><h4>🌿 食事処 あかざわ<br>（体験の里の中）</h4><p>観音亭と同じ敷地。広いテラス席があって、移動なしでゆっくりできるよ</p></div>
+  </div>
+
+  <div class="sech">旅のメモ</div>
+  <div class="memo">
+    <div class="box"><h3>🧳 持ちもの</h3><ul><li>Suica（残高は多めに）</li><li>上着を一枚多めに（11月下旬の夜は冷えるよ）</li><li>温泉セット・部屋着・常備薬</li><li>スマホのライト・充電器</li></ul></div>
+    <div class="box"><h3>🚕 気をつけること</h3><p>伊豆高原は夜タクシーがつかまりにくいよ。お店の人やホテルのフロントに早めにお願いしよう。<br><span class="small">※移動時間は「めやす」です。当日は地図アプリでも確認してね。</span></p></div>
+  </div>
+
+  <div class="foot">🍁 たのしい旅になりますように ・ 2 / 2 🍁</div>
+</section>
+</body>
+</html>
