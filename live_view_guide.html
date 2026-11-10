@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ライブビューの使い方</title>
+<link rel="apple-touch-icon" href="live_view_guide_icon.png">
+<link rel="icon" href="live_view_guide_icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ライブビュー">
+<meta name="theme-color" content="#EAF7F4">
+<style>
+:root{
+  --bg:#EAF7F4; --bg2:#FFF4EC; --card:#FFFFFF; --ink:#3E4A4F; --sub:#7A878B;
+  --mint:#5BB5A6; --mint-soft:#DDF2EE; --pink:#F28C8C; --pink-soft:#FDECEC;
+  --yellow:#FFE8A3; --shadow:0 4px 16px rgba(70,120,110,.12);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Maru Gothic ProN","Hiragino Sans","Hiragino Kaku Gothic ProN",sans-serif;
+  background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);
+  background-attachment:fixed;
+  color:var(--ink);font-size:19px;line-height:1.75;min-height:100vh;
+  padding:calc(env(safe-area-inset-top) + 20px) 16px calc(env(safe-area-inset-bottom) + 32px);
+}
+.wrap{max-width:520px;margin:0 auto}
+header{text-align:center;margin-bottom:22px}
+.hero{font-size:56px;line-height:1.2}
+h1{font-size:27px;font-weight:800;margin-top:6px;letter-spacing:.02em}
+.badge{
+  display:inline-block;margin-top:10px;background:var(--pink-soft);color:#C85F5F;
+  font-weight:700;font-size:17px;padding:6px 16px;border-radius:999px;
+}
+.card{
+  background:var(--card);border-radius:24px;box-shadow:var(--shadow);
+  padding:20px 20px 20px 18px;margin-bottom:16px;display:flex;gap:14px;align-items:flex-start;
+}
+.num{
+  flex:0 0 58px;height:58px;border-radius:50%;background:var(--mint);color:#fff;
+  font-size:32px;font-weight:800;display:flex;align-items:center;justify-content:center;
+}
+.card:nth-of-type(even) .num{background:var(--pink)}
+.body{flex:1;min-width:0}
+.ttl{font-size:22px;font-weight:800;line-height:1.45}
+.ttl .emo{font-size:28px;margin-left:4px;vertical-align:-3px}
+.desc{margin-top:6px;color:var(--ink)}
+.note{
+  margin-top:10px;background:var(--yellow);border-radius:14px;padding:8px 12px;font-size:17px;font-weight:700;
+}
+.trouble{
+  background:var(--card);border-radius:24px;box-shadow:var(--shadow);
+  padding:20px;margin-top:26px;border:3px dashed var(--pink);
+}
+.trouble h2{font-size:22px;font-weight:800;margin-bottom:10px}
+.trouble ul{list-style:none}
+.trouble li{
+  background:var(--pink-soft);border-radius:16px;padding:12px 14px;margin-bottom:10px;
+  display:flex;gap:10px;align-items:flex-start;
+}
+.trouble li:last-child{margin-bottom:0}
+.trouble .i{font-size:26px;line-height:1.4}
+.path{display:inline-block;background:#fff;border-radius:10px;padding:0 8px;font-weight:700;margin-top:4px}
+footer{text-align:center;color:var(--sub);font-size:16px;margin-top:24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="hero">🚶‍♀️📱✨</div>
+    <h1>ライブビューの使い方</h1>
+    <div class="badge">歩きのときだけ使えるよ</div>
+  </header>
+
+  <section class="card">
+    <div class="num">1</div>
+    <div class="body">
+      <div class="ttl">行き先を入れる<span class="emo">📍</span></div>
+      <div class="desc">Googleマップで行きたい場所を検索して、「<b>経路</b>」を押すよ。</div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="num">2</div>
+    <div class="body">
+      <div class="ttl">歩きのマークを選ぶ<span class="emo">🚶</span></div>
+      <div class="desc">画面の上にある、<b>歩いている人のマーク</b>を押してね。</div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="num">3</div>
+    <div class="body">
+      <div class="ttl">「ナビ開始」を押す<span class="emo">📷</span></div>
+      <div class="desc"><b>カメラのマークがついたボタン</b>を押すよ。</div>
+      <div class="note">⚠️ 「開始」じゃないよ。「ナビ開始」だよ</div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="num">4</div>
+    <div class="body">
+      <div class="ttl">スマホを持ち上げて、まわりを映す<span class="emo">🏢</span></div>
+      <div class="desc">まわりの建物を、<b>ゆっくり</b>映してね。</div>
+      <div class="note">📸 写真は残らないから安心してね</div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="num">5</div>
+    <div class="body">
+      <div class="ttl">矢印が出たら進む<span class="emo">⬆️</span></div>
+      <div class="desc">画面に出た矢印のほうへ歩いてね。</div>
+      <div class="note">🚦 歩きスマホは気をつけてね</div>
+    </div>
+  </section>
+
+  <section class="trouble">
+    <h2>🤔 出ないときは</h2>
+    <ul>
+      <li><span class="i">🚗</span><div>車のマークになっていないかな？<br>歩きのマークに変えてみてね。</div></li>
+      <li><span class="i">📷</span><div>カメラの許可はオンかな？<br><span class="path">設定 → Googleマップ → カメラ</span></div></li>
+      <li><span class="i">🗺️</span><div>場所によっては、出ないこともあるよ。</div></li>
+    </ul>
+  </section>
+
+  <footer>いってらっしゃい 🌷</footer>
+</div>
+</body>
+</html>
