@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="駐車場経費">
+<meta name="theme-color" content="#FFFFFF">
+<title>駐車場経費</title>
+<link rel="apple-touch-icon" href="chushajo_keihi_icon.png">
+<link rel="icon" type="image/png" href="chushajo_keihi_favicon.png">
+<style>
+:root{
+  --text:#111111; --sub:#222222; --line:#999999; --line-dark:#555555;
+  --bg:#F3F6F4; --card:#FFFFFF; --main:#1E6B3A; --main-dark:#154D29; --danger:#B3261E;
+}
+*{ box-sizing:border-box; margin:0; padding:0; }
+html{ -webkit-text-size-adjust:100%; }
+body{
+  font-family:-apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+  font-size:17px; line-height:1.5; color:var(--text); background:var(--bg);
+  padding-bottom:calc(110px + env(safe-area-inset-bottom));
+}
+button, input, select{ font:inherit; color:var(--text); }
+.top{ background:#FFFFFF; border-bottom:1px solid var(--line); padding:calc(14px + env(safe-area-inset-top)) 16px 14px; }
+.top h1{ font-size:21px; font-weight:700; }
+main{ max-width:640px; margin:0 auto; padding:16px; }
+.box{ background:var(--card); border:1px solid var(--line); border-radius:8px; padding:16px; margin-bottom:16px; }
+.box h2{ font-size:18px; font-weight:700; margin-bottom:10px; }
+label.lbl{ display:block; font-size:16px; font-weight:700; margin-bottom:4px; }
+input[type=text], input[type=date], input[type=tel]{
+  width:100%; min-height:48px; font-size:17px; padding:8px 10px;
+  border:1px solid var(--line-dark); border-radius:6px; background:#FFFFFF;
+  -webkit-appearance:none; appearance:none;
+}
+::placeholder{ color:#555555; opacity:1; }
+input:focus{ outline:3px solid #9CCFAE; outline-offset:0; }
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; text-align:center;
+  min-height:52px; padding:10px 18px; font-size:17px; font-weight:700;
+  border-radius:8px; border:1px solid var(--line-dark); background:#FFFFFF; cursor:pointer;
+  text-decoration:none; color:var(--text);
+}
+.btn:active{ background:#E6E8EC; }
+.btn.main{ background:var(--main); border-color:var(--main); color:#FFFFFF; }
+.btn.main:active{ background:var(--main-dark); }
+.btn.danger{ color:var(--danger); border-color:var(--danger); }
+.btn.wide{ width:100%; }
+.btn.quick{ background:#EAF4EC; border-color:var(--main); color:var(--main-dark); }
+.note{ font-size:16px; color:var(--sub); margin-top:8px; }
+.field{ margin-bottom:12px; }
+.grid2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.yen-wrap{ position:relative; }
+.yen-wrap input{ padding-right:34px; text-align:right; }
+.yen-wrap span{ position:absolute; right:10px; top:50%; transform:translateY(-50%); font-size:17px; }
+.btn-row{ display:flex; gap:10px; }
+.btn-row .btn{ flex:1; }
+.editing{ outline:3px solid #E0A800; }
+.edit-label{ display:none; background:#FFF4CC; border-radius:6px; padding:8px 10px; margin-bottom:12px; font-weight:700; }
+.editing .edit-label{ display:block; }
+
+/* 年のえらぶところ */
+.years{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+.years button{
+  min-height:48px; padding:6px 16px; font-size:18px; font-weight:700;
+  border:1px solid var(--line-dark); border-radius:24px; background:#FFFFFF; cursor:pointer;
+}
+.years button.cur{ background:var(--main); border-color:var(--main); color:#FFFFFF; }
+
+/* 一覧 */
+.list-head{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; }
+.list-head h2{ margin-bottom:0; }
+.list-head span{ font-size:16px; color:var(--sub); }
+.list{ list-style:none; }
+.list li{ border-top:1px solid #DDDDDD; }
+.list li:first-child{ border-top:none; }
+.list button{
+  width:100%; background:none; border:none; text-align:left; cursor:pointer;
+  display:grid; grid-template-columns:4.6em 1fr auto; gap:0 10px; align-items:center;
+  padding:10px 2px; min-height:56px;
+}
+.list button:active{ background:#E6E8EC; }
+.list .d{ font-size:16px; font-weight:700; }
+.list .it{ font-size:17px; font-weight:700; word-break:break-all; }
+.list .py{ display:block; font-size:15px; color:var(--sub); font-weight:400; }
+.list .a{ font-size:17px; font-weight:700; white-space:nowrap; }
+.list li.sel button{ background:#FFF4CC; }
+.empty{ text-align:center; padding:20px 8px; color:var(--sub); }
+.sum-row{ display:flex; justify-content:space-between; border-top:2px solid var(--text); margin-top:6px; padding-top:10px; font-size:19px; font-weight:700; }
+details{ margin-top:4px; }
+summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
+.mtable{ width:100%; border-collapse:collapse; font-size:17px; }
+.mtable td{ border-bottom:1px solid #DDDDDD; padding:8px 4px; }
+.mtable td:last-child{ text-align:right; white-space:nowrap; }
+.stack .btn{ margin-bottom:10px; }
+
+/* 下の固定バー */
+.bottom-bar{
+  position:fixed; left:0; right:0; bottom:0; background:#FFFFFF;
+  border-top:1px solid var(--line-dark); padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+}
+.bottom-inner{ max-width:640px; margin:0 auto; display:flex; align-items:center; gap:12px; }
+.total-area{ flex:1; }
+.total-area .t-lbl{ font-size:16px; }
+.total-area .t-val{ font-size:24px; font-weight:700; }
+.bottom-inner .btn{ min-width:140px; }
+
+/* PDFができたときの画面 */
+#pdfPanel{
+  display:none; position:fixed; inset:0; z-index:10; background:#FFFFFF; overflow-y:auto;
+  padding:calc(16px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom));
+}
+#pdfPanel.show{ display:block; }
+#pdfPanel .inner{ max-width:640px; margin:0 auto; }
+#pdfPanel h2{ font-size:20px; font-weight:700; margin-bottom:8px; }
+#pdfPanel .fname{ font-size:16px; margin-bottom:12px; word-break:break-all; }
+#pdfPanel .btn{ margin-bottom:12px; }
+#pdfPanel .preview{ width:100%; border:1px solid var(--line-dark); margin:4px 0 16px; display:block; }
+#pdfMsg{ font-size:16px; margin-bottom:12px; }
+.toast{
+  position:fixed; left:50%; bottom:calc(100px + env(safe-area-inset-bottom)); transform:translateX(-50%);
+  background:#222; color:#FFF; padding:12px 20px; border-radius:24px; font-size:17px; font-weight:700;
+  display:none; z-index:20; white-space:nowrap;
+}
+.toast.show{ display:block; }
+</style>
+</head>
+<body>
+
+<div class="top"><h1>🚗 東林間駐車場の経費</h1></div>
+
+<main>
+  <div class="years" id="years"></div>
+
+  <!-- 記録する -->
+  <section class="box" id="formBox">
+    <h2>記録する</h2>
+    <div class="edit-label">いま、記録をなおしています</div>
+    <button type="button" class="btn quick wide" id="quickBtn">いつもの交通費（2名分・560円）を入れる</button>
+    <div style="height:12px;"></div>
+    <div class="grid2 field">
+      <div><label class="lbl" for="fDate">日付</label><input type="date" id="fDate"></div>
+      <div><label class="lbl" for="fAmount">金額</label>
+        <div class="yen-wrap"><input type="tel" inputmode="numeric" id="fAmount" placeholder="0"><span>円</span></div></div>
+    </div>
+    <div class="field"><label class="lbl" for="fItem">項目（買ったもの）</label>
+      <input type="text" id="fItem" list="itemList" maxlength="40" placeholder="例：除草剤"></div>
+    <div class="field"><label class="lbl" for="fPayee">支払い先（お店）</label>
+      <input type="text" id="fPayee" list="payeeList" maxlength="40" placeholder="例：ヨドバシカメラ町田店"></div>
+    <datalist id="itemList"></datalist>
+    <datalist id="payeeList"></datalist>
+    <div id="addArea">
+      <button type="button" class="btn main wide" id="saveBtn">記録する</button>
+    </div>
+    <div id="editArea" style="display:none;">
+      <div class="btn-row">
+        <button type="button" class="btn main" id="updBtn">なおして保存</button>
+        <button type="button" class="btn" id="cancelBtn">やめる</button>
+      </div>
+      <div style="height:10px;"></div>
+      <button type="button" class="btn danger wide" id="delBtn">この記録を消す</button>
+    </div>
+    <p class="note">項目と支払い先は、文字を入れると前に使ったものが出てきます。</p>
+  </section>
+
+  <!-- 一覧 -->
+  <section class="box">
+    <div class="list-head"><h2 id="listTitle"></h2><span id="listCount"></span></div>
+    <p class="note" style="margin:0 0 8px;">なおしたいときは、その行を押してください。</p>
+    <ul class="list" id="list"></ul>
+    <div class="sum-row"><span>合計</span><span id="sumView">0円</span></div>
+    <details>
+      <summary>月ごとの合計を見る</summary>
+      <table class="mtable" id="monthTable"></table>
+    </details>
+  </section>
+
+  <!-- 税理士さんへ -->
+  <section class="box stack">
+    <h2>税理士さんにわたす</h2>
+    <button type="button" class="btn main wide" id="pdfBtn2">この年の表をPDFにする</button>
+    <button type="button" class="btn wide" id="copyBtn">この年の表をコピーする</button>
+    <p class="note" style="margin-top:0;">コピーしたものは、メールやLINE、Googleスプレッドシートにそのまま貼りつけられます。</p>
+  </section>
+
+  <!-- 記録を守る -->
+  <section class="box stack">
+    <h2>記録を守る（バックアップ）</h2>
+    <p class="note" style="margin:0 0 10px;">記録はこのiPhoneの中に保存されます。ときどき「ファイルに保存」をしておくと安心です。</p>
+    <button type="button" class="btn wide" id="backupBtn">すべての記録をファイルに保存</button>
+    <label class="btn wide" for="restoreFile">保存したファイルから戻す</label>
+    <input type="file" id="restoreFile" accept=".json,application/json" style="display:none;">
+  </section>
+</main>
+
+<div class="bottom-bar">
+  <div class="bottom-inner">
+    <div class="total-area">
+      <div class="t-lbl" id="tLbl">合計</div>
+      <div class="t-val" id="totalView">0円</div>
+    </div>
+    <button type="button" class="btn main" id="pdfBtn">PDFにする</button>
+  </div>
+</div>
+
+<div id="pdfPanel" role="dialog" aria-label="PDF">
+  <div class="inner">
+    <h2>PDFができました</h2>
+    <p class="fname" id="pdfName"></p>
+    <p id="pdfMsg"></p>
+    <button type="button" class="btn main wide" id="pdfShare">共有する（ファイルに保存・メールなど）</button>
+    <a class="btn wide" id="pdfOpen" target="_blank" rel="noopener">PDFを新しいタブで開く</a>
+    <button type="button" class="btn wide" id="pdfClose">閉じる</button>
+    <div id="pdfPreviews"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  'use strict';
+
+  var STORE_KEY = 'chushajo_keihi_v1';
+  var PLACE = '東林間駐車場';
+  // スプレッドシート「🚗 2026東林間駐車場収支」から写した、今までの記録（はじめて開いたときだけ入れる）
+  var SEED = {"2026":[["2026-01-07","交通費2名分","東林間ー中央林間",560],["2026-01-21","交通費2名分","東林間ー中央林間",560],["2026-02-04","交通費2名分","東林間ー中央林間",560],["2026-02-18","交通費2名分","東林間ー中央林間",560],["2026-03-01","除草用保護メガネ　ゴミ袋","ダイソー中央林間",1100],["2026-03-01","交通費2名分","東林間ー中央林間",560],["2026-03-11","除草剤","ヨドバシカメラ町田店",1407],["2026-03-11","領収書コピー代","っセブンイレブン綱島西",20],["2026-03-11","交通費2名分","東林間ー中央林間",560],["2026-03-17","殺虫剤　屋外用","ヨドバシカメラ",3750],["2026-03-17","交通費2名分","東林間ー中央林間",560],["2026-03-19","殺虫剤","ヨドバシカメラ",1312],["2026-03-20","車専用ブロック","ユニデイ相模大野",1630],["2026-04-08","除草用ゴミ袋","カインズりんかんモール",3490],["2026-04-08","交通費2名分","東林間ー中央林間",560],["2026-04-26","殺虫剤","OSドラッグ町田店",1955],["2026-04-26","交通費2名分","東林間ー中央林間",560],["2026-05-18","除草剤","ヨドバシカメラ町田店",2080],["2026-05-18","交通費2名分","東林間ー中央林間",560],["2026-05-27","交通費2名分","東林間ー中央林間",560],["2026-06-01","交通費2名分","東林間ー中央林間",560],["2026-06-15","交通費2名分","東林間ー中央林間",560],["2026-07-01","交通費2名分","東林間ー中央林間",560],["2026-07-17","除草作業用ポット","メルカリ",1980],["2026-07-17","交通費2名分","東林間ー中央林間",560],["2026-08-04","作業用箒","ヨドバシカメラ",794],["2026-08-04","領収書コピー代","セブンイレブン綱島西",20],["2026-08-04","交通費2名分","東林間ー中央林間",560],["2026-11-08","作業着用防水スプレー","ヨドバシカメラ",1980],["2026-11-08","交通費2名分","東林間ー中央林間",560],["2026-11-11","コピー代","セブンイレブン中央林間",20]],"2025":[["2025-01-08","交通費2名分","東林間ー中央林間",560],["2025-01-22","交通費2名分","東林間ー中央林間",560],["2025-02-05","交通費2名分","東林間ー中央林間",560],["2025-02-26","交通費2名分","東林間ー中央林間",560],["2025-03-05","交通費2名分","東林間ー中央林間",560],["2025-03-26","交通費2名分","東林間ー中央林間",560],["2025-04-01","交通費2名分","東林間ー中央林間",560],["2025-04-01","除草剤","ヨドバシカメラ町田店",1259],["2025-04-05","区画ロープ","キャンドゥ町田店",220],["2025-04-05","交通費2名分","東林間ー中央林間",560],["2025-04-16","除草剤ジョーロ","カインズ林間モール",1080],["2025-04-16","交通費2名分","東林間ー中央林間",560],["2025-05-07","交通費2名分","東林間ー中央林間",560],["2025-05-08","交通費2名分","東林間ー中央林間",560],["2025-05-08","除草剤","ヨドバシカメラ町田店",2699],["2025-05-09","殺虫剤","ヨドバシカメラ町田店",978],["2025-06-04","交通費2名分","東林間ー中央林間",560],["2025-06-18","交通費2名分","東林間ー中央林間",560],["2025-07-02","交通費2名分","東林間ー中央林間",560],["2025-07-16","交通費2名分","東林間ー中央林間",560],["2025-08-06","交通費2名分","東林間ー中央林間",560],["2025-08-20","交通費2名分","東林間ー中央林間",560],["2025-09-06","殺虫剤","ヨドバシカメラ町田店",927],["2025-09-06","交通費2名分","東林間ー中央林間",560],["2025-09-09","除草用スプレー","オーエスドラッグ町田店",1313],["2025-09-09","交通費2名分","東林間ー中央林間",560],["2025-10-15","交通費2名分","東林間ー中央林間",560],["2025-10-15","除草パネル","カインズりんかんモール",5560],["2025-10-19","除草シート","アマゾン",4126],["2025-10-19","交通費2名分","東林間ー中央林間",560],["2025-11-12","交通費2名分","東林間ー中央林間",560],["2025-11-12","除草シート固定テープ","ダイソーカインズーりんかんモール",440],["2025-11-23","除草シート","カインズーりんかんモール",4476],["2025-12-23","交通費2名分","東林間ー中央林間",560]],"2024":[["2024-01-03","交通費２名分","東林間ー中央林間",560],["2024-01-24","交通費２名分","東林間ー中央林間",560],["2024-02-04","ダストボックス","カインズりんかんモール",1480],["2024-02-04","交通費２名分","東林間ー中央林間",560],["2024-02-21","交通費２名分","東林間ー中央林間",560],["2024-03-06","交通費２名分","東林間ー中央林間",560],["2024-03-27","交通費２名分","東林間ー中央林間",560],["2024-04-03","交通費２名分","東林間ー中央林間",560],["2024-04-24","交通費２名分","東林間ー中央林間",560],["2024-05-15","防草シート","カインズりんかんモール",1280],["2024-05-15","交通費２名分","東林間ー中央林間",560],["2024-05-17","防草シート","カインズりんかんモール",598],["2024-05-17","交通費２名分","東林間ー中央林間",560],["2024-06-01","交通費２名分","東林間ー中央林間",560],["2024-06-19","交通費２名分","東林間ー中央林間",560],["2024-07-03","交通費２名分","東林間ー中央林間",560],["2024-07-24","交通費２名分","東林間ー中央林間",560],["2024-08-07","交通費２名分","東林間ー中央林間",560],["2024-08-16","交通費２名分","東林間ー中央林間",560],["2024-08-16","殺虫剤","ヨドバシカメラ町田店",1160],["2024-09-11","防草シートテープ","カインズりんかんモール",1196],["2024-09-11","交通費2名分","東林間ー中央林間",560],["2024-09-21","交通費２名分","東林間ー中央林間",560],["2024-10-02","交通費２名分","東林間ー中央林間",560],["2024-10-09","雑草ゴミ袋","カインズりんかんモール",1792],["2024-10-09","交通費2名分","東林間ー中央林間",560],["2024-11-06","交通費2名分","東林間ー中央林間",560],["2024-11-20","交通費2名分","東林間ー中央林間",560],["2024-12-04","交通費2名分","東林間ー中央林間",560],["2024-12-18","交通費2名分","東林間ー中央林間",560]]};
+  var QUICK = { item: '交通費2名分', payee: '東林間ー中央林間', amount: 560 };
+
+  var $ = function(id){ return document.getElementById(id); };
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function todayStr(){ var d = new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function toNumber(s){
+    if(s === null || s === undefined) return 0;
+    s = String(s).replace(/[０-９]/g, function(c){ return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); }).replace(/[^0-9]/g, '');
+    var n = parseInt(s, 10); return isNaN(n) ? 0 : n;
+  }
+  function yen(n){ return n.toLocaleString('ja-JP'); }
+  function esc(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+  function slash(d){ return d.replace(/-/g, '/'); }
+  function toast(msg){
+    var t = $('toast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(toast.tm); toast.tm = setTimeout(function(){ t.classList.remove('show'); }, 2000);
+  }
+
+  // ---------- 保存まわり ----------
+  var nextId = 1;
+  function fromSeed(){
+    var rows = [];
+    Object.keys(SEED).forEach(function(y){
+      SEED[y].forEach(function(r){ rows.push({ id: nextId++, date: r[0], item: r[1], payee: r[2], amount: r[3] }); });
+    });
+    return rows;
+  }
+  function load(){
+    var data = null;
+    try{ data = JSON.parse(localStorage.getItem(STORE_KEY)); }catch(e){}
+    if(!data || !Array.isArray(data.rows)) data = { rows: fromSeed() };
+    data.rows.forEach(function(r){ if(r.id >= nextId) nextId = r.id + 1; });
+    return data;
+  }
+  function save(){
+    try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
+    catch(e){ alert('保存できませんでした。ブラウザの設定（プライベートブラウズなど）をご確認ください。'); }
+  }
+  var state = load();
+  save();
+
+  var year = state.current || String(new Date().getFullYear());
+  var editId = null;
+
+  function yearRows(y){
+    return state.rows.filter(function(r){ return r.date.slice(0, 4) === y; })
+      .sort(function(a, b){ return a.date < b.date ? -1 : a.date > b.date ? 1 : a.id - b.id; });
+  }
+  function sum(rows){ return rows.reduce(function(s, r){ return s + toNumber(r.amount); }, 0); }
+
+  // ---------- 画面 ----------
+  function renderYears(){
+    var ys = {};
+    state.rows.forEach(function(r){ ys[r.date.slice(0, 4)] = 1; });
+    ys[String(new Date().getFullYear())] = 1;
+    ys[year] = 1;
+    $('years').innerHTML = Object.keys(ys).sort().reverse().map(function(y){
+      return '<button type="button" data-y="' + y + '"' + (y === year ? ' class="cur"' : '') + '>' + y + '年</button>';
+    }).join('');
+  }
+
+  function renderList(){
+    var rows = yearRows(year);
+    $('listTitle').textContent = year + '年の記録';
+    $('listCount').textContent = rows.length + '件';
+    if(rows.length === 0){
+      $('list').innerHTML = '<li class="empty">この年の記録はまだありません。</li>';
+    }else{
+      $('list').innerHTML = rows.map(function(r){
+        var p = r.date.split('-');
+        return '<li' + (r.id === editId ? ' class="sel"' : '') + '><button type="button" data-id="' + r.id + '">' +
+          '<span class="d">' + (+p[1]) + '月' + (+p[2]) + '日</span>' +
+          '<span class="it">' + esc(r.item) + '<span class="py">' + esc(r.payee) + '</span></span>' +
+          '<span class="a">' + yen(toNumber(r.amount)) + '円</span></button></li>';
+      }).join('');
+    }
+    var t = sum(rows);
+    $('sumView').textContent = yen(t) + '円';
+    $('tLbl').textContent = year + '年の合計（' + rows.length + '件）';
+    $('totalView').textContent = yen(t) + '円';
+    var html = '';
+    for(var m = 1; m <= 12; m++){
+      var mr = rows.filter(function(r){ return +r.date.slice(5, 7) === m; });
+      if(mr.length) html += '<tr><td>' + m + '月（' + mr.length + '件）</td><td>' + yen(sum(mr)) + '円</td></tr>';
+    }
+    $('monthTable').innerHTML = html || '<tr><td>記録はまだありません。</td><td></td></tr>';
+  }
+
+  function renderSuggest(){
+    var items = {}, payees = {};
+    state.rows.forEach(function(r){ if(r.item) items[r.item] = 1; if(r.payee) payees[r.payee] = 1; });
+    var opt = function(o){ return Object.keys(o).sort().map(function(v){ return '<option value="' + esc(v) + '">'; }).join(''); };
+    $('itemList').innerHTML = opt(items);
+    $('payeeList').innerHTML = opt(payees);
+  }
+
+  function renderAll(){ renderYears(); renderList(); renderSuggest(); }
+
+  function setYear(y){
+    year = y; state.current = y; save();
+    renderYears(); renderList();
+  }
+
+  // ---------- 入力 ----------
+  function clearForm(){
+    $('fDate').value = todayStr();
+    $('fAmount').value = '';
+    $('fItem').value = '';
+    $('fPayee').value = '';
+  }
+  function readForm(){
+    var r = { date: $('fDate').value, item: $('fItem').value.trim(), payee: $('fPayee').value.trim(), amount: toNumber($('fAmount').value) };
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(r.date)){ alert('日付を入れてください。'); return null; }
+    if(!r.item){ alert('項目を入れてください。'); return null; }
+    if(!r.amount){ alert('金額を入れてください。'); return null; }
+    return r;
+  }
+  function endEdit(){
+    editId = null;
+    $('formBox').classList.remove('editing');
+    $('addArea').style.display = '';
+    $('editArea').style.display = 'none';
+    clearForm();
+  }
+
+  $('quickBtn').addEventListener('click', function(){
+    if(!$('fDate').value) $('fDate').value = todayStr();
+    $('fItem').value = QUICK.item;
+    $('fPayee').value = QUICK.payee;
+    $('fAmount').value = yen(QUICK.amount);
+    toast('入れました。日付を見て「記録する」を押してね');
+  });
+
+  $('fAmount').addEventListener('focus', function(e){ var n = toNumber(e.target.value); e.target.value = n ? String(n) : ''; });
+  $('fAmount').addEventListener('blur', function(e){ var n = toNumber(e.target.value); e.target.value = n ? yen(n) : ''; });
+
+  $('saveBtn').addEventListener('click', function(){
+    var r = readForm(); if(!r) return;
+    r.id = nextId++;
+    state.rows.push(r);
+    save();
+    var y = r.date.slice(0, 4);
+    if(y !== year){ year = y; state.current = y; save(); }
+    clearForm();
+    renderAll();
+    toast('記録しました');
+  });
+
+  $('list').addEventListener('click', function(e){
+    var b = e.target.closest('[data-id]'); if(!b) return;
+    var id = +b.getAttribute('data-id');
+    var r = state.rows.filter(function(x){ return x.id === id; })[0]; if(!r) return;
+    editId = id;
+    $('fDate').value = r.date;
+    $('fItem').value = r.item;
+    $('fPayee').value = r.payee;
+    $('fAmount').value = yen(toNumber(r.amount));
+    $('formBox').classList.add('editing');
+    $('addArea').style.display = 'none';
+    $('editArea').style.display = '';
+    renderList();
+    $('formBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  $('updBtn').addEventListener('click', function(){
+    var r = readForm(); if(!r) return;
+    state.rows.forEach(function(x){
+      if(x.id === editId){ x.date = r.date; x.item = r.item; x.payee = r.payee; x.amount = r.amount; }
+    });
+    var y = r.date.slice(0, 4);
+    if(y !== year){ year = y; state.current = y; }
+    save(); endEdit(); renderAll();
+    toast('なおしました');
+  });
+  $('cancelBtn').addEventListener('click', function(){ endEdit(); renderList(); });
+  $('delBtn').addEventListener('click', function(){
+    var r = state.rows.filter(function(x){ return x.id === editId; })[0]; if(!r) return;
+    if(!confirm(slash(r.date) + '「' + r.item + '」' + yen(toNumber(r.amount)) + '円 を消しますか？')) return;
+    state.rows = state.rows.filter(function(x){ return x.id !== editId; });
+    save(); endEdit(); renderAll();
+    toast('消しました');
+  });
+
+  $('years').addEventListener('click', function(e){
+    var b = e.target.closest('[data-y]'); if(b){ endEdit(); setYear(b.getAttribute('data-y')); }
+  });
+
+  // ---------- コピー ----------
+  $('copyBtn').addEventListener('click', function(){
+    var rows = yearRows(year);
+    var lines = [year + '年' + PLACE + '経費', '日付\t項目\t支払い先\t金額'];
+    rows.forEach(function(r){ lines.push(slash(r.date) + '\t' + r.item + '\t' + r.payee + '\t' + yen(toNumber(r.amount)) + '円'); });
+    lines.push('合計\t\t\t' + yen(sum(rows)) + '円');
+    var txt = lines.join('\n');
+    var done = function(){ toast('コピーしました'); };
+    var fallback = function(){
+      var ta = document.createElement('textarea'); ta.value = txt; ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed'; ta.style.top = '0'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, txt.length);
+      try{ document.execCommand('copy'); done(); }catch(e){ alert('コピーできませんでした。'); }
+      document.body.removeChild(ta);
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done, fallback);
+    else fallback();
+  });
+
+  // ---------- バックアップ ----------
+  function shareOrDownload(file, url){
+    try{
+      if(navigator.share && navigator.canShare && navigator.canShare({ files: [file] })){
+        return navigator.share({ files: [file], title: file.name }).catch(function(){});
+      }
+    }catch(e){}
+    var a = document.createElement('a'); a.href = url; a.download = file.name;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  }
+  $('backupBtn').addEventListener('click', function(){
+    var blob = new Blob([JSON.stringify(state)], { type: 'application/json' });
+    var file = new File([blob], '駐車場経費_バックアップ_' + todayStr() + '.json', { type: 'application/json' });
+    shareOrDownload(file, URL.createObjectURL(blob));
+  });
+  $('restoreFile').addEventListener('change', function(e){
+    var f = e.target.files[0]; if(!f) return;
+    var rd = new FileReader();
+    rd.onload = function(){
+      var d = null;
+      try{ d = JSON.parse(rd.result); }catch(err){}
+      if(!d || !Array.isArray(d.rows)){ alert('このファイルは読みこめませんでした。'); return; }
+      if(!confirm('いまの記録を、ファイルの中身（' + d.rows.length + '件）に入れかえます。よろしいですか？')) return;
+      state = d; nextId = 1;
+      state.rows.forEach(function(r){ if(r.id >= nextId) nextId = r.id + 1; });
+      save(); endEdit(); renderAll();
+      toast('戻しました');
+    };
+    rd.readAsText(f);
+    e.target.value = '';
+  });
+
+  // ---------- PDF ----------
+  var DPI = 200, MM = DPI / 25.4, PT = 25.4 / 72;
+  var FONT = '"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo","Noto Sans JP","Noto Sans CJK JP",sans-serif';
+  var COLS = [20, 52, 105, 160, 190];     // 日付｜項目｜支払い先｜金額
+  var ROW_H = 6.2, PER_PAGE = 40, TOP = 30;
+
+  function drawPage(rows, pageNo, pages, isLast, total){
+    var cv = document.createElement('canvas');
+    cv.width = Math.round(210 * MM); cv.height = Math.round(297 * MM);
+    var c = cv.getContext('2d');
+    c.fillStyle = '#FFFFFF'; c.fillRect(0, 0, cv.width, cv.height);
+    c.setTransform(MM, 0, 0, MM, 0, 0);
+    c.fillStyle = '#000000'; c.strokeStyle = '#000000';
+    function font(pt, bold){ c.font = (bold ? 'bold ' : '') + (pt * PT).toFixed(3) + 'px ' + FONT; }
+    function line(x1, y1, x2, y2, w){ c.lineWidth = w || 0.25; c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.stroke(); }
+    function text(t, x, y, align, maxW){
+      c.textAlign = align || 'left'; c.textBaseline = 'middle';
+      if(maxW && c.measureText(t).width > maxW) c.fillText(t, x, y, maxW); else c.fillText(t, x, y);
+    }
+    font(15, true);
+    text(year + '年' + PLACE + '経費', 105, 20, 'center');
+    if(pages > 1){ font(9); text(pageNo + ' / ' + pages, 190, 20, 'right'); }
+
+    var n = rows.length + 1 + (isLast ? 1 : 0);
+    var bottom = TOP + ROW_H * n;
+    c.fillStyle = '#E8F0EA'; c.fillRect(COLS[0], TOP, COLS[4] - COLS[0], ROW_H); c.fillStyle = '#000000';
+    font(10, true);
+    ['日付', '項目', '支払い先', '金額'].forEach(function(h, i){ text(h, (COLS[i] + COLS[i + 1]) / 2, TOP + ROW_H / 2, 'center'); });
+    font(10);
+    rows.forEach(function(r, i){
+      var y = TOP + ROW_H * (i + 1.5);
+      text(slash(r.date), (COLS[0] + COLS[1]) / 2, y, 'center');
+      text(r.item, COLS[1] + 1.5, y, 'left', COLS[2] - COLS[1] - 3);
+      text(r.payee, COLS[2] + 1.5, y, 'left', COLS[3] - COLS[2] - 3);
+      text('¥' + yen(toNumber(r.amount)), COLS[4] - 1.5, y, 'right');
+    });
+    for(var k = 1; k < n; k++) line(COLS[0], TOP + ROW_H * k, COLS[4], TOP + ROW_H * k, k === 1 ? 0.4 : 0.2);
+    var colBottom = isLast ? bottom - ROW_H : bottom;
+    for(var j = 1; j < 4; j++) line(COLS[j], TOP, COLS[j], j === 3 ? bottom : colBottom, 0.25);
+    if(isLast){
+      line(COLS[0], bottom - ROW_H, COLS[4], bottom - ROW_H, 0.5);
+      font(11, true);
+      text('合　計', (COLS[0] + COLS[1]) / 2, bottom - ROW_H / 2, 'center');
+      text('（' + total.count + '件）', COLS[1] + 1.5, bottom - ROW_H / 2, 'left');
+      text('¥' + yen(total.sum), COLS[4] - 1.5, bottom - ROW_H / 2, 'right');
+    }
+    c.lineWidth = 0.45; c.strokeRect(COLS[0], TOP, COLS[4] - COLS[0], bottom - TOP);
+    return cv;
+  }
+
+  function makePdf(jpegs, title){
+    var enc = function(str){ var o = new Uint8Array(str.length); for(var i = 0; i < str.length; i++) o[i] = str.charCodeAt(i) & 0xFF; return o; };
+    var hex16 = function(str){ var h = 'FEFF'; for(var i = 0; i < str.length; i++) h += ('000' + str.charCodeAt(i).toString(16).toUpperCase()).slice(-4); return '<' + h + '>'; };
+    var W = '595.28', H = '841.89', content = 'q ' + W + ' 0 0 ' + H + ' 0 0 cm /Im0 Do Q';
+    var parts = [], offsets = [], len = 0, N = jpegs.length;
+    var push = function(u8){ parts.push(u8); len += u8.length; };
+    var obj = function(n, body){ offsets[n] = len; push(enc(n + ' 0 obj\n' + body + '\nendobj\n')); };
+    // 1:カタログ 2:ページたち 3:情報 そのあと、1ページごとに ページ・絵・中身 の3つ
+    push(enc('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n'));
+    obj(1, '<< /Type /Catalog /Pages 2 0 R >>');
+    var kids = []; for(var p = 0; p < N; p++) kids.push((4 + p * 3) + ' 0 R');
+    obj(2, '<< /Type /Pages /Kids [' + kids.join(' ') + '] /Count ' + N + ' >>');
+    obj(3, '<< /Title ' + hex16(title) + ' /Producer (chushajo_keihi) >>');
+    jpegs.forEach(function(j, p){
+      var pg = 4 + p * 3, im = pg + 1, ct = pg + 2;
+      obj(pg, '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + W + ' ' + H + '] /Resources << /XObject << /Im0 ' + im + ' 0 R >> >> /Contents ' + ct + ' 0 R >>');
+      offsets[im] = len;
+      push(enc(im + ' 0 obj\n<< /Type /XObject /Subtype /Image /Width ' + j.w + ' /Height ' + j.h +
+        ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + j.data.length + ' >>\nstream\n'));
+      push(j.data); push(enc('\nendstream\nendobj\n'));
+      obj(ct, '<< /Length ' + content.length + ' >>\nstream\n' + content + '\nendstream');
+    });
+    var size = 4 + N * 3, xref = len, x = 'xref\n0 ' + size + '\n0000000000 65535 f \n';
+    for(var n = 1; n < size; n++) x += ('000000000' + offsets[n]).slice(-10) + ' 00000 n \n';
+    push(enc(x + 'trailer\n<< /Size ' + size + ' /Root 1 0 R /Info 3 0 R >>\nstartxref\n' + xref + '\n%%EOF\n'));
+    var all = new Uint8Array(len), pos = 0;
+    parts.forEach(function(u8){ all.set(u8, pos); pos += u8.length; });
+    return all;
+  }
+
+  var pdfFile = null, pdfUrl = null;
+  function buildPdf(){
+    var rows = yearRows(year);
+    var pages = Math.max(1, Math.ceil((rows.length + 1) / PER_PAGE));
+    var total = { sum: sum(rows), count: rows.length };
+    var jpegs = [], previews = [];
+    for(var p = 0; p < pages; p++){
+      var cv = drawPage(rows.slice(p * PER_PAGE, (p + 1) * PER_PAGE), p + 1, pages, p === pages - 1, total);
+      var url = cv.toDataURL('image/jpeg', 0.9);
+      var bin = atob(url.split(',')[1]), u8 = new Uint8Array(bin.length);
+      for(var i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+      jpegs.push({ data: u8, w: cv.width, h: cv.height });
+      previews.push(url);
+      cv.width = cv.height = 1;
+    }
+    var name = year + '年' + PLACE + '経費';
+    var blob = new Blob([makePdf(jpegs, name)], { type: 'application/pdf' });
+    try{ pdfFile = new File([blob], name + '.pdf', { type: 'application/pdf' }); }catch(e){ pdfFile = blob; }
+    if(pdfUrl) URL.revokeObjectURL(pdfUrl);
+    pdfUrl = URL.createObjectURL(blob);
+    return { name: name + '.pdf', previews: previews };
+  }
+  function canShareFile(){
+    try{ return !!(navigator.share && navigator.canShare && pdfFile instanceof File && navigator.canShare({ files: [pdfFile] })); }
+    catch(e){ return false; }
+  }
+  function sharePdf(){
+    if(!canShareFile()) return Promise.reject(new Error('cannot-share'));
+    return navigator.share({ files: [pdfFile], title: pdfFile.name });
+  }
+  function onMakePdf(){
+    if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+    var info;
+    try{ info = buildPdf(); }catch(e){ alert('PDFを作れませんでした。もう一度お試しください。'); return; }
+    $('pdfName').textContent = 'ファイル名：' + info.name;
+    $('pdfPreviews').innerHTML = info.previews.map(function(u){ return '<img class="preview" alt="PDFの見本" src="' + u + '">'; }).join('');
+    $('pdfOpen').href = pdfUrl;
+    var ok = canShareFile();
+    $('pdfShare').style.display = ok ? '' : 'none';
+    $('pdfMsg').textContent = ok
+      ? '共有メニューが出なかったときは、下の「共有する」を押してください。'
+      : '「PDFを新しいタブで開く」を押して、開いたPDFの共有ボタン（□に↑）から保存してください。';
+    $('pdfPanel').classList.add('show');
+    $('pdfPanel').scrollTop = 0;
+    if(ok) sharePdf().catch(function(err){
+      if(err && err.name === 'AbortError') return;
+      $('pdfMsg').textContent = '共有メニューを開けませんでした。下の「共有する」をもう一度押してください。';
+    });
+  }
+  $('pdfBtn').addEventListener('click', onMakePdf);
+  $('pdfBtn2').addEventListener('click', onMakePdf);
+  $('pdfShare').addEventListener('click', function(){
+    sharePdf().catch(function(err){
+      if(err && err.name === 'AbortError') return;
+      $('pdfMsg').textContent = '共有メニューを開けませんでした。「PDFを新しいタブで開く」を使ってください。';
+    });
+  });
+  $('pdfClose').addEventListener('click', function(){ $('pdfPanel').classList.remove('show'); });
+
+  // ---------- はじめ ----------
+  clearForm();
+  renderAll();
+})();
+</script>
+</body>
+</html>
