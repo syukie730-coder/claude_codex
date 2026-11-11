@@ -275,7 +275,8 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
   var state = load();
   save();
 
-  var year = state.current || String(new Date().getFullYear());
+  // 開いたときは、いつも今年を出す（年が変わったら、自動で新しい年になる）
+  var year = String(new Date().getFullYear());
   var editId = null, newId = null;
 
   function yearRows(y){
