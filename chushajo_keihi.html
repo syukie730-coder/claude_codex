@@ -58,6 +58,7 @@ input:focus{ outline:3px solid #9CCFAE; outline-offset:0; }
 .btn-row{ display:flex; gap:10px; }
 .btn-row .btn{ flex:1; }
 .editing{ outline:3px solid #E0A800; }
+.adding{ outline:3px solid #9CCFAE; }
 .edit-label{ display:none; background:#FFF4CC; border-radius:6px; padding:8px 10px; margin-bottom:12px; font-weight:700; }
 .editing .edit-label{ display:block; }
 
@@ -97,8 +98,8 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
 .stack .btn{ margin-bottom:10px; }
 .check{ display:flex; align-items:center; gap:10px; font-size:17px; font-weight:700; min-height:48px; margin-bottom:6px; }
 .check input{ width:26px; height:26px; accent-color:var(--main); }
-.steps{ margin:12px 0 0 1.4em; font-size:17px; }
-.steps li{ margin-bottom:8px; }
+.add-row{ margin:10px 0 4px; border-style:dashed; border-width:2px; color:var(--main-dark); border-color:var(--main); }
+.list li.new button{ background:#EAF4EC; }
 
 /* 下の固定バー */
 .bottom-bar{
@@ -138,10 +139,22 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
 <main>
   <div class="years" id="years"></div>
 
+  <!-- 一覧 -->
+  <section class="box">
+    <div class="list-head"><h2 id="listTitle"></h2><span id="listCount"></span></div>
+    <p class="note" style="margin:0 0 8px;">なおしたいときは、その行を押してください。日付の順に自動でならびます。</p>
+    <ul class="list" id="list"></ul>
+    <button type="button" class="btn wide add-row" id="addRowBtn">＋ 行を追加する</button>
+    <div class="sum-row"><span>合計</span><span id="sumView">0円</span></div>
+    <details>
+      <summary>月ごとの合計を見る</summary>
+      <table class="mtable" id="monthTable"></table>
+    </details>
+  </section>
+
   <!-- 記録する -->
-  <section class="box" id="formBox">
-    <h2>記録する</h2>
-    <div class="edit-label">いま、記録をなおしています</div>
+  <section class="box" id="formBox" style="display:none;">
+    <h2 id="formTitle">新しい行を追加</h2>
     <button type="button" class="btn quick wide" id="quickBtn">いつもの交通費（2名分・560円）を入れる</button>
     <div style="height:12px;"></div>
     <div class="grid2 field">
@@ -156,7 +169,10 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
     <datalist id="itemList"></datalist>
     <datalist id="payeeList"></datalist>
     <div id="addArea">
-      <button type="button" class="btn main wide" id="saveBtn">記録する</button>
+      <div class="btn-row">
+        <button type="button" class="btn main" id="saveBtn">追加する</button>
+        <button type="button" class="btn" id="cancelAdd">やめる</button>
+      </div>
     </div>
     <div id="editArea" style="display:none;">
       <div class="btn-row">
@@ -169,32 +185,12 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
     <p class="note">項目と支払い先は、文字を入れると前に使ったものが出てきます。</p>
   </section>
 
-  <!-- 一覧 -->
-  <section class="box">
-    <div class="list-head"><h2 id="listTitle"></h2><span id="listCount"></span></div>
-    <p class="note" style="margin:0 0 8px;">なおしたいときは、その行を押してください。</p>
-    <ul class="list" id="list"></ul>
-    <div class="sum-row"><span>合計</span><span id="sumView">0円</span></div>
-    <details>
-      <summary>月ごとの合計を見る</summary>
-      <table class="mtable" id="monthTable"></table>
-    </details>
-  </section>
-
   <!-- 税理士さんへ -->
   <section class="box stack">
-    <h2>セブンイレブンで印刷する（年末に）</h2>
+    <h2>印刷する</h2>
     <label class="check"><input type="checkbox" id="withSummary" checked> 月ごとの合計もつける</label>
     <button type="button" class="btn main wide" id="pdfBtn2">この年の表を印刷用PDFにする</button>
     <p class="note" style="margin-top:0;">A4たて・白黒で、きれいに印刷できる形です。</p>
-    <ol class="steps">
-      <li>上のボタンを押して、PDFを作ります。</li>
-      <li>出てきた共有メニューで「netprint（ネットプリント）」のアプリを選びます。<br>（アプリが出ないときは「ファイルに保存」してから、ネットプリントのアプリで選びます）</li>
-      <li>用紙は「A4」、色は「白黒」を選んで登録します。</li>
-      <li>「プリント予約番号」が出たら、メモかスクショをしておきます。</li>
-      <li>お店のマルチコピー機で「プリント」→「ネットプリント」を選び、番号を入れて印刷します。</li>
-    </ol>
-    <p class="note">ネットプリントのアプリは、App Storeで「netprint」とさがすと出てきます。番号には使える期限があるので、登録したら早めに印刷してね。料金は、お店のコピー機で払います。</p>
   </section>
 
   <section class="box stack">
@@ -228,7 +224,7 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
     <h2>PDFができました</h2>
     <p class="fname" id="pdfName"></p>
     <p id="pdfMsg"></p>
-    <button type="button" class="btn main wide" id="pdfShare">共有する（ネットプリント・ファイルに保存・メール）</button>
+    <button type="button" class="btn main wide" id="pdfShare">共有する</button>
     <a class="btn wide" id="pdfOpen" target="_blank" rel="noopener">PDFを新しいタブで開く</a>
     <button type="button" class="btn wide" id="pdfClose">閉じる</button>
     <div id="pdfPreviews"></div>
@@ -291,7 +287,7 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
   save();
 
   var year = state.current || String(new Date().getFullYear());
-  var editId = null;
+  var editId = null, newId = null;
 
   function yearRows(y){
     return state.rows.filter(function(r){ return r.date.slice(0, 4) === y; })
@@ -319,7 +315,7 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
     }else{
       $('list').innerHTML = rows.map(function(r){
         var p = r.date.split('-');
-        return '<li' + (r.id === editId ? ' class="sel"' : '') + '><button type="button" data-id="' + r.id + '">' +
+        return '<li' + (r.id === editId ? ' class="sel"' : r.id === newId ? ' class="new"' : '') + '><button type="button" data-id="' + r.id + '">' +
           '<span class="d">' + (+p[1]) + '月' + (+p[2]) + '日</span>' +
           '<span class="it">' + esc(r.item) + '<span class="py">' + esc(r.payee) + '</span></span>' +
           '<span class="a">' + yen(toNumber(r.amount)) + '円</span></button></li>';
@@ -368,18 +364,34 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
   }
   function endEdit(){
     editId = null;
-    $('formBox').classList.remove('editing');
+    $('formBox').classList.remove('editing', 'adding');
+    $('formBox').style.display = 'none';
     $('addArea').style.display = '';
     $('editArea').style.display = 'none';
     clearForm();
   }
+  function openAdd(){
+    endEdit();
+    // 日付：今の年なら今日、ほかの年なら その年の最後の行と同じ日
+    var rows = yearRows(year);
+    if(year === todayStr().slice(0, 4)) $('fDate').value = todayStr();
+    else if(rows.length) $('fDate').value = rows[rows.length - 1].date;
+    else $('fDate').value = year + '-01-01';
+    $('formTitle').textContent = '新しい行を追加';
+    $('formBox').classList.add('adding');
+    $('formBox').style.display = '';
+    renderList();
+    $('formBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  $('addRowBtn').addEventListener('click', openAdd);
+  $('cancelAdd').addEventListener('click', function(){ endEdit(); renderList(); });
 
   $('quickBtn').addEventListener('click', function(){
     if(!$('fDate').value) $('fDate').value = todayStr();
     $('fItem').value = QUICK.item;
     $('fPayee').value = QUICK.payee;
     $('fAmount').value = yen(QUICK.amount);
-    toast('入れました。日付を見て「記録する」を押してね');
+    toast('入れました。日付を見て「追加する」を押してね');
   });
 
   $('fAmount').addEventListener('focus', function(e){ var n = toNumber(e.target.value); e.target.value = n ? String(n) : ''; });
@@ -392,9 +404,13 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
     save();
     var y = r.date.slice(0, 4);
     if(y !== year){ year = y; state.current = y; save(); }
-    clearForm();
+    endEdit();
+    newId = r.id;
     renderAll();
-    toast('記録しました');
+    newId = null;
+    var li = document.querySelector('#list li.new');
+    if(li) li.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    toast('追加しました');
   });
 
   $('list').addEventListener('click', function(e){
@@ -406,7 +422,10 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
     $('fItem').value = r.item;
     $('fPayee').value = r.payee;
     $('fAmount').value = yen(toNumber(r.amount));
+    $('formTitle').textContent = 'この行をなおす';
+    $('formBox').classList.remove('adding');
     $('formBox').classList.add('editing');
+    $('formBox').style.display = '';
     $('addArea').style.display = 'none';
     $('editArea').style.display = '';
     renderList();
@@ -654,7 +673,7 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
     var ok = canShareFile();
     $('pdfShare').style.display = ok ? '' : 'none';
     $('pdfMsg').textContent = ok
-      ? '共有メニューで「netprint」を選ぶと、セブンイレブンで印刷できます。メニューが出なかったときは、下の「共有する」を押してください。'
+      ? '共有メニューが出なかったときは、下の「共有する」を押してください。'
       : '「PDFを新しいタブで開く」を押して、開いたPDFの共有ボタン（□に↑）から保存してください。';
     $('pdfPanel').classList.add('show');
     $('pdfPanel').scrollTop = 0;
