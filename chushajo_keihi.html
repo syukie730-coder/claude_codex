@@ -95,6 +95,10 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
 .mtable td{ border-bottom:1px solid #DDDDDD; padding:8px 4px; }
 .mtable td:last-child{ text-align:right; white-space:nowrap; }
 .stack .btn{ margin-bottom:10px; }
+.check{ display:flex; align-items:center; gap:10px; font-size:17px; font-weight:700; min-height:48px; margin-bottom:6px; }
+.check input{ width:26px; height:26px; accent-color:var(--main); }
+.steps{ margin:12px 0 0 1.4em; font-size:17px; }
+.steps li{ margin-bottom:8px; }
 
 /* 下の固定バー */
 .bottom-bar{
@@ -179,10 +183,24 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
 
   <!-- 税理士さんへ -->
   <section class="box stack">
-    <h2>税理士さんにわたす</h2>
-    <button type="button" class="btn main wide" id="pdfBtn2">この年の表をPDFにする</button>
+    <h2>セブンイレブンで印刷する（年末に）</h2>
+    <label class="check"><input type="checkbox" id="withSummary" checked> 月ごとの合計もつける</label>
+    <button type="button" class="btn main wide" id="pdfBtn2">この年の表を印刷用PDFにする</button>
+    <p class="note" style="margin-top:0;">A4たて・白黒で、きれいに印刷できる形です。</p>
+    <ol class="steps">
+      <li>上のボタンを押して、PDFを作ります。</li>
+      <li>出てきた共有メニューで「netprint（ネットプリント）」のアプリを選びます。<br>（アプリが出ないときは「ファイルに保存」してから、ネットプリントのアプリで選びます）</li>
+      <li>用紙は「A4」、色は「白黒」を選んで登録します。</li>
+      <li>「プリント予約番号」が出たら、メモかスクショをしておきます。</li>
+      <li>お店のマルチコピー機で「プリント」→「ネットプリント」を選び、番号を入れて印刷します。</li>
+    </ol>
+    <p class="note">ネットプリントのアプリは、App Storeで「netprint」とさがすと出てきます。番号には使える期限があるので、登録したら早めに印刷してね。料金は、お店のコピー機で払います。</p>
+  </section>
+
+  <section class="box stack">
+    <h2>税理士さんに送る</h2>
     <button type="button" class="btn wide" id="copyBtn">この年の表をコピーする</button>
-    <p class="note" style="margin-top:0;">コピーしたものは、メールやLINE、Googleスプレッドシートにそのまま貼りつけられます。</p>
+    <p class="note" style="margin-top:0;">コピーしたものは、メールやLINE、Googleスプレッドシートにそのまま貼りつけられます。PDFをそのままメールで送ることもできます。</p>
   </section>
 
   <!-- 記録を守る -->
@@ -201,7 +219,7 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
       <div class="t-lbl" id="tLbl">合計</div>
       <div class="t-val" id="totalView">0円</div>
     </div>
-    <button type="button" class="btn main" id="pdfBtn">PDFにする</button>
+    <button type="button" class="btn main" id="pdfBtn">印刷用<br>PDFにする</button>
   </div>
 </div>
 
@@ -210,7 +228,7 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
     <h2>PDFができました</h2>
     <p class="fname" id="pdfName"></p>
     <p id="pdfMsg"></p>
-    <button type="button" class="btn main wide" id="pdfShare">共有する（ファイルに保存・メールなど）</button>
+    <button type="button" class="btn main wide" id="pdfShare">共有する（ネットプリント・ファイルに保存・メール）</button>
     <a class="btn wide" id="pdfOpen" target="_blank" rel="noopener">PDFを新しいタブで開く</a>
     <button type="button" class="btn wide" id="pdfClose">閉じる</button>
     <div id="pdfPreviews"></div>
@@ -470,12 +488,13 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
   });
 
   // ---------- PDF ----------
-  var DPI = 200, MM = DPI / 25.4, PT = 25.4 / 72;
+  var DPI = 300, MM = DPI / 25.4, PT = 25.4 / 72;
   var FONT = '"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo","Noto Sans JP","Noto Sans CJK JP",sans-serif';
   var COLS = [20, 52, 105, 160, 190];     // 日付｜項目｜支払い先｜金額
   var ROW_H = 6.2, PER_PAGE = 40, TOP = 30;
 
-  function drawPage(rows, pageNo, pages, isLast, total){
+  // 1枚の紙（A4縦）をかく。rows が null のときは、月ごとの合計だけのページ
+  function drawPage(rows, pageNo, pages, isLast, total, withSummary){
     var cv = document.createElement('canvas');
     cv.width = Math.round(210 * MM); cv.height = Math.round(297 * MM);
     var c = cv.getContext('2d');
@@ -488,34 +507,67 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
       c.textAlign = align || 'left'; c.textBaseline = 'middle';
       if(maxW && c.measureText(t).width > maxW) c.fillText(t, x, y, maxW); else c.fillText(t, x, y);
     }
+    function headFill(x1, y1, x2, y2){ c.fillStyle = '#E6E6E6'; c.fillRect(x1, y1, x2 - x1, y2 - y1); c.fillStyle = '#000000'; }
+
     font(15, true);
     text(year + '年' + PLACE + '経費', 105, 20, 'center');
-    if(pages > 1){ font(9); text(pageNo + ' / ' + pages, 190, 20, 'right'); }
+    font(9);
+    if(pages > 1) text(pageNo + ' / ' + pages, 190, 20, 'right');
+    text('作成日 ' + slash(todayStr()), 190, 290, 'right');
 
-    var n = rows.length + 1 + (isLast ? 1 : 0);
-    var bottom = TOP + ROW_H * n;
-    c.fillStyle = '#E8F0EA'; c.fillRect(COLS[0], TOP, COLS[4] - COLS[0], ROW_H); c.fillStyle = '#000000';
-    font(10, true);
-    ['日付', '項目', '支払い先', '金額'].forEach(function(h, i){ text(h, (COLS[i] + COLS[i + 1]) / 2, TOP + ROW_H / 2, 'center'); });
-    font(10);
-    rows.forEach(function(r, i){
-      var y = TOP + ROW_H * (i + 1.5);
-      text(slash(r.date), (COLS[0] + COLS[1]) / 2, y, 'center');
-      text(r.item, COLS[1] + 1.5, y, 'left', COLS[2] - COLS[1] - 3);
-      text(r.payee, COLS[2] + 1.5, y, 'left', COLS[3] - COLS[2] - 3);
-      text('¥' + yen(toNumber(r.amount)), COLS[4] - 1.5, y, 'right');
-    });
-    for(var k = 1; k < n; k++) line(COLS[0], TOP + ROW_H * k, COLS[4], TOP + ROW_H * k, k === 1 ? 0.4 : 0.2);
-    var colBottom = isLast ? bottom - ROW_H : bottom;
-    for(var j = 1; j < 4; j++) line(COLS[j], TOP, COLS[j], j === 3 ? bottom : colBottom, 0.25);
-    if(isLast){
-      line(COLS[0], bottom - ROW_H, COLS[4], bottom - ROW_H, 0.5);
-      font(11, true);
-      text('合　計', (COLS[0] + COLS[1]) / 2, bottom - ROW_H / 2, 'center');
-      text('（' + total.count + '件）', COLS[1] + 1.5, bottom - ROW_H / 2, 'left');
-      text('¥' + yen(total.sum), COLS[4] - 1.5, bottom - ROW_H / 2, 'right');
+    var bottom = TOP;
+    if(rows){
+      var n = rows.length + 1 + (isLast ? 1 : 0);
+      bottom = TOP + ROW_H * n;
+      headFill(COLS[0], TOP, COLS[4], TOP + ROW_H);
+      font(10, true);
+      ['日付', '項目', '支払い先', '金額'].forEach(function(h, i){ text(h, (COLS[i] + COLS[i + 1]) / 2, TOP + ROW_H / 2, 'center'); });
+      font(10);
+      rows.forEach(function(r, i){
+        var y = TOP + ROW_H * (i + 1.5);
+        text(slash(r.date), (COLS[0] + COLS[1]) / 2, y, 'center');
+        text(r.item, COLS[1] + 1.5, y, 'left', COLS[2] - COLS[1] - 3);
+        text(r.payee, COLS[2] + 1.5, y, 'left', COLS[3] - COLS[2] - 3);
+        text('¥' + yen(toNumber(r.amount)), COLS[4] - 1.5, y, 'right');
+      });
+      for(var k = 1; k < n; k++) line(COLS[0], TOP + ROW_H * k, COLS[4], TOP + ROW_H * k, k === 1 ? 0.4 : 0.2);
+      var colBottom = isLast ? bottom - ROW_H : bottom;
+      for(var j = 1; j < 4; j++) line(COLS[j], TOP, COLS[j], j === 3 ? bottom : colBottom, 0.25);
+      if(isLast){
+        line(COLS[0], bottom - ROW_H, COLS[4], bottom - ROW_H, 0.5);
+        font(11, true);
+        text('合　計', (COLS[0] + COLS[1]) / 2, bottom - ROW_H / 2, 'center');
+        text('（' + total.count + '件）', COLS[1] + 1.5, bottom - ROW_H / 2, 'left');
+        text('¥' + yen(total.sum), COLS[4] - 1.5, bottom - ROW_H / 2, 'right');
+      }
+      c.lineWidth = 0.45; c.strokeRect(COLS[0], TOP, COLS[4] - COLS[0], bottom - TOP);
     }
-    c.lineWidth = 0.45; c.strokeRect(COLS[0], TOP, COLS[4] - COLS[0], bottom - TOP);
+
+    if(withSummary){
+      // 月ごとの合計（月｜件数｜金額）
+      var top = rows ? bottom + 14 : TOP + 10;
+      var SX = [55, 90, 115, 155];
+      font(12, true);
+      text('月ごとの合計', 105, top - 5, 'center');
+      var sr = total.months.length + 2, sb = top + ROW_H * sr;
+      headFill(SX[0], top, SX[3], top + ROW_H);
+      font(10, true);
+      ['月', '件数', '金額'].forEach(function(h, i){ text(h, (SX[i] + SX[i + 1]) / 2, top + ROW_H / 2, 'center'); });
+      font(10);
+      total.months.forEach(function(m, i){
+        var y = top + ROW_H * (i + 1.5);
+        text(m.m + '月', (SX[0] + SX[1]) / 2, y, 'center');
+        text(m.count + '件', SX[2] - 2, y, 'right');
+        text('¥' + yen(m.sum), SX[3] - 1.5, y, 'right');
+      });
+      for(var q = 1; q < sr; q++) line(SX[0], top + ROW_H * q, SX[3], top + ROW_H * q, q === 1 || q === sr - 1 ? 0.45 : 0.2);
+      for(var v = 1; v < 3; v++) line(SX[v], top, SX[v], sb, 0.25);
+      font(11, true);
+      text('合　計', (SX[0] + SX[1]) / 2, sb - ROW_H / 2, 'center');
+      text(total.count + '件', SX[2] - 2, sb - ROW_H / 2, 'right');
+      text('¥' + yen(total.sum), SX[3] - 1.5, sb - ROW_H / 2, 'right');
+      c.lineWidth = 0.45; c.strokeRect(SX[0], top, SX[3] - SX[0], sb - top);
+    }
     return cv;
   }
 
@@ -552,12 +604,25 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
   var pdfFile = null, pdfUrl = null;
   function buildPdf(){
     var rows = yearRows(year);
-    var pages = Math.max(1, Math.ceil((rows.length + 1) / PER_PAGE));
-    var total = { sum: sum(rows), count: rows.length };
+    var months = [];
+    for(var m = 1; m <= 12; m++){
+      var mr = rows.filter(function(r){ return +r.date.slice(5, 7) === m; });
+      if(mr.length) months.push({ m: m, count: mr.length, sum: sum(mr) });
+    }
+    var total = { sum: sum(rows), count: rows.length, months: months };
+    var withSum = $('withSummary').checked && months.length > 0;
+    var mainPages = Math.max(1, Math.ceil((rows.length + 1) / PER_PAGE));
+    // 最後のページの下に、月ごとの合計が入るか
+    var lastCount = rows.length - (mainPages - 1) * PER_PAGE;
+    var sumH = 14 + ROW_H * (months.length + 2);
+    var fits = TOP + ROW_H * (lastCount + 2) + sumH <= 283;
+    var pages = mainPages + (withSum && !fits ? 1 : 0);
     var jpegs = [], previews = [];
     for(var p = 0; p < pages; p++){
-      var cv = drawPage(rows.slice(p * PER_PAGE, (p + 1) * PER_PAGE), p + 1, pages, p === pages - 1, total);
-      var url = cv.toDataURL('image/jpeg', 0.9);
+      var isMain = p < mainPages, isLast = p === mainPages - 1;
+      var cv = drawPage(isMain ? rows.slice(p * PER_PAGE, (p + 1) * PER_PAGE) : null, p + 1, pages, isLast, total,
+                        withSum && ((isLast && fits) || !isMain));
+      var url = cv.toDataURL('image/jpeg', 0.92);
       var bin = atob(url.split(',')[1]), u8 = new Uint8Array(bin.length);
       for(var i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
       jpegs.push({ data: u8, w: cv.width, h: cv.height });
@@ -569,7 +634,7 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
     try{ pdfFile = new File([blob], name + '.pdf', { type: 'application/pdf' }); }catch(e){ pdfFile = blob; }
     if(pdfUrl) URL.revokeObjectURL(pdfUrl);
     pdfUrl = URL.createObjectURL(blob);
-    return { name: name + '.pdf', previews: previews };
+    return { name: name + '.pdf', previews: previews, pages: pages, kb: Math.round(blob.size / 1024) };
   }
   function canShareFile(){
     try{ return !!(navigator.share && navigator.canShare && pdfFile instanceof File && navigator.canShare({ files: [pdfFile] })); }
@@ -583,13 +648,13 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
     if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
     var info;
     try{ info = buildPdf(); }catch(e){ alert('PDFを作れませんでした。もう一度お試しください。'); return; }
-    $('pdfName').textContent = 'ファイル名：' + info.name;
+    $('pdfName').textContent = 'ファイル名：' + info.name + '（A4・' + info.pages + '枚）';
     $('pdfPreviews').innerHTML = info.previews.map(function(u){ return '<img class="preview" alt="PDFの見本" src="' + u + '">'; }).join('');
     $('pdfOpen').href = pdfUrl;
     var ok = canShareFile();
     $('pdfShare').style.display = ok ? '' : 'none';
     $('pdfMsg').textContent = ok
-      ? '共有メニューが出なかったときは、下の「共有する」を押してください。'
+      ? '共有メニューで「netprint」を選ぶと、セブンイレブンで印刷できます。メニューが出なかったときは、下の「共有する」を押してください。'
       : '「PDFを新しいタブで開く」を押して、開いたPDFの共有ボタン（□に↑）から保存してください。';
     $('pdfPanel').classList.add('show');
     $('pdfPanel').scrollTop = 0;
