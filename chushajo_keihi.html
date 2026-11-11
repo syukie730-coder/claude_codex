@@ -146,10 +146,6 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
     <ul class="list" id="list"></ul>
     <button type="button" class="btn wide add-row" id="addRowBtn">＋ 行を追加する</button>
     <div class="sum-row"><span>合計</span><span id="sumView">0円</span></div>
-    <details>
-      <summary>月ごとの合計を見る</summary>
-      <table class="mtable" id="monthTable"></table>
-    </details>
   </section>
 
   <!-- 記録する -->
@@ -185,18 +181,12 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
     <p class="note">項目と支払い先は、文字を入れると前に使ったものが出てきます。</p>
   </section>
 
-  <!-- 税理士さんへ -->
+  <!-- 印刷 -->
   <section class="box stack">
     <h2>印刷する</h2>
     <label class="check"><input type="checkbox" id="withSummary" checked> 月ごとの合計もつける</label>
     <button type="button" class="btn main wide" id="pdfBtn2">この年の表を印刷用PDFにする</button>
     <p class="note" style="margin-top:0;">A4たて・白黒で、きれいに印刷できる形です。</p>
-  </section>
-
-  <section class="box stack">
-    <h2>税理士さんに送る</h2>
-    <button type="button" class="btn wide" id="copyBtn">この年の表をコピーする</button>
-    <p class="note" style="margin-top:0;">コピーしたものは、メールやLINE、Googleスプレッドシートにそのまま貼りつけられます。PDFをそのままメールで送ることもできます。</p>
   </section>
 
   <!-- 記録を守る -->
@@ -325,12 +315,6 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
     $('sumView').textContent = yen(t) + '円';
     $('tLbl').textContent = year + '年の合計（' + rows.length + '件）';
     $('totalView').textContent = yen(t) + '円';
-    var html = '';
-    for(var m = 1; m <= 12; m++){
-      var mr = rows.filter(function(r){ return +r.date.slice(5, 7) === m; });
-      if(mr.length) html += '<tr><td>' + m + '月（' + mr.length + '件）</td><td>' + yen(sum(mr)) + '円</td></tr>';
-    }
-    $('monthTable').innerHTML = html || '<tr><td>記録はまだありません。</td><td></td></tr>';
   }
 
   function renderSuggest(){
@@ -453,25 +437,6 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
 
   $('years').addEventListener('click', function(e){
     var b = e.target.closest('[data-y]'); if(b){ endEdit(); setYear(b.getAttribute('data-y')); }
-  });
-
-  // ---------- コピー ----------
-  $('copyBtn').addEventListener('click', function(){
-    var rows = yearRows(year);
-    var lines = [year + '年' + PLACE + '経費', '日付\t項目\t支払い先\t金額'];
-    rows.forEach(function(r){ lines.push(slash(r.date) + '\t' + r.item + '\t' + r.payee + '\t' + yen(toNumber(r.amount)) + '円'); });
-    lines.push('合計\t\t\t' + yen(sum(rows)) + '円');
-    var txt = lines.join('\n');
-    var done = function(){ toast('コピーしました'); };
-    var fallback = function(){
-      var ta = document.createElement('textarea'); ta.value = txt; ta.setAttribute('readonly', '');
-      ta.style.position = 'fixed'; ta.style.top = '0'; ta.style.opacity = '0';
-      document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, txt.length);
-      try{ document.execCommand('copy'); done(); }catch(e){ alert('コピーできませんでした。'); }
-      document.body.removeChild(ta);
-    };
-    if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done, fallback);
-    else fallback();
   });
 
   // ---------- バックアップ ----------
