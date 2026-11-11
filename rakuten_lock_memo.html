@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>口座ロックのメモ</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="口座ロック">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#fdf6ee">
+<link rel="apple-touch-icon" href="rakuten_lock_memo_icon.png">
+<link rel="icon" type="image/png" href="rakuten_lock_memo_icon.png">
+<style>
+  :root {
+    --bg: #fdf6ee;
+    --card: #ffffff;
+    --text: #222222;
+    --sub: #2b2b2b;
+    --accent: #c0563f;
+    --ok: #2f7a4a;
+    --ok-bg: #eaf6ee;
+    --stop: #b23a3a;
+    --stop-bg: #fcecec;
+    --note-bg: #fff7e0;
+    --line: #ecdccb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    font-size: 18px;
+    line-height: 1.8;
+    -webkit-text-size-adjust: 100%;
+  }
+  .wrap {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: calc(20px + env(safe-area-inset-top)) 16px calc(40px + env(safe-area-inset-bottom));
+  }
+  h1 {
+    font-size: 24px;
+    line-height: 1.5;
+    margin: 8px 0 20px;
+    color: #1a1a1a;
+  }
+  h1 small {
+    display: block;
+    font-size: 17px;
+    font-weight: normal;
+    color: var(--sub);
+    margin-top: 4px;
+  }
+  section {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 18px 18px 20px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  }
+  h2 {
+    font-size: 21px;
+    margin: 0 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--line);
+    color: #1a1a1a;
+  }
+  h2 .ico { margin-right: 6px; }
+  ul { margin: 0; padding-left: 1.3em; }
+  li { margin: 6px 0; }
+  .big {
+    font-size: 20px;
+    font-weight: bold;
+    background: var(--note-bg);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin: 4px 0 10px;
+  }
+  .ok { background: var(--ok-bg); border-color: #cfe8d7; }
+  .ok h2 { color: var(--ok); border-color: #cfe8d7; }
+  .stop { background: var(--stop-bg); border-color: #f2cfcf; }
+  .stop h2 { color: var(--stop); border-color: #f2cfcf; }
+  .small { font-size: 16px; color: var(--sub); }
+  .word { color: var(--sub); font-size: 16px; }
+  ol.steps { list-style: none; padding: 0; margin: 0; counter-reset: s; }
+  ol.steps li {
+    counter-increment: s;
+    position: relative;
+    padding: 12px 12px 12px 56px;
+    margin: 0 0 12px;
+    background: #fbf7f2;
+    border-radius: 12px;
+  }
+  ol.steps li::before {
+    content: counter(s);
+    position: absolute;
+    left: 12px; top: 12px;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-weight: bold;
+    text-align: center;
+    line-height: 32px;
+    font-size: 18px;
+  }
+  .where { display: block; font-weight: bold; }
+  .phase {
+    font-weight: bold;
+    color: var(--accent);
+    margin: 14px 0 8px;
+  }
+  .phase:first-of-type { margin-top: 4px; }
+  b.btn {
+    display: inline-block;
+    background: #fff;
+    border: 1.5px solid var(--accent);
+    color: #8a2f1c;
+    border-radius: 8px;
+    padding: 0 8px;
+    margin: 0 2px;
+  }
+  .warn {
+    background: #fff0e6;
+    border: 2px solid #e8a07f;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-top: 12px;
+    font-weight: bold;
+  }
+  .flow {
+    text-align: center;
+    font-weight: bold;
+    background: var(--note-bg);
+    border-radius: 10px;
+    padding: 8px;
+    margin-bottom: 14px;
+  }
+  footer { text-align: center; font-size: 16px; color: var(--sub); margin-top: 10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>楽天証券 口座ロックのメモ
+    <small>（2026年11月11日に設定）</small>
+  </h1>
+
+  <section>
+    <h2><span class="ico">🔒</span>今の設定</h2>
+    <p class="big">「投資信託の買付以外を停止」<br><span class="small">（画面の番号は「1」）</span></p>
+    <ul>
+      <li>2026年11月11日に設定しました。</li>
+      <li><span class="word">口座ロック（お金や株を勝手に動かせないように、口座に「カギ」をかけておくこと）</span></li>
+    </ul>
+  </section>
+
+  <section class="ok">
+    <h2><span class="ico">⭕</span>できること（そのまま使える）</h2>
+    <ul>
+      <li>ログイン（楽天証券のページに入ること）</li>
+      <li>入金（口座にお金を入れること）</li>
+      <li>投資信託の買付（投資信託を買うこと）<br>
+        <span class="small">→ 毎月の積立も、1月のNISAボーナス買付も、いつもどおり動きます。</span></li>
+    </ul>
+  </section>
+
+  <section class="stop">
+    <h2><span class="ico">✖</span>できないこと（止まっている）</h2>
+    <ul>
+      <li>売却（持っているものを売ること）<br>
+        <span class="small">→ 投資信託の定期売却（決まった日に自動で売る設定）も止まります。</span></li>
+      <li>出金（口座からお金を引き出すこと）</li>
+      <li>外国株式（外国の会社の株）</li>
+      <li>国内の個別株（日本の会社の株を1社ずつ買うもの）の売り買い</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="ico">📝</span>来年、日本の会社の株などを買いたいとき</h2>
+    <p class="flow">カギを外す → 買う → もう一度カギをかける</p>
+
+    <p class="phase">① カギを外す（解除）</p>
+    <ol class="steps">
+      <li><span class="where">楽天証券にログインする</span>
+        画面の中から <b class="btn">セキュリティ設定</b> を押します。</li>
+      <li><span class="where">顔認証をする</span>
+        パスキー（顔認証でログインする方法）の確認が出たら、iPhoneに顔を向けて顔認証をします。</li>
+      <li><span class="where">いちばん下までスクロールする</span>
+        「取引やサービスの一時的な利用停止」のところで <b class="btn">解除</b> を押します。</li>
+      <li><span class="where">電話で聞いた数字を入れる</span>
+        電話がかかってきて、ワンタイムキー（電話で聞く、1回だけ使える6桁の数字）を教えてくれます。その6桁を入れたら完了です。</li>
+    </ol>
+
+    <p class="phase">② 買う</p>
+    <p style="background:#fbf7f2;border-radius:12px;padding:12px 14px;margin:0 0 12px;">
+      いつもどおり、株などを買います。<br>
+      <span class="small">買い終わったら、次の「カギをかけ直す」を忘れずに。</span></p>
+
+    <p class="phase">③ もう一度カギをかける</p>
+    <ol class="steps" style="counter-reset: s 4;">
+      <li><span class="where">同じ画面を開く</span>
+        もう一度 <b class="btn">セキュリティ設定</b> の、いちばん下「取引やサービスの一時的な利用停止」へ。<br>
+        <b class="btn">設定</b> を押して、「投資信託の買付以外を停止」を選びます。</li>
+      <li><span class="where">数字を入れて完了</span>
+        <b class="btn">認証へ進む</b> を押します。電話で聞いたワンタイムキー（6桁の数字）を入れたら完了です。</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2><span class="ico">💡</span>覚えておくこと</h2>
+    <ul>
+      <li><b>電話で聞く6桁</b>は「ワンタイムキー」（1回だけ使える数字）。<br>
+        <b>顔認証</b>のほうが「パスキー」（顔でログインする方法）。</li>
+      <li>iPhoneが、知らない番号からの電話に自動で出て、聞こえた数字を文字にしてくれることがあります（音は鳴りません）。<br>
+        <span class="small">→ 「電話」アプリの「留守番電話」のところを見ると、数字が読めます。</span></li>
+      <li>うまく設定できると、楽天証券から「完了しました」というお知らせメールが届きます。</li>
+    </ul>
+    <p class="warn">⚠️ ワンタイムキーは、自分で画面を開いたときだけ使います。<br>電話やメールで人に聞かれても、ぜったいに教えません。</p>
+  </section>
+
+  <footer>このメモには、口座番号・ID・電話番号・パスワードは書いていません。</footer>
+</div>
+</body>
+</html>
