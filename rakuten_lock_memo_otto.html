@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>夫のロックメモ（Aの口座）</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="夫のロックメモ">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#eef6fb">
+<link rel="apple-touch-icon" href="rakuten_lock_memo_otto_icon.png">
+<link rel="icon" type="image/png" href="rakuten_lock_memo_otto_icon.png">
+<style>
+  :root {
+    --bg: #eef6fb;
+    --card: #ffffff;
+    --text: #222222;
+    --sub: #2b2b2b;
+    --accent: #3a7fbf;
+    --ok: #2f7a4a;
+    --ok-bg: #eaf6ee;
+    --stop: #b23a3a;
+    --stop-bg: #fcecec;
+    --note-bg: #e6f4f1;
+    --line: #cfe2ef;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    font-size: 18px;
+    line-height: 1.8;
+    -webkit-text-size-adjust: 100%;
+  }
+  .wrap {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: calc(20px + env(safe-area-inset-top)) 16px calc(40px + env(safe-area-inset-bottom));
+  }
+  h1 {
+    font-size: 24px;
+    line-height: 1.5;
+    margin: 8px 0 20px;
+    color: #1a1a1a;
+  }
+  h1 small {
+    display: block;
+    font-size: 17px;
+    font-weight: normal;
+    color: var(--sub);
+    margin-top: 4px;
+  }
+  section {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 18px 18px 20px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  }
+  h2 {
+    font-size: 21px;
+    margin: 0 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--line);
+    color: #1a1a1a;
+  }
+  h2 .ico { margin-right: 6px; }
+  ul { margin: 0; padding-left: 1.3em; }
+  li { margin: 6px 0; }
+  .big {
+    font-size: 20px;
+    font-weight: bold;
+    background: var(--note-bg);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin: 4px 0 10px;
+  }
+  .ok { background: var(--ok-bg); border-color: #cfe8d7; }
+  .ok h2 { color: var(--ok); border-color: #cfe8d7; }
+  .stop { background: var(--stop-bg); border-color: #f2cfcf; }
+  .stop h2 { color: var(--stop); border-color: #f2cfcf; }
+  .small { font-size: 16px; color: var(--sub); }
+  .word { color: var(--sub); font-size: 16px; }
+  ol.steps { list-style: none; padding: 0; margin: 0; counter-reset: s; }
+  ol.steps li {
+    counter-increment: s;
+    position: relative;
+    padding: 12px 12px 12px 56px;
+    margin: 0 0 12px;
+    background: #f1f7fb;
+    border-radius: 12px;
+  }
+  ol.steps li::before {
+    content: counter(s);
+    position: absolute;
+    left: 12px; top: 12px;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-weight: bold;
+    text-align: center;
+    line-height: 32px;
+    font-size: 18px;
+  }
+  .where { display: block; font-weight: bold; }
+  .phase {
+    font-weight: bold;
+    color: var(--accent);
+    margin: 14px 0 8px;
+  }
+  .phase:first-of-type { margin-top: 4px; }
+  b.btn {
+    display: inline-block;
+    background: #fff;
+    border: 1.5px solid #c0563f;
+    color: #8a2f1c;
+    border-radius: 8px;
+    padding: 0 8px;
+    margin: 0 2px;
+  }
+  .warn {
+    background: #fff0e6;
+    border: 2px solid #e8a07f;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-top: 12px;
+    font-weight: bold;
+  }
+  .flow {
+    text-align: center;
+    font-weight: bold;
+    background: var(--note-bg);
+    border-radius: 10px;
+    padding: 8px;
+    margin-bottom: 14px;
+  }
+  footer { text-align: center; font-size: 16px; color: var(--sub); margin-top: 10px; }
+  .who {
+    background: #3a7fbf;
+    color: #fff;
+    border-radius: 16px;
+    padding: 16px 14px;
+    text-align: center;
+    margin: 4px 0 18px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+  .who .main { display:block; font-size: 32px; font-weight: bold; line-height: 1.4; letter-spacing: 0.04em; }
+  .who .sub { display:block; font-size: 16px; margin-top: 6px; }
+  .tool { display:flex; gap:12px; align-items:flex-start; background:#f1f7fb; border-radius:12px; padding:12px; margin:0 0 10px; }
+  .tool .em { font-size: 30px; line-height: 1.2; }
+  .tool b { display:block; font-size: 19px; }
+  .info { background: #f1f7fb; border-radius: 12px; padding: 12px 14px; margin: 0 0 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="who">
+    <span class="main">👨 夫（A）の口座用</span>
+    <span class="sub">わたし（B）のメモとは、べつのページです</span>
+  </div>
+
+  <h1>楽天証券 口座ロックのメモ
+    <small>夫（Aで始まる方）の口座／2026年11月11日に設定</small>
+  </h1>
+
+  <section>
+    <h2><span class="ico">🔒</span>今の設定</h2>
+    <p class="big">「投資信託の買付以外を停止」<br><span class="small">（画面の番号は「1」）</span></p>
+    <ul>
+      <li>2026年11月11日に設定しました。</li>
+      <li>完了のお知らせメールも、夫のGmailに届きました。</li>
+      <li><span class="word">口座ロック（お金や株を勝手に動かせないように、口座に「カギ」をかけておくこと）</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="ico">🌱</span>今の状況（これからの方針）</h2>
+    <ul>
+      <li>夫の口座は、これからは<b>新しく買わずに、持ち続けます</b>。</li>
+      <li>S&amp;P500の投資信託は、そのまま運用を続けます。<br>
+        <span class="small">（運用＝持ったまま、お金を育ててもらうこと）</span></li>
+      <li>日本の高配当株は、配当金を受け取り続けるだけにします。<br>
+        <span class="small">（高配当株＝配当金が多めにもらえる会社の株）</span></li>
+      <li>ふだんは、夫の口座を開く必要は<b>ほとんどありません</b>。</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="ico">🧰</span>やる場所と道具（3つ）</h2>
+    <p class="info"><b>夫の口座の手続きは、これから全部、わたしのMacBookでやります。</b><br>
+      <span class="small">iPhone 8は使いません。</span></p>
+    <div class="tool"><span class="em">💻</span><div><b>1) MacBook</b>楽天証券の画面を操作する</div></div>
+    <div class="tool"><span class="em">📱</span><div><b>2) iPad mini</b>夫のGmailで、メールの確認や6桁の数字を見る</div></div>
+    <div class="tool"><span class="em">☎️</span><div><b>3) 夫の携帯</b>電話の自動音声（機械が読み上げる声）で6桁を受ける<br>
+      <span class="small">→ 夫にそばにいてもらいます。</span></div></div>
+  </section>
+
+  <section class="ok">
+    <h2><span class="ico">⭕</span>できること（そのまま使える）</h2>
+    <ul>
+      <li>ログイン（楽天証券のページに入ること）</li>
+      <li>入金（口座にお金を入れること）</li>
+      <li>投資信託の買付（投資信託を買うこと）<br>
+        <span class="small">→ 毎月の積立も、いつもどおり動きます。</span></li>
+      <li>配当金・分配金・利金の受け取り、再投資<br>
+        <span class="small">（配当金・分配金・利金＝持っている株や投資信託から、ときどきもらえるお金）<br>
+        （再投資＝もらったお金で、また同じものを買うこと）<br>
+        → 楽天証券の画面の説明に「可能」と書いてあります。</span></li>
+    </ul>
+  </section>
+
+  <section class="stop">
+    <h2><span class="ico">✖</span>できないこと（止まっている）</h2>
+    <ul>
+      <li>売却（持っているものを売ること）<br>
+        <span class="small">→ 投資信託の定期売却（決まった日に自動で売る設定）も止まります。</span></li>
+      <li>出金（証券口座からお金を引き出すこと）</li>
+      <li>外国株式（外国の会社の株）</li>
+      <li>国内の個別株（日本の会社の株を1社ずつ買うもの）の売り買い</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="ico">👀</span>配当金のこと（様子を見る）</h2>
+    <ul>
+      <li>ロックをかける前は、配当金が、夫の楽天銀行に<b>自動で入金</b>されていました。<br>
+        <span class="small">（マネーブリッジ＝楽天証券と楽天銀行をつなぐしくみ。その自動のお金の動き）</span></li>
+      <li>ロックをかけたあとも同じように入るかは、<b>まだわかっていません</b>。</li>
+    </ul>
+    <p class="info">💡 もし止まっても、お金は楽天証券の口座に残るだけで、<b>なくなりません</b>。</p>
+
+    <p class="phase">最初の配当金のころに、この順番で確かめます</p>
+    <ol class="steps">
+      <li><span class="where">MacBookで夫の口座を見る</span>
+        ロックをかけたまま、MacBookで夫の口座にログインします。<br>
+        ホーム画面の <b class="btn">預り金</b> や <b class="btn">出金可能額</b> に、配当金が入っているか見ます。<br>
+        <span class="small">（預り金＝証券口座に置いてあるお金）</span></li>
+      <li><span class="where">夫の楽天銀行を見る</span>
+        夫の楽天銀行にも、配当金が入っているか見ます。</li>
+      <li><span class="where">お知らせメールを見比べる</span>
+        配当金のお知らせメールが夫のGmailに届いたら、iPad miniで開いて、前回までのメールと見比べます。</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2><span class="ico">💡</span>覚えておくこと</h2>
+    <ul>
+      <li><b>6桁の数字</b>は、メールで来たら <b>iPad mini（夫のGmail）</b>、電話で来たら <b>夫の携帯</b> で受けます。</li>
+      <li>電話で聞く6桁は「ワンタイムキー」（1回だけ使える数字）です。</li>
+      <li>うまく設定できると、楽天証券から「完了しました」というお知らせメールが、夫のGmailに届きます。</li>
+    </ul>
+    <p class="warn">⚠️ 6桁の数字は、自分で画面を開いたときだけ使います。<br>電話やメールで人に聞かれても、ぜったいに教えません。</p>
+  </section>
+
+  <footer>このメモには、口座番号・ID・電話番号・パスワードは書いていません。<br>わたし（B）の口座のメモは、べつのページです。</footer>
+</div>
+</body>
+</html>
