@@ -184,7 +184,6 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
   <!-- 印刷 -->
   <section class="box stack">
     <h2>印刷する</h2>
-    <label class="check"><input type="checkbox" id="withSummary" checked> 月ごとの合計もつける</label>
     <button type="button" class="btn main wide" id="pdfBtn2">この年の表を印刷用PDFにする</button>
     <p class="note" style="margin-top:0;">A4たて・白黒で、きれいに印刷できる形です。</p>
   </section>
@@ -477,8 +476,8 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
   var COLS = [20, 52, 105, 160, 190];     // 日付｜項目｜支払い先｜金額
   var ROW_H = 6.2, PER_PAGE = 40, TOP = 30;
 
-  // 1枚の紙（A4縦）をかく。rows が null のときは、月ごとの合計だけのページ
-  function drawPage(rows, pageNo, pages, isLast, total, withSummary){
+  // 1枚の紙（A4縦）をかく
+  function drawPage(rows, pageNo, pages, isLast, total){
     var cv = document.createElement('canvas');
     cv.width = Math.round(210 * MM); cv.height = Math.round(297 * MM);
     var c = cv.getContext('2d');
@@ -527,31 +526,6 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
       c.lineWidth = 0.45; c.strokeRect(COLS[0], TOP, COLS[4] - COLS[0], bottom - TOP);
     }
 
-    if(withSummary){
-      // 月ごとの合計（月｜件数｜金額）
-      var top = rows ? bottom + 14 : TOP + 10;
-      var SX = [55, 90, 115, 155];
-      font(12, true);
-      text('月ごとの合計', 105, top - 5, 'center');
-      var sr = total.months.length + 2, sb = top + ROW_H * sr;
-      headFill(SX[0], top, SX[3], top + ROW_H);
-      font(10, true);
-      ['月', '件数', '金額'].forEach(function(h, i){ text(h, (SX[i] + SX[i + 1]) / 2, top + ROW_H / 2, 'center'); });
-      font(10);
-      total.months.forEach(function(m, i){
-        var y = top + ROW_H * (i + 1.5);
-        text(m.m + '月', (SX[0] + SX[1]) / 2, y, 'center');
-        text(m.count + '件', SX[2] - 2, y, 'right');
-        text('¥' + yen(m.sum), SX[3] - 1.5, y, 'right');
-      });
-      for(var q = 1; q < sr; q++) line(SX[0], top + ROW_H * q, SX[3], top + ROW_H * q, q === 1 || q === sr - 1 ? 0.45 : 0.2);
-      for(var v = 1; v < 3; v++) line(SX[v], top, SX[v], sb, 0.25);
-      font(11, true);
-      text('合　計', (SX[0] + SX[1]) / 2, sb - ROW_H / 2, 'center');
-      text(total.count + '件', SX[2] - 2, sb - ROW_H / 2, 'right');
-      text('¥' + yen(total.sum), SX[3] - 1.5, sb - ROW_H / 2, 'right');
-      c.lineWidth = 0.45; c.strokeRect(SX[0], top, SX[3] - SX[0], sb - top);
-    }
     return cv;
   }
 
@@ -588,24 +562,11 @@ summary{ font-size:17px; font-weight:700; padding:10px 0; cursor:pointer; }
   var pdfFile = null, pdfUrl = null;
   function buildPdf(){
     var rows = yearRows(year);
-    var months = [];
-    for(var m = 1; m <= 12; m++){
-      var mr = rows.filter(function(r){ return +r.date.slice(5, 7) === m; });
-      if(mr.length) months.push({ m: m, count: mr.length, sum: sum(mr) });
-    }
-    var total = { sum: sum(rows), count: rows.length, months: months };
-    var withSum = $('withSummary').checked && months.length > 0;
-    var mainPages = Math.max(1, Math.ceil((rows.length + 1) / PER_PAGE));
-    // 最後のページの下に、月ごとの合計が入るか
-    var lastCount = rows.length - (mainPages - 1) * PER_PAGE;
-    var sumH = 14 + ROW_H * (months.length + 2);
-    var fits = TOP + ROW_H * (lastCount + 2) + sumH <= 283;
-    var pages = mainPages + (withSum && !fits ? 1 : 0);
+    var total = { sum: sum(rows), count: rows.length };
+    var pages = Math.max(1, Math.ceil((rows.length + 1) / PER_PAGE));
     var jpegs = [], previews = [];
     for(var p = 0; p < pages; p++){
-      var isMain = p < mainPages, isLast = p === mainPages - 1;
-      var cv = drawPage(isMain ? rows.slice(p * PER_PAGE, (p + 1) * PER_PAGE) : null, p + 1, pages, isLast, total,
-                        withSum && ((isLast && fits) || !isMain));
+      var cv = drawPage(rows.slice(p * PER_PAGE, (p + 1) * PER_PAGE), p + 1, pages, p === pages - 1, total);
       var url = cv.toDataURL('image/jpeg', 0.92);
       var bin = atob(url.split(',')[1]), u8 = new Uint8Array(bin.length);
       for(var i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
