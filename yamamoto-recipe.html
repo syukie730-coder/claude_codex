@@ -162,6 +162,47 @@
     color: #6B5444;
     text-align: center;
   }
+
+  /* 食材でさがす */
+  .search-box {
+    background: #FFFFFF;
+    border: 3px solid #F5C99A;
+    border-radius: 22px;
+    padding: 18px 16px;
+  }
+  .search-box label { display: block; font-size: 21px; font-weight: 700; margin-bottom: 10px; }
+  .search-box input {
+    width: 100%;
+    height: 68px;
+    font-size: 24px;
+    font-family: inherit;
+    padding: 0 16px;
+    border: 3px solid #F08A3C;
+    border-radius: 16px;
+    background: #FFFDF9;
+    color: #3A2A1E;
+    -webkit-appearance: none;
+  }
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+  .chips button {
+    font-family: inherit;
+    font-size: 20px;
+    font-weight: 700;
+    min-height: 54px;
+    padding: 0 18px;
+    border: 3px solid #F08A3C;
+    border-radius: 27px;
+    background: #FFF1E0;
+    color: #B4441A;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .chips button:active { background: #F08A3C; color: #FFFFFF; }
+  #results { margin-top: 20px; }
+  #results[hidden] { display: none; }
+  #results .lead { font-size: 21px; font-weight: 700; margin-bottom: 12px; }
+  #results .btn:last-child { margin-bottom: 0; }
+  .btn.google { background: #B4441A; }
+  .search-note { font-size: 18px; color: #6B5444; margin-top: 14px; }
 </style>
 </head>
 <body>
@@ -172,6 +213,56 @@
     <h1>ゆりさんレシピ</h1>
     <p>山本ゆりさんのレシピを<br>すぐ見られる入口です</p>
   </header>
+
+  <h2>食材でさがす</h2>
+  <div class="search-box">
+    <label for="word">食材の名前を入れてください</label>
+    <input id="word" type="search" inputmode="text" enterkeyhint="search" autocomplete="off" placeholder="例：鶏肉">
+    <div class="chips" aria-label="よく使う食材">
+      <button type="button">鶏肉</button>
+      <button type="button">豚肉</button>
+      <button type="button">ひき肉</button>
+      <button type="button">ブロッコリー</button>
+      <button type="button">キャベツ</button>
+      <button type="button">卵</button>
+      <button type="button">豆腐</button>
+    </div>
+
+    <div id="results" hidden>
+      <p class="lead">「<span id="shown"></span>」のレシピを<br>どこでさがしますか？</p>
+      <a class="btn google" id="s-all" target="_blank" rel="noopener">
+        <span class="emoji" aria-hidden="true">🔍</span>
+        <span class="text"><span class="big">まとめてさがす</span><span class="small">ぜんぶのサイトから（Google）</span></span>
+        <span class="go" aria-hidden="true">›</span>
+      </a>
+      <a class="btn ameba" id="s-ameba" target="_blank" rel="noopener">
+        <span class="emoji" aria-hidden="true">📖</span>
+        <span class="text"><span class="big">アメブロでさがす</span><span class="small">分量と作り方がわかる</span></span>
+        <span class="go" aria-hidden="true">›</span>
+      </a>
+      <a class="btn search" id="s-yt" target="_blank" rel="noopener">
+        <span class="emoji" aria-hidden="true">▶️</span>
+        <span class="text"><span class="big">YouTubeでさがす</span><span class="small">動画で見る</span></span>
+        <span class="go" aria-hidden="true">›</span>
+      </a>
+      <a class="btn note" id="s-note" target="_blank" rel="noopener">
+        <span class="emoji" aria-hidden="true">📝</span>
+        <span class="text"><span class="big">noteでさがす</span><span class="small">まとめ記事</span></span>
+        <span class="go" aria-hidden="true">›</span>
+      </a>
+      <a class="btn insta" id="s-insta" target="_blank" rel="noopener">
+        <span class="emoji" aria-hidden="true">📷</span>
+        <span class="text"><span class="big">Instagramでさがす</span><span class="small">Googleから見つける</span></span>
+        <span class="go" aria-hidden="true">›</span>
+      </a>
+      <a class="btn xpost" id="s-x" target="_blank" rel="noopener">
+        <span class="emoji" aria-hidden="true">💬</span>
+        <span class="text"><span class="big">Xでさがす</span><span class="small">ログインが必要です</span></span>
+        <span class="go" aria-hidden="true">›</span>
+      </a>
+    </div>
+    <p class="search-note">食材を入れると、下にさがすボタンが出ます。押すと、それぞれのサイトで結果が開きます。</p>
+  </div>
 
   <h2>使い方の流れ</h2>
   <div class="flow">
@@ -314,5 +405,33 @@
   </footer>
 
 </main>
+<script>
+(function () {
+  var input = document.getElementById('word');
+  var results = document.getElementById('results');
+  var shown = document.getElementById('shown');
+  function g(q) { return 'https://www.google.com/search?q=' + encodeURIComponent(q); }
+  function update() {
+    var w = input.value.trim();
+    if (!w) { results.hidden = true; return; }
+    shown.textContent = w;
+    document.getElementById('s-all').href = g('山本ゆり レシピ ' + w);
+    document.getElementById('s-ameba').href = g(w + ' レシピ site:ameblo.jp/syunkon');
+    document.getElementById('s-yt').href = 'https://www.youtube.com/results?search_query=' + encodeURIComponent('山本ゆり ' + w);
+    document.getElementById('s-note').href = g(w + ' site:note.com/syunkon0507');
+    document.getElementById('s-insta').href = g('山本ゆり ' + w + ' site:instagram.com');
+    document.getElementById('s-x').href = 'https://x.com/search?q=' + encodeURIComponent('from:syunkon0507 ' + w);
+    results.hidden = false;
+  }
+  input.addEventListener('input', update);
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { input.blur(); update(); results.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+  });
+  var chips = document.querySelectorAll('.chips button');
+  for (var i = 0; i < chips.length; i++) {
+    chips[i].addEventListener('click', function () { input.value = this.textContent; update(); });
+  }
+})();
+</script>
 </body>
 </html>
