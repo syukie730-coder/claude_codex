@@ -54,6 +54,25 @@
   .hayami .when { font-weight: 700; }
   .hayami .do, .hayami .when { white-space: nowrap; }
 
+  /* 作戦・予定表 */
+  .yotei { width: 100%; border-collapse: collapse; background: #fff; border: 3px solid #111; }
+  .yotei th { background: #111; color: #fff; font-size: 16px; padding: 8px 6px; }
+  .yotei td { border-top: 2px solid #111; padding: 12px 10px; font-size: 17px; color: #111; vertical-align: top; line-height: 1.6; }
+  .yotei td:first-child { width: 30%; font-weight: 800; border-right: 1px solid #555; }
+  .yotei tr.main td { background: #e3f4ea; }
+  .yotei tr.main td:first-child { color: #0b6b3a; }
+  .yotei b { color: #111; }
+  .sakusen {
+    background: #fff; border: 3px solid #0b6b3a; border-radius: 16px;
+    padding: 14px 16px; margin-bottom: 14px; font-size: 17px; color: #111;
+  }
+  .sakusen p { margin: 0 0 8px; }
+  .sakusen p:last-child { margin: 0; }
+  .tojitsu { background: #fff; border: 3px solid #0b6b3a; border-radius: 16px; padding: 14px 16px 4px; margin-top: 14px; }
+  .tojitsu h3 { font-size: 19px; margin: 0 0 8px; color: #0b6b3a; }
+  .tojitsu ol { margin: 0; padding-left: 1.5em; }
+  .tojitsu li { font-size: 17px; margin-bottom: 10px; color: #111; }
+
   /* 目安の見かた */
   .hanrei { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; padding: 0; list-style: none; }
   .hanrei li {
@@ -197,6 +216,57 @@
     </tr>
   </table>
   <p class="sub" style="margin-top:12px">「3月中旬まで」にしているのは、3月末の配当をNISAで受け取るためです。配当の時期は目安なので、注文の前に確認してください。最後に決めるのは景一さんです。</p>
+
+  <h2>作戦と予定表</h2>
+  <div class="sakusen">
+    <p><b>作戦はかんたんです。</b>2027年1月、アイチ（とIDEC）を<b>1日で</b>「売る→すぐNISAで買い直す」。武田薬品はさわりません。</p>
+    <p>理由：同じ日にやれば、株価が動くすきまが小さくなるからです。</p>
+  </div>
+
+  <table class="yotei">
+    <tr><th>いつ</th><th>やること</th></tr>
+    <tr>
+      <td>2026年<br>12月中</td>
+      <td>
+        ① NISAの配当の受け取り方が<b>「株式数比例配分方式」</b>（配当を証券口座で受け取るやり方）になっているか確認。これでないと、NISAでも配当に税金がかかります<br>
+        ② 100株未満でもNISAで買えるか、注文画面で確認
+      </td>
+    </tr>
+    <tr class="main">
+      <td>2027年<br>1月12日（火）ごろ</td>
+      <td>
+        <b>お引っ越しの日</b>（やり方は下の「当日の流れ」）<br>
+        年明けすぐ（1月4日）は混みやすいので、少しずらした平日に
+      </td>
+    </tr>
+    <tr>
+      <td>その2〜3日後</td>
+      <td>NISA口座にアイチ147株（112＋35）、IDEC 1株が入っているか確認</td>
+    </tr>
+    <tr>
+      <td>予備の日<br>3月中旬まで</td>
+      <td>1月にできなかったときは、ここまでに。3月末の配当をNISAで受け取るためです（くわしい日付は楽天証券の画面で確認）</td>
+    </tr>
+    <tr>
+      <td>2027年<br>6月ごろ</td>
+      <td>アイチの配当が入ったら、<b>税金が引かれていない</b>か確認。引かれていなければ作戦成功</td>
+    </tr>
+    <tr>
+      <td>毎年1月</td>
+      <td>武田薬品をどうするか、1年に1回だけ見直す。それ以外はそのままでOK</td>
+    </tr>
+  </table>
+
+  <div class="tojitsu">
+    <h3>当日の流れ（1月12日ごろ）</h3>
+    <ol>
+      <li>口座の<b>ロックを解除</b></li>
+      <li>特定口座で、アイチ35株（とIDEC 1株）を<b>売る</b></li>
+      <li>売れたのを確かめたら、すぐ<b>NISA口座で同じ株数を買う</b></li>
+      <li>買えたのを確かめたら、<b>もう一度ロック</b></li>
+    </ol>
+  </div>
+  <p class="sub" style="margin-top:12px">日付は目安です。株価や配当の日は変わることがあるので、注文の前に画面で確認してください。</p>
 
   <h2>3つの銘柄をくらべる</h2>
   <ul class="hanrei">
