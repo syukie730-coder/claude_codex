@@ -144,6 +144,14 @@
   }
   .card-person:active{transform:scale(.95);}
   .card-memo{margin:8px 0 0;font-size:16px;color:var(--ink-soft);white-space:pre-wrap;word-break:break-word;}
+  .card-memo a{color:#1F8F7F;font-weight:700;text-decoration:underline;}
+  .card-link{
+    display:inline-flex;align-items:center;gap:6px;margin:10px 0 0;
+    padding:8px 16px;min-height:44px;
+    font-size:16px;font-weight:700;color:#fff;text-decoration:none;
+    background:#3DB8A5;border-radius:999px;box-shadow:0 3px 0 #2A9483;
+  }
+  .card-link:active{transform:translateY(2px);box-shadow:0 1px 0 #2A9483;}
   .card-actions{flex:0 0 auto;display:flex;flex-direction:column;gap:6px;}
   .icon-btn{
     width:44px;height:44px;display:grid;place-items:center;
@@ -388,6 +396,9 @@
   </div>
   <input type="file" id="photoIn" accept="image/*" hidden>
 
+  <label for="fLink">リンク <span class="hint">ホームページなど。なくても だいじょうぶ</span></label>
+  <input type="text" id="fLink" inputmode="url" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="例）https://… を ここに はりつけ">
+
   <label for="fMemo">ひとこと <span class="hint">なくても だいじょうぶ</span></label>
   <textarea id="fMemo" placeholder="例）予約はネットから。夕方がすいてるって"></textarea>
 
@@ -464,6 +475,22 @@
   function esc(s){
     return String(s).replace(/[&<>"']/g, function(c){
       return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+  /* リンクを ととのえる（http / https だけ通す） */
+  function fixLink(s){
+    s = String(s||"").trim().replace(/\s+/g,"");
+    if(!s) return "";
+    if(!/^https?:\/\//i.test(s)){
+      if(/^[a-z][a-z0-9+.-]*:/i.test(s)) return "";
+      s = "https://" + s;
+    }
+    return /^https?:\/\/[^\/]+\.[^\/]+/i.test(s) ? s : "";
+  }
+  /* ひとことの中の https://… を タップできるようにする */
+  function memoHtml(s){
+    return esc(s).replace(/https?:\/\/[^\s<]+/g, function(u){
+      return '<a href="'+u+'" target="_blank" rel="noopener noreferrer">'+u+'</a>';
     });
   }
   function genreOf(id){
@@ -602,7 +629,8 @@
       +     '<span class="card-genre">'+esc(g.name)+'</span>'
       +     '<h3 class="card-title">'+esc(it.name)+'</h3>'
       +     (it.person ? '<button type="button" class="card-person" data-person="'+esc(it.person)+'">👤 '+esc(it.person)+' から</button>' : '')
-      +     (it.memo ? '<p class="card-memo">'+esc(it.memo)+'</p>' : '')
+      +     (it.memo ? '<p class="card-memo">'+memoHtml(it.memo)+'</p>' : '')
+      +     (fixLink(it.link) ? '<a class="card-link" href="'+esc(fixLink(it.link))+'" target="_blank" rel="noopener noreferrer">🔗 リンクを ひらく</a>' : '')
       +   '</div>'
       +   '<div class="card-actions">'
       +     '<button type="button" class="icon-btn" data-edit="'+it.id+'" aria-label="なおす">✏️</button>'
@@ -619,6 +647,7 @@
     el("fName").value   = item ? item.name : "";
     el("fPerson").value = item ? item.person : "";
     el("fMemo").value   = item ? (item.memo||"") : "";
+    el("fLink").value   = item ? (item.link||"") : "";
     pickedGenre = item ? item.genre : (filterGenre !== "all" ? filterGenre : "hospital");
     pickedPhoto = item ? (item.photo || "") : "";
     buildGenrePick();
@@ -666,8 +695,15 @@
       toast("名前を 入れてね 🙏");
       return;
     }
+    var rawLink = el("fLink").value.trim();
+    if(rawLink && !fixLink(rawLink)){
+      el("fLink").focus();
+      toast("リンクの 形を たしかめてね 🙏");
+      return;
+    }
     var data = {
       name: name,
+      link: fixLink(rawLink),
       person: el("fPerson").value.trim(),
       genre: pickedGenre,
       memo: el("fMemo").value.trim(),
@@ -680,7 +716,7 @@
         if(items[i].id === editingId){
           items[i].name = data.name; items[i].person = data.person;
           items[i].genre = data.genre; items[i].memo = data.memo;
-          items[i].photo = data.photo;
+          items[i].photo = data.photo; items[i].link = data.link;
           break;
         }
       }
@@ -725,7 +761,7 @@
           items.unshift({
             id:"i"+Date.now()+Math.floor(Math.random()*10000),
             name:String(o.name), person:String(o.person||""),
-            genre: genreOf(o.genre).id, memo:String(o.memo||""), photo:String(o.photo||"")
+            genre: genreOf(o.genre).id, memo:String(o.memo||""), photo:String(o.photo||""), link:fixLink(o.link)
           });
           added++;
         });
