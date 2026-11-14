@@ -39,10 +39,13 @@
   }
 
   /* 数字の表 */
-  .suji { width: 100%; border-collapse: collapse; background: #fff; border: 3px solid #111; }
+  .suji { width: 100%; max-width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 0; background: #fff; border: 3px solid #111; }
   .suji th { background: #111; color: #fff; font-size: 16px; padding: 8px 6px; text-align: center; }
   .suji td { border-top: 2px solid #111; padding: 10px 10px; font-size: 17px; vertical-align: middle; line-height: 1.5; }
-  .suji td:last-child { text-align: right; font-weight: 800; white-space: nowrap; }
+  .suji td:last-child { text-align: right; font-weight: 800; }
+  .suji td.r { text-align: right; font-weight: 800; }
+  .suji td { overflow-wrap: anywhere; }
+  .suji tr:nth-child(2) td { border-top: 0; }
   .suji td + td { border-left: 1px solid #555; }
   .suji tr.kore td { background: #e3f4ea; }
   .suji tr.kore td:first-child { color: #0b4f2c; font-weight: 800; }
@@ -113,6 +116,16 @@
   }
   .ue { text-align: center; margin-top: 28px; }
   .ue a { color: #0b4f2c; font-weight: 800; font-size: 17px; }
+
+  /* 印刷しても右はしが切れないように */
+  @page { size: A4; margin: 12mm; }
+  @media print {
+    body { background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .wrap { max-width: none; width: auto; padding: 0 3mm; }
+    .nav, .reset, .ue { display: none; }
+    .suji, .box, .matome, .mae, .tomaru, .yotei li, .tejun li, .chui li { break-inside: avoid; page-break-inside: avoid; }
+    h2 { break-after: avoid; page-break-after: avoid; }
+  }
 </style>
 </head>
 <body>
@@ -147,8 +160,8 @@
 
   <table class="suji" style="margin-top:12px">
     <tr><th>売る金額</th><th>税金</th><th>手取り</th></tr>
-    <tr class="kore"><td>138万円分<br><small>（今回はこれ）</small></td><td style="text-align:right;font-weight:800;white-space:nowrap">約16万2千円</td><td>約121万8千円</td></tr>
-    <tr><td>全部売ると<br><small>（参考）</small></td><td style="text-align:right;font-weight:800;white-space:nowrap">約49万1千円</td><td>約368万8千円</td></tr>
+    <tr class="kore"><td>138万円分<br><small>（今回はこれ）</small></td><td class="r">約16万2千円</td><td>約121万8千円</td></tr>
+    <tr><td>全部売ると<br><small>（参考）</small></td><td class="r">約49万1千円</td><td>約368万8千円</td></tr>
   </table>
 
   <div class="box">
@@ -186,7 +199,7 @@
       <span class="hi">来年の1月か2月<span class="tag yaru">来年の分</span></span>
       <span class="naka">毎月100円＋ボーナス設定で、約120万円。</span>
       <span class="hosoku">今年分と来年分の両方をやるなら、手元に約240万円が必要。売るのは約272万円分。</span>
-      <span class="hosoku">積立指定日を25日にするなら、1月22日（金）ごろまでにお金が証券口座に入っていればOK。</span>
+      <span class="hosoku"><b>1月にするなら1月22日（金）ごろ、2月にするなら2月24日（水）ごろ</b>までに、お金が証券口座に入っていればOK（積立指定日を25日にした場合）。</span>
     </li>
   </ul>
 
@@ -246,7 +259,7 @@
   <h2 id="chui">注意書き</h2>
   <ul class="chui">
     <li>使い切り設定は、<b>毎月の積立設定がある時だけ</b>使えます。買付日は12月18日で固定。証券口座から引き落とされます。</li>
-    <li>お金が足りない時は、その回の買付が見送りになります。罰金のようなものは見つかっていません。ただし、<b>今年の枠が使えなくなります</b>。</li>
+    <li>お金が足りない時は、その回の買付が見送りになると思います（公式ページには書いていませんでした）。罰金のようなものは見つかっていません。ただし、<b>今年の枠が使えなくなります</b>。</li>
     <li>NISAの枠は、来年に持ち越せません。</li>
     <li>分けて売っても、税金の合計は変わりません。</li>
     <li>税金は自動で引かれるので、確定申告はいりません。</li>
