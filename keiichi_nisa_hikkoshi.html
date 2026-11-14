@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>景一さん NISAお引っ越し検討表</title>
+<style>
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: #f3f1ec;
+    color: #111;
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+    font-size: 17px;
+    line-height: 1.7;
+  }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 20px 16px 48px; }
+
+  h1 { font-size: 24px; line-height: 1.4; margin: 0 0 6px; color: #111; }
+  .sub { font-size: 16px; color: #222; margin: 0 0 20px; }
+
+  h2 { font-size: 21px; margin: 32px 0 12px; color: #111; }
+
+  /* いちばん上の結論 */
+  .ketsuron {
+    background: #12372a;
+    color: #fff;
+    border-radius: 16px;
+    padding: 18px 18px 8px;
+  }
+  .ketsuron .label {
+    display: inline-block;
+    background: #fff;
+    color: #12372a;
+    font-weight: 700;
+    font-size: 16px;
+    border-radius: 999px;
+    padding: 2px 14px;
+    margin-bottom: 10px;
+  }
+  .ketsuron ol { margin: 0; padding-left: 1.4em; }
+  .ketsuron li { font-size: 18px; font-weight: 700; margin-bottom: 12px; line-height: 1.6; }
+  .ketsuron .mark { color: #ffe27a; }
+
+  /* 目安の見かた */
+  .hanrei { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; padding: 0; list-style: none; }
+  .hanrei li {
+    font-size: 16px; font-weight: 700; color: #fff;
+    border-radius: 999px; padding: 3px 14px;
+  }
+
+  /* カード */
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    border: 3px solid var(--c);
+    margin-bottom: 22px;
+    overflow: hidden;
+  }
+  .good { --c: #0b6b3a; --bg: #e3f4ea; }
+  .ok   { --c: #0b4f9c; --bg: #e2eefb; }
+  .weak { --c: #a34a00; --bg: #fdeedd; }
+  .hanrei .good, .hanrei .ok, .hanrei .weak { background: var(--c); }
+
+  .card-head {
+    background: var(--c);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+  }
+  .meyasu {
+    flex: none;
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--c);
+    font-size: 44px;
+    font-weight: 700;
+    line-height: 64px;
+    text-align: center;
+  }
+  .name { font-size: 20px; font-weight: 700; line-height: 1.35; }
+  .code { font-size: 16px; font-weight: 700; }
+
+  .card-body { padding: 16px; }
+
+  /* 元が取れるまで（いちばん目立たせる） */
+  .moto {
+    background: var(--bg);
+    border-radius: 14px;
+    text-align: center;
+    padding: 14px 10px 16px;
+  }
+  .moto .t { font-size: 17px; font-weight: 700; color: #111; }
+  .moto .v { font-size: 46px; font-weight: 800; color: var(--c); line-height: 1.25; }
+
+  /* 2つの税金を並べる */
+  .kurabe { display: flex; gap: 10px; margin-top: 12px; }
+  .kurabe > div {
+    flex: 1;
+    border: 2px solid #222;
+    border-radius: 12px;
+    padding: 10px 6px 12px;
+    text-align: center;
+  }
+  .kurabe .t { font-size: 16px; font-weight: 700; color: #111; line-height: 1.4; }
+  .kurabe .v { font-size: 26px; font-weight: 800; color: #111; line-height: 1.4; margin-top: 4px; }
+  .kurabe .n { font-size: 16px; color: #222; }
+  .kurabe .uku { border-color: var(--c); background: var(--bg); }
+  .kurabe .uku .v { color: var(--c); }
+
+  /* こまかい数字 */
+  dl { margin: 14px 0 0; }
+  dl > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid #555;
+  }
+  dl > div:last-child { border-bottom: none; }
+  dt { font-size: 17px; color: #111; }
+  dd { margin: 0; font-size: 18px; font-weight: 700; color: #111; text-align: right; }
+  dd small { display: block; font-size: 16px; font-weight: 400; color: #222; }
+
+  .memo {
+    margin: 12px 0 0;
+    background: #fff6c9;
+    border-left: 6px solid #8a6a00;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 17px;
+    font-weight: 700;
+    color: #111;
+  }
+
+  /* 注意書き */
+  .chui {
+    background: #fff;
+    border: 3px solid #a11d1d;
+    border-radius: 16px;
+    padding: 16px 16px 6px;
+  }
+  .chui ul { margin: 0; padding-left: 1.3em; }
+  .chui li { font-size: 17px; margin-bottom: 12px; color: #111; }
+  .chui b { color: #a11d1d; }
+
+  .foot { font-size: 16px; color: #222; margin-top: 24px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>特定口座 → NISA成長投資枠<br>お引っ越し検討表</h1>
+  <p class="sub">景一さん・楽天証券／2026年11月14日時点の株価</p>
+
+  <div class="ketsuron">
+    <span class="label">さきに結論</span>
+    <ol>
+      <li>効果がはっきり出るのは<br><span class="mark">「アイチコーポレーション」</span></li>
+      <li>今年の成長投資枠は使い切っているので、動かせるのは<span class="mark">2027年1月以降</span></li>
+      <li>3銘柄ぜんぶでも<span class="mark">約82,000円</span><br>（来年の成長投資枠240万円の約3.4%）</li>
+    </ol>
+  </div>
+
+  <h2>3つの銘柄をくらべる</h2>
+  <ul class="hanrei">
+    <li class="good">◎ 効果が大きい</li>
+    <li class="ok">○ まずまず</li>
+    <li class="weak">△ 時間がかかる</li>
+  </ul>
+  <p class="sub" style="margin-top:12px">「元が取れるまで」＝売る時にかかる税金を、毎年浮く配当の税金で取り戻すまでの長さです。</p>
+
+  <!-- 1 -->
+  <section class="card good">
+    <div class="card-head">
+      <div class="meyasu">◎</div>
+      <div>
+        <div class="name">アイチコーポレーション</div>
+        <div class="code">6345</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="moto">
+        <div class="t">元が取れるまで</div>
+        <div class="v">約7か月</div>
+      </div>
+      <div class="kurabe">
+        <div>
+          <div class="t">売る時の税金</div>
+          <div class="v">約280円</div>
+          <div class="n">1回だけ</div>
+        </div>
+        <div class="uku">
+          <div class="t">毎年浮く<br>配当の税金</div>
+          <div class="v">約460円</div>
+          <div class="n">毎年ずっと</div>
+        </div>
+      </div>
+      <dl>
+        <div><dt>株数</dt><dd>35株</dd></div>
+        <div><dt>評価額</dt><dd>44,835円</dd></div>
+        <div><dt>含み益</dt><dd>+1,400円</dd></div>
+        <div><dt>年間配当</dt><dd>2,275円<small>1株65円</small></dd></div>
+      </dl>
+      <p class="memo">NISA口座にもすでに112株あります</p>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="card ok">
+    <div class="card-head">
+      <div class="meyasu">○</div>
+      <div>
+        <div class="name">IDEC</div>
+        <div class="code">6652</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="moto">
+        <div class="t">元が取れるまで</div>
+        <div class="v">約4年半</div>
+      </div>
+      <div class="kurabe">
+        <div>
+          <div class="t">売る時の税金</div>
+          <div class="v">約120円</div>
+          <div class="n">1回だけ</div>
+        </div>
+        <div class="uku">
+          <div class="t">毎年浮く<br>配当の税金</div>
+          <div class="v">約26円</div>
+          <div class="n">毎年ずっと</div>
+        </div>
+      </div>
+      <dl>
+        <div><dt>株数</dt><dd>1株</dd></div>
+        <div><dt>評価額</dt><dd>3,240円</dd></div>
+        <div><dt>含み益</dt><dd>+585円</dd></div>
+        <div><dt>年間配当</dt><dd>130円<small>1株130円</small></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section class="card weak">
+    <div class="card-head">
+      <div class="meyasu">△</div>
+      <div>
+        <div class="name">武田薬品</div>
+        <div class="code">4502</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="moto">
+        <div class="t">元が取れるまで</div>
+        <div class="v">約13年</div>
+      </div>
+      <div class="kurabe">
+        <div>
+          <div class="t">売る時の税金</div>
+          <div class="v">約2,640円</div>
+          <div class="n">1回だけ</div>
+        </div>
+        <div class="uku">
+          <div class="t">毎年浮く<br>配当の税金</div>
+          <div class="v">約210円</div>
+          <div class="n">毎年ずっと</div>
+        </div>
+      </div>
+      <dl>
+        <div><dt>株数</dt><dd>5株</dd></div>
+        <div><dt>評価額</dt><dd>34,185円</dd></div>
+        <div><dt>含み益</dt><dd>+12,980円</dd></div>
+        <div><dt>年間配当</dt><dd>1,020円<small>1株204円</small></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <h2>動かす前に気をつけること</h2>
+  <div class="chui">
+    <ul>
+      <li>特定口座からNISAへは<b>そのまま移せません</b>。いったん売って、NISAで買い直します。</li>
+      <li>景一さんの口座は<b>ロック中</b>です。売り買いの前に解除して、終わったら<b>もう一度ロック</b>します。</li>
+      <li>売ってから買い直すまでのあいだに、<b>株価が動く</b>ことがあります。</li>
+      <li>3つとも100株未満です。NISAで<b>同じ株数を買えるか</b>、注文画面で確認します。</li>
+    </ul>
+  </div>
+
+  <p class="foot">※金額は2026年11月14日のスクショ時点の株価をもとにした目安です。株価や配当が変わると数字も変わります。</p>
+
+</div>
+</body>
+</html>
