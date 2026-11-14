@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>景一さん つみたて枠120万円 予定表と手順</title>
+<style>
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: #f3f1ec;
+    color: #111;
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+    font-size: 17px;
+    line-height: 1.7;
+  }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 20px 16px 56px; }
+  h1 { font-size: 24px; line-height: 1.4; margin: 0 0 6px; }
+  .sub { font-size: 16px; color: #222; margin: 0 0 18px; }
+  h2 { font-size: 21px; margin: 36px 0 12px; padding-left: 10px; border-left: 8px solid #0b6b3a; line-height: 1.4; }
+  p { margin: 0 0 10px; }
+
+  /* いちばん上のまとめ */
+  .matome { background: #12372a; color: #fff; border-radius: 16px; padding: 18px; }
+  .matome .label {
+    display: inline-block; background: #fff; color: #12372a; font-weight: 700;
+    font-size: 16px; border-radius: 999px; padding: 2px 14px; margin-bottom: 10px;
+  }
+  .matome p { font-size: 19px; font-weight: 700; line-height: 1.65; margin: 0; }
+  .matome .mark { color: #ffe27a; }
+
+  /* 目次ボタン */
+  .nav { display: flex; gap: 8px; margin: 14px 0 0; }
+  .nav a {
+    flex: 1; text-align: center; background: #fff; color: #0b4f2c; font-weight: 800; font-size: 16px;
+    border: 3px solid #0b6b3a; border-radius: 12px; padding: 10px 4px; text-decoration: none; line-height: 1.4;
+  }
+
+  /* 数字の表 */
+  .suji { width: 100%; border-collapse: collapse; background: #fff; border: 3px solid #111; }
+  .suji th { background: #111; color: #fff; font-size: 16px; padding: 8px 6px; text-align: center; }
+  .suji td { border-top: 2px solid #111; padding: 10px 10px; font-size: 17px; vertical-align: middle; line-height: 1.5; }
+  .suji td:last-child { text-align: right; font-weight: 800; white-space: nowrap; }
+  .suji td + td { border-left: 1px solid #555; }
+  .suji tr.kore td { background: #e3f4ea; }
+  .suji tr.kore td:first-child { color: #0b4f2c; font-weight: 800; }
+  .suji small { font-size: 16px; font-weight: 400; }
+
+  .box { background: #fff; border: 2px solid #111; border-radius: 14px; padding: 12px 14px; margin-top: 12px; font-size: 17px; }
+  .box p:last-child { margin: 0; }
+
+  /* 予定表 */
+  .yotei { list-style: none; margin: 0; padding: 0; }
+  .yotei li {
+    background: #fff; border: 2px solid #111; border-radius: 14px;
+    padding: 12px 14px; margin-bottom: 10px;
+  }
+  .yotei .hi { display: block; font-size: 20px; font-weight: 800; color: #111; }
+  .yotei .tag {
+    display: inline-block; font-size: 16px; font-weight: 800; border-radius: 999px;
+    padding: 0 12px; margin-left: 6px; vertical-align: 2px;
+  }
+  .tag.yaru { background: #b3261e; color: #fff; }
+  .tag.miru { background: #dbe9ff; color: #0b2f6b; border: 2px solid #0b2f6b; }
+  .tag.auto { background: #e3f4ea; color: #0b4f2c; border: 2px solid #0b4f2c; }
+  .yotei li.main { border: 4px solid #b3261e; background: #fff4f2; }
+  .yotei .naka { display: block; font-size: 17px; margin-top: 4px; }
+  .yotei .hosoku { display: block; font-size: 16px; color: #222; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #555; }
+
+  /* 手順チェックリスト */
+  .mae { background: #fff7d6; border: 3px solid #8a6100; border-radius: 14px; padding: 4px; margin-bottom: 12px; }
+  .mae .ttl { font-weight: 800; color: #5c4000; font-size: 16px; padding: 6px 10px 0; }
+  .tejun { list-style: none; margin: 0; padding: 0; }
+  .tejun li { margin-bottom: 10px; }
+  .step {
+    display: flex; align-items: flex-start; gap: 12px; width: 100%;
+    background: #fff; border: 3px solid #111; border-radius: 14px;
+    padding: 14px 12px; font: inherit; color: #111; text-align: left;
+    cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  .mae .step { border: 0; background: transparent; padding: 8px 10px 10px; }
+  .step .maru {
+    flex: none; width: 44px; height: 44px; border-radius: 50%;
+    border: 3px solid #0b6b3a; background: #fff; color: #0b4f2c;
+    font-size: 22px; font-weight: 800; line-height: 38px; text-align: center;
+  }
+  .step .txt { flex: 1; min-width: 0; }
+  .step .big { display: block; font-size: 19px; font-weight: 800; line-height: 1.5; }
+  .step .small { display: block; font-size: 16px; margin-top: 4px; line-height: 1.6; }
+  .step[aria-pressed="true"] { background: #e3f4ea; border-color: #0b6b3a; }
+  .mae .step[aria-pressed="true"] { background: transparent; }
+  .step[aria-pressed="true"] .maru { background: #0b6b3a; color: #fff; }
+  .step[aria-pressed="true"] .big { text-decoration: line-through; text-decoration-thickness: 2px; }
+  .step:focus-visible { outline: 4px solid #1a56c4; outline-offset: 2px; }
+
+  .tomaru {
+    background: #fff; border: 4px solid #b3261e; border-radius: 14px;
+    padding: 12px 14px; margin: 14px 0 0; font-size: 17px; font-weight: 700; color: #111;
+  }
+  .tomaru b { color: #8c1d18; }
+  .nokori { font-size: 17px; font-weight: 800; margin: 0 0 10px; }
+  .reset {
+    display: block; margin: 16px auto 0; background: #fff; color: #111; font: inherit; font-size: 16px; font-weight: 700;
+    border: 2px solid #111; border-radius: 999px; padding: 8px 20px; cursor: pointer;
+  }
+
+  .chui { margin: 0; padding: 0; list-style: none; }
+  .chui li {
+    background: #fff; border: 2px solid #111; border-radius: 12px;
+    padding: 10px 14px; margin-bottom: 8px; font-size: 17px;
+  }
+  .ue { text-align: center; margin-top: 28px; }
+  .ue a { color: #0b4f2c; font-weight: 800; font-size: 17px; }
+</style>
+</head>
+<body>
+<div class="wrap" id="top">
+
+  <h1>今年のつみたて枠120万円<br>予定表と手順</h1>
+  <p class="sub">景一さん・楽天証券／数字は2026年11月14日時点の画面</p>
+
+  <div class="matome">
+    <span class="label">やること まとめ</span>
+    <p>景一さんの特定口座の<span class="mark">S&amp;P500</span>（eMAXIS Slim 米国株式）を<span class="mark">一部売って</span>、景一さんのNISAつみたて投資枠（今年の残り<span class="mark">120万円</span>）を「<span class="mark">使い切り設定</span>」で使う。</p>
+  </div>
+
+  <div class="nav">
+    <a href="#yotei">予定表<br>（日付順）</a>
+    <a href="#tejun">11/18の<br>手順</a>
+    <a href="#chui">注意<br>書き</a>
+  </div>
+
+  <h2>いまの数字</h2>
+  <table class="suji">
+    <tr><th colspan="2">特定口座のS&amp;P500</th></tr>
+    <tr><td>持っている数</td><td>944,788口</td></tr>
+    <tr><td>いまの値段（評価額）</td><td>4,179,175円</td></tr>
+    <tr><td>元手</td><td>1,760,000円</td></tr>
+    <tr><td>利益</td><td>2,419,175円</td></tr>
+  </table>
+
+  <div class="box">
+    <p>税金は<b>利益に20.315％</b>かかります。<br>売った金額でみると、<b>約12％</b>が税金になります。</p>
+  </div>
+
+  <table class="suji" style="margin-top:12px">
+    <tr><th>売る金額</th><th>税金</th><th>手取り</th></tr>
+    <tr class="kore"><td>138万円分<br><small>（今回はこれ）</small></td><td style="text-align:right;font-weight:800;white-space:nowrap">約16万2千円</td><td>約121万8千円</td></tr>
+    <tr><td>全部売ると<br><small>（参考）</small></td><td style="text-align:right;font-weight:800;white-space:nowrap">約49万1千円</td><td>約368万8千円</td></tr>
+  </table>
+
+  <div class="box">
+    <p>138万円分を売れば、必要な<b>120万円に足ります</b>。</p>
+    <p>金額は、売る日の値段で少し変わります。</p>
+  </div>
+
+  <h2 id="yotei">予定表（日付順）</h2>
+  <ul class="yotei">
+    <li class="main">
+      <span class="hi">11月18日（水）<span class="tag yaru">実行日</span></span>
+      <span class="naka">下の「11/18の手順」のとおりに進める。</span>
+    </li>
+    <li>
+      <span class="hi">11月19日（木）<span class="tag miru">見るだけ</span></span>
+      <span class="naka">売却が「約定」（売り買いが成立）したか見る。操作はしない。</span>
+    </li>
+    <li>
+      <span class="hi">11月25日（水）ごろ<span class="tag miru">見るだけ</span></span>
+      <span class="naka">売ったお金が証券口座に入ったか見る。</span>
+    </li>
+    <li>
+      <span class="hi">12月17日（木）<span class="tag miru">最終確認</span></span>
+      <span class="naka">使い切り設定の締切。お金が証券口座に入っているか、最後の確認。</span>
+    </li>
+    <li>
+      <span class="hi">12月18日（金）<span class="tag auto">自動</span></span>
+      <span class="naka">使い切りの買付日。証券口座から120万円で買われる。</span>
+    </li>
+    <li>
+      <span class="hi">12月18日のあと<span class="tag miru">見るだけ</span></span>
+      <span class="naka">NISAつみたて投資枠の今年の残りが、0円になったか確認。</span>
+    </li>
+    <li>
+      <span class="hi">来年の1月か2月<span class="tag yaru">来年の分</span></span>
+      <span class="naka">毎月100円＋ボーナス設定で、約120万円。</span>
+      <span class="hosoku">今年分と来年分の両方をやるなら、手元に約240万円が必要。売るのは約272万円分。</span>
+      <span class="hosoku">積立指定日を25日にするなら、1月22日（金）ごろまでにお金が証券口座に入っていればOK。</span>
+    </li>
+  </ul>
+
+  <h2 id="tejun">11月18日（水）の手順</h2>
+  <p>景一さんの口座を、MacBookで。<br>終わったら、番号をタップすると ✓ がつきます。</p>
+  <p class="nokori" id="nokori" aria-live="polite"></p>
+
+  <div class="mae">
+    <div class="ttl">前の日までに</div>
+    <button type="button" class="step" data-id="mae" data-n="前" aria-pressed="false">
+      <span class="maru" aria-hidden="true">前</span>
+      <span class="txt"><span class="big">景一さんに「水曜日に電話が来るよ」と伝えておく</span></span>
+    </button>
+  </div>
+
+  <ol class="tejun">
+    <li><button type="button" class="step" data-id="s1" data-n="1" aria-pressed="false">
+      <span class="maru" aria-hidden="true">1</span>
+      <span class="txt"><span class="big">ロックを解除する</span>
+      <span class="small">景一さんの携帯に電話が来る → 6桁の数字を入れる</span></span>
+    </button></li>
+    <li><button type="button" class="step" data-id="s2" data-n="2" aria-pressed="false">
+      <span class="maru" aria-hidden="true">2</span>
+      <span class="txt"><span class="big">小さな積立設定を作って、使い切り設定で 1,200,000円 を上乗せ</span>
+      <span class="small">景一さんの口座に「毎月100円」などの積立設定（NISAつみたて投資枠）を作る。<br>→ 使い切り設定で 1,200,000円。<br><b>ボーナス設定は使わない。</b></span></span>
+    </button></li>
+    <li><button type="button" class="step" data-id="s3" data-n="3" aria-pressed="false">
+      <span class="maru" aria-hidden="true">3</span>
+      <span class="txt"><span class="big">「変更」「解除」のボタンが出ているか確認</span>
+      <span class="small">設定ができたら画面で見て、スクショをとる。</span></span>
+    </button></li>
+    <li><button type="button" class="step" data-id="s4" data-n="4" aria-pressed="false">
+      <span class="maru" aria-hidden="true">4</span>
+      <span class="txt"><span class="big">特定口座のS&amp;P500を 約138万円分 売る</span>
+      <span class="small">「金額」で指定して売る。<br><b>注文は15時まで。</b></span></span>
+    </button></li>
+    <li><button type="button" class="step" data-id="s5" data-n="5" aria-pressed="false">
+      <span class="maru" aria-hidden="true">5</span>
+      <span class="txt"><span class="big">注文が受け付けられたか確認</span>
+      <span class="small">「注文照会」の画面で見る。</span></span>
+    </button></li>
+    <li><button type="button" class="step" data-id="s6" data-n="6" aria-pressed="false">
+      <span class="maru" aria-hidden="true">6</span>
+      <span class="txt"><span class="big">もう一度ロックする</span>
+      <span class="small">電話で6桁の数字。</span></span>
+    </button></li>
+  </ol>
+
+  <div class="tomaru">
+    <b>うまくいかない時は</b><br>
+    ②③の設定がうまく出ない時は、<b>売らずにそこでやめてOK</b>。<br>
+    売ると税金が決まって、取り消せないからです。
+  </div>
+
+  <button type="button" class="reset" id="reset">チェックを全部はずす</button>
+
+  <h2 id="chui">注意書き</h2>
+  <ul class="chui">
+    <li>使い切り設定は、<b>毎月の積立設定がある時だけ</b>使えます。買付日は12月18日で固定。証券口座から引き落とされます。</li>
+    <li>お金が足りない時は、その回の買付が見送りになります。罰金のようなものは見つかっていません。ただし、<b>今年の枠が使えなくなります</b>。</li>
+    <li>NISAの枠は、来年に持ち越せません。</li>
+    <li>分けて売っても、税金の合計は変わりません。</li>
+    <li>税金は自動で引かれるので、確定申告はいりません。</li>
+    <li>景一さんの日本株3つ（アイチ・IDEC・武田薬品）は、動かさずそのまま持っておくことに決めました。</li>
+    <li>細かい画面の動きは、当日スクショを見ながらクロちゃんと一緒に確認します。</li>
+  </ul>
+
+  <p class="ue"><a href="#top">▲ いちばん上にもどる</a></p>
+</div>
+
+<script>
+(function () {
+  var KEY = 'keiichi_tsumitate_tejun_2026';
+  var steps = document.querySelectorAll('.step');
+  var nokori = document.getElementById('nokori');
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { saved = {}; }
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {}
+  }
+  function show(btn, on) {
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    btn.querySelector('.maru').textContent = on ? '✓' : btn.getAttribute('data-n');
+  }
+  function count() {
+    var done = 0;
+    for (var i = 0; i < steps.length; i++) {
+      if (steps[i].getAttribute('aria-pressed') === 'true') done++;
+    }
+    nokori.textContent = done === steps.length
+      ? '✓ 全部おわりました。おつかれさまでした。'
+      : '✓ ' + done + ' / ' + steps.length + ' おわり';
+  }
+  for (var i = 0; i < steps.length; i++) {
+    (function (btn) {
+      show(btn, !!saved[btn.getAttribute('data-id')]);
+      btn.addEventListener('click', function () {
+        var on = btn.getAttribute('aria-pressed') !== 'true';
+        show(btn, on);
+        saved[btn.getAttribute('data-id')] = on;
+        save();
+        count();
+      });
+    })(steps[i]);
+  }
+  count();
+  document.getElementById('reset').addEventListener('click', function () {
+    saved = {};
+    save();
+    for (var i = 0; i < steps.length; i++) show(steps[i], false);
+    count();
+  });
+})();
+</script>
+</body>
+</html>
