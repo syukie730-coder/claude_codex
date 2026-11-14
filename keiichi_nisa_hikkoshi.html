@@ -44,6 +44,16 @@
   .ketsuron li { font-size: 18px; font-weight: 700; margin-bottom: 12px; line-height: 1.6; }
   .ketsuron .mark { color: #ffe27a; }
 
+  /* 早見表 */
+  .hayami { width: 100%; border-collapse: collapse; background: #fff; border: 3px solid #111; }
+  .hayami th { background: #111; color: #fff; font-size: 16px; padding: 8px 6px; text-align: center; }
+  .hayami td { border-top: 2px solid #111; padding: 12px 8px; font-size: 17px; color: #111; vertical-align: middle; line-height: 1.5; }
+  .hayami td + td { border-left: 1px solid #555; text-align: center; }
+  .hayami .m { font-weight: 800; color: var(--c); }
+  .hayami .do { font-size: 19px; font-weight: 800; color: var(--c); background: var(--bg); }
+  .hayami .when { font-weight: 700; }
+  .hayami .do, .hayami .when { white-space: nowrap; }
+
   /* 目安の見かた */
   .hanrei { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; padding: 0; list-style: none; }
   .hanrei li {
@@ -166,6 +176,27 @@
       <li>3銘柄ぜんぶでも<span class="mark">約82,000円</span><br>（来年の成長投資枠240万円の約3.4%）</li>
     </ol>
   </div>
+
+  <h2>どうする？ 早見表</h2>
+  <table class="hayami">
+    <tr><th>銘柄</th><th>どうする</th><th>いつごろ</th></tr>
+    <tr class="good">
+      <td><span class="m">◎</span> アイチコーポレーション</td>
+      <td class="do">売って<br>NISAで<br>買い直す</td>
+      <td class="when">2027年<br>1月〜<br>3月中旬</td>
+    </tr>
+    <tr class="ok">
+      <td><span class="m">○</span> IDEC</td>
+      <td class="do">どちら<br>でもよい</td>
+      <td class="when">やるなら<br>アイチと<br>同じ日に</td>
+    </tr>
+    <tr class="weak">
+      <td><span class="m">△</span> 武田薬品</td>
+      <td class="do">そのまま<br>残す</td>
+      <td class="when">動かさ<br>ない</td>
+    </tr>
+  </table>
+  <p class="sub" style="margin-top:12px">「3月中旬まで」にしているのは、3月末の配当をNISAで受け取るためです。配当の時期は目安なので、注文の前に確認してください。最後に決めるのは景一さんです。</p>
 
   <h2>3つの銘柄をくらべる</h2>
   <ul class="hanrei">
