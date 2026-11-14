@@ -217,20 +217,6 @@
   .trend .ml { font-size:11px; color:var(--ink-soft); font-weight:900; }
   .trend-note { font-size:12px; color:var(--ink-soft); margin-top:12px; line-height:1.7; }
 
-  /* ===== 検索 ===== */
-  .search-wrap { padding:16px 14px; }
-  .search-box { display:flex; gap:8px; }
-  .search-box input { flex:1; padding:15px; border:2px solid var(--line); border-radius:20px; font-size:16px; background:#fff; font-family:inherit; color:var(--ink); }
-  .search-box input:focus { outline:none; border-color:var(--rose); }
-  .search-box button { padding:0 20px; border:3px solid #fff; border-radius:20px; background:linear-gradient(135deg,#EE9CBF,#E68CB0); color:#fff; font-size:15px; font-weight:900; font-family:inherit; box-shadow:0 4px 0 rgba(200,90,135,.4); transition:transform .12s; }
-  .search-box button:active { transform:translateY(2px); box-shadow:0 2px 0 rgba(200,90,135,.4); }
-  .quick-tags { display:flex; gap:7px; flex-wrap:wrap; margin-top:12px; }
-  .quick-tags button { background:#fff; border:2px solid var(--line); border-radius:20px; padding:9px 15px; font-size:14px; color:var(--rose-deep); font-weight:700; font-family:inherit; box-shadow:0 2px 0 rgba(200,90,135,.2); }
-  .result { background:#fff; border:2px solid var(--line); border-radius:20px; padding:13px 15px; margin-top:10px; box-shadow:0 3px 6px rgba(200,90,135,.1); }
-  .result .r-head { display:flex; align-items:center; gap:8px; margin-bottom:5px; }
-  .result .r-date { font-size:14px; font-weight:900; }
-  .result .r-lv { font-size:11px; font-weight:900; color:#fff; padding:4px 10px; border-radius:11px; text-shadow:0 1px 1px rgba(0,0,0,.15); }
-  .result .r-memo { font-size:14px; line-height:1.6; white-space:pre-wrap; }
   .no-result { text-align:center; color:var(--ink-soft); padding:30px 0; font-size:15px; }
 
   /* ===== 設定 ===== */
@@ -377,24 +363,6 @@
   </div>
 </div>
 
-<!-- 検索 -->
-<div class="screen" id="screen-search">
-  <div class="search-wrap">
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="メモを検索(例:シャンプー)">
-      <button id="searchBtn">検索</button>
-    </div>
-    <div class="quick-tags">
-      <button data-q="シャンプー">シャンプー</button>
-      <button data-q="ストレス">ストレス</button>
-      <button data-q="薬">薬</button>
-      <button data-q="美容院">美容院</button>
-      <button data-q="かゆ">かゆみ</button>
-    </div>
-    <div id="searchResults"></div>
-  </div>
-</div>
-
 <!-- 設定 -->
 <div class="screen" id="screen-settings">
   <div class="settings-wrap">
@@ -461,7 +429,6 @@
   <button class="active" data-screen="cal"><span class="ico">🗓️</span>カレンダー</button>
   <button data-screen="weight"><span class="ico">🐷</span>体重</button>
   <button data-screen="graph"><span class="ico">📊</span>抜け毛</button>
-  <button data-screen="search"><span class="ico">🔍</span>検索</button>
   <button data-screen="settings"><span class="ico">🎀</span>設定</button>
 </nav>
 
@@ -641,25 +608,7 @@ function renderGraphs() {
   $('trendChart').innerHTML = cols.join('');
 }
 
-function doSearch(q) {
-  q = q.trim(); const box=$('searchResults');
-  if (!q){ box.innerHTML=''; return; }
-  const keys = Object.keys(db.records).filter(k=>(db.records[k].memo||'').includes(q)).sort().reverse();
-  if (!keys.length){ box.innerHTML='<p class="no-result">「'+escapeHtml(q)+'」が入ったメモは見つかりませんでした</p>'; return; }
-  box.innerHTML = keys.map(k => {
-    const [y,m,d]=k.split('-').map(Number); const rec=db.records[k];
-    const lv = rec.level && LEVELS[rec.level] ? `<span class="r-lv" style="background:${LEVELS[rec.level].color}">${LEVELS[rec.level].symbol} ${LEVELS[rec.level].label}</span>` : '';
-    return `<div class="result" data-key="${k}"><div class="r-head"><span class="r-date">${y}年${m}月${d}日</span>${lv}</div><div class="r-memo">${escapeHtml(rec.memo)}</div></div>`;
-  }).join('');
-  box.querySelectorAll('.result').forEach(el => {
-    el.addEventListener('click', () => { const [y,m]=el.dataset.key.split('-').map(Number); viewYear=y; viewMonth=m-1; switchScreen('cal'); refresh(); openRecordSheet(el.dataset.key); });
-  });
-}
 function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-$('searchBtn').addEventListener('click', () => doSearch($('searchInput').value));
-$('searchInput').addEventListener('keydown', e => { if(e.key==='Enter') doSearch(e.target.value); });
-document.querySelectorAll('.quick-tags button').forEach(b => { b.addEventListener('click', () => { $('searchInput').value=b.dataset.q; doSearch(b.dataset.q); }); });
-
 function download(filename, text, type){ const blob=new Blob([text],{type}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename; a.click(); URL.revokeObjectURL(a.href); }
 $('exportJsonBtn').addEventListener('click', () => { const d=new Date(); download(`抜け毛体重手帳_バックアップ_${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}.json`, JSON.stringify(db,null,2), 'application/json'); toast('バックアップを書き出しました'); });
 $('exportCsvBtn').addEventListener('click', () => {
@@ -687,7 +636,7 @@ $('importFile').addEventListener('change', e => {
 function switchScreen(name) {
   document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active', s.id==='screen-'+name));
   document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active', b.dataset.screen===name));
-  const titles = { weight:'🐷 体重の記録', search:'🔍 メモをさがす', settings:'🎀 設定' };
+  const titles = { weight:'🐷 体重の記録', settings:'🎀 設定' };
   document.querySelector('header').classList.toggle('plain', !!titles[name]);
   $('headTitle').textContent = titles[name] || '';
   if (name==='graph') renderGraphs();
