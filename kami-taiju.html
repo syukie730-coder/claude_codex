@@ -376,9 +376,15 @@
     </div>
     <div class="graph-card">
       <h3>📦 前の「抜け毛記録」から引っ越す</h3>
-      <p>① 前のアプリの「設定」で「JSONでバックアップ」を押す<br>
-      ② このアプリの上の「バックアップから復元」で、そのファイルを選ぶ<br>
-      これで、今までの抜け毛の記録がそのまま入ります🎀</p>
+      <p>① 前の「抜け毛記録」アプリを開く →「設定」→「記録をまるごとコピーする」を押す<br>
+      ② このアプリにもどって、下のボタンを押す<br>
+      (「ペースト」と出たら、それを押してね)</p>
+      <button class="set-btn primary" id="pasteBtn">コピーした記録を入れる</button>
+      <div id="pasteBox" style="display:none">
+        <p>うまく読みこめませんでした。下の白いわくを長押しして「ペースト」を押してから、「これを入れる」を押してね。</p>
+        <textarea id="pasteArea" style="width:100%;min-height:90px;border:2px solid var(--line);border-radius:18px;padding:12px 14px;font-size:16px;font-family:inherit;background:#fff;color:var(--ink);margin-bottom:10px" placeholder="ここを長押し →「ペースト」"></textarea>
+        <button class="set-btn" id="pasteAreaBtn">これを入れる</button>
+      </div>
     </div>
     <div class="graph-card">
       <h3>🎀 このアプリについて</h3>
@@ -618,6 +624,33 @@ $('exportCsvBtn').addEventListener('click', () => {
   csv+='\n年月,まとめ\n';
   Object.keys(db.summaries).sort().forEach(k=>{ csv+=`${k},"${(db.summaries[k]||'').replace(/"/g,'""')}"\n`; });
   const d=new Date(); download(`抜け毛体重手帳_${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}.csv`, csv, 'text/csv'); toast('CSVを書き出しました');
+});
+// 前のアプリでコピーした記録を、今の記録に足す(今ある記録は消さない)
+function takeIn(text){
+  let data;
+  try { data = JSON.parse(String(text||'').trim().replace(/^NUKEGE1:/,'')); } catch(e) { return false; }
+  if (!data || typeof data.records !== 'object' || !data.records) return false;
+  let n = 0;
+  for (const k in data.records) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(k)) continue;
+    const r = data.records[k] || {};
+    if (!db.records[k]) { db.records[k] = { level: LEVELS[r.level] ? r.level : null, memo: String(r.memo||'') }; n++; }
+  }
+  for (const k in (data.summaries||{})) { if (/^\d{4}-\d{2}$/.test(k) && !db.summaries[k]) db.summaries[k] = String(data.summaries[k]||''); }
+  for (const k in (data.weights||{})) { if (/^\d{4}-\d{2}-\d{2}$/.test(k) && db.weights[k]==null && parseW(data.weights[k])!==null) db.weights[k] = parseW(data.weights[k]); }
+  saveDB(); refresh();
+  $('pasteBox').style.display = 'none'; $('pasteArea').value = '';
+  celebrate(true);
+  alert(n ? `${n}日分の記録を入れました🎀\nカレンダーで見てみてね。` : '新しく入れる記録はありませんでした。\n(もう全部入っています🎀)');
+  return true;
+}
+$('pasteBtn').addEventListener('click', async () => {
+  let text = '';
+  try { text = await navigator.clipboard.readText(); } catch(e) {}
+  if (!takeIn(text)) { $('pasteBox').style.display = 'block'; $('pasteArea').focus(); }
+});
+$('pasteAreaBtn').addEventListener('click', () => {
+  if (!takeIn($('pasteArea').value)) alert('記録が見つかりませんでした。\n前のアプリで「記録をまるごとコピーする」を押してから、もう一度ためしてね。');
 });
 $('importBtn').addEventListener('click', () => $('importFile').click());
 $('importFile').addEventListener('change', e => {

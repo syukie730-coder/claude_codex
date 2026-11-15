@@ -334,6 +334,11 @@
       <input type="file" id="importFile" accept=".json">
     </div>
     <div class="graph-card">
+      <h3>📦 新しい「抜け毛・体重手帳」へ引っ越す</h3>
+      <p>下のボタンを押すと、今までの記録がまるごとコピーされます。そのあと新しいアプリの「設定」で「コピーした記録を入れる」を押してください🎀<br>(このアプリの記録は消えません)</p>
+      <button class="set-btn primary" id="copyAllBtn">記録をまるごとコピーする</button>
+    </div>
+    <div class="graph-card">
       <h3>🎀 このアプリについて</h3>
       <p>抜け毛記録 ver.4.0 〜ローズ＆ゴールド サロン版〜 🎀<br>
       毎日数秒で記録できることを大切に作りました。<br>
@@ -571,6 +576,20 @@ $('exportCsvBtn').addEventListener('click', () => {
   csv+='\n年月,まとめ\n';
   Object.keys(db.summaries).sort().forEach(k=>{ csv+=`${k},"${(db.summaries[k]||'').replace(/"/g,'""')}"\n`; });
   const d=new Date(); download(`抜け毛記録_${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}.csv`, csv, 'text/csv'); toast('CSVを書き出しました');
+});
+$('copyAllBtn').addEventListener('click', async () => {
+  const text = 'NUKEGE1:' + JSON.stringify({ records: db.records, summaries: db.summaries });
+  const n = Object.keys(db.records).length;
+  let ok = false;
+  try { await navigator.clipboard.writeText(text); ok = true; } catch(e) {}
+  if (!ok) {
+    const ta = document.createElement('textarea'); ta.value = text; ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;font-size:16px';
+    document.body.appendChild(ta); ta.focus(); ta.select(); ta.setSelectionRange(0, text.length);
+    try { ok = document.execCommand('copy'); } catch(e) {}
+    ta.remove();
+  }
+  if (ok) alert(`${n}日分の記録をコピーしました🎀\n\n次に、新しい「抜け毛・体重手帳」を開いて、\n「設定」→「コピーした記録を入れる」を押してください。`);
+  else alert('コピーできませんでした。もう一度ボタンを押してみてください。');
 });
 $('importBtn').addEventListener('click', () => $('importFile').click());
 $('importFile').addEventListener('change', e => {
