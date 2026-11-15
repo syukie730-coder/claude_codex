@@ -338,7 +338,7 @@
       <p class="w-date" id="wDate"></p>
       <div class="w-input-row">
         <button class="w-step" id="wMinus" aria-label="0.1へらす">−</button>
-        <div class="w-field"><input type="text" inputmode="decimal" id="wInput" placeholder="00.0" autocomplete="off"><span>kg</span></div>
+        <div class="w-field"><input type="text" inputmode="decimal" id="wInput" placeholder="00.0" maxlength="5" autocomplete="off"><span>kg</span></div>
         <button class="w-step" id="wPlus" aria-label="0.1ふやす">＋</button>
       </div>
       <p class="w-hint" id="wHint"></p>
@@ -402,7 +402,7 @@
   <h2 id="sheetTitle">7月6日(月)の記録</h2>
   <p class="sec">🐷 体重</p>
   <div class="w-input-row">
-    <div class="w-field"><input type="text" inputmode="decimal" id="sheetWeight" placeholder="00.0" autocomplete="off"><span>kg</span></div>
+    <div class="w-field"><input type="text" inputmode="decimal" id="sheetWeight" placeholder="00.0" maxlength="5" autocomplete="off"><span>kg</span></div>
   </div>
   <p class="sec">✂️ 抜け毛</p>
   <div class="lv-btns">
@@ -691,7 +691,9 @@ function parseW(str){
   if (str == null) return null;
   const t = String(str).replace(/[０-９]/g, c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0)).replace(/[，,．。]/g,'.').replace(/[^0-9.]/g,'');
   if (!t) return null;
-  const n = Math.round(parseFloat(t)*10)/10;
+  let n = Math.round(parseFloat(t)*10)/10;
+  // 「495」のように点なしで3けた以上なら、最後の1けたを小数にする(49.5)
+  if (!t.includes('.') && t.length>=3 && n/10>=20) n = Math.round(n)/10;
   return (isFinite(n) && n>=20 && n<=250) ? n : null;
 }
 function keyToDate(k){ const [y,m,d]=k.split('-').map(Number); return new Date(y,m-1,d); }
@@ -711,7 +713,7 @@ function renderWeight(resetInput){
     $('wHint').textContent = '今日は記録ずみです✨' + (prevK ? `　前回より ${diffText(db.weights[tk]-db.weights[prevK])}kg` : '');
     $('wSave').textContent = '直して記録する 🐷';
   } else {
-    $('wHint').textContent = prevK ? `前回 ${niceDate(prevK)} は ${fmtW(db.weights[prevK])}kg でした` : 'はじめての記録です。数字を入れてね🐷';
+    $('wHint').textContent = prevK ? `前回 ${niceDate(prevK)} は ${fmtW(db.weights[prevK])}kg でした` : '数字だけでOK。495 と打つと 49.5 になります🐷';
     $('wSave').textContent = '記録する 🐷';
   }
   renderWeightChart(keys);
@@ -803,6 +805,15 @@ $('wSave').addEventListener('click', () => {
   db.weights[todayKey()] = w; saveDB(); $('wInput').blur();
   refresh(); celebrate(false); toast(`${fmtW(w)}kg を記録しました🐷`);
 });
+// 数字だけ打っても、自動で点が入る(495 → 49.5、1005 → 100.5)
+function autoDot(e){
+  if (e.inputType && e.inputType.startsWith('delete')) return;
+  const inp = e.target;
+  const t = inp.value.replace(/[０-９]/g, c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0));
+  if (/^[2-9]\d{2}$/.test(t) || /^1\d{3}$/.test(t)) inp.value = t.slice(0,-1) + '.' + t.slice(-1);
+}
+$('wInput').addEventListener('input', autoDot);
+$('sheetWeight').addEventListener('input', autoDot);
 $('wInput').addEventListener('keydown', e => { if (e.key==='Enter') $('wSave').click(); });
 document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
 function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2000); }
