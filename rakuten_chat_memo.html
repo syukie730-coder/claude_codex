@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>チャットで聞いたメモ</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="チャットメモ">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#fdf6ee">
+<link rel="apple-touch-icon" href="rakuten_lock_memo_icon.png">
+<link rel="icon" type="image/png" href="rakuten_lock_memo_icon.png">
+<style>
+  :root {
+    --bg: #fdf6ee;
+    --card: #ffffff;
+    --text: #222222;
+    --sub: #4a4a4a;
+    --accent: #c0563f;
+    --line: #ecdccb;
+    --head: #f6e7d8;
+    --row: #fbf7f2;
+    --note-bg: #fff7e0;
+    --mine-bg: #eef3fb;
+    --mine: #2f5a93;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    font-size: 18px;
+    line-height: 1.8;
+    -webkit-text-size-adjust: 100%;
+  }
+  .wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: calc(16px + env(safe-area-inset-top)) 16px calc(40px + env(safe-area-inset-bottom));
+  }
+  .top-note {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--sub);
+    background: #fff;
+    border: 1px dashed var(--line);
+    border-radius: 10px;
+    padding: 8px 12px;
+    margin: 0 0 14px;
+  }
+  h1 { font-size: 24px; line-height: 1.5; margin: 4px 0 18px; color: #1a1a1a; }
+  section {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 16px 14px 18px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  }
+  h2 {
+    font-size: 21px;
+    line-height: 1.5;
+    margin: 0 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--line);
+    color: #1a1a1a;
+  }
+  h2 .sub { display: block; font-size: 16px; font-weight: normal; color: var(--sub); }
+
+  /* 表 */
+  table { width: 100%; border-collapse: collapse; }
+  th, td {
+    border: 1px solid var(--line);
+    padding: 10px 10px;
+    vertical-align: top;
+    text-align: left;
+  }
+  thead th { background: var(--head); font-size: 17px; }
+  tbody tr:nth-child(even) td { background: var(--row); }
+  td.q { font-weight: bold; width: 30%; }
+  td.a { width: 42%; }
+  td.m { color: var(--sub); font-size: 16px; }
+  .num {
+    display: inline-block;
+    min-width: 26px; height: 26px;
+    line-height: 26px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    text-align: center;
+    font-size: 15px;
+    margin-right: 6px;
+  }
+  .w { color: var(--sub); font-size: 16px; font-weight: normal; }
+  .tag {
+    display: inline-block;
+    font-size: 14px;
+    line-height: 1.6;
+    border-radius: 6px;
+    padding: 0 6px;
+    margin-top: 4px;
+    background: var(--note-bg);
+    border: 1px solid #ecd59a;
+    color: #7a5a00;
+  }
+  .tag.mine { background: var(--mine-bg); border-color: #c7d6ee; color: var(--mine); }
+
+  /* スマホでは1行ずつカードの形に */
+  @media (max-width: 600px) {
+    table, thead, tbody, tr, td { display: block; width: 100%; }
+    thead { display: none; }
+    tr {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      overflow: hidden;
+      background: #fff;
+    }
+    tbody tr:nth-child(even) td { background: transparent; }
+    td { border: none; border-top: 1px solid var(--line); padding: 8px 12px 10px; width: 100% !important; }
+    td:first-child { border-top: none; background: var(--head) !important; }
+    td::before {
+      content: attr(data-label);
+      display: block;
+      font-size: 14px;
+      font-weight: bold;
+      color: var(--accent);
+    }
+  }
+
+  /* 最後の2つの枠 */
+  .flow { list-style: none; padding: 0; margin: 0; }
+  .flow li {
+    background: var(--row);
+    border-radius: 12px;
+    padding: 10px 12px 10px 52px;
+    position: relative;
+    margin: 0;
+  }
+  .flow li .n {
+    position: absolute; left: 12px; top: 10px;
+    width: 30px; height: 30px; line-height: 30px;
+    border-radius: 50%;
+    background: var(--accent); color: #fff;
+    text-align: center; font-weight: bold; font-size: 16px;
+  }
+  .flow .arrow { text-align: center; color: var(--accent); font-size: 20px; line-height: 1.4; padding: 2px 0; background: none; }
+  .check label {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--row);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+  .check input { width: 26px; height: 26px; margin: 3px 0 0; flex: none; accent-color: var(--accent); }
+  .check input:checked + span { color: var(--sub); text-decoration: line-through; }
+  .reset {
+    font-size: 16px; padding: 8px 14px;
+    border-radius: 10px; border: 1.5px solid var(--accent);
+    background: #fff; color: #8a2f1c;
+  }
+  footer { text-align: center; font-size: 15px; color: var(--sub); margin-top: 10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="top-note">2026/11/17 楽天証券オペレーターチャットで聞いた内容のメモ。公式の画面や案内が一番正しいので、迷ったらそちらを優先する。</p>
+
+  <h1>楽天証券 チャットで聞いたことのメモ</h1>
+
+  <!-- 表1 -->
+  <section>
+    <h2>表1：ロック中の動き
+      <span class="sub">今のロック＝「投資信託の買付以外を停止」</span></h2>
+    <table>
+      <thead><tr><th>聞いたこと</th><th>答え</th><th>ひとことメモ</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="q" data-label="聞いたこと"><span class="num">1</span>銀行から証券口座への自動入金</td>
+          <td class="a" data-label="答え">入金は止められていないので、<b>行われる</b>。</td>
+          <td class="m" data-label="ひとことメモ"><span class="tag">オペレーターの回答</span></td>
+        </tr>
+        <tr>
+          <td class="q" data-label="聞いたこと"><span class="num">2</span>積立の引き落とし</td>
+          <td class="a" data-label="答え">自動入金の設定があれば、お金が足りないときは<b>楽天銀行から自動で入る</b>。</td>
+          <td class="m" data-label="ひとことメモ"><span class="tag">オペレーターの回答</span></td>
+        </tr>
+        <tr>
+          <td class="q" data-label="聞いたこと"><span class="num">3</span>証券口座から銀行へ戻る自動出金</td>
+          <td class="a" data-label="答え">ロック中は<b>止まっている</b>。</td>
+          <td class="m" data-label="ひとことメモ"><span class="tag mine">自分で確かめたこと</span><br>公式の回答ではない。</td>
+        </tr>
+        <tr>
+          <td class="q" data-label="聞いたこと"><span class="num">4</span>ロック中に、積立の設定を変える・やめる</td>
+          <td class="a" data-label="答え"><b>できる</b>。</td>
+          <td class="m" data-label="ひとことメモ"><span class="tag">オペレーターの回答</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 表2 -->
+  <section>
+    <h2>表2：売ることとロックの順番</h2>
+    <table>
+      <thead><tr><th>聞いたこと</th><th>答え</th><th>ひとことメモ</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="q" data-label="聞いたこと"><span class="num">1</span>売る注文を出したあとに、ロックしても大丈夫？</td>
+          <td class="a" data-label="答え">注文の締切（多くの商品は<b>15:30</b>）をすぎていれば、そのまま約定<span class="w">（注文が成立すること）</span>する。</td>
+          <td class="m" data-label="ひとことメモ">ロックは15:30をすぎてからかける。</td>
+        </tr>
+        <tr>
+          <td class="q" data-label="聞いたこと"><span class="num">2</span>eMAXIS Slim 米国株式（S&amp;P500）の日にち</td>
+          <td class="a" data-label="答え">締切は<b>15:30</b>。水曜（11/18）に注文すると、<br>約定<span class="w">（注文が成立する日）</span>は<b>11/19（木）</b>、<br>受渡日<span class="w">（お金が手元に入る日）</span>は<b>11/25（水）</b>。</td>
+          <td class="m" data-label="ひとことメモ">注文してから、お金が入るまで約1週間。</td>
+        </tr>
+        <tr>
+          <td class="q" data-label="聞いたこと"><span class="num">3</span>売ったお金は、いつから使える？</td>
+          <td class="a" data-label="答え"><b>銀行へ出す</b>のは、受渡日（11/25）から。<br><b>別のものを買う</b>のには、約定日の次の営業日<span class="w">（証券会社が動いている日）</span>＝<b>11/20（金）</b>から使える。</td>
+          <td class="m" data-label="ひとことメモ">「出す」と「買う」で使える日がちがう。</td>
+        </tr>
+        <tr>
+          <td class="q" data-label="聞いたこと"><span class="num">4</span>税金はどうなる？</td>
+          <td class="a" data-label="答え">特定口座<span class="w">（税金の計算を証券会社がしてくれる口座）</span>で利益が出ていれば、売ったときに税金が引かれる。<br>買付可能額<span class="w">（買い物に使える金額）</span>には、<b>税金を引いたあとの金額</b>が入る。</td>
+          <td class="m" data-label="ひとことメモ">売った金額がそのまま全部使えるわけではない。</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 表3 -->
+  <section>
+    <h2>表3：積立の「使い切り設定」</h2>
+    <table>
+      <thead><tr><th>聞いたこと</th><th>答え</th><th>ひとことメモ</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="q" data-label="聞いたこと"><span class="num">1</span>使い切り設定ってなに？</td>
+          <td class="a" data-label="答え">1年の枠<span class="w">（NISAで1年に買える上限）</span>を上限に、今の積立に<b>上乗せして金額を増やす</b>しくみ。</td>
+          <td class="m" data-label="ひとことメモ">枠の残りを、年末にまとめて使うイメージ。</td>
+        </tr>
+        <tr>
+          <td class="q" data-label="聞いたこと"><span class="num">2</span>使うために必要なことは？</td>
+          <td class="a" data-label="答え">先に<b>毎月の積立設定</b>が必要。<br>使い切りの分は<b>証券口座のお金</b>で払う。</td>
+          <td class="m" data-label="ひとことメモ">だから明日、毎月100円の積立を先に作る。</td>
+        </tr>
+        <tr>
+          <td class="q" data-label="聞いたこと"><span class="num">3</span>日にちは？</td>
+          <td class="a" data-label="答え">締切は<b>12/17</b>、買うのは<b>12/18</b>。<br><b>2026年の枠</b>として使われる。</td>
+          <td class="m" data-label="ひとことメモ">12/17までに証券口座にお金を用意しておく。</td>
+        </tr>
+        <tr>
+          <td class="q" data-label="聞いたこと"><span class="num">4</span>11月に設定したら、11月の積立は変わる？</td>
+          <td class="a" data-label="答え">使い切りが動くのは<b>12月</b>。<b>11月の積立には影響しない</b>。</td>
+          <td class="m" data-label="ひとことメモ">11月はいつもどおり。</td>
+        </tr>
+        <tr>
+          <td class="q" data-label="聞いたこと"><span class="num">5</span>終わったあとはどうなる？</td>
+          <td class="a" data-label="答え">12月の使い切りが終わると、設定から<b>自動で消える</b>。<b>1月からの積立には影響しない</b>。</td>
+          <td class="m" data-label="ひとことメモ">自分で消さなくてよい。</td>
+        </tr>
+        <tr>
+          <td class="q" data-label="聞いたこと"><span class="num">6</span>お金が足りないときは？</td>
+          <td class="a" data-label="答え">使い切りは<b>まるごと行われない</b>。<br>足りる分だけ買う、ということはない。</td>
+          <td class="m" data-label="ひとことメモ">ここがいちばん大事。お金は多めに。</td>
+        </tr>
+        <tr>
+          <td class="q" data-label="聞いたこと"><span class="num">7</span>足りない分はどうなる？</td>
+          <td class="a" data-label="答え">自動入金の設定があれば、<b>楽天銀行から入る</b>。</td>
+          <td class="m" data-label="ひとことメモ">楽天銀行にもお金があるか見ておく。</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 明日の流れ -->
+  <section>
+    <h2>明日（11/18）の流れ</h2>
+    <ol class="flow">
+      <li><span class="n">1</span>ロックを外す（解除）</li>
+      <li class="arrow" aria-hidden="true">↓</li>
+      <li><span class="n">2</span>毎月100円の積立設定をする</li>
+      <li class="arrow" aria-hidden="true">↓</li>
+      <li><span class="n">3</span>使い切り設定をする</li>
+      <li class="arrow" aria-hidden="true">↓</li>
+      <li><span class="n">4</span>売る注文を出す（<b>15:30より前</b>に）</li>
+      <li class="arrow" aria-hidden="true">↓</li>
+      <li><span class="n">5</span><b>15:30をすぎてから</b>、もう一度ロックをかける</li>
+    </ol>
+  </section>
+
+  <!-- チェック -->
+  <section class="check">
+    <h2>明日、画面で確かめること
+      <span class="sub">確かめたら、□をタップしてチェック</span></h2>
+    <label><input type="checkbox" data-k="c1"><span>使い切りの金額が、画面に<b>いくら</b>と出るか</span></label>
+    <label><input type="checkbox" data-k="c2"><span>12/25の100円を入れても、<b>枠をはみ出さないか</b></span></label>
+    <label><input type="checkbox" data-k="c3"><span>売ったあと（11/20）の買付可能額<span class="w">（買い物に使える金額）</span>が、<b>使い切りの金額より多いか</b></span></label>
+    <p style="text-align:right;margin:4px 0 0;"><button type="button" class="reset" id="reset">チェックを全部はずす</button></p>
+  </section>
+
+  <footer>このメモは、聞いた話の覚え書きです。</footer>
+</div>
+
+<script>
+(function () {
+  var KEY = 'rakuten_chat_memo_check';
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { saved = {}; }
+  var boxes = document.querySelectorAll('.check input[type=checkbox]');
+  function save() {
+    var o = {};
+    boxes.forEach(function (b) { o[b.dataset.k] = b.checked; });
+    try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {}
+  }
+  boxes.forEach(function (b) {
+    b.checked = !!saved[b.dataset.k];
+    b.addEventListener('change', save);
+  });
+  document.getElementById('reset').addEventListener('click', function () {
+    boxes.forEach(function (b) { b.checked = false; });
+    save();
+  });
+})();
+</script>
+</body>
+</html>
