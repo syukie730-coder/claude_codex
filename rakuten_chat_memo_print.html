@@ -19,7 +19,9 @@
   @media screen { .wrap { padding: 16px; } }
   .top-note { font-size: 12px; border: 1px dashed #999; border-radius: 6px; padding: 4px 8px; margin: 0 0 6px; }
   h1 { font-size: 20px; margin: 2px 0 8px; }
-  section { margin: 0 0 10px; break-inside: avoid; page-break-inside: avoid; }
+  section { margin: 0 0 10px; }
+  h2 { break-after: avoid; page-break-after: avoid; }
+  .keep { break-inside: avoid; page-break-inside: avoid; }
   h2 { font-size: 15.5px; margin: 0 0 4px; padding: 3px 10px; background: #333; color: #fff; }
   h2 .sub { font-size: 12.5px; font-weight: normal; margin-left: 8px; }
   table { width: 100%; border-collapse: collapse; }
@@ -158,7 +160,7 @@
   </section>
 
   <!-- 明日の流れ -->
-  <section>
+  <section class="keep">
     <h2>明日（11/18）の流れ</h2>
     <ol class="flow">
       <li><span class="n">1</span>ロックを外す（解除）</li>
@@ -174,7 +176,7 @@
   </section>
 
   <!-- チェック -->
-  <section class="check">
+  <section class="check keep">
     <h2>明日、画面で確かめること
       <span class="sub">確かめたら、□にチェックを書く</span></h2>
     <label><span class="box"></span><span>使い切りの金額が、画面に<b>いくら</b>と出るか</span></label>
