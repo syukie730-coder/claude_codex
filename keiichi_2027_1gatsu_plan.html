@@ -47,10 +47,10 @@
   .nara > div { flex: 1; }
   .yo { font-weight: 800; white-space: nowrap; }
 
-  .tejun td { padding: 3px 7px; }
-  .tejun .no { width: 8%; text-align: center; font-size: 21px; font-weight: 800; vertical-align: middle; }
-  .tejun .big { font-size: 15.5px; line-height: 1.4; font-weight: 800; display: block; }
-  .tomaru { border: 4px solid #000; padding: 5px 12px; margin-top: 8px; font-size: 16px; font-weight: 700; }
+  .tejun td { padding: 3px 7px; line-height: 1.3; }
+  .tejun .no { width: 8%; text-align: center; font-size: 19px; white-space: nowrap; font-weight: 800; vertical-align: middle; }
+  .tejun .big { font-size: 15.5px; line-height: 1.3; font-weight: 800; display: block; }
+  .tomaru { border: 4px solid #000; padding: 4px 12px; margin-top: 6px; font-size: 16px; font-weight: 700; }
   ul.chui { margin: 0; padding-left: 1.3em; font-size: 14.5px; }
   ul.chui li { margin-bottom: 1px; }
 
@@ -61,8 +61,8 @@
   .kakunin .kotae { width: 27%; }
   .kakunin tr.midashi td { background: #eee; font-weight: 800; }
 
-  .yari td { padding: 6px 7px; }
-  .yari .koma { width: 28%; font-weight: 800; }
+  .yari td { padding: 3px 7px; line-height: 1.35; }
+  .yari .koma { width: 23%; font-weight: 800; }
 
   @media print {
     .annai { display: none; }
@@ -74,7 +74,7 @@
 <body>
 
 <div class="annai">
-  印刷用のページです（A4で5枚）。白黒で印刷して、赤ペンで✓をつけてね。<br>
+  印刷用のページです（A4で4枚）。白黒で印刷して、赤ペンで✓をつけてね。<br>
   <button type="button" onclick="window.print()">印刷する</button>
   <a href="keiichi_2027_1gatsu_plan.pdf">PDFで開く</a>
 </div>
@@ -84,7 +84,7 @@
 <!-- 1枚目 -->
 <section class="page">
   <h1>来年1月のNISA作戦　予定表</h1>
-  <p class="sub">景一さん・楽天証券／2026年11月18日に作った案　（1枚目／5枚）</p>
+  <p class="sub">景一さん・楽天証券／2026年11月18日に作った案　（1枚目／4枚）</p>
 
   <div class="matome">2027年1月6日（水）に、特定口座のS&amp;P500（eMAXIS Slim 米国株式）を約138万円分売る。<br>そのお金で、1月25日（月）ごろにNISAつみたて投資枠の「1月ボーナス 1,198,800円」を買う。</div>
 
@@ -126,7 +126,7 @@
 <!-- 2枚目 -->
 <section class="page">
   <h1>来年1月のNISA作戦　予定表（つづき）</h1>
-  <p class="sub">（2枚目／5枚）</p>
+  <p class="sub">（2枚目／4枚）</p>
   <h2>予定表②　1月7日〜</h2>
   <table>
     <tr><th>日にち</th><th>やること</th><th>メモ</th><th>済</th></tr>
@@ -161,12 +161,12 @@
 <!-- 3枚目 -->
 <section class="page">
   <h1>1月6日（水）の手順</h1>
-  <p class="sub">景一さんの口座で　終わったら□に✓を書く　（3枚目／5枚）</p>
+  <p class="sub">景一さんの口座で　終わったら□に✓を書く。暗証番号や6桁の数字は書かない　（3枚目／4枚）</p>
 
   <table class="tejun">
     <tr><th>順番</th><th>すること</th><th>メモ</th><th>済</th></tr>
     <tr><td class="no">前</td><td><span class="big">前日までに、景一さんに伝える</span>「水曜日に、050から始まる番号から電話が来るよ」<br>電話は<b>余裕を見て2〜3時間</b>とっておいてもらう</td><td class="memo"></td><td class="chk"><span class="waku"></span></td></tr>
-    <tr><td class="no">前</td><td><span class="big">当日は10時ごろに始める</span>電話が30分近く来ないこともあるため</td><td class="memo"></td><td class="chk"><span class="waku"></span></td></tr>
+    <tr><td class="no">前</td><td><span class="big">当日は10時ごろに始める</span></td><td class="memo"></td><td class="chk"><span class="waku"></span></td></tr>
     <tr><td class="no">始</td><td><span class="big">ログインする</span>絵文字の認証をする</td><td class="memo"></td><td class="chk"><span class="waku"></span></td></tr>
     <tr><td class="no">①</td><td><span class="big">メールで認証する（STEP1）</span>「セキュリティ設定」→「一時的な利用停止」を開く<br>景一さんのGmailに届いた6桁を入れる</td><td class="memo"></td><td class="chk"><span class="waku"></span></td></tr>
     <tr><td class="no">②</td><td><span class="big">電話でロックを解除する</span>「認証へ進む」→ 携帯番号を選ぶ →「ワンタイムキーを通知」→ 景一さんの携帯に電話で6桁</td><td class="memo"></td><td class="chk"><span class="waku"></span></td></tr>
@@ -175,25 +175,26 @@
     <tr><td class="no">⑤</td><td><span class="big">注文する（15時までに）</span>4枚目のBを見てから、取引暗証番号 →「注文」</td><td class="memo"></td><td class="chk"><span class="waku"></span></td></tr>
     <tr><td class="no">⑥</td><td><span class="big">「受付済み」を確認する</span>購入・売却履歴で見る</td><td class="memo"></td><td class="chk"><span class="waku"></span></td></tr>
     <tr><td class="no">待つ</td><td><span class="big">15:30をすぎるまで待つ</span>締切は15:30。それまでは再ロックしない</td><td class="memo"></td><td class="chk"><span class="waku"></span></td></tr>
-    <tr><td class="no">⑦</td><td><span class="big">もう一度ロックする</span>「一時的な利用停止（投資信託の買付以外を停止）」にもどす</td><td class="memo"></td><td class="chk"><span class="waku"></span></td></tr>
+    <tr><td class="no">⑦</td><td><span class="big">もう一度ロックする</span>「投資信託の買付以外を停止」にもどす</td><td class="memo"></td><td class="chk"><span class="waku"></span></td></tr>
   </table>
 
-  <div class="tomaru">※ 画面がいつもとちがう時は、売らずにそこでやめてOK。<br>（売ると取り消せないから。予備日は1月7日・8日・9日）</div>
+  <div class="tomaru">※ 画面がいつもとちがう時は、売らずにやめてOK（売ると取り消せないから）</div>
 
-  <h2>電話（ワンタイムキー）の注意</h2>
-  <ul class="chui">
-    <li>11/18は、混んでいて電話が来るまで約29分かかった</li>
-    <li>6桁の有効期限は30分。30分たつまで「再通知」は押せない</li>
-    <li>「通知」ボタンは何回も押さない</li>
-    <li>楽天は30分さわらないと、自動でログアウトされることがある</li>
-    <li>暗証番号や6桁の数字は、この紙に書かない</li>
-  </ul>
+  <h2 style="margin-top:8px">うまくいかない時のやり直し方</h2>
+  <table class="yari">
+    <tr><th>こまったこと</th><th>やること</th><th>済</th></tr>
+    <tr><td class="koma">電話が来ない</td><td>11/18は約29分。30分たつまで待つ。何回も押さない<br>30分たったら「再通知」を1回だけ。14時すぎなら予備日</td><td class="chk"><span class="waku"></span></td></tr>
+    <tr><td class="koma">ログアウトされた</td><td>30分さわらないと起きることがある<br>もう一度ログインして、①からやり直す</td><td class="chk"><span class="waku"></span></td></tr>
+    <tr><td class="koma">注文が取り消された</td><td>15時前なら、③からもう一度注文する<br>15時をすぎていたら、予備日にする</td><td class="chk"><span class="waku"></span></td></tr>
+    <tr><td class="koma">1/22にお金が足りない</td><td>楽天銀行から証券口座に入れる（締切は【要確認】）</td><td class="chk"><span class="waku"></span></td></tr>
+    <tr><td class="koma">予備日にもできない</td><td>ボーナスの月を「2月」に変える<br>買付は2/25（木）ごろ、お金は2/24（水）ごろまで【要確認】</td><td class="chk"><span class="waku"></span></td></tr>
+  </table>
 </section>
 
 <!-- 4枚目 -->
 <section class="page">
   <h1>画面で確かめるチェック表（A〜D）</h1>
-  <p class="sub">「画面の答え」に、画面で見たことを書く。合っていたら○　（4枚目／5枚）</p>
+  <p class="sub">「画面の答え」に、画面で見たことを書く。合っていたら○　（4枚目／4枚）</p>
 
   <table class="kakunin">
     <tr><th>記号</th><th>確かめること</th><th>正しい答え</th><th>画面の答え</th><th>○</th></tr>
@@ -226,23 +227,6 @@
     <tr><td class="ki">D3</td><td class="q">1/13 証券口座のお金</td><td class="sei">約121.9万円ふえている<br><small>税金が引かれたあと</small></td><td class="kotae"></td><td class="chk"></td></tr>
     <tr><td class="ki">D4</td><td class="q">1/22 証券口座のお金</td><td class="sei">1,198,900円より多い<br><small>ボーナス＋毎月100円</small></td><td class="kotae"></td><td class="chk"></td></tr>
   </table>
-</section>
-
-<!-- 5枚目 -->
-<section class="page">
-  <h1>うまくいかない時のやり直し方</h1>
-  <p class="sub">あわてなくて大丈夫。売らずにやめても、損はしない　（5枚目／5枚）</p>
-
-  <table class="yari">
-    <tr><th>こまったこと</th><th>やること</th><th>済</th></tr>
-    <tr><td class="koma">電話が来ない</td><td>30分たつまで待つ。ボタンは何回も押さない<br>30分たったら「再通知」を1回だけ押す<br>14時をすぎても解除できなければ、その日はやめて予備日にする</td><td class="chk"><span class="waku"></span></td></tr>
-    <tr><td class="koma">ログアウトされた</td><td>もう一度ログインして、①のメール認証からやり直す<br>注文の前なら、何も起きていないので大丈夫</td><td class="chk"><span class="waku"></span></td></tr>
-    <tr><td class="koma">注文が取り消された<br><small>（受付済みになっていない）</small></td><td>購入・売却履歴をもう一度見る<br>15時前なら、③からもう一度注文する<br>15時をすぎていたら、予備日にする</td><td class="chk"><span class="waku"></span></td></tr>
-    <tr><td class="koma">同じ注文が2つある</td><td>どちらか1つを取り消す（15:30まで）<br>分からなければ、楽天証券に聞く</td><td class="chk"><span class="waku"></span></td></tr>
-    <tr><td class="koma">1/22にお金が足りない</td><td>楽天銀行から証券口座にお金を入れる<br>入金の締切は【要確認】<br>間に合わなければ、2月ボーナスに切りかえる</td><td class="chk"><span class="waku"></span></td></tr>
-    <tr><td class="koma">予備日にもできない</td><td>2月ボーナスに切りかえる<br>積立設定のボーナスの月を「2月」に変える<br>買付は2月25日（木）ごろ、お金は2月24日（水）ごろまでに【要確認】</td><td class="chk"><span class="waku"></span></td></tr>
-  </table>
-
 </section>
 
 </div>
