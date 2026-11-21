@@ -216,6 +216,16 @@
   .trend .seg { width:100%; }
   .trend .ml { font-size:11px; color:var(--ink-soft); font-weight:900; }
   .trend-note { font-size:12px; color:var(--ink-soft); margin-top:12px; line-height:1.7; }
+  .rank-row { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:18px; margin-bottom:8px; background:var(--paper-2); border:2px solid var(--line); }
+  .rank-row.top { background:linear-gradient(135deg,#FFF6D8,#FFE9F1); border-color:#E8C76A; }
+  .rank-row.low { background:#FDEFF3; }
+  .rank-row .rn { width:40px; text-align:center; font-size:24px; font-weight:900; color:var(--ink-soft); flex-shrink:0; }
+  .rank-row .rm { width:46px; font-size:17px; font-weight:900; flex-shrink:0; }
+  .rank-row .rbar { flex:1; height:14px; background:#fff; border-radius:8px; overflow:hidden; border:1.5px solid var(--line); }
+  .rank-row .rbar b { display:block; height:100%; border-radius:6px; }
+  .rank-row .rp { width:60px; text-align:right; font-size:17px; font-weight:900; flex-shrink:0; }
+  .rank-row .rp small { font-size:11px; }
+  .rank-say { font-size:15px; font-weight:900; line-height:1.8; margin-bottom:12px; padding:12px 14px; border-radius:18px; background:#fff; border:2px dashed var(--line); }
 
   .no-result { text-align:center; color:var(--ink-soft); padding:30px 0; font-size:15px; }
 
@@ -326,6 +336,11 @@
       <h3>🌷 抜け毛・過去6ヶ月の変化</h3>
       <div class="trend" id="trendChart"></div>
       <p class="trend-note">棒の高さ＝記録した日数。緑が多い月は調子が良い月、赤が多い月は抜け毛が多かった月です。</p>
+    </div>
+    <div class="graph-card">
+      <h3>🏆 調子の良かった月ランキング</h3>
+      <div id="rankBox"></div>
+      <p class="trend-note">点数の出し方：◎＝100点、○＝75点、△＝50点、✕＝25点、✕✕＝0点として、その月の平均を出しています。点が高いほど調子が良かった月です。（上のグラフと同じ6ヶ月で比べます）</p>
     </div>
   </div>
 </div>
@@ -612,6 +627,33 @@ function renderGraphs() {
     cols.push(`<div class="col"><div class="stack" style="height:${t/maxTotal*112}px">${segs}</div><div class="ml">${m+1}月</div></div>`);
   }
   $('trendChart').innerHTML = cols.join('');
+  renderRanking(months);
+}
+function renderRanking(months){
+  const PT={oo:100,o:75,s:50,x:25,xx:0};
+  const list=months.filter(o=>o.t>0).map(o=>({...o,score:Math.round(LV_ORDER.reduce((s,lv)=>s+o.cc[lv]*PT[lv],0)/o.t)}));
+  if(!list.length){ $('rankBox').innerHTML='<p class="no-result">まだ記録がありません🎀</p>'; return; }
+  list.sort((a,b)=>b.score-a.score);
+  let rank=0, prev=null;
+  list.forEach((o,i)=>{ if(o.score!==prev){rank=i+1;prev=o.score;} o.rank=rank; });
+  const worstScore=list[list.length-1].score;
+  const col=sc=>sc>=80?'var(--best)':sc>=60?'var(--good)':sc>=40?'var(--soso)':sc>=20?'var(--bad)':'var(--worst)';
+  const medal=r=>r===1?'🥇':r===2?'🥈':r===3?'🥉':r+'位';
+  const nm=o=>`${o.m+1}月`;
+  const best=list.filter(o=>o.rank===1).map(nm).join('・');
+  let say=`🌟 いちばん調子が良かったのは <span style="color:var(--rose-deep);white-space:nowrap">${best}</span>`;
+  if(list.length>1 && worstScore<list[0].score){
+    const worst=list.filter(o=>o.score===worstScore).map(nm).join('・');
+    say+=`<br>💦 いちばん抜け毛が多かったのは <span style="color:var(--worst);white-space:nowrap">${worst}</span>`;
+  }
+  const rows=list.map(o=>{
+    const cls=o.rank===1?'top':(list.length>1&&o.score===worstScore&&o.score<list[0].score?'low':'');
+    const few=o.t<5?`<div style="font-size:10px;color:var(--ink-soft)">記録${o.t}日</div>`:'';
+    return `<div class="rank-row ${cls}"><div class="rn">${medal(o.rank)}</div><div class="rm">${nm(o)}${few}</div>
+      <div class="rbar"><b style="width:${Math.max(o.score,4)}%;background:${col(o.score)}"></b></div>
+      <div class="rp" style="color:${col(o.score)}">${o.score}<small>点</small></div></div>`;
+  }).join('');
+  $('rankBox').innerHTML=`<div class="rank-say">${say}</div>`+rows;
 }
 
 function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -821,7 +863,7 @@ function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('sho
 loadDB(); refresh();
 
 // ===== 新しい版が出ていたら、自動で入れかえる(ホーム画面のアプリは古いままになりやすいため) =====
-const APP_VER = 6;
+const APP_VER = 7;
 let lastVerCheck = 0;
 function checkNewVersion(){
   if (!/^https?:/.test(location.protocol)) return;
