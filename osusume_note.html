@@ -479,13 +479,23 @@
   }
   /* リンクを ととのえる（http / https だけ通す） */
   function fixLink(s){
-    s = String(s||"").trim().replace(/\s+/g,"");
+    s = String(s||"").trim();
     if(!s) return "";
-    if(!/^https?:\/\//i.test(s)){
-      if(/^[a-z][a-z0-9+.-]*:/i.test(s)) return "";
-      s = "https://" + s;
-    }
-    return /^https?:\/\/[^\/]+\.[^\/]+/i.test(s) ? s : "";
+    /* 文の中に https://… がまざっていたら、そこだけ使う */
+    var m = s.match(/https?:\/\/[^\s<>"']+/i);
+    if(m) return m[0];
+    var t = s.replace(/\s+/g,"");
+    if(/^[a-z][a-z0-9+.-]*:/i.test(t)) return "";
+    /* example.com のような形なら https:// をつける */
+    if(/^[a-z0-9-]+(\.[a-z0-9-]+)+(\/.*)?$/i.test(t)) return "https://" + t;
+    return "";
+  }
+  /* リンク欄に お店の名前など ふつうの文字が入っていたら、
+     止めずに「その名前で グーグル検索するリンク」にして保存する */
+  function linkFromInput(s){
+    s = String(s||"").trim();
+    if(!s) return "";
+    return fixLink(s) || ("https://www.google.com/search?q=" + encodeURIComponent(s));
   }
   /* ひとことの中の https://… を タップできるようにする */
   function memoHtml(s){
@@ -696,14 +706,9 @@
       return;
     }
     var rawLink = el("fLink").value.trim();
-    if(rawLink && !fixLink(rawLink)){
-      el("fLink").focus();
-      toast("リンクの 形を たしかめてね 🙏");
-      return;
-    }
     var data = {
       name: name,
-      link: fixLink(rawLink),
+      link: linkFromInput(rawLink),
       person: el("fPerson").value.trim(),
       genre: pickedGenre,
       memo: el("fMemo").value.trim(),
