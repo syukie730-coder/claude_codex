@@ -270,13 +270,25 @@
   .w-row .v i { font-size:12px; font-style:normal; color:var(--ink-soft); margin-left:2px; }
   .w-row .df { width:58px; text-align:right; font-size:13px; font-weight:900; color:var(--ink-soft); }
   .w-row .df.down { color:#2F8F76; } .w-row .df.up { color:#D2577F; }
-  .goal-main { text-align:center; padding:6px 0 4px; }
-  .goal-main .gsub { font-size:14px; font-weight:900; color:var(--ink-soft); }
-  .goal-main .gbig { font-size:20px; font-weight:900; color:var(--ink); margin:4px 0; }
-  .goal-main .gbig b { font-size:40px; color:var(--rose-deep); margin:0 4px; }
-  .goal-main .gbig.done b { color:#2F8F76; }
-  .goal-bar { height:18px; background:var(--paper-2); border:2px solid var(--line); border-radius:10px; overflow:hidden; margin:10px 0 6px; }
-  .goal-bar b { display:block; height:100%; background:linear-gradient(90deg,#EE9CBF,#2FA98A); border-radius:8px; transition:width .5s; }
+  .goal-hero { text-align:center; padding:4px 0 2px; }
+  .goal-hero .gtag { display:inline-block; font-size:14px; font-weight:900; color:#fff; background:linear-gradient(135deg,#EE9CBF,#E68CB0); border-radius:20px; padding:5px 16px; border:2px solid #fff; box-shadow:0 2px 6px rgba(200,90,135,.3); }
+  .goal-hero .gbig { font-size:22px; font-weight:900; color:var(--ink); margin:6px 0 0; line-height:1.2; }
+  .goal-hero .gbig b { font-size:64px; color:var(--rose-deep); margin:0 4px; letter-spacing:-1px; }
+  .goal-hero .gbig.done b { font-size:40px; color:#2F8F76; }
+  .goal-hero .gcheer { font-size:16px; font-weight:900; color:var(--rose-deep); margin-top:2px; }
+  .road { position:relative; margin:44px 6px 6px; }
+  .road .rail { height:22px; border-radius:12px; background:var(--paper-2); border:2px solid var(--line); overflow:hidden; }
+  .road .rail b { display:block; height:100%; border-radius:10px; background:linear-gradient(90deg,#F6C2D8,#EE9CBF 45%,#2FA98A); transition:width .6s; }
+  .road .pig { position:absolute; top:-40px; transform:translateX(-50%); font-size:34px; line-height:1; transition:left .6s; filter:drop-shadow(0 2px 2px rgba(0,0,0,.15)); }
+  .road .flag { position:absolute; right:-6px; top:-38px; font-size:30px; line-height:1; }
+  .road-lab { display:flex; justify-content:space-between; margin:6px 0 4px; font-size:13px; font-weight:900; color:var(--ink-soft); }
+  .road-lab span:last-child { color:#2F8F76; text-align:right; }
+  .road-lab small { display:block; font-size:11px; }
+  .goal-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:12px; }
+  .goal-stats div { background:var(--paper-2); border-radius:16px; padding:9px 4px; text-align:center; }
+  .goal-stats small { display:block; font-size:11px; font-weight:900; color:var(--ink-soft); margin-bottom:2px; }
+  .goal-stats b { font-size:18px; font-weight:900; color:var(--ink); }
+  .goal-stats b i { font-size:11px; font-style:normal; }
   .goal-note { font-size:13px; color:var(--ink-soft); font-weight:700; text-align:center; line-height:1.7; }
   .goal-edit { margin-top:12px; }
   .goal-edit .w-input-row { margin-bottom:10px; }
@@ -360,17 +372,6 @@
 <div class="screen" id="screen-weight">
   <div class="graph-wrap">
     <div class="graph-card">
-      <h3>🐷 今朝の体重</h3>
-      <p class="w-date" id="wDate"></p>
-      <div class="w-input-row">
-        <button class="w-step" id="wMinus" aria-label="0.1へらす">−</button>
-        <div class="w-field"><input type="text" inputmode="decimal" id="wInput" placeholder="00.0" maxlength="5" autocomplete="off"><span>kg</span></div>
-        <button class="w-step" id="wPlus" aria-label="0.1ふやす">＋</button>
-      </div>
-      <p class="w-hint" id="wHint"></p>
-      <button class="btn-save w-save" id="wSave">記録する 🐷</button>
-    </div>
-    <div class="graph-card">
       <h3>🎯 目標体重</h3>
       <div id="goalView"></div>
       <div class="goal-edit" id="goalEdit" style="display:none">
@@ -381,6 +382,17 @@
         <button class="goal-btn" id="goalCancel" style="color:var(--ink-soft)">やめる</button>
       </div>
       <button class="goal-btn" id="goalOpen">目標を決める・変える</button>
+    </div>
+    <div class="graph-card">
+      <h3>🐷 今朝の体重</h3>
+      <p class="w-date" id="wDate"></p>
+      <div class="w-input-row">
+        <button class="w-step" id="wMinus" aria-label="0.1へらす">−</button>
+        <div class="w-field"><input type="text" inputmode="decimal" id="wInput" placeholder="00.0" maxlength="5" autocomplete="off"><span>kg</span></div>
+        <button class="w-step" id="wPlus" aria-label="0.1ふやす">＋</button>
+      </div>
+      <p class="w-hint" id="wHint"></p>
+      <button class="btn-save w-save" id="wSave">記録する 🐷</button>
     </div>
     <div class="graph-card">
       <h3>📈 体重のグラフ</h3>
@@ -861,22 +873,26 @@ function renderWeightChart(keys){
 function renderGoal(keys){
   const g = db.goal, last = keys.length ? db.weights[keys[keys.length-1]] : null;
   $('goalOpen').textContent = g ? '目標を変える' : '目標を決める 🎯';
-  if (!g) { $('goalView').innerHTML = '<p class="goal-note">目標体重を決めると、「目標まであと何kg」がここに出ます🐷</p>'; return; }
-  if (last == null) { $('goalView').innerHTML = `<div class="goal-main"><div class="gsub">目標 ${fmtW(g.w)}kg</div></div><p class="goal-note">体重を記録すると、あと何kgかが出ます🐷</p>`; return; }
+  if (!g) { $('goalView').innerHTML = '<p class="goal-note" style="font-size:15px">🏁 目標体重を決めると、<br>「ゴールまであと何kg」がここに大きく出ます🐷</p>'; return; }
+  if (last == null) { $('goalView').innerHTML = `<div class="goal-hero"><span class="gtag">🏁 目標 ${fmtW(g.w)}kg</span></div><p class="goal-note" style="margin-top:10px">体重を記録すると、あと何kgかが出ます🐷</p>`; return; }
   const rest = Math.round((last - g.w)*10)/10;
-  let html;
-  if (rest <= 0) {
-    html = `<div class="goal-main"><div class="gsub">目標 ${fmtW(g.w)}kg ／ いま ${fmtW(last)}kg</div>
-      <div class="gbig done">🎉<b>目標達成！</b>🎉</div></div>` + (rest<0 ? `<p class="goal-note">目標より ${fmtW(-rest)}kg 下です。よくがんばりました✨</p>` : '<p class="goal-note">ぴったり目標です。よくがんばりました✨</p>');
-  } else {
-    const st = g.start != null && g.start > g.w ? g.start : null;
-    const pct = st ? Math.max(0, Math.min(100, (st - last) / (st - g.w) * 100)) : 0;
-    html = `<div class="goal-main"><div class="gsub">いま ${fmtW(last)}kg → 目標 ${fmtW(g.w)}kg</div>
-      <div class="gbig">あと<b>${fmtW(rest)}</b>kg</div></div>` +
-      (st ? `<div class="goal-bar"><b style="width:${Math.max(pct,3)}%"></b></div>
-      <p class="goal-note">目標を決めたとき ${fmtW(st)}kg から、${st-last>0 ? fmtW(st-last)+'kg へりました（'+Math.round(pct)+'%）' : 'まだ変わっていません。ゆっくりいこうね'}</p>` : '');
-  }
-  $('goalView').innerHTML = html;
+  let st = g.start != null ? g.start : db.weights[keys[0]];
+  if (st == null || st <= g.w) st = Math.max(last, g.w + 0.1);
+  const pct = rest <= 0 ? 100 : Math.max(0, Math.min(100, (st - last) / (st - g.w) * 100));
+  const lost = Math.round((st - last)*10)/10;
+  const cheer = rest<=0 ? '' : rest<=0.5 ? 'ゴールはもう目の前！✨' : rest<=1 ? 'あと少し！がんばってるね💪' : pct>=50 ? '半分こえたよ！その調子🌷' : lost>0 ? 'いい調子！一歩ずつね🐷' : 'ゆっくりいこうね🐷';
+  const head = rest <= 0
+    ? `<div class="goal-hero"><span class="gtag">🏁 目標 ${fmtW(g.w)}kg</span><div class="gbig done">🎉<b>目標達成！</b>🎉</div>
+       <div class="gcheer">${rest<0 ? '目標より '+fmtW(-rest)+'kg 下です✨' : 'ぴったり目標です✨'}</div></div>`
+    : `<div class="goal-hero"><span class="gtag">🏁 目標 ${fmtW(g.w)}kg まで</span><div class="gbig">あと<b>${fmtW(rest)}</b>kg</div>
+       <div class="gcheer">${cheer}</div></div>`;
+  const road = `<div class="road"><span class="pig" style="left:${Math.max(4,Math.min(84,pct))}%">🐷</span><span class="flag">🏁</span>
+      <div class="rail"><b style="width:${Math.max(pct,4)}%"></b></div></div>
+    <div class="road-lab"><span><small>スタート</small>${fmtW(st)}kg</span><span><small>ゴール</small>${fmtW(g.w)}kg</span></div>`;
+  const stats = `<div class="goal-stats"><div><small>いま</small><b>${fmtW(last)}<i>kg</i></b></div>
+    <div><small>へった</small><b style="color:#2F8F76">${lost>0?fmtW(lost):'0.0'}<i>kg</i></b></div>
+    <div><small>すすみぐあい</small><b>${Math.round(pct)}<i>%</i></b></div></div>`;
+  $('goalView').innerHTML = head + road + stats;
 }
 function openGoal(show){
   $('goalEdit').style.display = show ? 'block' : 'none';
@@ -930,7 +946,7 @@ function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('sho
 loadDB(); refresh();
 
 // ===== 新しい版が出ていたら、自動で入れかえる(ホーム画面のアプリは古いままになりやすいため) =====
-const APP_VER = 8;
+const APP_VER = 9;
 let lastVerCheck = 0;
 function checkNewVersion(){
   if (!/^https?:/.test(location.protocol)) return;
