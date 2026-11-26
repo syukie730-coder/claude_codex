@@ -270,6 +270,17 @@
   .w-row .v i { font-size:12px; font-style:normal; color:var(--ink-soft); margin-left:2px; }
   .w-row .df { width:58px; text-align:right; font-size:13px; font-weight:900; color:var(--ink-soft); }
   .w-row .df.down { color:#2F8F76; } .w-row .df.up { color:#D2577F; }
+  .goal-main { text-align:center; padding:6px 0 4px; }
+  .goal-main .gsub { font-size:14px; font-weight:900; color:var(--ink-soft); }
+  .goal-main .gbig { font-size:20px; font-weight:900; color:var(--ink); margin:4px 0; }
+  .goal-main .gbig b { font-size:40px; color:var(--rose-deep); margin:0 4px; }
+  .goal-main .gbig.done b { color:#2F8F76; }
+  .goal-bar { height:18px; background:var(--paper-2); border:2px solid var(--line); border-radius:10px; overflow:hidden; margin:10px 0 6px; }
+  .goal-bar b { display:block; height:100%; background:linear-gradient(90deg,#EE9CBF,#2FA98A); border-radius:8px; transition:width .5s; }
+  .goal-note { font-size:13px; color:var(--ink-soft); font-weight:700; text-align:center; line-height:1.7; }
+  .goal-edit { margin-top:12px; }
+  .goal-edit .w-input-row { margin-bottom:10px; }
+  .goal-btn { width:100%; padding:13px; border:2px solid var(--line); border-radius:18px; background:#fff; color:var(--rose-deep); font-size:15px; font-weight:900; font-family:inherit; margin-top:12px; }
   .sheet .sec { font-size:15px; font-weight:900; color:var(--rose-deep); margin:2px 0 10px; }
   .sheet .w-input-row { margin-bottom:18px; }
   .sheet .w-field input { font-size:30px; }
@@ -358,6 +369,18 @@
       </div>
       <p class="w-hint" id="wHint"></p>
       <button class="btn-save w-save" id="wSave">記録する 🐷</button>
+    </div>
+    <div class="graph-card">
+      <h3>🎯 目標体重</h3>
+      <div id="goalView"></div>
+      <div class="goal-edit" id="goalEdit" style="display:none">
+        <div class="w-input-row">
+          <div class="w-field"><input type="text" inputmode="decimal" id="goalInput" placeholder="48.0" maxlength="5" autocomplete="off"><span>kg</span></div>
+        </div>
+        <button class="btn-save w-save" id="goalSave">この目標にする 🎯</button>
+        <button class="goal-btn" id="goalCancel" style="color:var(--ink-soft)">やめる</button>
+      </div>
+      <button class="goal-btn" id="goalOpen">目標を決める・変える</button>
     </div>
     <div class="graph-card">
       <h3>📈 体重のグラフ</h3>
@@ -680,6 +703,7 @@ function takeIn(text){
   }
   for (const k in (data.summaries||{})) { if (/^\d{4}-\d{2}$/.test(k) && !db.summaries[k]) db.summaries[k] = String(data.summaries[k]||''); }
   for (const k in (data.weights||{})) { if (/^\d{4}-\d{2}-\d{2}$/.test(k) && db.weights[k]==null && parseW(data.weights[k])!==null) db.weights[k] = parseW(data.weights[k]); }
+  if (!db.goal && data.goal && parseW(data.goal.w)!==null) db.goal = data.goal;
   saveDB(); refresh();
   $('pasteBox').style.display = 'none'; $('pasteArea').value = '';
   celebrate(true);
@@ -701,7 +725,7 @@ $('importFile').addEventListener('change', e => {
   reader.onload = () => {
     try {
       const data=JSON.parse(reader.result); if(!data.records) throw new Error();
-      if (confirm(data.weights ? '今のデータをバックアップの内容に置き換えますか?\n(置き換え前のデータは消えます)' : '抜け毛の記録を、このファイルの内容に置き換えますか?\n(体重の記録はそのまま残ります)')){ db={records:data.records||{},summaries:data.summaries||{},weights:data.weights||db.weights||{}}; saveDB(); refresh(); toast('復元しました🎀'); }
+      if (confirm(data.weights ? '今のデータをバックアップの内容に置き換えますか?\n(置き換え前のデータは消えます)' : '抜け毛の記録を、このファイルの内容に置き換えますか?\n(体重の記録はそのまま残ります)')){ db={records:data.records||{},summaries:data.summaries||{},weights:data.weights||db.weights||{},goal:data.goal||db.goal}; saveDB(); refresh(); toast('復元しました🎀'); }
     } catch { alert('このファイルは読み込めませんでした。JSONバックアップファイルを選んでください。'); }
     e.target.value='';
   };
@@ -758,6 +782,7 @@ function renderWeight(resetInput){
     $('wHint').textContent = prevK ? `前回 ${niceDate(prevK)} は ${fmtW(db.weights[prevK])}kg でした` : '数字だけでOK。495 と打つと 49.5 になります🐷';
     $('wSave').textContent = '記録する 🐷';
   }
+  renderGoal(keys);
   renderWeightChart(keys);
   const list = keys.slice().reverse().slice(0,60);
   $('wList').innerHTML = list.length ? list.map(k=>{
@@ -782,6 +807,8 @@ function renderWeightChart(keys){
   }
   if (end - start < 6*DAY) start = end - 6*DAY;
   const vals = pts.map(p=>p.v), mn = Math.min(...vals), mx = Math.max(...vals);
+  const gw = db.goal ? db.goal.w : null;
+  const cmn = gw!=null ? Math.min(mn, gw) : mn, cmx = gw!=null ? Math.max(mx, gw) : mx;
   const first = pts[0], last = pts[pts.length-1], d0 = last.v-first.v;
   $('wStats').innerHTML =
     `<div><small>いちばん新しい</small><b>${fmtW(last.v)}<i>kg</i></b></div>` +
@@ -789,7 +816,7 @@ function renderWeightChart(keys){
     `<div><small>最小〜最大</small><b style="font-size:15px">${fmtW(mn)}〜${fmtW(mx)}</b></div>`;
 
   // たて軸の目もり
-  let lo = Math.floor(mn-0.5), hi = Math.ceil(mx+0.5);
+  let lo = Math.floor(cmn-0.5), hi = Math.ceil(cmx+0.5);
   const step = [1,2,5,10,20,50].find(s => (hi-lo)/s <= 5) || 50;
   lo = Math.floor(lo/step)*step; hi = Math.ceil(hi/step)*step; if (hi===lo) hi = lo+step;
   const W=340, H=220, L=40, R=16, T=14, B=30;
@@ -805,6 +832,8 @@ function renderWeightChart(keys){
   g += `<text x="${L}" y="${H-8}" text-anchor="start" font-size="13" font-weight="700" fill="#A98C9C">${lab(start)}</text>` +
        `<text x="${x(mid)}" y="${H-8}" text-anchor="middle" font-size="13" font-weight="700" fill="#A98C9C">${lab(mid)}</text>` +
        `<text x="${W-R}" y="${H-8}" text-anchor="end" font-size="13" font-weight="700" fill="#A98C9C">${lab(end)}</text>`;
+  if (gw!=null) g += `<line x1="${L}" x2="${W-R}" y1="${y(gw)}" y2="${y(gw)}" stroke="#2FA98A" stroke-width="2" stroke-dasharray="6 5"/>` +
+       `<text x="${W-R}" y="${y(gw)-5}" text-anchor="end" font-size="12" font-weight="900" fill="#2FA98A">目標 ${fmtW(gw)}</text>`;
   const path = pts.map((p,i)=>`${i?'L':'M'}${x(p.t).toFixed(1)} ${y(p.v).toFixed(1)}`).join(' ');
   if (pts.length>1){
     g += `<path d="${path} L${x(last.t).toFixed(1)} ${H-B} L${x(first.t).toFixed(1)} ${H-B} Z" fill="rgba(230,140,176,.14)"/>` +
@@ -829,6 +858,40 @@ function renderWeightChart(keys){
   svg.addEventListener('touchmove', pick, {passive:true});
 }
 
+function renderGoal(keys){
+  const g = db.goal, last = keys.length ? db.weights[keys[keys.length-1]] : null;
+  $('goalOpen').textContent = g ? '目標を変える' : '目標を決める 🎯';
+  if (!g) { $('goalView').innerHTML = '<p class="goal-note">目標体重を決めると、「目標まであと何kg」がここに出ます🐷</p>'; return; }
+  if (last == null) { $('goalView').innerHTML = `<div class="goal-main"><div class="gsub">目標 ${fmtW(g.w)}kg</div></div><p class="goal-note">体重を記録すると、あと何kgかが出ます🐷</p>`; return; }
+  const rest = Math.round((last - g.w)*10)/10;
+  let html;
+  if (rest <= 0) {
+    html = `<div class="goal-main"><div class="gsub">目標 ${fmtW(g.w)}kg ／ いま ${fmtW(last)}kg</div>
+      <div class="gbig done">🎉<b>目標達成！</b>🎉</div></div>` + (rest<0 ? `<p class="goal-note">目標より ${fmtW(-rest)}kg 下です。よくがんばりました✨</p>` : '<p class="goal-note">ぴったり目標です。よくがんばりました✨</p>');
+  } else {
+    const st = g.start != null && g.start > g.w ? g.start : null;
+    const pct = st ? Math.max(0, Math.min(100, (st - last) / (st - g.w) * 100)) : 0;
+    html = `<div class="goal-main"><div class="gsub">いま ${fmtW(last)}kg → 目標 ${fmtW(g.w)}kg</div>
+      <div class="gbig">あと<b>${fmtW(rest)}</b>kg</div></div>` +
+      (st ? `<div class="goal-bar"><b style="width:${Math.max(pct,3)}%"></b></div>
+      <p class="goal-note">目標を決めたとき ${fmtW(st)}kg から、${st-last>0 ? fmtW(st-last)+'kg へりました（'+Math.round(pct)+'%）' : 'まだ変わっていません。ゆっくりいこうね'}</p>` : '');
+  }
+  $('goalView').innerHTML = html;
+}
+function openGoal(show){
+  $('goalEdit').style.display = show ? 'block' : 'none';
+  $('goalOpen').style.display = show ? 'none' : 'block';
+  if (show) { $('goalInput').value = db.goal ? fmtW(db.goal.w) : ''; $('goalInput').focus(); }
+}
+$('goalOpen').addEventListener('click', () => openGoal(true));
+$('goalCancel').addEventListener('click', () => openGoal(false));
+$('goalSave').addEventListener('click', () => {
+  const v = parseW($('goalInput').value);
+  if (v === null) { toast('数字を入れてね🎯'); return; }
+  const ks = weightKeys(), last = ks.length ? db.weights[ks[ks.length-1]] : null;
+  db.goal = { w: v, start: last, since: todayKey() };
+  saveDB(); openGoal(false); renderWeight(false); toast('目標を決めました🎯');
+});
 $('wRange').querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
   wRange = Number(b.dataset.r);
   $('wRange').querySelectorAll('button').forEach(x=>x.classList.toggle('on', x===b));
@@ -845,7 +908,9 @@ $('wSave').addEventListener('click', () => {
   const w = parseW($('wInput').value);
   if (w === null){ toast('体重は 20〜250 の数字で入れてね🐷'); return; }
   db.weights[todayKey()] = w; saveDB(); $('wInput').blur();
-  refresh(); celebrate(false); toast(`${fmtW(w)}kg を記録しました🐷`);
+  refresh(); celebrate(false);
+  const gr = db.goal ? Math.round((w-db.goal.w)*10)/10 : null;
+  toast(gr==null ? `${fmtW(w)}kg を記録しました🐷` : gr>0 ? `${fmtW(w)}kg 記録🐷 目標まであと${fmtW(gr)}kg` : `${fmtW(w)}kg 記録🎉 目標達成！`);
 });
 // 数字だけ打っても、自動で点が入る(495 → 49.5、1005 → 100.5)
 function autoDot(e){
@@ -856,6 +921,8 @@ function autoDot(e){
 }
 $('wInput').addEventListener('input', autoDot);
 $('sheetWeight').addEventListener('input', autoDot);
+$('goalInput').addEventListener('input', autoDot);
+$('goalInput').addEventListener('keydown', e => { if (e.key==='Enter') $('goalSave').click(); });
 $('wInput').addEventListener('keydown', e => { if (e.key==='Enter') $('wSave').click(); });
 document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
 function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2000); }
@@ -863,7 +930,7 @@ function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('sho
 loadDB(); refresh();
 
 // ===== 新しい版が出ていたら、自動で入れかえる(ホーム画面のアプリは古いままになりやすいため) =====
-const APP_VER = 7;
+const APP_VER = 8;
 let lastVerCheck = 0;
 function checkNewVersion(){
   if (!/^https?:/.test(location.protocol)) return;
