@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>わたしの簿記ノート</title>
+<meta name="description" content="動画の目次と、自分だけの問題集。簿記3級のおべんきょうノート。">
+<meta name="theme-color" content="#FFF4EA">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="簿記ノート">
+<link rel="icon" type="image/png" href="boki-benkyo-icon.png">
+<link rel="apple-touch-icon" href="boki-benkyo-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="boki-benkyo-icon.png">
+<link rel="apple-touch-icon" sizes="512x512" href="boki-benkyo-icon-512.png">
+<link rel="manifest" href="boki_benkyo.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFF4EA; --card:#FFFFFF; --ink:#5B4A42; --sub:#9A877C; --line:#F1E2D6;
+  --pink:#F6B7C1; --pink-d:#E98A9B; --pink-l:#FDE8EC;
+  --mint:#BFE6D4; --mint-d:#5FB592; --mint-l:#E8F6EF;
+  --lav:#D9CCF2; --lav-d:#8E76C9; --lav-l:#F1ECFB;
+  --yel:#FBE3A6; --yel-d:#D9A93A; --yel-l:#FFF6DD;
+  --blue-l:#E6F0FB;
+  --shadow:0 3px 12px rgba(150,110,90,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Hiragino Sans",sans-serif;
+  font-size:17px;line-height:1.7;font-weight:500;
+  -webkit-text-size-adjust:100%;
+}
+button,input,select,textarea{font-family:inherit;font-size:17px;color:var(--ink)}
+button{cursor:pointer;border:none;background:none}
+
+/* ヘッダー */
+header{
+  position:sticky;top:0;z-index:20;
+  background:rgba(255,244,234,.95);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  padding:calc(env(safe-area-inset-top) + 10px) 16px 10px;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  border-bottom:1px solid var(--line);
+}
+header h1{margin:0;font-size:21px;font-weight:900;letter-spacing:.04em;display:flex;align-items:center;gap:6px}
+header h1 .dot{color:var(--pink-d)}
+.gear{
+  min-width:48px;height:44px;border-radius:22px;background:#fff;box-shadow:var(--shadow);
+  font-size:15px;font-weight:700;padding:0 14px;color:var(--ink);
+}
+
+main{padding:14px 16px calc(110px + env(safe-area-inset-bottom));max-width:680px;margin:0 auto}
+.view{display:none}
+.view.on{display:block}
+
+/* 論点のボタン */
+.chips{
+  display:flex;gap:8px;overflow-x:auto;padding:4px 2px 12px;margin:0 -16px;padding-left:16px;padding-right:16px;
+  scrollbar-width:none;
+}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  flex:0 0 auto;min-height:44px;padding:8px 16px;border-radius:22px;
+  background:#fff;border:2px solid var(--line);font-weight:700;font-size:16px;white-space:nowrap;
+}
+.chip .n{font-size:13px;color:var(--sub);margin-left:4px}
+.chip.on{background:var(--pink);border-color:var(--pink);color:#fff}
+.chip.on .n{color:#fff}
+
+.toolbar{display:flex;gap:10px;margin:2px 0 14px;flex-wrap:wrap}
+.btn{
+  min-height:50px;padding:10px 18px;border-radius:16px;font-weight:700;font-size:17px;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  box-shadow:var(--shadow);background:#fff;
+}
+.btn.main{background:var(--pink-d);color:#fff}
+.btn.mint{background:var(--mint-d);color:#fff}
+.btn.lav{background:var(--lav-d);color:#fff}
+.btn.soft{background:var(--lav-l);color:var(--lav-d);box-shadow:none}
+.btn.yel{background:var(--yel);color:#7A5A12}
+.btn.wide{width:100%}
+.btn.flex1{flex:1}
+.btn.small{min-height:44px;padding:6px 14px;font-size:16px;border-radius:14px;box-shadow:none;background:#F8F1EA}
+.btn.danger{background:#FFE9E6;color:#C6614F;box-shadow:none}
+
+.summary{font-size:15px;color:var(--sub);margin:0 2px 10px}
+
+/* カード */
+.card{
+  background:var(--card);border-radius:20px;box-shadow:var(--shadow);
+  padding:14px;margin-bottom:14px;
+}
+.vtop{display:flex;gap:12px;align-items:flex-start;text-decoration:none;color:inherit}
+.thumb{
+  flex:0 0 128px;width:128px;height:72px;border-radius:12px;overflow:hidden;
+  background:var(--pink-l);position:relative;display:flex;align-items:center;justify-content:center;
+}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb .play{
+  position:absolute;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.9);
+  display:flex;align-items:center;justify-content:center;color:var(--pink-d);font-size:16px;padding-left:3px;
+}
+.vtitle{font-weight:700;font-size:17px;line-height:1.5;word-break:break-word}
+.tag{
+  display:inline-block;font-size:13px;font-weight:700;padding:2px 10px;border-radius:10px;
+  background:var(--mint-l);color:#3E8A6B;margin-bottom:4px;
+}
+.memo{
+  margin-top:10px;background:var(--yel-l);border-radius:12px;padding:8px 12px;font-size:16px;
+  white-space:pre-wrap;word-break:break-word;
+}
+.row{display:flex;gap:8px;margin-top:12px;align-items:center;flex-wrap:wrap}
+.seen{
+  min-height:44px;padding:6px 14px;border-radius:14px;font-weight:700;font-size:16px;
+  background:#F8F1EA;color:var(--sub);border:2px dashed #E6D6C8;
+}
+.seen.on{background:var(--mint);color:#2F7457;border:2px solid var(--mint)}
+.card.watched{background:#FBFFFD}
+.spacer{flex:1}
+
+/* 問題カード */
+.pcard{display:block;width:100%;text-align:left;cursor:pointer}
+.ptext{
+  font-size:17px;white-space:pre-wrap;word-break:break-word;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+}
+.res{display:inline-block;font-size:14px;font-weight:700;padding:3px 12px;border-radius:12px;margin-left:6px}
+.res.ok{background:var(--mint);color:#2F7457}
+.res.maybe{background:var(--yel);color:#7A5A12}
+.res.ng{background:var(--pink);color:#fff}
+.res.none{background:#F3ECE5;color:var(--sub)}
+.phead{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:6px;flex-wrap:wrap}
+
+.nigate-on{background:var(--yel-l);border:2px solid var(--yel);border-radius:18px;padding:10px 14px;margin-bottom:14px;font-size:16px}
+
+.empty{
+  text-align:center;color:var(--sub);background:#fff;border-radius:20px;padding:30px 18px;
+  border:2px dashed var(--line);font-size:16px;
+}
+.empty .big{font-size:40px;display:block;margin-bottom:6px}
+
+/* 下のボタン */
+nav.tabs{
+  position:fixed;left:0;right:0;bottom:0;z-index:30;
+  background:#fff;border-top:1px solid var(--line);
+  display:flex;padding:8px 12px calc(8px + env(safe-area-inset-bottom));gap:10px;
+  box-shadow:0 -4px 14px rgba(150,110,90,.08);
+}
+nav.tabs button{
+  flex:1;min-height:60px;border-radius:18px;font-weight:900;font-size:18px;color:var(--sub);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.25;
+}
+nav.tabs button .ic{font-size:24px}
+nav.tabs button.on{background:var(--pink-l);color:var(--pink-d)}
+
+/* 下から出てくる画面 */
+.overlay{
+  position:fixed;inset:0;z-index:50;background:rgba(90,70,60,.35);
+  display:none;align-items:flex-end;justify-content:center;
+}
+.overlay.on{display:flex}
+.sheet{
+  background:var(--bg);width:100%;max-width:680px;max-height:92vh;overflow-y:auto;
+  border-radius:26px 26px 0 0;padding:10px 18px calc(26px + env(safe-area-inset-bottom));
+  -webkit-overflow-scrolling:touch;animation:up .22s ease-out;
+}
+@keyframes up{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+.grab{width:46px;height:5px;border-radius:3px;background:#E3D2C4;margin:4px auto 10px}
+.sheet h2{font-size:20px;margin:0 0 14px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.close{min-width:44px;height:44px;border-radius:22px;background:#fff;font-size:20px;box-shadow:var(--shadow)}
+label.f{display:block;font-weight:700;margin:14px 0 6px;font-size:16px}
+label.f small{font-weight:500;color:var(--sub);font-size:14px;margin-left:4px}
+input[type=text],input[type=url],select,textarea{
+  width:100%;border:2px solid var(--line);border-radius:14px;background:#fff;padding:12px 14px;
+  font-size:17px;outline:none;-webkit-appearance:none;appearance:none;
+}
+select{background-image:linear-gradient(45deg,transparent 50%,var(--sub) 50%),linear-gradient(135deg,var(--sub) 50%,transparent 50%);
+  background-position:calc(100% - 22px) 52%,calc(100% - 16px) 52%;background-size:6px 6px;background-repeat:no-repeat;padding-right:40px}
+input:focus,select:focus,textarea:focus{border-color:var(--pink)}
+textarea{min-height:150px;line-height:1.7;resize:vertical}
+textarea.short{min-height:84px}
+.hint{font-size:14px;color:var(--sub);margin-top:4px}
+.err{color:#C6614F;font-size:15px;font-weight:700;margin-top:6px;display:none}
+
+.qbox{
+  background:#fff;border-radius:18px;padding:16px;box-shadow:var(--shadow);
+  white-space:pre-wrap;word-break:break-word;font-size:18px;line-height:1.85;
+}
+.abox{
+  background:var(--mint-l);border-radius:18px;padding:16px;margin-top:14px;
+  white-space:pre-wrap;word-break:break-word;font-size:18px;line-height:1.85;border:2px solid var(--mint);
+}
+.boxlabel{font-weight:900;font-size:15px;margin:16px 0 6px;color:var(--sub)}
+.judge{display:flex;gap:8px;margin-top:10px}
+.judge button{
+  flex:1;min-height:64px;border-radius:16px;font-weight:900;font-size:15px;line-height:1.3;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;border:3px solid transparent;
+}
+.judge .e{font-size:22px}
+.judge .ok{background:var(--mint-l);color:#2F7457}
+.judge .maybe{background:var(--yel-l);color:#7A5A12}
+.judge .ng{background:var(--pink-l);color:#C2566A}
+.judge .ok.sel{border-color:var(--mint-d)}
+.judge .maybe.sel{border-color:var(--yel-d)}
+.judge .ng.sel{border-color:var(--pink-d)}
+.thanks{text-align:center;color:var(--mint-d);font-weight:700;margin-top:10px;min-height:1.7em}
+
+.set-sec{background:#fff;border-radius:20px;padding:16px;box-shadow:var(--shadow);margin-bottom:16px}
+.set-sec h3{margin:0 0 6px;font-size:18px}
+.set-sec p{margin:4px 0 12px;font-size:15px;color:var(--sub)}
+.topic-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px dashed var(--line)}
+.topic-item:last-child{border-bottom:none}
+.topic-item .nm{flex:1;font-weight:700}
+.topic-item .cnt{font-size:14px;color:var(--sub)}
+.addrow{display:flex;gap:8px;margin-top:10px}
+.addrow input{flex:1}
+
+/* やさしいお知らせ */
+.notice{
+  position:fixed;left:14px;right:14px;z-index:40;
+  bottom:calc(96px + env(safe-area-inset-bottom));
+  max-width:640px;margin:0 auto;
+  background:#fff;border-radius:22px;padding:16px;box-shadow:0 8px 24px rgba(150,110,90,.22);
+  border:3px solid var(--yel);display:none;animation:up .3s ease-out;
+}
+.notice.on{display:block}
+.notice .msg{font-size:17px;font-weight:700;margin-bottom:4px}
+.notice .msub{font-size:15px;color:var(--sub);margin-bottom:12px}
+
+.toast{
+  position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 70px);transform:translateX(-50%);
+  background:var(--ink);color:#fff;border-radius:20px;padding:10px 20px;font-size:16px;font-weight:700;
+  z-index:80;opacity:0;pointer-events:none;transition:opacity .25s;max-width:90%;text-align:center;
+}
+.toast.on{opacity:.95}
+
+/* かくにん */
+.confirm{position:fixed;inset:0;z-index:70;background:rgba(90,70,60,.4);display:none;align-items:center;justify-content:center;padding:20px}
+.confirm.on{display:flex}
+.confirm .box{background:#fff;border-radius:22px;padding:22px 18px 18px;width:100%;max-width:400px;text-align:center}
+.confirm .box p{margin:0 0 18px;font-size:17px;white-space:pre-wrap}
+.confirm .box .row{justify-content:center;margin-top:0}
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span class="dot">✿</span>わたしの簿記ノート</h1>
+  <button class="gear" id="openSettings" aria-label="設定">⚙ 設定</button>
+</header>
+
+<main>
+  <!-- 動画 -->
+  <section class="view on" id="view-video">
+    <div class="chips" id="vchips"></div>
+    <div class="toolbar">
+      <button class="btn main flex1" id="addVideo">＋ 動画を追加</button>
+    </div>
+    <div class="summary" id="vsummary"></div>
+    <div id="vlist"></div>
+  </section>
+
+  <!-- 問題 -->
+  <section class="view" id="view-prob">
+    <div class="chips" id="pchips"></div>
+    <div class="toolbar">
+      <button class="btn main flex1" id="addProb">＋ 問題を追加</button>
+      <button class="btn yel flex1" id="nigateBtn">📒 にがてノート</button>
+    </div>
+    <div id="nigateBar"></div>
+    <div class="summary" id="psummary"></div>
+    <div id="plist"></div>
+  </section>
+</main>
+
+<nav class="tabs">
+  <button id="tab-video" class="on"><span class="ic">🎬</span>動画</button>
+  <button id="tab-prob"><span class="ic">📝</span>問題</button>
+</nav>
+
+<div class="overlay" id="overlay"><div class="sheet" id="sheet"></div></div>
+
+<div class="notice" id="notice">
+  <div class="msg">🌷 バックアップ、しばらくしていないよ</div>
+  <div class="msub">いまの記録を、ファイルにのこしておくと安心だよ。</div>
+  <div class="row" style="margin-top:0">
+    <button class="btn mint flex1" id="noticeSave">いま保存する</button>
+    <button class="btn small" id="noticeLater">またあとで</button>
+  </div>
+</div>
+
+<div class="confirm" id="confirm"><div class="box">
+  <p id="confirmMsg"></p>
+  <div class="row">
+    <button class="btn small" id="confirmNo">やめておく</button>
+    <button class="btn danger" id="confirmYes">消す</button>
+  </div>
+</div></div>
+
+<div class="toast" id="toast"></div>
+<input type="file" id="fileIn" accept=".json,application/json,text/plain" style="display:none">
+
+<script>
+(function(){
+'use strict';
+
+/* ---------- 保存まわり ---------- */
+var KEY = 'bokiBenkyoNote_v1';
+var DEFAULT_TOPICS = ['第1問 仕訳','第2問 前払い','第2問 未払い','第2問 前受け','第2問 未収','第3問 決算','固定資産台帳','損益振替','経過勘定','その他'];
+var OTHER = 'その他';
+
+function blank(){ return {topics:DEFAULT_TOPICS.slice(), videos:[], problems:[], lastBackup:null, lastNotice:null}; }
+function load(){
+  try{
+    var s = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if(!s || typeof s !== 'object') return blank();
+    var b = blank();
+    b.topics = Array.isArray(s.topics) && s.topics.length ? s.topics : b.topics;
+    b.videos = Array.isArray(s.videos) ? s.videos : [];
+    b.problems = Array.isArray(s.problems) ? s.problems : [];
+    b.lastBackup = s.lastBackup || null;
+    b.lastNotice = s.lastNotice || null;
+    return b;
+  }catch(e){ return blank(); }
+}
+var S = load();
+if(S.topics.indexOf(OTHER) < 0) S.topics.push(OTHER);
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify(S)); }
+  catch(e){ toast('うまく保存できなかったよ。もう一度ためしてね'); }
+}
+
+/* ---------- 小さな道具 ---------- */
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function today(){ var d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+function md(t){ if(!t) return ''; var d=new Date(t); return (d.getMonth()+1)+'/'+d.getDate(); }
+var toastTimer;
+function toast(msg){
+  var t=$('toast'); t.textContent=msg; t.classList.add('on');
+  clearTimeout(toastTimer); toastTimer=setTimeout(function(){ t.classList.remove('on'); }, 2200);
+}
+var confirmCb=null;
+function askConfirm(msg, yesLabel, cb){
+  $('confirmMsg').textContent=msg; $('confirmYes').textContent=yesLabel||'消す';
+  confirmCb=cb; $('confirm').classList.add('on');
+}
+$('confirmNo').onclick=function(){ $('confirm').classList.remove('on'); confirmCb=null; };
+$('confirmYes').onclick=function(){ $('confirm').classList.remove('on'); var c=confirmCb; confirmCb=null; if(c) c(); };
+
+function openSheet(html){ $('sheet').innerHTML='<div class="grab"></div>'+html; $('overlay').classList.add('on'); $('sheet').scrollTop=0; document.body.style.overflow='hidden'; }
+function closeSheet(){ $('overlay').classList.remove('on'); $('sheet').innerHTML=''; document.body.style.overflow=''; }
+$('overlay').addEventListener('click', function(e){ if(e.target === $('overlay')) closeSheet(); });
+
+function ytId(url){
+  if(!url) return '';
+  var m = url.match(/(?:youtu\.be\/|[?&]v=|\/shorts\/|\/live\/|\/embed\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : '';
+}
+function topicOptions(sel){
+  var h = S.topics.map(function(t){ return '<option'+(t===sel?' selected':'')+'>'+esc(t)+'</option>'; }).join('');
+  return h + '<option value="__new">＋ 新しい論点をつくる…</option>';
+}
+function bindNewTopic(selId, boxId){
+  var sel=$(selId), box=$(boxId);
+  sel.addEventListener('change', function(){ box.style.display = sel.value==='__new' ? 'block' : 'none'; if(sel.value==='__new') box.querySelector('input').focus(); });
+}
+function pickTopic(selId, inputId){
+  var v=$(selId).value;
+  if(v!=='__new') return v;
+  var n=$(inputId).value.trim();
+  if(!n) return null;
+  if(S.topics.indexOf(n)<0){ var i=S.topics.indexOf(OTHER); if(i<0) S.topics.push(n); else S.topics.splice(i,0,n); }
+  return n;
+}
+
+/* ---------- 下のボタン（切りかえ） ---------- */
+var tab='video';
+function setTab(t){
+  tab=t;
+  $('view-video').classList.toggle('on', t==='video');
+  $('view-prob').classList.toggle('on', t==='prob');
+  $('tab-video').classList.toggle('on', t==='video');
+  $('tab-prob').classList.toggle('on', t==='prob');
+  window.scrollTo(0,0);
+}
+$('tab-video').onclick=function(){ setTab('video'); };
+$('tab-prob').onclick=function(){ setTab('prob'); };
+
+function chipsHtml(list, cur){
+  var h='<button class="chip'+(cur==='__all'?' on':'')+'" data-t="__all">すべて<span class="n">'+list.length+'</span></button>';
+  S.topics.forEach(function(t){
+    var n=list.filter(function(x){ return x.topic===t; }).length;
+    h+='<button class="chip'+(cur===t?' on':'')+'" data-t="'+esc(t)+'">'+esc(t)+'<span class="n">'+n+'</span></button>';
+  });
+  return h;
+}
+
+/* ---------- 動画 ---------- */
+var vTopic='__all';
+function renderVideos(){
+  if(vTopic!=='__all' && S.topics.indexOf(vTopic)<0) vTopic='__all';
+  $('vchips').innerHTML=chipsHtml(S.videos, vTopic);
+  var list = S.videos.filter(function(v){ return vTopic==='__all' || v.topic===vTopic; });
+  var seen = list.filter(function(v){ return v.seen; }).length;
+  $('vsummary').textContent = list.length ? ('見た動画　'+seen+' / '+list.length+' 本') : '';
+  if(!list.length){
+    $('vlist').innerHTML = '<div class="empty"><span class="big">🎬</span>'+(S.videos.length?'この論点の動画は、まだないよ。':'まだ動画がないよ。<br>「＋ 動画を追加」から入れてみてね。')+'</div>';
+    return;
+  }
+  $('vlist').innerHTML = list.map(function(v){
+    var id=ytId(v.url);
+    var th = id ? '<img src="https://i.ytimg.com/vi/'+id+'/mqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">' : '';
+    return '<div class="card'+(v.seen?' watched':'')+'">'+
+      '<a class="vtop" href="'+esc(v.url)+'" target="_blank" rel="noopener">'+
+        '<div class="thumb">'+th+'<span class="play">▶</span></div>'+
+        '<div><span class="tag">'+esc(v.topic)+'</span><div class="vtitle">'+esc(v.title)+'</div></div>'+
+      '</a>'+
+      (v.memo ? '<div class="memo">'+esc(v.memo)+'</div>' : '')+
+      '<div class="row">'+
+        '<button class="seen'+(v.seen?' on':'')+'" data-seen="'+v.id+'">'+(v.seen?'✓ 見た':'まだ見てない')+'</button>'+
+        '<span class="spacer"></span>'+
+        '<button class="btn small" data-vedit="'+v.id+'">編集</button>'+
+        '<button class="btn small danger" data-vdel="'+v.id+'">削除</button>'+
+      '</div></div>';
+  }).join('');
+}
+$('vchips').addEventListener('click', function(e){ var b=e.target.closest('.chip'); if(!b) return; vTopic=b.getAttribute('data-t'); renderVideos(); });
+$('vlist').addEventListener('click', function(e){
+  var b;
+  if((b=e.target.closest('[data-seen]'))){
+    var v=findV(b.getAttribute('data-seen')); v.seen=!v.seen; v.seenAt=v.seen?Date.now():null; save(); renderVideos();
+    if(v.seen) toast('おつかれさま 🌸');
+  }else if((b=e.target.closest('[data-vedit]'))){
+    videoForm(findV(b.getAttribute('data-vedit')));
+  }else if((b=e.target.closest('[data-vdel]'))){
+    var d=findV(b.getAttribute('data-vdel'));
+    askConfirm('「'+d.title+'」を消してもいい？\n消すと、もとに戻せないよ。','消す', function(){
+      S.videos=S.videos.filter(function(x){ return x.id!==d.id; }); save(); renderVideos(); toast('消したよ');
+    });
+  }
+});
+function findV(id){ return S.videos.filter(function(v){ return v.id===id; })[0]; }
+
+function videoForm(v){
+  var isNew=!v;
+  var defTopic = v ? v.topic : (vTopic!=='__all' ? vTopic : S.topics[0]);
+  openSheet(
+    '<h2>'+(isNew?'動画を追加':'動画を編集')+'<button class="close" data-close>✕</button></h2>'+
+    '<label class="f">タイトル</label><input type="text" id="fvTitle" value="'+esc(v?v.title:'')+'" placeholder="例：前払費用のきほん">'+
+    '<label class="f">YouTubeのURL<small>（動画の「共有」→「コピー」で写せるよ）</small></label>'+
+    '<input type="url" id="fvUrl" value="'+esc(v?v.url:'')+'" placeholder="https://youtu.be/…" autocapitalize="off" autocorrect="off">'+
+    '<div class="err" id="fvErr"></div>'+
+    '<label class="f">論点</label><select id="fvTopic">'+topicOptions(defTopic)+'</select>'+
+    '<div id="fvNewBox" style="display:none;margin-top:8px"><input type="text" id="fvNew" placeholder="新しい論点の名前"></div>'+
+    '<label class="f">ひとことメモ<small>（なくてもOK）</small></label><textarea class="short" id="fvMemo" placeholder="例：12分あたりの図がわかりやすい">'+esc(v?v.memo:'')+'</textarea>'+
+    '<div style="height:16px"></div><button class="btn main wide" id="fvSave">保存する</button>'
+  );
+  bindNewTopic('fvTopic','fvNewBox');
+  $('fvSave').onclick=function(){
+    var title=$('fvTitle').value.trim(), url=$('fvUrl').value.trim(), err=$('fvErr');
+    err.style.display='none';
+    if(!title){ err.textContent='タイトルを入れてね'; err.style.display='block'; return; }
+    if(!/^https?:\/\//i.test(url)){
+      var m=url.match(/https?:\/\/\S+/); if(m) url=m[0];
+      else { err.textContent='URLは https:// から始まる形で入れてね'; err.style.display='block'; return; }
+    }
+    var topic=pickTopic('fvTopic','fvNew');
+    if(!topic){ err.textContent='新しい論点の名前を入れてね'; err.style.display='block'; return; }
+    var memo=$('fvMemo').value.trim();
+    if(isNew){ S.videos.push({id:uid(), title:title, url:url, topic:topic, memo:memo, seen:false, createdAt:Date.now()}); }
+    else { v.title=title; v.url=url; v.topic=topic; v.memo=memo; }
+    save(); closeSheet(); renderAll(); toast(isNew?'動画を追加したよ':'なおしたよ');
+  };
+}
+$('addVideo').onclick=function(){ videoForm(null); };
+
+/* ---------- 問題 ---------- */
+var pTopic='__all', nigate=false;
+var RES = {ok:{t:'できた',e:'🌸'}, maybe:{t:'あやしい',e:'🤔'}, ng:{t:'できなかった',e:'💧'}};
+function resBadge(p){
+  if(!p.result) return '<span class="res none">まだ</span>';
+  return '<span class="res '+p.result+'">'+RES[p.result].e+' '+RES[p.result].t+'</span>';
+}
+function probList(){
+  return S.problems.filter(function(p){
+    if(pTopic!=='__all' && p.topic!==pTopic) return false;
+    if(nigate && !(p.result==='maybe' || p.result==='ng')) return false;
+    return true;
+  });
+}
+function renderProblems(){
+  if(pTopic!=='__all' && S.topics.indexOf(pTopic)<0) pTopic='__all';
+  var base = nigate ? S.problems.filter(function(p){ return p.result==='maybe'||p.result==='ng'; }) : S.problems;
+  $('pchips').innerHTML=chipsHtml(base, pTopic);
+  $('nigateBtn').textContent = nigate ? '← ぜんぶの問題' : '📒 にがてノート';
+  $('nigateBar').innerHTML = nigate ? '<div class="nigate-on">📒 <b>にがてノート</b>　「あやしい」「できなかった」の問題だけを出しているよ。できたら、ここから卒業していくよ。</div>' : '';
+  var list=probList();
+  var ok=list.filter(function(p){ return p.result==='ok'; }).length;
+  $('psummary').textContent = list.length ? (nigate ? ('にがての問題　'+list.length+' 問') : ('ぜんぶで '+list.length+' 問 ・ できた '+ok+' 問')) : '';
+  if(!list.length){
+    var msg = nigate ? (S.problems.length?'にがての問題は、いまはないよ 🌷':'まだ問題がないよ。') :
+      (S.problems.length?'この論点の問題は、まだないよ。':'まだ問題がないよ。<br>「＋ 問題を追加」から入れてみてね。');
+    $('plist').innerHTML='<div class="empty"><span class="big">📝</span>'+msg+'</div>';
+    return;
+  }
+  $('plist').innerHTML = list.map(function(p){
+    return '<button class="card pcard" data-open="'+p.id+'">'+
+      '<div class="phead"><span class="tag">'+esc(p.topic)+'</span><span>'+resBadge(p)+'</span></div>'+
+      '<div class="ptext">'+esc(p.question)+'</div></button>';
+  }).join('');
+}
+$('pchips').addEventListener('click', function(e){ var b=e.target.closest('.chip'); if(!b) return; pTopic=b.getAttribute('data-t'); renderProblems(); });
+$('nigateBtn').onclick=function(){ nigate=!nigate; pTopic='__all'; renderProblems(); window.scrollTo(0,0); };
+$('plist').addEventListener('click', function(e){ var b=e.target.closest('[data-open]'); if(b) showProblem(b.getAttribute('data-open')); });
+function findP(id){ return S.problems.filter(function(p){ return p.id===id; })[0]; }
+
+function showProblem(id){
+  var p=findP(id); if(!p) return;
+  var order=probList().map(function(x){ return x.id; });
+  var idx=order.indexOf(id);
+  var nextId = idx>=0 && idx<order.length-1 ? order[idx+1] : null;
+  var last = p.result ? ('前回：'+RES[p.result].e+' '+RES[p.result].t+'（'+md(p.resultAt)+'）') : 'はじめての問題';
+  openSheet(
+    '<h2><span class="tag" style="margin:0">'+esc(p.topic)+'</span><button class="close" data-close>✕</button></h2>'+
+    '<div class="hint" style="margin:-6px 0 8px">'+esc(last)+'</div>'+
+    '<div class="boxlabel">問題</div><div class="qbox">'+esc(p.question)+'</div>'+
+    '<div id="ansArea"><div style="height:16px"></div><button class="btn lav wide" id="showAns">👀 答えを見る</button></div>'+
+    '<div style="height:22px"></div>'+
+    '<div class="row"><button class="btn small" id="pEdit">編集</button><button class="btn small danger" id="pDel">削除</button>'+
+    '<span class="spacer"></span>'+(nextId?'<button class="btn small" id="pNext">つぎの問題 →</button>':'')+'</div>'
+  );
+  $('showAns').onclick=function(){
+    $('ansArea').innerHTML =
+      '<div class="boxlabel">答えと解説</div><div class="abox">'+esc(p.answer||'（答えはまだ入っていないよ）')+'</div>'+
+      '<div class="boxlabel">どうだった？</div>'+
+      '<div class="judge">'+
+        ['ok','maybe','ng'].map(function(k){ return '<button class="'+k+(p.result===k?' sel':'')+'" data-res="'+k+'"><span class="e">'+RES[k].e+'</span>'+RES[k].t+'</button>'; }).join('')+
+      '</div><div class="thanks" id="thanks"></div>';
+    $('ansArea').querySelectorAll('[data-res]').forEach(function(b){
+      b.onclick=function(){
+        var k=b.getAttribute('data-res'); p.result=k; p.resultAt=Date.now(); save();
+        $('ansArea').querySelectorAll('[data-res]').forEach(function(x){ x.classList.toggle('sel', x===b); });
+        $('thanks').textContent = k==='ok' ? 'やったね、よくできました 🌸' : (k==='maybe' ? 'にがてノートに入れておくね。また見直そう' : 'だいじょうぶ、にがてノートで一緒に見直そうね');
+        renderProblems();
+      };
+    });
+  };
+  $('pEdit').onclick=function(){ problemForm(p); };
+  $('pDel').onclick=function(){
+    askConfirm('この問題を消してもいい？\n消すと、もとに戻せないよ。','消す', function(){
+      S.problems=S.problems.filter(function(x){ return x.id!==p.id; }); save(); closeSheet(); renderProblems(); toast('消したよ');
+    });
+  };
+  if(nextId) $('pNext').onclick=function(){ showProblem(nextId); };
+}
+
+function problemForm(p){
+  var isNew=!p;
+  var defTopic = p ? p.topic : (pTopic!=='__all' ? pTopic : S.topics[0]);
+  openSheet(
+    '<h2>'+(isNew?'問題を追加':'問題を編集')+'<button class="close" data-close>✕</button></h2>'+
+    '<label class="f">論点</label><select id="fpTopic">'+topicOptions(defTopic)+'</select>'+
+    '<div id="fpNewBox" style="display:none;margin-top:8px"><input type="text" id="fpNew" placeholder="新しい論点の名前"></div>'+
+    '<label class="f">問題文</label><textarea id="fpQ" placeholder="問題をここに書いてね（長くても大丈夫）">'+esc(p?p.question:'')+'</textarea>'+
+    '<label class="f">答えと解説</label><textarea id="fpA" style="min-height:190px" placeholder="答えと、なぜそうなるかを書いておこう">'+esc(p?p.answer:'')+'</textarea>'+
+    '<div class="err" id="fpErr"></div>'+
+    '<div style="height:16px"></div><button class="btn main wide" id="fpSave">保存する</button>'
+  );
+  bindNewTopic('fpTopic','fpNewBox');
+  $('fpSave').onclick=function(){
+    var q=$('fpQ').value.trim(), a=$('fpA').value.trim(), err=$('fpErr');
+    err.style.display='none';
+    if(!q){ err.textContent='問題文を入れてね'; err.style.display='block'; return; }
+    var topic=pickTopic('fpTopic','fpNew');
+    if(!topic){ err.textContent='新しい論点の名前を入れてね'; err.style.display='block'; return; }
+    if(isNew){ S.problems.push({id:uid(), topic:topic, question:q, answer:a, result:null, resultAt:null, createdAt:Date.now()}); }
+    else { p.topic=topic; p.question=q; p.answer=a; }
+    save(); closeSheet(); renderAll(); toast(isNew?'問題を追加したよ':'なおしたよ');
+  };
+}
+$('addProb').onclick=function(){ problemForm(null); };
+
+$('sheet').addEventListener('click', function(e){ if(e.target.closest('[data-close]')) closeSheet(); });
+
+/* ---------- 設定 ---------- */
+function settings(){
+  var lb = S.lastBackup ? (new Date(S.lastBackup).getMonth()+1)+'月'+new Date(S.lastBackup).getDate()+'日' : 'まだ一度もないよ';
+  var topicsHtml = S.topics.map(function(t,i){
+    var n = S.videos.filter(function(v){ return v.topic===t; }).length + S.problems.filter(function(p){ return p.topic===t; }).length;
+    return '<div class="topic-item"><span class="nm">'+esc(t)+'</span><span class="cnt">'+n+'件</span>'+
+      (t===OTHER ? '' : '<button class="btn small danger" data-tdel="'+i+'">削除</button>')+'</div>';
+  }).join('');
+  openSheet(
+    '<h2>⚙ 設定<button class="close" data-close>✕</button></h2>'+
+    '<div class="set-sec"><h3>💾 バックアップ</h3>'+
+      '<p>スマホの中の記録を、ファイルにのこしておけるよ。「ファイル」アプリに保存しておくと安心。<br>さいごに保存した日：<b>'+lb+'</b></p>'+
+      '<button class="btn mint wide" id="doBackup">バックアップを保存</button>'+
+      '<div style="height:10px"></div>'+
+      '<button class="btn soft wide" id="doRestore">バックアップから戻す</button></div>'+
+    '<div class="set-sec"><h3>🏷 論点</h3><p>動画と問題で、いっしょに使う論点だよ。</p>'+topicsHtml+
+      '<div class="addrow"><input type="text" id="newTopic" placeholder="新しい論点"><button class="btn main" id="addTopic">追加</button></div></div>'+
+    '<div class="set-sec"><h3>📊 いまの記録</h3><p style="margin-bottom:0">動画 '+S.videos.length+' 本 ・ 問題 '+S.problems.length+' 問</p></div>'
+  );
+  $('doBackup').onclick=doBackup;
+  $('doRestore').onclick=function(){ $('fileIn').value=''; $('fileIn').click(); };
+  $('addTopic').onclick=function(){
+    var n=$('newTopic').value.trim();
+    if(!n){ toast('名前を入れてね'); return; }
+    if(S.topics.indexOf(n)>=0){ toast('その論点は、もうあるよ'); return; }
+    var i=S.topics.indexOf(OTHER); if(i<0) S.topics.push(n); else S.topics.splice(i,0,n);
+    save(); renderAll(); settings(); toast('「'+n+'」を追加したよ');
+  };
+  $('sheet').querySelectorAll('[data-tdel]').forEach(function(b){
+    b.onclick=function(){
+      var t=S.topics[+b.getAttribute('data-tdel')];
+      askConfirm('論点「'+t+'」を消してもいい？\nこの論点の動画と問題は、消えずに「その他」にうつるよ。','消す', function(){
+        S.topics=S.topics.filter(function(x){ return x!==t; });
+        S.videos.forEach(function(v){ if(v.topic===t) v.topic=OTHER; });
+        S.problems.forEach(function(p){ if(p.topic===t) p.topic=OTHER; });
+        save(); renderAll(); settings(); toast('消したよ');
+      });
+    };
+  });
+}
+$('openSettings').onclick=settings;
+
+function stamp(){ var d=new Date(); function z(n){ return (n<10?'0':'')+n; } return d.getFullYear()+z(d.getMonth()+1)+z(d.getDate()); }
+function markBackedUp(){
+  S.lastBackup=Date.now(); save(); hideNotice();
+  if($('overlay').classList.contains('on') && $('doBackup')) settings();
+  toast('バックアップを保存したよ 🌷');
+}
+function doBackup(){
+  var data={app:'boki-note', version:1, savedAt:new Date().toISOString(), topics:S.topics, videos:S.videos, problems:S.problems};
+  var text=JSON.stringify(data, null, 1);
+  var name='簿記ノート_バックアップ_'+stamp()+'.json';
+  var file=null;
+  try{ file=new File([text], name, {type:'application/json'}); }catch(e){}
+  if(file && navigator.canShare && navigator.canShare({files:[file]})){
+    navigator.share({files:[file], title:'わたしの簿記ノート バックアップ'}).then(markBackedUp).catch(function(err){
+      if(err && err.name==='AbortError') return;
+      download(text, name);
+    });
+  }else{
+    download(text, name);
+  }
+}
+function download(text, name){
+  var blob=new Blob([text], {type:'application/json'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name;
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+  markBackedUp();
+}
+$('fileIn').addEventListener('change', function(){
+  var f=this.files && this.files[0]; if(!f) return;
+  var r=new FileReader();
+  r.onload=function(){
+    var d;
+    try{ d=JSON.parse(r.result); }catch(e){ toast('このファイルは読めなかったよ'); return; }
+    if(!d || !Array.isArray(d.videos) || !Array.isArray(d.problems)){ toast('簿記ノートのバックアップではないみたい'); return; }
+    askConfirm('バックアップから戻してもいい？\n（動画 '+d.videos.length+' 本・問題 '+d.problems.length+' 問）\nいまの記録は、バックアップの中身に入れかわるよ。','戻す', function(){
+      S.videos=d.videos; S.problems=d.problems;
+      if(Array.isArray(d.topics) && d.topics.length) S.topics=d.topics;
+      if(S.topics.indexOf(OTHER)<0) S.topics.push(OTHER);
+      [].concat(S.videos, S.problems).forEach(function(x){ if(x.topic && S.topics.indexOf(x.topic)<0){ var i=S.topics.indexOf(OTHER); S.topics.splice(i,0,x.topic); } });
+      save(); closeSheet(); renderAll(); toast('もとに戻したよ 🌷');
+    });
+  };
+  r.readAsText(f);
+});
+
+/* ---------- 1日1回のやさしいお知らせ ---------- */
+var STALE_DAYS=7;
+function hideNotice(){ $('notice').classList.remove('on'); }
+function checkNotice(){
+  if(!S.videos.length && !S.problems.length) return;
+  if(S.lastNotice===today()) return;
+  var stale = !S.lastBackup || (Date.now()-S.lastBackup) > STALE_DAYS*86400000;
+  if(!stale) return;
+  S.lastNotice=today(); save();
+  setTimeout(function(){ $('notice').classList.add('on'); }, 700);
+}
+$('noticeSave').onclick=function(){ hideNotice(); doBackup(); };
+$('noticeLater').onclick=hideNotice;
+document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible') checkNotice(); });
+
+/* ---------- はじめ ---------- */
+function renderAll(){ renderVideos(); renderProblems(); }
+renderAll();
+checkNotice();
+})();
+</script>
+</body>
+</html>

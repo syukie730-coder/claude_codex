@@ -1,0 +1,13 @@
+{
+  "name": "わたしの簿記ノート",
+  "short_name": "簿記ノート",
+  "start_url": "boki_benkyo.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FFF4EA",
+  "theme_color": "#FFF4EA",
+  "icons": [
+    {"src": "boki-benkyo-icon.png", "sizes": "180x180", "type": "image/png"},
+    {"src": "boki-benkyo-icon-512.png", "sizes": "512x512", "type": "image/png"}
+  ]
+}
