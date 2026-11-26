@@ -210,6 +210,18 @@ textarea.short{min-height:84px}
 .judge .maybe.sel{border-color:var(--yel-d)}
 .judge .ng.sel{border-color:var(--pink-d)}
 .thanks{text-align:center;color:var(--mint-d);font-weight:700;margin-top:10px;min-height:1.7em}
+/* おすすめ動画 */
+.rec{background:var(--blue-l);border-radius:18px;padding:14px;margin-top:14px;border:2px solid #CFE0F4}
+.rec .rh{font-weight:900;font-size:17px;margin-bottom:10px}
+.rec-item{background:#fff;border-radius:14px;padding:10px;margin-bottom:10px}
+.rec-item:last-child{margin-bottom:0}
+.rec-link{display:block;text-decoration:none;color:var(--ink);font-weight:700;font-size:16px;line-height:1.55;
+  background:var(--pink-l);border-radius:12px;padding:10px 12px;min-height:44px;word-break:break-word}
+.rec-link .who{display:block;font-size:13px;font-weight:700;color:var(--sub);margin-bottom:2px}
+.rec-add{margin-top:8px;width:100%;min-height:44px;border-radius:12px;font-weight:700;font-size:16px;background:var(--mint-l);color:#2F7457}
+.rec-add.done{background:#F3ECE5;color:var(--sub)}
+.rec-none{font-size:15px;color:var(--sub)}
+.rec-hint{font-size:14px;font-weight:700;color:#5F86B5;margin-top:8px}
 
 .set-sec{background:#fff;border-radius:20px;padding:16px;box-shadow:var(--shadow);margin-bottom:16px}
 .set-sec h3{margin:0 0 6px;font-size:18px}
@@ -306,6 +318,37 @@ textarea.short{min-height:84px}
 <div class="toast" id="toast"></div>
 <input type="file" id="fileIn" accept=".json,application/json,text/plain" style="display:none">
 
+<script>
+/* =========================================================
+   おすすめ動画のリスト
+   ・「あやしい」「できなかった」を押したときに出す動画です。
+   ・増やすときは、論点の名前の下に { … } を1行ずつ足してください。
+     teacher: 先生の名前 / title: 動画の題名 / url: YouTubeのURL
+   ・論点の名前は、アプリの論点と同じ文字にしてください。
+   ・題名とURLは、ネット検索で本当にあると確かめたものだけです。
+     動画の中身までは見ていません（題名から選びました）。
+   ========================================================= */
+var RECOMMEND_VIDEOS = {
+  '第2問 前払い': [
+    { teacher:'福島先生', title:'簿記3級⑨決算整理仕訳1/3 【基礎18回＋じっくり復習等7回】『未収収益 未払費用 前受収益 前払費用 当座借越、現金過不足、貯蔵品』', url:'https://www.youtube.com/watch?v=er8MMhWy6vQ' }
+  ],
+  '第2問 未払い': [
+    { teacher:'福島先生', title:'簿記3級⑨決算整理仕訳1/3 【基礎18回＋じっくり復習等7回】『未収収益 未払費用 前受収益 前払費用 当座借越、現金過不足、貯蔵品』', url:'https://www.youtube.com/watch?v=er8MMhWy6vQ' }
+  ],
+  '第2問 前受け': [
+    { teacher:'福島先生', title:'簿記3級⑨決算整理仕訳1/3 【基礎18回＋じっくり復習等7回】『未収収益 未払費用 前受収益 前払費用 当座借越、現金過不足、貯蔵品』', url:'https://www.youtube.com/watch?v=er8MMhWy6vQ' }
+  ],
+  '第2問 未収': [
+    { teacher:'福島先生', title:'簿記3級⑨決算整理仕訳1/3 【基礎18回＋じっくり復習等7回】『未収収益 未払費用 前受収益 前払費用 当座借越、現金過不足、貯蔵品』', url:'https://www.youtube.com/watch?v=er8MMhWy6vQ' }
+  ],
+  '固定資産台帳': [
+    { teacher:'桜田先生', title:'✧固定資産台帳&勘定記入✧【簿記3級】第2問(1)サンプル2の解き方', url:'https://www.youtube.com/watch?v=1AY0L8oeQgw' },
+    { teacher:'桜田先生', title:'✧第31回✧【簿記3級】決算整理仕訳(3) 固定資産の減価償却', url:'https://www.youtube.com/watch?v=QtkgHXCwVR0' },
+    { teacher:'福島先生', title:'簿記3級⑩決算整理仕訳2/3 『減価償却と貸倒引当金の仕訳がメッチャわかるっ！』', url:'https://www.youtube.com/watch?v=btACBgyMj7Y' }
+  ]
+};
+/* ===== おすすめ動画のリスト ここまで ===== */
+</script>
 <script>
 (function(){
 'use strict';
@@ -484,6 +527,36 @@ $('addVideo').onclick=function(){ videoForm(null); };
 
 /* ---------- 問題 ---------- */
 var pTopic='__all', nigate=false;
+function recFor(topic){ var l=(typeof RECOMMEND_VIDEOS!=='undefined' && RECOMMEND_VIDEOS[topic]) || []; return l.filter(function(r){ return r && r.url && r.title; }); }
+function sameVideo(a,b){ var x=ytId(a), y=ytId(b); return x&&y ? x===y : String(a).trim()===String(b).trim(); }
+function hasVideo(url){ return S.videos.some(function(v){ return sameVideo(v.url,url); }); }
+function recHtml(p){
+  var list=recFor(p.topic);
+  if(!list.length) return '<div class="rec"><div class="rh">🎬 この問題に合う動画</div><div class="rec-none">この論点のおすすめ動画は、まだ入っていないよ。</div></div>';
+  return '<div class="rec"><div class="rh">この問題に合う動画はこれだよ🎬</div>'+
+    list.map(function(r,i){
+      var have=hasVideo(r.url);
+      return '<div class="rec-item"><a class="rec-link" href="'+esc(r.url)+'" target="_blank" rel="noopener"><span class="who">▶ '+esc(r.teacher||'')+'</span>'+esc(r.title)+'</a>'+
+        '<button class="rec-add'+(have?' done':'')+'" data-recadd="'+i+'">'+(have?'✓ わたしの動画に入っているよ':'＋ わたしの動画に入れる')+'</button></div>';
+    }).join('')+'</div>';
+}
+function bindRec(box, p){
+  box.querySelectorAll('[data-recadd]').forEach(function(b){
+    b.onclick=function(){
+      var r=recFor(p.topic)[+b.getAttribute('data-recadd')]; if(!r) return;
+      if(hasVideo(r.url)){ toast('もう入っているよ'); return; }
+      S.videos.push({id:uid(), title:r.title, url:r.url, topic:p.topic, memo:'おすすめから追加'+(r.teacher?'（'+r.teacher+'）':''), seen:false, createdAt:Date.now()});
+      save(); renderVideos();
+      b.classList.add('done'); b.textContent='✓ わたしの動画に入っているよ';
+      toast('🎬 動画に入れたよ');
+    };
+  });
+}
+function showRec(p){
+  var box=$('recArea'); if(!box) return;
+  if(p.result==='maybe' || p.result==='ng'){ box.innerHTML=recHtml(p); bindRec(box,p); }
+  else box.innerHTML='';
+}
 var RES = {ok:{t:'できた',e:'🌸'}, maybe:{t:'あやしい',e:'🤔'}, ng:{t:'できなかった',e:'💧'}};
 function resBadge(p){
   if(!p.result) return '<span class="res none">まだ</span>';
@@ -514,7 +587,7 @@ function renderProblems(){
   $('plist').innerHTML = list.map(function(p){
     return '<button class="card pcard" data-open="'+p.id+'">'+
       '<div class="phead"><span class="tag">'+esc(p.topic)+'</span><span>'+resBadge(p)+'</span></div>'+
-      '<div class="ptext">'+esc(p.question)+'</div></button>';
+      '<div class="ptext">'+esc(p.question)+'</div>'+(nigate && recFor(p.topic).length ? '<div class="rec-hint">🎬 合う動画が '+recFor(p.topic).length+' 本あるよ</div>' : '')+'</button>';
   }).join('');
 }
 $('pchips').addEventListener('click', function(e){ var b=e.target.closest('.chip'); if(!b) return; pTopic=b.getAttribute('data-t'); renderProblems(); });
@@ -533,6 +606,7 @@ function showProblem(id){
     '<div class="hint" style="margin:-6px 0 8px">'+esc(last)+'</div>'+
     '<div class="boxlabel">問題</div><div class="qbox">'+esc(p.question)+'</div>'+
     '<div id="ansArea"><div style="height:16px"></div><button class="btn lav wide" id="showAns">👀 答えを見る</button></div>'+
+    '<div id="recArea"></div>'+
     '<div style="height:22px"></div>'+
     '<div class="row"><button class="btn small" id="pEdit">編集</button><button class="btn small danger" id="pDel">削除</button>'+
     '<span class="spacer"></span>'+(nextId?'<button class="btn small" id="pNext">つぎの問題 →</button>':'')+'</div>'
@@ -549,10 +623,12 @@ function showProblem(id){
         var k=b.getAttribute('data-res'); p.result=k; p.resultAt=Date.now(); save();
         $('ansArea').querySelectorAll('[data-res]').forEach(function(x){ x.classList.toggle('sel', x===b); });
         $('thanks').textContent = k==='ok' ? 'やったね、よくできました 🌸' : (k==='maybe' ? 'にがてノートに入れておくね。また見直そう' : 'だいじょうぶ、にがてノートで一緒に見直そうね');
+        showRec(p);
         renderProblems();
       };
     });
   };
+  if(nigate) showRec(p);
   $('pEdit').onclick=function(){ problemForm(p); };
   $('pDel').onclick=function(){
     askConfirm('この問題を消してもいい？\n消すと、もとに戻せないよ。','消す', function(){
