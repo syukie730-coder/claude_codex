@@ -424,7 +424,7 @@ let cameFrom = 'scr-home';  // 詳細画面からの戻り先
 const DEFAULT_FOLDERS = [
   "🥦 野菜料理","🍗 鶏肉料理","🐷 豚肉料理","🥩 牛肉料理","🍖 ひき肉料理",
   "🍳 卵料理","🧀 豆腐料理","🐟 魚料理","🥔 じゃがいも料理","🥕 根菜料理",
-  "🌿 サラダ","🥜 乾物料理","🍝 麺料理","🍚 ご飯もの","🥣 スープ","🍛 その他"
+  "🌿 サラダ","🥜 乾物料理","🍝 麺料理","🍚 ご飯もの","🥣 スープ","🍲 鍋料理","🍛 その他"
 ];
 
 /* ============================================================
@@ -435,6 +435,17 @@ async function init(){
   const f = await store.get('folders');
   if (f) {
     folders = JSON.parse(f);
+    // 「鍋料理」フォルダがなければ、「その他」の前に追加する(1回だけ)
+    const nabeDone = await store.get('added_nabe');
+    if (!nabeDone) {
+      if (!folders.some(x=>x.name.includes('鍋'))) {
+        const nabe = {id:'f-nabe', name:'🍲 鍋料理'};
+        const oi = folders.findIndex(x=>x.name.includes('その他'));
+        if (oi >= 0) folders.splice(oi,0,nabe); else folders.push(nabe);
+        await store.set('folders', JSON.stringify(folders));
+      }
+      await store.set('added_nabe', '1');
+    }
   } else {
     folders = DEFAULT_FOLDERS.map((name,i)=>({id:'f'+i, name}));
     await store.set('folders', JSON.stringify(folders));
