@@ -53,6 +53,15 @@
   @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
   @keyframes popIn { 0%{opacity:0;transform:scale(.6)} 70%{transform:scale(1.06)} 100%{opacity:1;transform:scale(1)} }
   @keyframes fall { 0%{transform:translateY(-10vh) rotate(0);opacity:1} 100%{transform:translateY(105vh) rotate(340deg);opacity:.2} }
+  @keyframes pigfall {
+    0%{transform:translateY(-12vh) translateX(0) rotate(-18deg) scale(.8);opacity:1}
+    25%{transform:translateY(22vh) translateX(18px) rotate(16deg) scale(1)}
+    50%{transform:translateY(50vh) translateX(-16px) rotate(-14deg)}
+    75%{transform:translateY(78vh) translateX(14px) rotate(12deg)}
+    88%{transform:translateY(96vh) translateX(0) rotate(0) scale(1.1,.85)}
+    94%{transform:translateY(90vh) rotate(0) scale(.95,1.05)}
+    100%{transform:translateY(96vh) rotate(0) scale(1);opacity:0}
+  }
   @keyframes shine { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
   @media (prefers-reduced-motion: reduce){ *,*::before,*::after{animation:none!important;transition:none!important} }
 
@@ -311,6 +320,7 @@
   .toast { position:fixed; left:50%; bottom:calc(env(safe-area-inset-bottom) + 108px); transform:translateX(-50%); background:linear-gradient(135deg,#EE9CBF,#E68CB0); color:#fff; padding:13px 26px; border-radius:28px; font-size:15px; font-weight:900; border:2.5px solid #fff; opacity:0; pointer-events:none; transition:opacity .3s; z-index:100; white-space:nowrap; box-shadow:0 5px 14px rgba(200,90,135,.4); }
   .toast.show { opacity:1; }
 
+  .piglet { position:fixed; top:0; z-index:99; pointer-events:none; line-height:1; animation:pigfall ease-in forwards; filter:drop-shadow(0 3px 3px rgba(200,90,135,.25)); }
   .petal { position:fixed; top:0; z-index:99; pointer-events:none; font-size:20px; animation:fall linear forwards; }
 </style>
 </head>
@@ -590,6 +600,20 @@ function celebrate(big) {
     document.body.appendChild(p); setTimeout(()=>p.remove(),4600);
   }
 }
+function pigRain(big) {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const count = big ? 18 : 9;
+  for (let i=0;i<count;i++){
+    const p=document.createElement('span');
+    const pig = i%3!==2;
+    p.className = pig ? 'piglet' : 'petal';
+    p.textContent = pig ? '🐷' : (big ? ['🎉','💕','✨'][i%3] : ['💕','✨'][i%2]);
+    p.style.left=(4+Math.random()*84)+'vw';
+    p.style.fontSize = pig ? (30+Math.random()*20)+'px' : (14+Math.random()*10)+'px';
+    p.style.animationDuration=(2.4+Math.random()*1.4)+'s'; p.style.animationDelay=(Math.random()*.8)+'s';
+    document.body.appendChild(p); setTimeout(()=>p.remove(),5200);
+  }
+}
 function monthRecordCount() {
   const prefix = monthKey(viewYear, viewMonth)+'-';
   return Object.keys(db.records).filter(k=>k.startsWith(prefix)).length;
@@ -609,7 +633,9 @@ $('saveBtn').addEventListener('click', () => {
   if (w === null) delete db.weights[editingDate]; else db.weights[editingDate] = w;
   saveDB(); closeSheets(); refresh();
   const n = monthRecordCount();
-  if (n>0 && n%10===0){ celebrate(true); toast(`すごい!今月${n}日目の記録です🎀`); }
+  const onlyWeight = w !== null && !selectedLevel && !memo;
+  if (n>0 && n%10===0 && !onlyWeight){ celebrate(true); toast(`すごい!今月${n}日目の記録です🎀`); }
+  else if (onlyWeight){ pigRain(false); toast('保存しました🐷'); }
   else { celebrate(false); toast('保存しました🎀'); }
 });
 $('deleteBtn').addEventListener('click', () => {
@@ -924,7 +950,8 @@ $('wSave').addEventListener('click', () => {
   const w = parseW($('wInput').value);
   if (w === null){ toast('体重は 20〜250 の数字で入れてね🐷'); return; }
   db.weights[todayKey()] = w; saveDB(); $('wInput').blur();
-  refresh(); celebrate(false);
+  const gr0 = db.goal ? Math.round((w-db.goal.w)*10)/10 : null;
+  refresh(); pigRain(gr0!==null && gr0<=0);
   const gr = db.goal ? Math.round((w-db.goal.w)*10)/10 : null;
   toast(gr==null ? `${fmtW(w)}kg を記録しました🐷` : gr>0 ? `${fmtW(w)}kg 記録🐷 目標まであと${fmtW(gr)}kg` : `${fmtW(w)}kg 記録🎉 目標達成！`);
 });
@@ -946,7 +973,7 @@ function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('sho
 loadDB(); refresh();
 
 // ===== 新しい版が出ていたら、自動で入れかえる(ホーム画面のアプリは古いままになりやすいため) =====
-const APP_VER = 9;
+const APP_VER = 10;
 let lastVerCheck = 0;
 function checkNewVersion(){
   if (!/^https?:/.test(location.protocol)) return;
