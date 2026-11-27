@@ -477,13 +477,21 @@ function toast(msg){
 /* ============================================================
    ホーム画面
    ============================================================ */
+// フォルダ名を「絵文字」と「名前」に分ける
+// (空白なし・全角空白でもOK。絵文字がなければ📁にする)
+function splitFolderName(name){
+  const n = (name||'').trim();
+  const m = n.match(/^(\p{Extended_Pictographic}(?:\uFE0F|\p{Emoji_Modifier}|\u200D\p{Extended_Pictographic}\uFE0F?)*)[\s\u3000]*(.*)$/u);
+  if (m && m[2]) return {emoji:m[1], label:m[2]};
+  if (m) return {emoji:m[1], label:n};
+  return {emoji:'📁', label:n};
+}
 function renderHome(){
   const list = document.getElementById('folder-list');
   list.innerHTML = '';
   folders.forEach(f=>{
     const n = recipes.filter(r=>r.folderId===f.id).length;
-    const emoji = f.name.trim().split(' ')[0];
-    const label = f.name.replace(emoji,'').trim() || f.name;
+    const {emoji, label} = splitFolderName(f.name);
     const btn = document.createElement('button');
     btn.className = 'row';
     btn.innerHTML = `<span class="emoji">${esc(emoji)}</span>
